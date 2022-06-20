@@ -20,7 +20,7 @@
 #include <functional>// for std::less
 #include "Math.h"
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -38,7 +38,7 @@ public:
     MinMax() : mMin(Limits::max()), mMax(Limits::lowest())
     {
         static_assert(std::numeric_limits<ValueType>::is_specialized,
-                      "openvdb::math::MinMax default constructor requires a std::numeric_limits specialization");
+                      "laovdb::math::MinMax default constructor requires a std::numeric_limits specialization");
     }
 
     /// @brief Constructor
@@ -377,6 +377,6 @@ private:
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_MATH_STATS_HAS_BEEN_INCLUDED

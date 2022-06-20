@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 
-using openvdb::Index;
+using laovdb::Index;
 
 template<typename MaskType> void TestAll();
 
@@ -145,10 +145,10 @@ void TestAll()
 
 TEST_F(TestNodeMask, testCompress)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     using ValueT = int;
-    using MaskT = openvdb::util::NodeMask<1>;
+    using MaskT = laovdb::util::NodeMask<1>;
 
     { // no inactive values
         MaskT valueMask(true);
@@ -159,10 +159,10 @@ TEST_F(TestNodeMask, testCompress)
         EXPECT_EQ(valueMask.countOn(), Index32(8));
         EXPECT_EQ(childMask.countOn(), Index32(0));
 
-        openvdb::io::MaskCompress<ValueT, MaskT> maskCompress(
+        laovdb::io::MaskCompress<ValueT, MaskT> maskCompress(
             valueMask, childMask, values.data(), background);
 
-        EXPECT_EQ(maskCompress.metadata, int8_t(openvdb::io::NO_MASK_OR_INACTIVE_VALS));
+        EXPECT_EQ(maskCompress.metadata, int8_t(laovdb::io::NO_MASK_OR_INACTIVE_VALS));
         EXPECT_EQ(maskCompress.inactiveVal[0], background);
         EXPECT_EQ(maskCompress.inactiveVal[1], background);
     }
@@ -175,10 +175,10 @@ TEST_F(TestNodeMask, testCompress)
 
         EXPECT_EQ(valueMask.countOn(), Index32(0));
 
-        openvdb::io::MaskCompress<ValueT, MaskT> maskCompress(
+        laovdb::io::MaskCompress<ValueT, MaskT> maskCompress(
             valueMask, childMask, values.data(), background);
 
-        EXPECT_EQ(maskCompress.metadata, int8_t(openvdb::io::NO_MASK_OR_INACTIVE_VALS));
+        EXPECT_EQ(maskCompress.metadata, int8_t(laovdb::io::NO_MASK_OR_INACTIVE_VALS));
         EXPECT_EQ(maskCompress.inactiveVal[0], background);
         EXPECT_EQ(maskCompress.inactiveVal[1], background);
     }
@@ -191,10 +191,10 @@ TEST_F(TestNodeMask, testCompress)
 
         EXPECT_EQ(valueMask.countOn(), Index32(0));
 
-        openvdb::io::MaskCompress<ValueT, MaskT> maskCompress(
+        laovdb::io::MaskCompress<ValueT, MaskT> maskCompress(
             valueMask, childMask, values.data(), background);
 
-        EXPECT_EQ(maskCompress.metadata, int8_t(openvdb::io::NO_MASK_AND_MINUS_BG));
+        EXPECT_EQ(maskCompress.metadata, int8_t(laovdb::io::NO_MASK_AND_MINUS_BG));
         EXPECT_EQ(maskCompress.inactiveVal[0], -background);
         EXPECT_EQ(maskCompress.inactiveVal[1], background);
     }
@@ -211,10 +211,10 @@ TEST_F(TestNodeMask, testCompress)
         valueMask.setOff(6);
         EXPECT_EQ(valueMask.countOn(), Index32(4));
 
-        openvdb::io::MaskCompress<ValueT, MaskT> maskCompress(
+        laovdb::io::MaskCompress<ValueT, MaskT> maskCompress(
             valueMask, childMask, values.data(), background);
 
-        EXPECT_EQ(int(maskCompress.metadata), int(openvdb::io::NO_MASK_AND_ONE_INACTIVE_VAL));
+        EXPECT_EQ(int(maskCompress.metadata), int(laovdb::io::NO_MASK_AND_ONE_INACTIVE_VAL));
         EXPECT_EQ(maskCompress.inactiveVal[0], 500);
         EXPECT_EQ(maskCompress.inactiveVal[1], background);
     }
@@ -229,10 +229,10 @@ TEST_F(TestNodeMask, testCompress)
         valueMask.setOn(4);
         EXPECT_EQ(valueMask.countOn(), Index32(2));
 
-        openvdb::io::MaskCompress<ValueT, MaskT> maskCompress(
+        laovdb::io::MaskCompress<ValueT, MaskT> maskCompress(
             valueMask, childMask, values.data(), background);
 
-        EXPECT_EQ(int(maskCompress.metadata), int(openvdb::io::MASK_AND_NO_INACTIVE_VALS));
+        EXPECT_EQ(int(maskCompress.metadata), int(laovdb::io::MASK_AND_NO_INACTIVE_VALS));
         EXPECT_EQ(maskCompress.inactiveVal[0], -background);
         EXPECT_EQ(maskCompress.inactiveVal[1], background);
     }
@@ -247,10 +247,10 @@ TEST_F(TestNodeMask, testCompress)
         valueMask.setOn(4);
         EXPECT_EQ(valueMask.countOn(), Index32(2));
 
-        openvdb::io::MaskCompress<ValueT, MaskT> maskCompress(
+        laovdb::io::MaskCompress<ValueT, MaskT> maskCompress(
             valueMask, childMask, values.data(), background);
 
-        EXPECT_EQ(int(maskCompress.metadata), int(openvdb::io::MASK_AND_NO_INACTIVE_VALS));
+        EXPECT_EQ(int(maskCompress.metadata), int(laovdb::io::MASK_AND_NO_INACTIVE_VALS));
         EXPECT_EQ(maskCompress.inactiveVal[0], -background);
         EXPECT_EQ(maskCompress.inactiveVal[1], background);
     }
@@ -265,10 +265,10 @@ TEST_F(TestNodeMask, testCompress)
         valueMask.setOn(4);
         EXPECT_EQ(valueMask.countOn(), Index32(2));
 
-        openvdb::io::MaskCompress<ValueT, MaskT> maskCompress(
+        laovdb::io::MaskCompress<ValueT, MaskT> maskCompress(
             valueMask, childMask, values.data(), background);
 
-        EXPECT_EQ(int(maskCompress.metadata), int(openvdb::io::MASK_AND_ONE_INACTIVE_VAL));
+        EXPECT_EQ(int(maskCompress.metadata), int(laovdb::io::MASK_AND_ONE_INACTIVE_VAL));
         EXPECT_EQ(maskCompress.inactiveVal[0], 500);
         EXPECT_EQ(maskCompress.inactiveVal[1], background);
     }
@@ -283,10 +283,10 @@ TEST_F(TestNodeMask, testCompress)
         valueMask.setOn(4);
         EXPECT_EQ(valueMask.countOn(), Index32(2));
 
-        openvdb::io::MaskCompress<ValueT, MaskT> maskCompress(
+        laovdb::io::MaskCompress<ValueT, MaskT> maskCompress(
             valueMask, childMask, values.data(), background);
 
-        EXPECT_EQ(int(maskCompress.metadata), int(openvdb::io::MASK_AND_TWO_INACTIVE_VALS));
+        EXPECT_EQ(int(maskCompress.metadata), int(laovdb::io::MASK_AND_TWO_INACTIVE_VALS));
         EXPECT_EQ(maskCompress.inactiveVal[0], 500); // first unique value
         EXPECT_EQ(maskCompress.inactiveVal[1], 2000); // second unique value
     }
@@ -301,10 +301,10 @@ TEST_F(TestNodeMask, testCompress)
         valueMask.setOn(4);
         EXPECT_EQ(valueMask.countOn(), Index32(2));
 
-        openvdb::io::MaskCompress<ValueT, MaskT> maskCompress(
+        laovdb::io::MaskCompress<ValueT, MaskT> maskCompress(
             valueMask, childMask, values.data(), background);
 
-        EXPECT_EQ(int(maskCompress.metadata), int(openvdb::io::MASK_AND_TWO_INACTIVE_VALS));
+        EXPECT_EQ(int(maskCompress.metadata), int(laovdb::io::MASK_AND_TWO_INACTIVE_VALS));
         EXPECT_EQ(maskCompress.inactiveVal[0], 2000); // first unique value
         EXPECT_EQ(maskCompress.inactiveVal[1], 500); // second unique value
     }
@@ -319,10 +319,10 @@ TEST_F(TestNodeMask, testCompress)
         valueMask.setOn(4);
         EXPECT_EQ(valueMask.countOn(), Index32(2));
 
-        openvdb::io::MaskCompress<ValueT, MaskT> maskCompress(
+        laovdb::io::MaskCompress<ValueT, MaskT> maskCompress(
             valueMask, childMask, values.data(), background);
 
-        EXPECT_EQ(int(maskCompress.metadata), int(openvdb::io::NO_MASK_AND_ALL_VALS));
+        EXPECT_EQ(int(maskCompress.metadata), int(laovdb::io::NO_MASK_AND_ALL_VALS));
         EXPECT_EQ(maskCompress.inactiveVal[0], 1000); // first unique value
         EXPECT_EQ(maskCompress.inactiveVal[1], 2000); // second unique value
     }
@@ -341,16 +341,16 @@ TEST_F(TestNodeMask, testCompress)
         childMask.setOn(6);
         EXPECT_EQ(childMask.countOn(), Index32(2));
 
-        openvdb::io::MaskCompress<ValueT, MaskT> maskCompress(
+        laovdb::io::MaskCompress<ValueT, MaskT> maskCompress(
             valueMask, childMask, values.data(), background);
 
-        EXPECT_EQ(int(maskCompress.metadata), int(openvdb::io::MASK_AND_TWO_INACTIVE_VALS));
+        EXPECT_EQ(int(maskCompress.metadata), int(laovdb::io::MASK_AND_TWO_INACTIVE_VALS));
         EXPECT_EQ(maskCompress.inactiveVal[0], 1000); // first unique value
         EXPECT_EQ(maskCompress.inactiveVal[1], 2000); // secone unique value
     }
 }
 
-TEST_F(TestNodeMask, testAll4) { TestAll<openvdb::util::NodeMask<4> >(); }
-TEST_F(TestNodeMask, testAll3) { TestAll<openvdb::util::NodeMask<3> >(); }
-TEST_F(TestNodeMask, testAll2) { TestAll<openvdb::util::NodeMask<2> >(); }
-TEST_F(TestNodeMask, testAll1) { TestAll<openvdb::util::NodeMask<1> >(); }
+TEST_F(TestNodeMask, testAll4) { TestAll<laovdb::util::NodeMask<4> >(); }
+TEST_F(TestNodeMask, testAll3) { TestAll<laovdb::util::NodeMask<3> >(); }
+TEST_F(TestNodeMask, testAll2) { TestAll<laovdb::util::NodeMask<2> >(); }
+TEST_F(TestNodeMask, testAll1) { TestAll<laovdb::util::NodeMask<1> >(); }

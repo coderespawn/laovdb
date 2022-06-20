@@ -19,7 +19,7 @@
 
 #include <string>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -106,11 +106,11 @@ inline void collectNodeType(const ast::Node& node, ContainerType& array);
 
 /// @brief  Visit all nodes of the given types and store pointers to them in a
 ///         container of base ast::Node pointers
-/// @note   NodeTypeList is expected to be a an openvdb::TypeList object with a
+/// @note   NodeTypeList is expected to be a an laovdb::TypeList object with a
 ///         list of node types. For example, to collect all Attribute and
 ///         External Variable ast Nodes:
 ///
-///            using ListT = openvdb::TypeList<ast::Attribute, ast::ExternalVariable>;
+///            using ListT = laovdb::TypeList<ast::Attribute, ast::ExternalVariable>;
 ///            std::vector<const ast::Node*> nodes;
 ///            ast::collectNodeTypes<ListT>(tree, nodes);
 ///
@@ -201,7 +201,7 @@ inline void visitNodeType(const ast::Node& node, const OpT& op)
 } // namespace ast
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_COMPILER_AST_SCANNERS_HAS_BEEN_INCLUDED
 

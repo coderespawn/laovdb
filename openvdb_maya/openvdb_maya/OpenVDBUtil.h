@@ -48,17 +48,17 @@
 namespace openvdb_maya {
 
 
-using Grid = openvdb::GridBase;
-using GridPtr = openvdb::GridBase::Ptr;
-using GridCPtr = openvdb::GridBase::ConstPtr;
-using GridRef = openvdb::GridBase&;
-using GridCRef = const openvdb::GridBase&;
+using Grid = laovdb::GridBase;
+using GridPtr = laovdb::GridBase::Ptr;
+using GridCPtr = laovdb::GridBase::ConstPtr;
+using GridRef = laovdb::GridBase&;
+using GridCRef = const laovdb::GridBase&;
 
-using GridPtrVec = openvdb::GridPtrVec;
+using GridPtrVec = laovdb::GridPtrVec;
 using GridPtrVecIter = GridPtrVec::iterator;
 using GridPtrVecCIter = GridPtrVec::const_iterator;
 
-using GridCPtrVec = openvdb::GridCPtrVec;
+using GridCPtrVec = laovdb::GridCPtrVec;
 using GridCPtrVecIter = GridCPtrVec::iterator;
 using GridCPtrVecCIter = GridCPtrVec::const_iterator;
 
@@ -70,7 +70,7 @@ using GridCPtrVecCIter = GridCPtrVec::const_iterator;
 const OpenVDBData* getInputVDB(const MObject& vdb, MDataBlock& data);
 
 
-void getGrids(std::vector<openvdb::GridBase::ConstPtr>& grids,
+void getGrids(std::vector<laovdb::GridBase::ConstPtr>& grids,
     const OpenVDBData& vdb, const std::string& names);
 
 std::string getGridNames(const OpenVDBData& vdb);
@@ -204,10 +204,10 @@ template<class TreeType>
 class MinMaxVoxel
 {
 public:
-    using LeafArray = openvdb::tree::LeafManager<TreeType>;
+    using LeafArray = laovdb::tree::LeafManager<TreeType>;
     using ValueType = typename TreeType::ValueType;
 
-    // LeafArray = openvdb::tree::LeafManager<TreeType> leafs(myTree)
+    // LeafArray = laovdb::tree::LeafManager<TreeType> leafs(myTree)
     MinMaxVoxel(LeafArray&);
 
     void runParallel();
@@ -297,13 +297,13 @@ MinMaxVoxel<TreeType>::join(const MinMaxVoxel<TreeType>& rhs)
 class WireBoxBuilder
 {
 public:
-    WireBoxBuilder(const openvdb::math::Transform& xform,
+    WireBoxBuilder(const laovdb::math::Transform& xform,
         std::vector<GLuint>& indices, std::vector<GLfloat>& points, std::vector<GLfloat>& colors);
 
-    void add(GLuint boxIndex, const openvdb::CoordBBox& bbox, const openvdb::Vec3s& color);
+    void add(GLuint boxIndex, const laovdb::CoordBBox& bbox, const laovdb::Vec3s& color);
 
 private:
-    const openvdb::math::Transform *mXForm;
+    const laovdb::math::Transform *mXForm;
     std::vector<GLuint> *mIndices;
     std::vector<GLfloat> *mPoints;
     std::vector<GLfloat> *mColors;
@@ -320,7 +320,7 @@ public:
     {
     }
 
-    void operator()(openvdb::GridBase::ConstPtr grid)
+    void operator()(laovdb::GridBase::ConstPtr grid)
     {
         const size_t N = 8 * 3;
 
@@ -331,7 +331,7 @@ public:
         WireBoxBuilder boxBuilder(grid->constTransform(), indices, points, colors);
 
         boxBuilder.add(0, grid->evalActiveVoxelBoundingBox(),
-            openvdb::Vec3s(0.045f, 0.045f, 0.045f));
+            laovdb::Vec3s(0.045f, 0.045f, 0.045f));
 
         // store the sorted min/max points.
         mMin[0] = std::numeric_limits<float>::max();
@@ -357,12 +357,12 @@ public:
         mBuffer->genIndexBuffer(indices, GL_LINES);
     }
 
-    const openvdb::Vec3s& min() const { return mMin; }
-    const openvdb::Vec3s& max() const { return mMax; }
+    const laovdb::Vec3s& min() const { return mMin; }
+    const laovdb::Vec3s& max() const { return mMax; }
 
 private:
     BufferObject *mBuffer;
-    openvdb::Vec3s mMin, mMax;
+    laovdb::Vec3s mMin, mMax;
 }; // BoundingBoxGeo
 
 
@@ -383,15 +383,15 @@ public:
 
         WireBoxBuilder boxBuilder(grid->constTransform(), indices, points, colors);
 
-        openvdb::CoordBBox bbox(openvdb::Coord(0), openvdb::Coord(10));
+        laovdb::CoordBBox bbox(laovdb::Coord(0), laovdb::Coord(10));
         size_t boxIndex = 0;
 
         typename GridType::TreeType::NodeCIter iter = grid->tree().cbeginNode();
         iter.setMaxDepth(GridType::TreeType::NodeCIter::LEAF_DEPTH - 1);
 
-        const openvdb::Vec3s nodeColor[2] = {
-            openvdb::Vec3s(0.0432f, 0.33f, 0.0411023f), // first internal node level
-            openvdb::Vec3s(0.871f, 0.394f, 0.01916f) // intermediate internal node levels
+        const laovdb::Vec3s nodeColor[2] = {
+            laovdb::Vec3s(0.0432f, 0.33f, 0.0411023f), // first internal node level
+            laovdb::Vec3s(0.871f, 0.394f, 0.01916f) // intermediate internal node levels
         };
 
         for ( ; iter; ++iter) {
@@ -423,7 +423,7 @@ public:
     {
         using TreeType = typename GridType::TreeType;
 
-        openvdb::tree::LeafManager<const TreeType> leafs(grid->tree());
+        laovdb::tree::LeafManager<const TreeType> leafs(grid->tree());
 
         const size_t N = leafs.leafCount() * 8 * 3;
         std::vector<GLuint> indices(N);
@@ -431,7 +431,7 @@ public:
         std::vector<GLfloat> colors(N);
 
         WireBoxBuilder boxBuilder(grid->constTransform(), indices, points, colors);
-        const openvdb::Vec3s color(0.00608299f, 0.279541f, 0.625f); // leaf node color
+        const laovdb::Vec3s color(0.00608299f, 0.279541f, 0.625f); // leaf node color
 
         tbb::parallel_for(leafs.getRange(), LeafOp<TreeType>(leafs, boxBuilder, color));
 
@@ -445,16 +445,16 @@ protected:
     template<typename TreeType>
     struct LeafOp
     {
-        using LeafManagerType = openvdb::tree::LeafManager<const TreeType>;
+        using LeafManagerType = laovdb::tree::LeafManager<const TreeType>;
 
-        LeafOp(const LeafManagerType& leafs, WireBoxBuilder& boxBuilder, const openvdb::Vec3s& color)
+        LeafOp(const LeafManagerType& leafs, WireBoxBuilder& boxBuilder, const laovdb::Vec3s& color)
             : mLeafs(&leafs), mBoxBuilder(&boxBuilder), mColor(color) {}
 
         void operator()(const tbb::blocked_range<size_t>& range) const
         {
-            openvdb::CoordBBox bbox;
-            openvdb::Coord& min = bbox.min();
-            openvdb::Coord& max = bbox.max();
+            laovdb::CoordBBox bbox;
+            laovdb::Coord& min = bbox.min();
+            laovdb::Coord& max = bbox.max();
             const int offset = int(TreeType::LeafNodeType::DIM) - 1;
 
             for (size_t n = range.begin(); n < range.end(); ++n) {
@@ -469,7 +469,7 @@ protected:
     private:
         const LeafManagerType *mLeafs;
         WireBoxBuilder *mBoxBuilder;
-        const openvdb::Vec3s mColor;
+        const laovdb::Vec3s mColor;
     }; // LeafOp
 
 private:
@@ -486,7 +486,7 @@ public:
     void operator()(typename GridType::ConstPtr grid)
     {
         using TreeType = typename GridType::TreeType;
-        const openvdb::Index maxDepth = TreeType::ValueAllIter::LEAF_DEPTH - 1;
+        const laovdb::Index maxDepth = TreeType::ValueAllIter::LEAF_DEPTH - 1;
         size_t tileCount = 0;
 
         {
@@ -503,8 +503,8 @@ public:
 
         WireBoxBuilder boxBuilder(grid->constTransform(), indices, points, colors);
 
-        const openvdb::Vec3s color(0.9f, 0.3f, 0.3f);
-        openvdb::CoordBBox bbox;
+        const laovdb::Vec3s color(0.9f, 0.3f, 0.3f);
+        laovdb::CoordBBox bbox;
         size_t boxIndex = 0;
 
         typename TreeType::ValueOnCIter iter(grid->tree());
@@ -535,26 +535,26 @@ public:
     template<typename GridType>
     void operator()(typename GridType::ConstPtr grid)
     {
-        openvdb::tools::VolumeToMesh mesher(mIso);
+        laovdb::tools::VolumeToMesh mesher(mIso);
         mesher(*grid);
 
         // Copy points and generate point normals.
         std::vector<GLfloat> points(mesher.pointListSize() * 3);
         std::vector<GLfloat> normals(mesher.pointListSize() * 3);
 
-        openvdb::tree::ValueAccessor<const typename GridType::TreeType> acc(grid->tree());
-        openvdb::math::GenericMap map(grid->transform());
-        openvdb::Coord ijk;
+        laovdb::tree::ValueAccessor<const typename GridType::TreeType> acc(grid->tree());
+        laovdb::math::GenericMap map(grid->transform());
+        laovdb::Coord ijk;
 
         for (size_t n = 0, i = 0,  N = mesher.pointListSize(); n < N; ++n) {
-            const openvdb::Vec3s& p = mesher.pointList()[n];
+            const laovdb::Vec3s& p = mesher.pointList()[n];
             points[i++] = p[0];
             points[i++] = p[1];
             points[i++] = p[2];
         }
 
         // Copy primitives
-        openvdb::tools::PolygonPoolList& polygonPoolList = mesher.polygonPoolList();
+        laovdb::tools::PolygonPoolList& polygonPoolList = mesher.polygonPoolList();
         size_t numQuads = 0;
         for (size_t n = 0, N = mesher.polygonPoolListSize(); n < N; ++n) {
             numQuads += polygonPoolList[n].numQuads();
@@ -562,12 +562,12 @@ public:
 
         std::vector<GLuint> indices;
         indices.reserve(numQuads * 4);
-        openvdb::Vec3d normal, e1, e2;
+        laovdb::Vec3d normal, e1, e2;
 
         for (size_t n = 0, N = mesher.polygonPoolListSize(); n < N; ++n) {
-            const openvdb::tools::PolygonPool& polygons = polygonPoolList[n];
+            const laovdb::tools::PolygonPool& polygons = polygonPoolList[n];
             for (size_t i = 0, I = polygons.numQuads(); i < I; ++i) {
-                const openvdb::Vec4I& quad = polygons.quad(i);
+                const laovdb::Vec4I& quad = polygons.quad(i);
                 indices.push_back(quad[0]);
                 indices.push_back(quad[1]);
                 indices.push_back(quad[2]);
@@ -606,14 +606,14 @@ template<typename TreeType>
 class PointGenerator
 {
 public:
-    using LeafManagerType = openvdb::tree::LeafManager<TreeType>;
+    using LeafManagerType = laovdb::tree::LeafManager<TreeType>;
 
     PointGenerator(
         std::vector<GLfloat>& points,
         std::vector<GLuint>& indices,
         LeafManagerType& leafs,
         std::vector<unsigned>& indexMap,
-        const openvdb::math::Transform& transform,
+        const laovdb::math::Transform& transform,
         size_t voxelsPerLeaf = TreeType::LeafNodeType::NUM_VOXELS)
         : mPoints(&points)
         , mIndices(&indices)
@@ -634,7 +634,7 @@ public:
     {
         using ValueOnCIter = typename TreeType::LeafNodeType::ValueOnCIter;
 
-        openvdb::Vec3d pos;
+        laovdb::Vec3d pos;
         unsigned index = 0;
         size_t activeVoxels = 0;
 
@@ -660,7 +660,7 @@ public:
 
             } else {
 
-                std::vector<openvdb::Coord> coords;
+                std::vector<laovdb::Coord> coords;
                 coords.reserve(activeVoxels);
                 for ( ; it; ++it) { coords.push_back(it.getCoord()); }
 
@@ -683,7 +683,7 @@ public:
     }
 
 private:
-    void insertPoint(const openvdb::Vec3d& pos, unsigned index) const
+    void insertPoint(const laovdb::Vec3d& pos, unsigned index) const
     {
         (*mIndices)[index] = index;
         const unsigned element = index * 3;
@@ -696,7 +696,7 @@ private:
     std::vector<GLuint> *mIndices;
     LeafManagerType *mLeafs;
     std::vector<unsigned> *mIndexMap;
-    const openvdb::math::Transform *mTransform;
+    const laovdb::math::Transform *mTransform;
     const size_t mVoxelsPerLeaf;
 }; // PointGenerator
 
@@ -713,7 +713,7 @@ public:
         const GridType& grid,
         ValueType minValue,
         ValueType maxValue,
-        openvdb::Vec3s (&colorMap)[4],
+        laovdb::Vec3s (&colorMap)[4],
         bool isLevelSet = false)
         : mPoints(&points)
         , mColors(&colors)
@@ -724,7 +724,7 @@ public:
         , mMaxValue(maxValue)
         , mColorMap(colorMap)
         , mIsLevelSet(isLevelSet)
-        , mZeroValue(openvdb::zeroVal<ValueType>())
+        , mZeroValue(laovdb::zeroVal<ValueType>())
     {
         init();
     }
@@ -736,7 +736,7 @@ public:
         const GridType& grid,
         ValueType minValue,
         ValueType maxValue,
-        openvdb::Vec3s (&colorMap)[4],
+        laovdb::Vec3s (&colorMap)[4],
         bool isLevelSet = false)
         : mPoints(&points)
         , mColors(&colors)
@@ -747,7 +747,7 @@ public:
         , mMaxValue(maxValue)
         , mColorMap(colorMap)
         , mIsLevelSet(isLevelSet)
-        , mZeroValue(openvdb::zeroVal<ValueType>())
+        , mZeroValue(laovdb::zeroVal<ValueType>())
     {
         init();
     }
@@ -760,9 +760,9 @@ public:
 
     inline void operator()(const tbb::blocked_range<size_t>& range) const
     {
-        openvdb::Coord ijk;
-        openvdb::Vec3d pos, tmpNormal, normal(0.0, -1.0, 0.0);
-        openvdb::Vec3s color(0.9f, 0.3f, 0.3f);
+        laovdb::Coord ijk;
+        laovdb::Vec3d pos, tmpNormal, normal(0.0, -1.0, 0.0);
+        laovdb::Vec3s color(0.9f, 0.3f, 0.3f);
         float w = 0.0;
 
         size_t e1, e2, e3, voxelNum = 0;
@@ -788,14 +788,14 @@ public:
                     color = mColorMap[1];
                 } else {
                     w = (float(value) - mOffset[1]) * mScale[1];
-                    color = openvdb::Vec3s{w * mColorMap[0] + (1.0 - w) * mColorMap[1]};
+                    color = laovdb::Vec3s{w * mColorMap[0] + (1.0 - w) * mColorMap[1]};
                 }
             } else {
                 if (mIsLevelSet) {
                     color = mColorMap[2];
                 } else {
                     w = (float(value) - mOffset[0]) * mScale[0];
-                    color = openvdb::Vec3s{w * mColorMap[2] + (1.0 - w) * mColorMap[3]};
+                    color = laovdb::Vec3s{w * mColorMap[2] + (1.0 - w) * mColorMap[3]};
                 }
             }
 
@@ -806,8 +806,8 @@ public:
             if (mNormals) {
 
                 if ((voxelNum % 2) == 0) {
-                    tmpNormal = openvdb::math::ISGradient<
-                        openvdb::math::CD_2ND>::result(mAccessor, ijk);
+                    tmpNormal = laovdb::math::ISGradient<
+                        laovdb::math::CD_2ND>::result(mAccessor, ijk);
 
                     double length = tmpNormal.length();
                     if (length > 1.0e-7) {
@@ -839,10 +839,10 @@ private:
     std::vector<GLfloat> *mNormals;
 
     const GridType *mGrid;
-    openvdb::tree::ValueAccessor<const typename GridType::TreeType> mAccessor;
+    laovdb::tree::ValueAccessor<const typename GridType::TreeType> mAccessor;
 
     ValueType mMinValue, mMaxValue;
-    openvdb::Vec3s (&mColorMap)[4];
+    laovdb::Vec3s (&mColorMap)[4];
     const bool mIsLevelSet;
 
     ValueType mZeroValue;
@@ -862,17 +862,17 @@ public:
         , mColorMaxNegValue(0.3f, 0.3f, 0.9f) // blue
     { }
 
-    void setColorMinPosValue(const openvdb::Vec3s& c) { mColorMinPosValue = c; }
-    void setColorMaxPosValue(const openvdb::Vec3s& c) { mColorMaxPosValue = c; }
-    void setColorMinNegValue(const openvdb::Vec3s& c) { mColorMinNegValue = c; }
-    void setColorMaxNegValue(const openvdb::Vec3s& c) { mColorMaxNegValue = c; }
+    void setColorMinPosValue(const laovdb::Vec3s& c) { mColorMinPosValue = c; }
+    void setColorMaxPosValue(const laovdb::Vec3s& c) { mColorMaxPosValue = c; }
+    void setColorMinNegValue(const laovdb::Vec3s& c) { mColorMinNegValue = c; }
+    void setColorMaxNegValue(const laovdb::Vec3s& c) { mColorMaxNegValue = c; }
 
     template<typename GridType>
     void operator()(typename GridType::ConstPtr grid)
     {
         const size_t maxVoxelPoints = 26000000;
 
-        openvdb::Vec3s colorMap[4];
+        laovdb::Vec3s colorMap[4];
         colorMap[0] = mColorMinPosValue;
         colorMap[1] = mColorMaxPosValue;
         colorMap[2] = mColorMinNegValue;
@@ -884,10 +884,10 @@ public:
         using TreeType = typename GridType::TreeType;
 
         const TreeType& tree = grid->tree();
-        const bool isLevelSetGrid = grid->getGridClass() == openvdb::GRID_LEVEL_SET;
+        const bool isLevelSetGrid = grid->getGridClass() == laovdb::GRID_LEVEL_SET;
 
         ValueType minValue, maxValue;
-        openvdb::tree::LeafManager<const TreeType> leafs(tree);
+        laovdb::tree::LeafManager<const TreeType> leafs(tree);
 
         {
             util::MinMaxVoxel<const TreeType> minmax(leafs);
@@ -931,7 +931,7 @@ public:
 
 private:
     BufferObject *mPointBuffer;
-    openvdb::Vec3s mColorMinPosValue, mColorMaxPosValue, mColorMinNegValue, mColorMaxNegValue;
+    laovdb::Vec3s mColorMinPosValue, mColorMaxPosValue, mColorMinNegValue, mColorMaxNegValue;
 }; // ActiveVoxelGeo
 
 
@@ -941,16 +941,16 @@ private:
 /// Helper class used internally by processTypedGrid()
 template<typename GridType, typename OpType, bool IsConst/*=false*/>
 struct GridProcessor {
-    static inline void call(OpType& op, openvdb::GridBase::Ptr grid) {
-        op.template operator()<GridType>(openvdb::gridPtrCast<GridType>(grid));
+    static inline void call(OpType& op, laovdb::GridBase::Ptr grid) {
+        op.template operator()<GridType>(laovdb::gridPtrCast<GridType>(grid));
     }
 };
 
 /// Helper class used internally by processTypedGrid()
 template<typename GridType, typename OpType>
 struct GridProcessor<GridType, OpType, /*IsConst=*/true> {
-    static inline void call(OpType& op, openvdb::GridBase::ConstPtr grid) {
-        op.template operator()<GridType>(openvdb::gridConstPtrCast<GridType>(grid));
+    static inline void call(OpType& op, laovdb::GridBase::ConstPtr grid) {
+        op.template operator()<GridType>(laovdb::gridConstPtrCast<GridType>(grid));
     }
 };
 
@@ -986,7 +986,7 @@ template<typename GridPtrType, typename OpType>
 bool
 processTypedGrid(GridPtrType grid, OpType& op)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     if (grid->template isType<BoolGrid>())        doProcessTypedGrid<BoolGrid>(grid, op);
     else if (grid->template isType<FloatGrid>())  doProcessTypedGrid<FloatGrid>(grid, op);
     else if (grid->template isType<DoubleGrid>()) doProcessTypedGrid<DoubleGrid>(grid, op);
@@ -1019,7 +1019,7 @@ template<typename GridPtrType, typename OpType>
 bool
 processTypedScalarGrid(GridPtrType grid, OpType& op)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     if (grid->template isType<FloatGrid>())       doProcessTypedGrid<FloatGrid>(grid, op);
     else if (grid->template isType<DoubleGrid>()) doProcessTypedGrid<DoubleGrid>(grid, op);
     else if (grid->template isType<Int32Grid>())  doProcessTypedGrid<Int32Grid>(grid, op);
@@ -1036,7 +1036,7 @@ template<typename GridPtrType, typename OpType>
 bool
 processTypedVectorGrid(GridPtrType grid, OpType& op)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     if (grid->template isType<Vec3IGrid>())       doProcessTypedGrid<Vec3IGrid>(grid, op);
     else if (grid->template isType<Vec3SGrid>()) doProcessTypedGrid<Vec3SGrid>(grid, op);
     else if (grid->template isType<Vec3DGrid>())  doProcessTypedGrid<Vec3DGrid>(grid, op);

@@ -10,7 +10,7 @@
 #include <blosc.h>
 #endif
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace compression {
@@ -626,4 +626,4 @@ PagedOutputStream::resize(size_t size)
 
 } // namespace compression
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

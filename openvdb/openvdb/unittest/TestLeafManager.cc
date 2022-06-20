@@ -11,18 +11,18 @@
 class TestLeafManager: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 };
 
 
 TEST_F(TestLeafManager, testBasics)
 {
-    using openvdb::CoordBBox;
-    using openvdb::Coord;
-    using openvdb::Vec3f;
-    using openvdb::FloatGrid;
-    using openvdb::FloatTree;
+    using laovdb::CoordBBox;
+    using laovdb::Coord;
+    using laovdb::Vec3f;
+    using laovdb::FloatGrid;
+    using laovdb::FloatTree;
 
     const Vec3f center(0.35f, 0.35f, 0.35f);
     const float radius = 0.15f;
@@ -31,7 +31,7 @@ TEST_F(TestLeafManager, testBasics)
 
     FloatGrid::Ptr grid = FloatGrid::create(/*background=*/half_width*voxel_size);
     FloatTree& tree = grid->tree();
-    grid->setTransform(openvdb::math::Transform::createLinearTransform(/*voxel size=*/voxel_size));
+    grid->setTransform(laovdb::math::Transform::createLinearTransform(/*voxel size=*/voxel_size));
 
     unittest_util::makeSphere<FloatGrid>(
         Coord(dim), center, radius, *grid, unittest_util::SPHERE_SPARSE_NARROW_BAND);
@@ -39,7 +39,7 @@ TEST_F(TestLeafManager, testBasics)
 
     //grid->print(std::cout, 3);
     {// test with no aux buffers
-        openvdb::tree::LeafManager<FloatTree> r(tree);
+        laovdb::tree::LeafManager<FloatTree> r(tree);
         EXPECT_EQ(leafCount, r.leafCount());
         EXPECT_EQ(size_t(0), r.auxBufferCount());
         EXPECT_EQ(size_t(0), r.auxBuffersPerLeaf());
@@ -64,7 +64,7 @@ TEST_F(TestLeafManager, testBasics)
         }
     }
     {// test with 2 aux buffers
-        openvdb::tree::LeafManager<FloatTree> r(tree, 2);
+        laovdb::tree::LeafManager<FloatTree> r(tree, 2);
         EXPECT_EQ(leafCount, r.leafCount());
         EXPECT_EQ(size_t(2), r.auxBuffersPerLeaf());
         EXPECT_EQ(size_t(2*leafCount),r.auxBufferCount());
@@ -115,7 +115,7 @@ TEST_F(TestLeafManager, testBasics)
         }
     }
     {// test with const tree (buffers are not swappable)
-        openvdb::tree::LeafManager<const FloatTree> r(tree);
+        laovdb::tree::LeafManager<const FloatTree> r(tree);
 
         for (size_t numAuxBuffers = 0; numAuxBuffers <= 2; ++numAuxBuffers += 2) {
             r.rebuildAuxBuffers(numAuxBuffers);
@@ -148,7 +148,7 @@ TEST_F(TestLeafManager, testBasics)
 
 TEST_F(TestLeafManager, testActiveLeafVoxelCount)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     for (const Int32 dim: { 87, 1023, 1024, 2023 }) {
         const CoordBBox denseBBox{Coord{0}, Coord{dim - 1}};
@@ -168,7 +168,7 @@ TEST_F(TestLeafManager, testActiveLeafVoxelCount)
         // On a dual CPU Intel(R) Xeon(R) E5-2697 v3 @ 2.60GHz
         // the speedup of LeafManager::activeLeafVoxelCount over
         // Tree::activeLeafVoxelCount is ~15x (assuming a LeafManager already exists)
-        //openvdb::util::CpuTimer t("\nTree::activeVoxelCount");
+        //laovdb::util::CpuTimer t("\nTree::activeVoxelCount");
         const auto treeActiveVoxels = tree.activeVoxelCount();
         //t.restart("\nTree::activeLeafVoxelCount");
         const auto treeActiveLeafVoxels = tree.activeLeafVoxelCount();
@@ -212,14 +212,14 @@ struct ReduceOp
     }
     void join(const ReduceOp &other) {mN += other.mN;}
     const float mV;
-    openvdb::Index mN;
+    laovdb::Index mN;
 };// ReduceOp
 
 }//unnamed namespace
 
 TEST_F(TestLeafManager, testForeach)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatTree tree( 0.0f );
     const int dim = int(FloatTree::LeafNodeType::dim());
@@ -259,7 +259,7 @@ TEST_F(TestLeafManager, testForeach)
 
 TEST_F(TestLeafManager, testReduce)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatTree tree( 0.0f );
     const int dim = int(FloatTree::LeafNodeType::dim());

@@ -33,7 +33,7 @@ public:
 CPPUNIT_TEST_SUITE_REGISTRATION(TestLogger);
 
 /*
-extern openvdb::ax::Logger* axlog;
+extern laovdb::ax::Logger* axlog;
 /// @note We don't deploy the grammar c files as part of the AX install.
 ///  Because the unit tests are structured to be able to build against
 ///  an existing version of AX we can't include the parser.cc here for
@@ -43,7 +43,7 @@ extern openvdb::ax::Logger* axlog;
 void
 TestLogger::testParseNewNode()
 {
-    openvdb::ax::Logger logger;
+    laovdb::ax::Logger logger;
     axlog = &logger;// setting global Logger* used in parser
     AXLTYPE location;
     location.first_line = 100;
@@ -51,11 +51,11 @@ TestLogger::testParseNewNode()
     const auto& nodeToLineColMap = logger.mNodeToLineColMap;
     CPPUNIT_ASSERT(nodeToLineColMap.empty());
 
-    const openvdb::ax::ast::Local* testLocal =
-        newNode<openvdb::ax::ast::Local>(&location, "test");
+    const laovdb::ax::ast::Local* testLocal =
+        newNode<laovdb::ax::ast::Local>(&location, "test");
 
     CPPUNIT_ASSERT_EQUAL(nodeToLineColMap.size(),static_cast<size_t>(1));
-    openvdb::ax::Logger::CodeLocation lineCol = nodeToLineColMap.at(testLocal);
+    laovdb::ax::Logger::CodeLocation lineCol = nodeToLineColMap.at(testLocal);
     CPPUNIT_ASSERT_EQUAL(lineCol.first, static_cast<size_t>(100));
     CPPUNIT_ASSERT_EQUAL(lineCol.second, static_cast<size_t>(65));
 }
@@ -64,10 +64,10 @@ TestLogger::testParseNewNode()
 void
 TestLogger::testParseSetsTree()
 {
-    openvdb::ax::Logger logger;
+    laovdb::ax::Logger logger;
     CPPUNIT_ASSERT(!logger.mTreePtr);
     std::string code("");
-    openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse(code.c_str(), logger);
+    laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse(code.c_str(), logger);
     CPPUNIT_ASSERT(tree);
     CPPUNIT_ASSERT_EQUAL(tree, logger.mTreePtr);
 }
@@ -76,13 +76,13 @@ void
 TestLogger::testAddError()
 {
     std::vector<std::string> messages;
-    openvdb::ax::Logger logger([&messages](const std::string& message) {
+    laovdb::ax::Logger logger([&messages](const std::string& message) {
         messages.emplace_back(message);
     });
     CPPUNIT_ASSERT(!logger.hasError());
     CPPUNIT_ASSERT_EQUAL(logger.errors(), messages.size());
 
-    openvdb::ax::Logger::CodeLocation codeLocation(1,1);
+    laovdb::ax::Logger::CodeLocation codeLocation(1,1);
     std::string message("test");
 
     logger.error(message, codeLocation);
@@ -99,7 +99,7 @@ TestLogger::testAddError()
     CPPUNIT_ASSERT(!logger.hasError());
     CPPUNIT_ASSERT_EQUAL(logger.errors(), static_cast<size_t>(0));
 
-    openvdb::ax::ast::Local testLocal("name");
+    laovdb::ax::ast::Local testLocal("name");
     logger.error(message, &testLocal);
     CPPUNIT_ASSERT(logger.hasError());
     CPPUNIT_ASSERT_EQUAL(logger.errors(), static_cast<size_t>(1));
@@ -113,8 +113,8 @@ TestLogger::testAddError()
 
     // test that add error finds code location
     {
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse(" a;", logger);
-        const openvdb::ax::ast::Node* local = tree->child(0)->child(0);
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse(" a;", logger);
+        const laovdb::ax::ast::Node* local = tree->child(0)->child(0);
         CPPUNIT_ASSERT(local);
 
         logger.error(message, local);
@@ -128,11 +128,11 @@ TestLogger::testAddError()
     CPPUNIT_ASSERT(!logger.hasError());
     // test add error finds code location even when node is deep copy
     {
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse("a;", logger);
-        openvdb::ax::ast::Tree::ConstPtr treeCopy(tree->copy());
-        const openvdb::ax::ast::Node* local = tree->child(0)->child(0);
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse("a;", logger);
+        laovdb::ax::ast::Tree::ConstPtr treeCopy(tree->copy());
+        const laovdb::ax::ast::Node* local = tree->child(0)->child(0);
         CPPUNIT_ASSERT(local);
-        const openvdb::ax::ast::Node* localCopy = treeCopy->child(0)->child(0);
+        const laovdb::ax::ast::Node* localCopy = treeCopy->child(0)->child(0);
         CPPUNIT_ASSERT(localCopy);
         // add referring to copy
         logger.error(message, localCopy);
@@ -149,14 +149,14 @@ void
 TestLogger::testAddWarning()
 {
     std::vector<std::string> messages;
-    openvdb::ax::Logger logger([](const std::string&) {},
+    laovdb::ax::Logger logger([](const std::string&) {},
         [&messages](const std::string& message) {
             messages.emplace_back(message);
     });
     CPPUNIT_ASSERT(!logger.hasWarning());
     CPPUNIT_ASSERT_EQUAL(logger.warnings(), messages.size());
 
-    openvdb::ax::Logger::CodeLocation codeLocation(1,1);
+    laovdb::ax::Logger::CodeLocation codeLocation(1,1);
     std::string message("test");
 
     logger.warning(message, codeLocation);
@@ -173,7 +173,7 @@ TestLogger::testAddWarning()
     CPPUNIT_ASSERT(!logger.hasWarning());
     CPPUNIT_ASSERT_EQUAL(logger.warnings(), static_cast<size_t>(0));
 
-    openvdb::ax::ast::Local testLocal("name");
+    laovdb::ax::ast::Local testLocal("name");
     logger.warning(message, &testLocal);
     CPPUNIT_ASSERT(logger.hasWarning());
     CPPUNIT_ASSERT_EQUAL(logger.warnings(), static_cast<size_t>(1));
@@ -187,8 +187,8 @@ TestLogger::testAddWarning()
 
     // test that add warning finds code location
     {
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse(" a;", logger);
-        const openvdb::ax::ast::Node* local = tree->child(0)->child(0);
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse(" a;", logger);
+        const laovdb::ax::ast::Node* local = tree->child(0)->child(0);
         CPPUNIT_ASSERT(local);
 
         logger.warning(message, local);
@@ -202,11 +202,11 @@ TestLogger::testAddWarning()
     CPPUNIT_ASSERT(!logger.hasWarning());
     // test add warning finds code location even when node is deep copy
     {
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse("a;", logger);
-        openvdb::ax::ast::Tree::ConstPtr treeCopy(tree->copy());
-        const openvdb::ax::ast::Node* local = tree->child(0)->child(0);
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse("a;", logger);
+        laovdb::ax::ast::Tree::ConstPtr treeCopy(tree->copy());
+        const laovdb::ax::ast::Node* local = tree->child(0)->child(0);
         CPPUNIT_ASSERT(local);
-        const openvdb::ax::ast::Node* localCopy = treeCopy->child(0)->child(0);
+        const laovdb::ax::ast::Node* localCopy = treeCopy->child(0)->child(0);
         CPPUNIT_ASSERT(localCopy);
         // add referring to copy
         logger.warning(message, localCopy);
@@ -222,9 +222,9 @@ TestLogger::testAddWarning()
 void
 TestLogger::testWarningsAsErrors()
 {
-    openvdb::ax::Logger logger([](const std::string&) {});
+    laovdb::ax::Logger logger([](const std::string&) {});
     const std::string message("test");
-    const openvdb::ax::Logger::CodeLocation location(10,20);
+    const laovdb::ax::Logger::CodeLocation location(10,20);
     logger.setWarningsAsErrors(true);
     CPPUNIT_ASSERT(!logger.hasError());
     CPPUNIT_ASSERT(!logger.hasWarning());
@@ -237,9 +237,9 @@ TestLogger::testWarningsAsErrors()
 void
 TestLogger::testMaxErrors()
 {
-    openvdb::ax::Logger logger([](const std::string&) {});
+    laovdb::ax::Logger logger([](const std::string&) {});
     const std::string message("test");
-    const openvdb::ax::Logger::CodeLocation location(10,20);
+    const laovdb::ax::Logger::CodeLocation location(10,20);
 
     CPPUNIT_ASSERT(logger.error(message, location));
     CPPUNIT_ASSERT(logger.error(message, location));

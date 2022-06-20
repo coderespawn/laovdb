@@ -14,7 +14,7 @@
 #include <type_traits> // for std::enable_if, std::is_floating_point
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -129,6 +129,6 @@ OPENVDB_VOLUME_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_MASK_HAS_BEEN_INCLUDED

@@ -7,7 +7,7 @@
 #include <openvdb/Types.h>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -43,6 +43,6 @@ closestPointOnSegmentToPoint(
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_MESH_TO_VOLUME_UTIL_HAS_BEEN_INCLUDED

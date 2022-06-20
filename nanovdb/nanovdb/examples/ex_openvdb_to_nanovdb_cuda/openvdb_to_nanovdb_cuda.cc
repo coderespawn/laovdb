@@ -14,7 +14,7 @@ int main()
 {
     try {
         // Create an OpenVDB grid of a sphere at the origin with radius 100 and voxel size 1.
-        auto srcGrid = openvdb::tools::createLevelSetSphere<openvdb::FloatGrid>(100.0f, openvdb::Vec3f(0.0f), 1.0f);
+        auto srcGrid = laovdb::tools::createLevelSetSphere<laovdb::FloatGrid>(100.0f, laovdb::Vec3f(0.0f), 1.0f);
 
         // Converts the OpenVDB to NanoVDB and returns a GridHandle that uses CUDA for memory management.
         auto handle = nanovdb::openToNanoVDB<nanovdb::CudaDeviceBuffer>(*srcGrid);

@@ -8,7 +8,7 @@
 
 #include <openvdb/version.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace util {
@@ -51,6 +51,6 @@ inline bool wasInterrupted(T* i, int percent = -1) { return i && i->wasInterrupt
 
 } // namespace util
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_UTIL_NULL_INTERRUPTER_HAS_BEEN_INCLUDED

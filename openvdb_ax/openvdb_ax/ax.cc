@@ -16,7 +16,7 @@
 
 #include <mutex>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace ax {
@@ -24,17 +24,17 @@ namespace ax {
 /// @note Implementation for initialize, isInitialized and uninitialized
 ///       reamins in compiler/Compiler.cc
 
-void run(const char* ax, openvdb::GridBase& grid, const AttributeBindings& bindings)
+void run(const char* ax, laovdb::GridBase& grid, const AttributeBindings& bindings)
 {
     // Construct a generic compiler
-    openvdb::ax::Compiler compiler;
+    laovdb::ax::Compiler compiler;
 
     if (grid.isType<points::PointDataGrid>()) {
         // Compile for Point support and produce an executable
         // @note  Throws compiler errors on invalid code. On success, returns
         //        the executable which can be used multiple times on any inputs
-        const openvdb::ax::PointExecutable::Ptr exe =
-            compiler.compile<openvdb::ax::PointExecutable>(ax);
+        const laovdb::ax::PointExecutable::Ptr exe =
+            compiler.compile<laovdb::ax::PointExecutable>(ax);
         assert(exe);
 
         //Set the attribute bindings
@@ -47,8 +47,8 @@ void run(const char* ax, openvdb::GridBase& grid, const AttributeBindings& bindi
         // Compile for numerical grid support and produce an executable
         // @note  Throws compiler errors on invalid code. On success, returns
         //        the executable which can be used multiple times on any inputs
-        const openvdb::ax::VolumeExecutable::Ptr exe =
-            compiler.compile<openvdb::ax::VolumeExecutable>(ax);
+        const laovdb::ax::VolumeExecutable::Ptr exe =
+            compiler.compile<laovdb::ax::VolumeExecutable>(ax);
         assert(exe);
 
         // Set the attribute bindings
@@ -59,7 +59,7 @@ void run(const char* ax, openvdb::GridBase& grid, const AttributeBindings& bindi
     }
 }
 
-void run(const char* ax, openvdb::GridPtrVec& grids, const AttributeBindings& bindings)
+void run(const char* ax, laovdb::GridPtrVec& grids, const AttributeBindings& bindings)
 {
     if (grids.empty()) return;
     // Check the type of all grids. If they are all points, run for point data.
@@ -73,14 +73,14 @@ void run(const char* ax, openvdb::GridPtrVec& grids, const AttributeBindings& bi
         }
     }
     // Construct a generic compiler
-    openvdb::ax::Compiler compiler;
+    laovdb::ax::Compiler compiler;
 
     if (points) {
         // Compile for Point support and produce an executable
         // @note  Throws compiler errors on invalid code. On success, returns
         //        the executable which can be used multiple times on any inputs
-        const openvdb::ax::PointExecutable::Ptr exe =
-            compiler.compile<openvdb::ax::PointExecutable>(ax);
+        const laovdb::ax::PointExecutable::Ptr exe =
+            compiler.compile<laovdb::ax::PointExecutable>(ax);
         assert(exe);
 
         //Set the attribute bindings
@@ -95,8 +95,8 @@ void run(const char* ax, openvdb::GridPtrVec& grids, const AttributeBindings& bi
         // Compile for Volume support and produce an executable
         // @note  Throws compiler errors on invalid code. On success, returns
         //        the executable which can be used multiple times on any inputs
-        const openvdb::ax::VolumeExecutable::Ptr exe =
-            compiler.compile<openvdb::ax::VolumeExecutable>(ax);
+        const laovdb::ax::VolumeExecutable::Ptr exe =
+            compiler.compile<laovdb::ax::VolumeExecutable>(ax);
         assert(exe);
 
         //Set the attribute bindings
@@ -189,5 +189,5 @@ void uninitialize()
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

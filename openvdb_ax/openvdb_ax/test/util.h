@@ -29,11 +29,11 @@
 
 #define TEST_SYNTAX_PASSES(Tests) \
 { \
-    openvdb::ax::Logger logger;\
+    laovdb::ax::Logger logger;\
     for (const auto& test : Tests) { \
         logger.clear();\
         const std::string& code = test.first; \
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse(code.c_str(), logger);\
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse(code.c_str(), logger);\
         std::stringstream str; \
         CPPUNIT_ASSERT_MESSAGE(ERROR_MSG("Unexpected parsing error(s)\n", str.str()), tree && !logger.hasError()); \
     } \
@@ -41,11 +41,11 @@
 
 #define TEST_SYNTAX_FAILS(Tests) \
 { \
-    openvdb::ax::Logger logger([](const std::string&) {});\
+    laovdb::ax::Logger logger([](const std::string&) {});\
     for (const auto& test : Tests) { \
         logger.clear();\
         const std::string& code = test.first; \
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse(code.c_str(), logger);\
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse(code.c_str(), logger);\
         CPPUNIT_ASSERT_MESSAGE(ERROR_MSG("Expected parsing error", code), !tree && logger.hasError()); \
     } \
 } \
@@ -55,7 +55,7 @@ namespace unittest_util
 // Use shared pointers rather than unique pointers so initializer lists can easily
 // be used. Could easily introduce some move semantics to work around this if
 // necessary.
-using CodeTests = std::vector<std::pair<std::string, openvdb::ax::ast::Node::Ptr>>;
+using CodeTests = std::vector<std::pair<std::string, laovdb::ax::ast::Node::Ptr>>;
 // Ordered map for consistency across platforms
 using ConfigMap = std::map<std::string, std::map<std::string, std::string>>;
 
@@ -73,8 +73,8 @@ inline void replace(std::string& str, const std::string& oldStr, const std::stri
 
 //
 
-inline bool compareLinearTrees(const std::vector<const openvdb::ax::ast::Node*>& a,
-    const std::vector<const openvdb::ax::ast::Node*>& b, const bool allowEmpty = false)
+inline bool compareLinearTrees(const std::vector<const laovdb::ax::ast::Node*>& a,
+    const std::vector<const laovdb::ax::ast::Node*>& b, const bool allowEmpty = false)
 {
     if (!allowEmpty && (a.empty() || b.empty())) return false;
     if (a.size() != b.size()) return false;
@@ -88,128 +88,128 @@ inline bool compareLinearTrees(const std::vector<const openvdb::ax::ast::Node*>&
         // @todo generalize this
         // @note  Value methods does not compare child text data
 
-        if (a[i]->nodetype() == openvdb::ax::ast::Node::AssignExpressionNode) {
-            if (static_cast<const openvdb::ax::ast::AssignExpression*>(a[i])->operation() !=
-                static_cast<const openvdb::ax::ast::AssignExpression*>(b[i])->operation()) {
+        if (a[i]->nodetype() == laovdb::ax::ast::Node::AssignExpressionNode) {
+            if (static_cast<const laovdb::ax::ast::AssignExpression*>(a[i])->operation() !=
+                static_cast<const laovdb::ax::ast::AssignExpression*>(b[i])->operation()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::BinaryOperatorNode) {
-            if (static_cast<const openvdb::ax::ast::BinaryOperator*>(a[i])->operation() !=
-                static_cast<const openvdb::ax::ast::BinaryOperator*>(b[i])->operation()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::BinaryOperatorNode) {
+            if (static_cast<const laovdb::ax::ast::BinaryOperator*>(a[i])->operation() !=
+                static_cast<const laovdb::ax::ast::BinaryOperator*>(b[i])->operation()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::CrementNode) {
-            if (static_cast<const openvdb::ax::ast::Crement*>(a[i])->operation() !=
-                static_cast<const openvdb::ax::ast::Crement*>(b[i])->operation()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::CrementNode) {
+            if (static_cast<const laovdb::ax::ast::Crement*>(a[i])->operation() !=
+                static_cast<const laovdb::ax::ast::Crement*>(b[i])->operation()) {
                 return false;
             }
-            if (static_cast<const openvdb::ax::ast::Crement*>(a[i])->post() !=
-                static_cast<const openvdb::ax::ast::Crement*>(b[i])->post()) {
-                return false;
-            }
-        }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::CastNode) {
-            if (static_cast<const openvdb::ax::ast::Cast*>(a[i])->type() !=
-                static_cast<const openvdb::ax::ast::Cast*>(b[i])->type()) {
+            if (static_cast<const laovdb::ax::ast::Crement*>(a[i])->post() !=
+                static_cast<const laovdb::ax::ast::Crement*>(b[i])->post()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::FunctionCallNode) {
-            if (static_cast<const openvdb::ax::ast::FunctionCall*>(a[i])->name() !=
-                static_cast<const openvdb::ax::ast::FunctionCall*>(b[i])->name()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::CastNode) {
+            if (static_cast<const laovdb::ax::ast::Cast*>(a[i])->type() !=
+                static_cast<const laovdb::ax::ast::Cast*>(b[i])->type()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::LoopNode) {
-            if (static_cast<const openvdb::ax::ast::Loop*>(a[i])->loopType() !=
-                static_cast<const openvdb::ax::ast::Loop*>(b[i])->loopType()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::FunctionCallNode) {
+            if (static_cast<const laovdb::ax::ast::FunctionCall*>(a[i])->name() !=
+                static_cast<const laovdb::ax::ast::FunctionCall*>(b[i])->name()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::KeywordNode) {
-            if (static_cast<const openvdb::ax::ast::Keyword*>(a[i])->keyword() !=
-                static_cast<const openvdb::ax::ast::Keyword*>(b[i])->keyword()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::LoopNode) {
+            if (static_cast<const laovdb::ax::ast::Loop*>(a[i])->loopType() !=
+                static_cast<const laovdb::ax::ast::Loop*>(b[i])->loopType()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::AttributeNode) {
-            if (static_cast<const openvdb::ax::ast::Attribute*>(a[i])->type() !=
-                static_cast<const openvdb::ax::ast::Attribute*>(b[i])->type()) {
-                return false;
-            }
-            if (static_cast<const openvdb::ax::ast::Attribute*>(a[i])->name() !=
-                static_cast<const openvdb::ax::ast::Attribute*>(b[i])->name()) {
-                return false;
-            }
-            if (static_cast<const openvdb::ax::ast::Attribute*>(a[i])->inferred() !=
-                static_cast<const openvdb::ax::ast::Attribute*>(b[i])->inferred()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::KeywordNode) {
+            if (static_cast<const laovdb::ax::ast::Keyword*>(a[i])->keyword() !=
+                static_cast<const laovdb::ax::ast::Keyword*>(b[i])->keyword()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::ExternalVariableNode) {
-            if (static_cast<const openvdb::ax::ast::ExternalVariable*>(a[i])->type() !=
-                static_cast<const openvdb::ax::ast::ExternalVariable*>(b[i])->type()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::AttributeNode) {
+            if (static_cast<const laovdb::ax::ast::Attribute*>(a[i])->type() !=
+                static_cast<const laovdb::ax::ast::Attribute*>(b[i])->type()) {
                 return false;
             }
-            if (static_cast<const openvdb::ax::ast::ExternalVariable*>(a[i])->name() !=
-                static_cast<const openvdb::ax::ast::ExternalVariable*>(b[i])->name()) {
+            if (static_cast<const laovdb::ax::ast::Attribute*>(a[i])->name() !=
+                static_cast<const laovdb::ax::ast::Attribute*>(b[i])->name()) {
+                return false;
+            }
+            if (static_cast<const laovdb::ax::ast::Attribute*>(a[i])->inferred() !=
+                static_cast<const laovdb::ax::ast::Attribute*>(b[i])->inferred()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::DeclareLocalNode) {
-            if (static_cast<const openvdb::ax::ast::DeclareLocal*>(a[i])->type() !=
-                static_cast<const openvdb::ax::ast::DeclareLocal*>(b[i])->type()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::ExternalVariableNode) {
+            if (static_cast<const laovdb::ax::ast::ExternalVariable*>(a[i])->type() !=
+                static_cast<const laovdb::ax::ast::ExternalVariable*>(b[i])->type()) {
+                return false;
+            }
+            if (static_cast<const laovdb::ax::ast::ExternalVariable*>(a[i])->name() !=
+                static_cast<const laovdb::ax::ast::ExternalVariable*>(b[i])->name()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::LocalNode) {
-            if (static_cast<const openvdb::ax::ast::Local*>(a[i])->name() !=
-                static_cast<const openvdb::ax::ast::Local*>(b[i])->name()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::DeclareLocalNode) {
+            if (static_cast<const laovdb::ax::ast::DeclareLocal*>(a[i])->type() !=
+                static_cast<const laovdb::ax::ast::DeclareLocal*>(b[i])->type()) {
+                return false;
+            }
+        }
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::LocalNode) {
+            if (static_cast<const laovdb::ax::ast::Local*>(a[i])->name() !=
+                static_cast<const laovdb::ax::ast::Local*>(b[i])->name()) {
                 return false;
             }
         }
         // @note  Value methods does not compare child text data
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::ValueBoolNode) {
-            if (static_cast<const openvdb::ax::ast::Value<bool>*>(a[i])->value() !=
-                static_cast<const openvdb::ax::ast::Value<bool>*>(b[i])->value()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::ValueBoolNode) {
+            if (static_cast<const laovdb::ax::ast::Value<bool>*>(a[i])->value() !=
+                static_cast<const laovdb::ax::ast::Value<bool>*>(b[i])->value()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::ValueInt16Node) {
-            if (static_cast<const openvdb::ax::ast::Value<int16_t>*>(a[i])->value() !=
-                static_cast<const openvdb::ax::ast::Value<int16_t>*>(b[i])->value()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::ValueInt16Node) {
+            if (static_cast<const laovdb::ax::ast::Value<int16_t>*>(a[i])->value() !=
+                static_cast<const laovdb::ax::ast::Value<int16_t>*>(b[i])->value()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::ValueInt32Node) {
-            if (static_cast<const openvdb::ax::ast::Value<int32_t>*>(a[i])->value() !=
-                static_cast<const openvdb::ax::ast::Value<int32_t>*>(b[i])->value()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::ValueInt32Node) {
+            if (static_cast<const laovdb::ax::ast::Value<int32_t>*>(a[i])->value() !=
+                static_cast<const laovdb::ax::ast::Value<int32_t>*>(b[i])->value()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::ValueInt64Node) {
-            if (static_cast<const openvdb::ax::ast::Value<int64_t>*>(a[i])->value() !=
-                static_cast<const openvdb::ax::ast::Value<int64_t>*>(b[i])->value()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::ValueInt64Node) {
+            if (static_cast<const laovdb::ax::ast::Value<int64_t>*>(a[i])->value() !=
+                static_cast<const laovdb::ax::ast::Value<int64_t>*>(b[i])->value()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::ValueFloatNode) {
-            if (static_cast<const openvdb::ax::ast::Value<float>*>(a[i])->value() !=
-                static_cast<const openvdb::ax::ast::Value<float>*>(b[i])->value()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::ValueFloatNode) {
+            if (static_cast<const laovdb::ax::ast::Value<float>*>(a[i])->value() !=
+                static_cast<const laovdb::ax::ast::Value<float>*>(b[i])->value()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::ValueDoubleNode) {
-            if (static_cast<const openvdb::ax::ast::Value<double>*>(a[i])->value() !=
-                static_cast<const openvdb::ax::ast::Value<double>*>(b[i])->value()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::ValueDoubleNode) {
+            if (static_cast<const laovdb::ax::ast::Value<double>*>(a[i])->value() !=
+                static_cast<const laovdb::ax::ast::Value<double>*>(b[i])->value()) {
                 return false;
             }
         }
-        else if (a[i]->nodetype() == openvdb::ax::ast::Node::ValueStrNode) {
-            if (static_cast<const openvdb::ax::ast::Value<std::string>*>(a[i])->value() !=
-                static_cast<const openvdb::ax::ast::Value<std::string>*>(b[i])->value()) {
+        else if (a[i]->nodetype() == laovdb::ax::ast::Node::ValueStrNode) {
+            if (static_cast<const laovdb::ax::ast::Value<std::string>*>(a[i])->value() !=
+                static_cast<const laovdb::ax::ast::Value<std::string>*>(b[i])->value()) {
                 return false;
             }
         }

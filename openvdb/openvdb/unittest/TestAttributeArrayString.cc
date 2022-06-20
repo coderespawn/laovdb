@@ -9,14 +9,14 @@
 
 #include <iostream>
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestAttributeArrayString: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestAttributeArrayString
 
 
@@ -26,8 +26,8 @@ public:
 namespace {
 
 bool
-matchingNamePairs(const openvdb::NamePair& lhs,
-                  const openvdb::NamePair& rhs)
+matchingNamePairs(const laovdb::NamePair& lhs,
+                  const laovdb::NamePair& rhs)
 {
     if (lhs.first != rhs.first)     return false;
     if (lhs.second != rhs.second)     return false;
@@ -104,7 +104,7 @@ TEST_F(TestAttributeArrayString, testStringMetaInserter)
         EXPECT_TRUE(inserter.hasKey("test"));
         StringMetadata::Ptr meta = metadata.getMetadata<StringMetadata>("string:0");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test"));
     }
 
     { // insert another value
@@ -117,10 +117,10 @@ TEST_F(TestAttributeArrayString, testStringMetaInserter)
         EXPECT_TRUE(inserter.hasKey("test2"));
         StringMetadata::Ptr meta = metadata.getMetadata<StringMetadata>("string:0");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test"));
         meta = metadata.getMetadata<StringMetadata>("string:1");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test2"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test2"));
     }
 
     // remove a value and reset the cache
@@ -134,10 +134,10 @@ TEST_F(TestAttributeArrayString, testStringMetaInserter)
         EXPECT_EQ(Index(2), index);
         StringMetadata::Ptr meta = metadata.getMetadata<StringMetadata>("string:0");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test"));
         meta = metadata.getMetadata<StringMetadata>("string:1");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test3"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test3"));
     }
 
     { // insert and remove to create a gap
@@ -149,10 +149,10 @@ TEST_F(TestAttributeArrayString, testStringMetaInserter)
         EXPECT_EQ(metadata.metaCount(), size_t(2));
         StringMetadata::Ptr meta = metadata.getMetadata<StringMetadata>("string:0");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test"));
         meta = metadata.getMetadata<StringMetadata>("string:2");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test4"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test4"));
     }
 
     { // insert to fill gap
@@ -161,13 +161,13 @@ TEST_F(TestAttributeArrayString, testStringMetaInserter)
         EXPECT_EQ(Index(2), index);
         StringMetadata::Ptr meta = metadata.getMetadata<StringMetadata>("string:0");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test"));
         meta = metadata.getMetadata<StringMetadata>("string:1");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test10"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test10"));
         meta = metadata.getMetadata<StringMetadata>("string:2");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test4"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test4"));
     }
 
     { // insert existing value
@@ -191,10 +191,10 @@ TEST_F(TestAttributeArrayString, testStringMetaInserter)
         EXPECT_EQ(Index(1), index);
         StringMetadata::Ptr meta = metadata.getMetadata<StringMetadata>("string:0");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test15"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test15"));
         meta = metadata.getMetadata<StringMetadata>("string:1");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test10"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test10"));
     }
 
     { // insert using a hint
@@ -203,7 +203,7 @@ TEST_F(TestAttributeArrayString, testStringMetaInserter)
         EXPECT_EQ(Index(1000), index);
         StringMetadata::Ptr meta = metadata.getMetadata<StringMetadata>("string:999");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test1000"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test1000"));
     }
 
     { // insert using same hint (fail to use hint this time)
@@ -212,7 +212,7 @@ TEST_F(TestAttributeArrayString, testStringMetaInserter)
         EXPECT_EQ(Index(3), index);
         StringMetadata::Ptr meta = metadata.getMetadata<StringMetadata>("string:2");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test1001"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test1001"));
     }
 
     { // insert using next adjacent hint
@@ -221,7 +221,7 @@ TEST_F(TestAttributeArrayString, testStringMetaInserter)
         EXPECT_EQ(Index(1001), index);
         StringMetadata::Ptr meta = metadata.getMetadata<StringMetadata>("string:1000");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test1002"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test1002"));
     }
 
     { // insert using previous adjacent hint
@@ -230,7 +230,7 @@ TEST_F(TestAttributeArrayString, testStringMetaInserter)
         EXPECT_EQ(Index(999), index);
         StringMetadata::Ptr meta = metadata.getMetadata<StringMetadata>("string:998");
         EXPECT_TRUE(meta);
-        EXPECT_EQ(meta->value(), openvdb::Name("test999"));
+        EXPECT_EQ(meta->value(), laovdb::Name("test999"));
     }
 }
 
@@ -536,7 +536,7 @@ TEST_F(TestAttributeArrayString, testStringAttributeWriteHandle)
 TEST_F(TestAttributeArrayString, testProfile)
 {
 #ifdef PROFILE
-    struct Timer : public openvdb::util::CpuTimer {};
+    struct Timer : public laovdb::util::CpuTimer {};
     const size_t elements = 1000000;
 #else
     struct Timer {
@@ -575,14 +575,14 @@ TEST_F(TestAttributeArrayString, testProfile)
 
     timer.stop();
 
-    openvdb::points::StringAttributeArray attr(elements);
+    laovdb::points::StringAttributeArray attr(elements);
     for (size_t i = 0; i < elements; ++i) {
         attr.set(Index(i), Index(i));
     }
 
     timer.start("StringAttributeWriteHandle construction");
 
-    openvdb::points::StringAttributeWriteHandle handle(attr, metadata);
+    laovdb::points::StringAttributeWriteHandle handle(attr, metadata);
 
     timer.stop();
     timer.start("StringAttributeWriteHandle contains()");

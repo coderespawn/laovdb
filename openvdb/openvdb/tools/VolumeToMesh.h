@@ -29,7 +29,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -118,14 +118,14 @@ public:
 
     const size_t& numQuads() const                      { return mNumQuads; }
 
-    openvdb::Vec4I& quad(size_t n)                      { return mQuads[n]; }
-    const openvdb::Vec4I& quad(size_t n) const          { return mQuads[n]; }
+    laovdb::Vec4I& quad(size_t n)                      { return mQuads[n]; }
+    const laovdb::Vec4I& quad(size_t n) const          { return mQuads[n]; }
 
 
     const size_t& numTriangles() const                  { return mNumTriangles; }
 
-    openvdb::Vec3I& triangle(size_t n)                  { return mTriangles[n]; }
-    const openvdb::Vec3I& triangle(size_t n) const      { return mTriangles[n]; }
+    laovdb::Vec3I& triangle(size_t n)                  { return mTriangles[n]; }
+    const laovdb::Vec3I& triangle(size_t n) const      { return mTriangles[n]; }
 
 
     // polygon flags accessor methods
@@ -148,15 +148,15 @@ private:
     void operator=(const PolygonPool&) {}
 
     size_t mNumQuads, mNumTriangles;
-    std::unique_ptr<openvdb::Vec4I[]> mQuads;
-    std::unique_ptr<openvdb::Vec3I[]> mTriangles;
+    std::unique_ptr<laovdb::Vec4I[]> mQuads;
+    std::unique_ptr<laovdb::Vec3I[]> mTriangles;
     std::unique_ptr<char[]> mQuadFlags, mTriangleFlags;
 };
 
 
 /// @{
 /// @brief Point and primitive list types.
-using PointList = std::unique_ptr<openvdb::Vec3s[]>;
+using PointList = std::unique_ptr<laovdb::Vec3s[]>;
 using PolygonPoolList = std::unique_ptr<PolygonPool[]>;
 /// @}
 
@@ -4184,7 +4184,7 @@ struct FlagAndCountQuadsToSubdivide
 {
     FlagAndCountQuadsToSubdivide(PolygonPoolList& polygons,
         const std::vector<uint8_t>& pointFlags,
-        std::unique_ptr<openvdb::Vec3s[]>& points,
+        std::unique_ptr<laovdb::Vec3s[]>& points,
         std::unique_ptr<unsigned[]>& numQuadsToDivide)
         : mPolygonPoolList(&polygons)
         , mPointFlags(pointFlags.data())
@@ -4242,9 +4242,9 @@ private:
 struct SubdivideQuads
 {
     SubdivideQuads(PolygonPoolList& polygons,
-        const std::unique_ptr<openvdb::Vec3s[]>& points,
+        const std::unique_ptr<laovdb::Vec3s[]>& points,
         size_t pointCount,
-        std::unique_ptr<openvdb::Vec3s[]>& centroids,
+        std::unique_ptr<laovdb::Vec3s[]>& centroids,
         std::unique_ptr<unsigned[]>& numQuadsToDivide,
         std::unique_ptr<unsigned[]>& centroidOffsets)
         : mPolygonPoolList(&polygons)
@@ -4281,7 +4281,7 @@ struct SubdivideQuads
 
                     unsigned newPointIdx = unsigned(offset + mPointCount);
 
-                    openvdb::Vec4I& quad = polygons.quad(i);
+                    laovdb::Vec4I& quad = polygons.quad(i);
 
                     mCentroids[offset] = (mPoints[quad[0]] + mPoints[quad[1]] +
                         mPoints[quad[2]] + mPoints[quad[3]]) * 0.25f;
@@ -4349,7 +4349,7 @@ struct SubdivideQuads
 
                 size_t quadIdx = 0;
                 for (size_t i = 0, I = polygons.numQuads(); i < I; ++i) {
-                    openvdb::Vec4I& quad = polygons.quad(i);
+                    laovdb::Vec4I& quad = polygons.quad(i);
 
                     if (quad[0] != util::INVALID_IDX) { // ignore invalid quads
                         tmpPolygons.quad(quadIdx) = quad;
@@ -4411,7 +4411,7 @@ subdivideNonplanarSeamLineQuads(
 
         const size_t newPointListSize = centroidCount + pointListSize;
 
-        std::unique_ptr<openvdb::Vec3s[]> newPointList(new openvdb::Vec3s[newPointListSize]);
+        std::unique_ptr<laovdb::Vec3s[]> newPointList(new laovdb::Vec3s[newPointListSize]);
 
         tbb::parallel_for(tbb::blocked_range<size_t>(0, pointListSize),
             CopyArray<Vec3s>(newPointList.get(), pointList.get()));
@@ -4447,7 +4447,7 @@ struct ReviseSeamLineFlags
 
                 if (flags & POLYFLAG_FRACTURE_SEAM) {
 
-                    openvdb::Vec4I& verts = polygons.quad(i);
+                    laovdb::Vec4I& verts = polygons.quad(i);
 
                     const bool hasSeamLinePoint =
                         mPointFlags[verts[0]] || mPointFlags[verts[1]] ||
@@ -4465,7 +4465,7 @@ struct ReviseSeamLineFlags
 
                 if (flags & POLYFLAG_FRACTURE_SEAM) {
 
-                    openvdb::Vec3I& verts = polygons.triangle(i);
+                    laovdb::Vec3I& verts = polygons.triangle(i);
 
                     const bool hasSeamLinePoint =
                         mPointFlags[verts[0]] || mPointFlags[verts[1]] || mPointFlags[verts[2]];
@@ -4605,7 +4605,7 @@ relaxDisorientedTriangles(
         PolygonPool& polygons = polygonPoolList[n];
 
         for (size_t i = 0, I = polygons.numQuads(); i < I; ++i) {
-            openvdb::Vec4I& verts = polygons.quad(i);
+            laovdb::Vec4I& verts = polygons.quad(i);
 
             for (int v = 0; v < 4; ++v) {
 
@@ -4623,7 +4623,7 @@ relaxDisorientedTriangles(
         }
 
         for (size_t i = 0, I = polygons.numTriangles(); i < I; ++i) {
-            openvdb::Vec3I& verts = polygons.triangle(i);
+            laovdb::Vec3I& verts = polygons.triangle(i);
 
             for (int v = 0; v < 3; ++v) {
 
@@ -4671,8 +4671,8 @@ inline
 PolygonPool::PolygonPool(const size_t numQuads, const size_t numTriangles)
     : mNumQuads(numQuads)
     , mNumTriangles(numTriangles)
-    , mQuads(new openvdb::Vec4I[mNumQuads])
-    , mTriangles(new openvdb::Vec3I[mNumTriangles])
+    , mQuads(new laovdb::Vec4I[mNumQuads])
+    , mTriangles(new laovdb::Vec3I[mNumTriangles])
     , mQuadFlags(new char[mNumQuads])
     , mTriangleFlags(new char[mNumTriangles])
 {
@@ -4701,7 +4701,7 @@ inline void
 PolygonPool::resetQuads(size_t size)
 {
     mNumQuads = size;
-    mQuads.reset(new openvdb::Vec4I[mNumQuads]);
+    mQuads.reset(new laovdb::Vec4I[mNumQuads]);
     mQuadFlags.reset(new char[mNumQuads]);
 }
 
@@ -4719,7 +4719,7 @@ inline void
 PolygonPool::resetTriangles(size_t size)
 {
     mNumTriangles = size;
-    mTriangles.reset(new openvdb::Vec3I[mNumTriangles]);
+    mTriangles.reset(new laovdb::Vec3I[mNumTriangles]);
     mTriangleFlags.reset(new char[mNumTriangles]);
 }
 
@@ -4744,7 +4744,7 @@ PolygonPool::trimQuads(const size_t n, bool reallocate)
             mQuads.reset(nullptr);
         } else {
 
-            std::unique_ptr<openvdb::Vec4I[]> quads(new openvdb::Vec4I[n]);
+            std::unique_ptr<laovdb::Vec4I[]> quads(new laovdb::Vec4I[n]);
             std::unique_ptr<char[]> flags(new char[n]);
 
             for (size_t i = 0; i < n; ++i) {
@@ -4773,7 +4773,7 @@ PolygonPool::trimTrinagles(const size_t n, bool reallocate)
             mTriangles.reset(nullptr);
         } else {
 
-            std::unique_ptr<openvdb::Vec3I[]> triangles(new openvdb::Vec3I[n]);
+            std::unique_ptr<laovdb::Vec3I[]> triangles(new laovdb::Vec3I[n]);
             std::unique_ptr<char[]> flags(new char[n]);
 
             for (size_t i = 0; i < n; ++i) {
@@ -4893,7 +4893,7 @@ VolumeToMesh::operator()(const InputGridType& inputGrid)
     // unsigned distance fields and fog volumes have the same value type but use different
     // inside value classifications.
     const bool invertSurfaceOrientation = (!volume_to_mesh_internal::isBoolValue<InputValueType>()
-        && (inputGrid.getGridClass() != openvdb::GRID_LEVEL_SET));
+        && (inputGrid.getGridClass() != laovdb::GRID_LEVEL_SET));
 
     // references, masks and auxiliary data
 
@@ -5081,7 +5081,7 @@ VolumeToMesh::operator()(const InputGridType& inputGrid)
         }
 
         mPointListSize = size_t(pointCount);
-        mPoints.reset(new openvdb::Vec3s[mPointListSize]);
+        mPoints.reset(new laovdb::Vec3s[mPointListSize]);
         mPointFlags.clear();
     }
 
@@ -5194,7 +5194,7 @@ doVolumeToMesh(
     { // Preallocate primitive lists
         size_t numQuads = 0, numTriangles = 0;
         for (size_t n = 0, N = mesher.polygonPoolListSize(); n < N; ++n) {
-            openvdb::tools::PolygonPool& polygons = polygonPoolList[n];
+            laovdb::tools::PolygonPool& polygons = polygonPoolList[n];
             numTriangles += polygons.numTriangles();
             numQuads += polygons.numQuads();
         }
@@ -5208,7 +5208,7 @@ doVolumeToMesh(
     // Copy primitives
     size_t qIdx = 0, tIdx = 0;
     for (size_t n = 0, N = mesher.polygonPoolListSize(); n < N; ++n) {
-        openvdb::tools::PolygonPool& polygons = polygonPoolList[n];
+        laovdb::tools::PolygonPool& polygons = polygonPoolList[n];
 
         for (size_t i = 0, I = polygons.numQuads(); i < I; ++i) {
             quads[qIdx++] = polygons.quad(i);
@@ -5293,6 +5293,6 @@ OPENVDB_NUMERIC_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_VOLUME_TO_MESH_HAS_BEEN_INCLUDED

@@ -36,7 +36,7 @@ struct FastSweepingParms {
         mFSPrimName(""),
         mExtPrimName(""),
         mExtFieldProcessed(false),
-        mSweepingDomain(openvdb::tools::FastSweepingDomain::SWEEP_ALL),
+        mSweepingDomain(laovdb::tools::FastSweepingDomain::SWEEP_ALL),
         mNewFSGrid(nullptr),
         mNewExtGrid(nullptr)
     { }
@@ -54,7 +54,7 @@ struct FastSweepingParms {
     std::string mFSPrimName;
     std::string mExtPrimName;
     bool mExtFieldProcessed;
-    openvdb::tools::FastSweepingDomain mSweepingDomain;
+    laovdb::tools::FastSweepingDomain mSweepingDomain;
 
     // updated fast sweeping grid placeholder
     hvdb::Grid::Ptr mNewFSGrid;
@@ -65,7 +65,7 @@ struct FastSweepingParms {
 
 
 /// @brief Helper class to be used with GEOvdbApply and calling
-///        openvdb::tools::maskSdf. The mask VDB is allowed to be
+///        laovdb::tools::maskSdf. The mask VDB is allowed to be
 ///        of any grid type.
 template <typename GridT>
 struct FastSweepingMaskOp
@@ -76,7 +76,7 @@ struct FastSweepingMaskOp
     template<typename MaskGridType>
     void operator()(const MaskGridType& mask)
     {
-        mOutGrid = openvdb::tools::maskSdf(*mInGrid, mask, mParms.mIgnoreTiles, mParms.mNSweeps);
+        mOutGrid = laovdb::tools::maskSdf(*mInGrid, mask, mParms.mIgnoreTiles, mParms.mNSweeps);
     }
 
     const FastSweepingParms& mParms;
@@ -91,14 +91,14 @@ template<typename ExtGridT>
 struct DirichletSamplerOp
 {
     using ExtValueT = typename ExtGridT::ValueType;
-    using SamplerT = openvdb::tools::GridSampler<ExtGridT, openvdb::tools::BoxSampler>;
+    using SamplerT = laovdb::tools::GridSampler<ExtGridT, laovdb::tools::BoxSampler>;
 
     DirichletSamplerOp(typename ExtGridT::ConstPtr functorGrid, SamplerT sampler)
         : mFunctorGrid (functorGrid),
           mSampler(sampler)
     {}
 
-    ExtValueT operator()(const openvdb::Vec3d& xyz) const
+    ExtValueT operator()(const laovdb::Vec3d& xyz) const
     {
         return static_cast<ExtValueT>(mSampler.isSample(xyz));
     }
@@ -426,8 +426,8 @@ SOP_OpenVDB_Extrapolate::Cache::processHelper(
     typename FSGridT::ValueType fsIsoValue,
     const GU_PrimVDB* maskPrim)
 {
-    using namespace openvdb;
-    using namespace openvdb::tools;
+    using namespace laovdb;
+    using namespace laovdb::tools;
 
     if (parms.mNeedExt) {
         // Get the extension primitive
@@ -449,7 +449,7 @@ SOP_OpenVDB_Extrapolate::Cache::processHelper(
             parms.mNewExtGrid.reset();
             extPrim->makeGridUnique();
 
-            openvdb::GridBase::Ptr extGridBase = extPrim->getGridPtr();
+            laovdb::GridBase::Ptr extGridBase = extPrim->getGridPtr();
             UT_VDBType extType = UTvdbGetGridType(*extGridBase);
             parms.mExtPrimName = extPrim.getPrimitiveNameOrIndex().toStdString();
 
@@ -473,10 +473,10 @@ SOP_OpenVDB_Extrapolate::Cache::processHelper(
             switch (extType) {
                 case UT_VDB_FLOAT:
                 {
-                    openvdb::FloatGrid::Ptr extGrid = openvdb::gridPtrCast<openvdb::FloatGrid>(extGridBase);
+                    laovdb::FloatGrid::Ptr extGrid = laovdb::gridPtrCast<laovdb::FloatGrid>(extGridBase);
                     if (extGrid) {
                         float extBg = static_cast<float>(extGrid->background());
-                        process<FSGridT, openvdb::FloatGrid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
+                        process<FSGridT, laovdb::FloatGrid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
                     } else {
                         std::string msg = "Skipping extending VDB primitive " + parms.mExtPrimName + " because of cast failure.";
                         addWarning(SOP_MESSAGE, msg.c_str());
@@ -485,10 +485,10 @@ SOP_OpenVDB_Extrapolate::Cache::processHelper(
                 } // UT_VDB_FLOAT
                 case UT_VDB_DOUBLE:
                 {
-                    openvdb::DoubleGrid::Ptr extGrid = openvdb::gridPtrCast<openvdb::DoubleGrid>(extGridBase);
+                    laovdb::DoubleGrid::Ptr extGrid = laovdb::gridPtrCast<laovdb::DoubleGrid>(extGridBase);
                     if (extGrid) {
                         double extBg = static_cast<double>(extGrid->background());
-                        process<FSGridT, openvdb::DoubleGrid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
+                        process<FSGridT, laovdb::DoubleGrid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
                     } else {
                         std::string msg = "Skipping extending VDB primitive " + parms.mExtPrimName + " because of cast failure.";
                         addWarning(SOP_MESSAGE, msg.c_str());
@@ -497,10 +497,10 @@ SOP_OpenVDB_Extrapolate::Cache::processHelper(
                 } // UT_VDB_DOUBLE
                 case UT_VDB_INT32:
                 {
-                    openvdb::Int32Grid::Ptr extGrid = openvdb::gridPtrCast<openvdb::Int32Grid>(extGridBase);
+                    laovdb::Int32Grid::Ptr extGrid = laovdb::gridPtrCast<laovdb::Int32Grid>(extGridBase);
                     if (extGrid) {
                         int extBg = static_cast<int>(extGrid->background());
-                        process<FSGridT, openvdb::Int32Grid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
+                        process<FSGridT, laovdb::Int32Grid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
                     } else {
                         std::string msg = "Skipping extending VDB primitive " + parms.mExtPrimName + " because of cast failure.";
                         addWarning(SOP_MESSAGE, msg.c_str());
@@ -509,10 +509,10 @@ SOP_OpenVDB_Extrapolate::Cache::processHelper(
                 } // UT_VDB_INT32
                 case UT_VDB_VEC3F:
                 {
-                    openvdb::Vec3SGrid::Ptr extGrid = openvdb::gridPtrCast<openvdb::Vec3SGrid>(extGridBase);
+                    laovdb::Vec3SGrid::Ptr extGrid = laovdb::gridPtrCast<laovdb::Vec3SGrid>(extGridBase);
                     if (extGrid) {
-                        openvdb::Vec3f extBg = static_cast<openvdb::Vec3f>(extGrid->background());
-                        process<FSGridT, openvdb::Vec3SGrid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
+                        laovdb::Vec3f extBg = static_cast<laovdb::Vec3f>(extGrid->background());
+                        process<FSGridT, laovdb::Vec3SGrid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
                     } else {
                         std::string msg = "Skipping extending VDB primitive " + parms.mExtPrimName + " because of cast failure.";
                         addWarning(SOP_MESSAGE, msg.c_str());
@@ -521,10 +521,10 @@ SOP_OpenVDB_Extrapolate::Cache::processHelper(
                 } // UT_VDB_VEC3F
                 case UT_VDB_VEC3D:
                 {
-                    openvdb::Vec3DGrid::Ptr extGrid = openvdb::gridPtrCast<openvdb::Vec3DGrid>(extGridBase);
+                    laovdb::Vec3DGrid::Ptr extGrid = laovdb::gridPtrCast<laovdb::Vec3DGrid>(extGridBase);
                     if (extGrid) {
-                        openvdb::Vec3d extBg = static_cast<openvdb::Vec3d>(extGrid->background());
-                        process<FSGridT, openvdb::Vec3DGrid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
+                        laovdb::Vec3d extBg = static_cast<laovdb::Vec3d>(extGrid->background());
+                        process<FSGridT, laovdb::Vec3DGrid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
                     } else {
                         std::string msg = "Skipping extending VDB primitive " + parms.mExtPrimName + " because of cast failure.";
                         addWarning(SOP_MESSAGE, msg.c_str());
@@ -533,10 +533,10 @@ SOP_OpenVDB_Extrapolate::Cache::processHelper(
                 } // UT_VDB_VEC3D
                 case UT_VDB_VEC3I:
                 {
-                    openvdb::Vec3IGrid::Ptr extGrid = openvdb::gridPtrCast<openvdb::Vec3IGrid>(extGridBase);
+                    laovdb::Vec3IGrid::Ptr extGrid = laovdb::gridPtrCast<laovdb::Vec3IGrid>(extGridBase);
                     if (extGrid) {
-                        openvdb::Vec3i extBg = static_cast<openvdb::Vec3i>(extGrid->background());
-                        process<FSGridT, openvdb::Vec3IGrid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
+                        laovdb::Vec3i extBg = static_cast<laovdb::Vec3i>(extGrid->background());
+                        process<FSGridT, laovdb::Vec3IGrid>(parms, lsPrim, fsIsoValue, nullptr /*=maskPrim*/, *extPrim, extBg);
                     } else {
                         std::string msg = "Skipping extending VDB primitive " + parms.mExtPrimName + " because of cast failure.";
                         addWarning(SOP_MESSAGE, msg.c_str());
@@ -573,15 +573,15 @@ SOP_OpenVDB_Extrapolate::Cache::process(
     GU_PrimVDB* exPrim,
     const typename ExtGridT::ValueType& background)
 {
-    using namespace openvdb::tools;
+    using namespace laovdb::tools;
 
-    using SamplerT = openvdb::tools::GridSampler<ExtGridT, openvdb::tools::BoxSampler>;
+    using SamplerT = laovdb::tools::GridSampler<ExtGridT, laovdb::tools::BoxSampler>;
     using ExtValueT = typename ExtGridT::ValueType;
 
-    typename FSGridT::Ptr fsGrid = openvdb::gridPtrCast<FSGridT>(lsPrim->getGridPtr());
+    typename FSGridT::Ptr fsGrid = laovdb::gridPtrCast<FSGridT>(lsPrim->getGridPtr());
 
     if (parms.mNeedExt) {
-        typename ExtGridT::ConstPtr extGrid = openvdb::gridConstPtrCast<ExtGridT>(exPrim->getConstGridPtr());
+        typename ExtGridT::ConstPtr extGrid = laovdb::gridConstPtrCast<ExtGridT>(exPrim->getConstGridPtr());
         if (!extGrid) {
             std::string msg = "Extension grid (" + extGrid->getName() + ") cannot be converted " +
                               "to the explicit type specified.";
@@ -593,17 +593,17 @@ SOP_OpenVDB_Extrapolate::Cache::process(
         if (parms.mMode == "fogext" || parms.mMode == "sdfext") {
             if (!parms.mConvertOrRenormalize) {
                 // there are 4 cases:
-                if (parms.mMode == "fogext" && (fsGrid->getGridClass() != openvdb::GRID_LEVEL_SET)) {
+                if (parms.mMode == "fogext" && (fsGrid->getGridClass() != laovdb::GRID_LEVEL_SET)) {
                     std::string msg = "Extending " + extGrid->getName() + " grid using " + parms.mFSPrimName + " Fog grid.";
                     addMessage(SOP_MESSAGE, msg.c_str());
                     parms.mNewExtGrid = fogToExt(*fsGrid, op, background, fsIsoValue, parms.mNSweeps, parms.mSweepingDomain, extGrid);
                 }
-                else if (parms.mMode == "fogext" && (fsGrid->getGridClass() == openvdb::GRID_LEVEL_SET)) {
+                else if (parms.mMode == "fogext" && (fsGrid->getGridClass() == laovdb::GRID_LEVEL_SET)) {
                     std::string msg = "VDB primitive " + parms.mFSPrimName + " is a level set.\n"
                         "You may want to use __Extend Field(s) Off SDF__.";
                     addWarning(SOP_MESSAGE, msg.c_str());
                     return false;
-                } else if (parms.mMode == "sdfext" && (fsGrid->getGridClass() == openvdb::GRID_LEVEL_SET)) {
+                } else if (parms.mMode == "sdfext" && (fsGrid->getGridClass() == laovdb::GRID_LEVEL_SET)) {
                     std::string msg = "Extending " + extGrid->getName() + " grid using " + parms.mFSPrimName + " SDF grid.";
                     addMessage(SOP_MESSAGE, msg.c_str());
                     parms.mNewExtGrid = sdfToExt(*fsGrid, op, background, fsIsoValue, parms.mNSweeps, parms.mSweepingDomain, extGrid);
@@ -622,17 +622,17 @@ SOP_OpenVDB_Extrapolate::Cache::process(
             } else {
                 std::pair<hvdb::Grid::Ptr, hvdb::Grid::Ptr> outPair;
                 // there are 4 cases:
-                if (parms.mMode == "fogext" && (fsGrid->getGridClass() != openvdb::GRID_LEVEL_SET)) {
+                if (parms.mMode == "fogext" && (fsGrid->getGridClass() != laovdb::GRID_LEVEL_SET)) {
                     std::string msg = "Extending " + extGrid->getName() + " grid using " + parms.mFSPrimName + " Fog grid.";
                     addMessage(SOP_MESSAGE, msg.c_str());
                     outPair = fogToSdfAndExt(*fsGrid, op, background, fsIsoValue, parms.mNSweeps, parms.mSweepingDomain, extGrid);
                 }
-                else if (parms.mMode == "fogext" && (fsGrid->getGridClass() == openvdb::GRID_LEVEL_SET)) {
+                else if (parms.mMode == "fogext" && (fsGrid->getGridClass() == laovdb::GRID_LEVEL_SET)) {
                     std::string msg = "VDB primitive " + parms.mFSPrimName + " is a level set.\n"
                         "You may want to use __Extend Field(s) Off SDF__.";
                     addWarning(SOP_MESSAGE, msg.c_str());
                     return false;
-                } else if (parms.mMode == "sdfext" && (fsGrid->getGridClass() == openvdb::GRID_LEVEL_SET)) {
+                } else if (parms.mMode == "sdfext" && (fsGrid->getGridClass() == laovdb::GRID_LEVEL_SET)) {
                     std::string msg = "Extending " + extGrid->getName() + " grid using " + parms.mFSPrimName + " SDF grid.";
                     addMessage(SOP_MESSAGE, msg.c_str());
                     outPair = sdfToSdfAndExt(*fsGrid, op, background, fsIsoValue, parms.mNSweeps, parms.mSweepingDomain, extGrid);
@@ -646,7 +646,7 @@ SOP_OpenVDB_Extrapolate::Cache::process(
                 // Update both the Fast Sweeping grid and the Extension grid
                 if (outPair.first && outPair.second) {
                     outPair.first->setTransform(fsGrid->transform().copy());
-                    outPair.first->setGridClass(openvdb::GRID_LEVEL_SET);
+                    outPair.first->setGridClass(laovdb::GRID_LEVEL_SET);
                     outPair.second->insertMeta(*extGrid);
                     outPair.second->setTransform(fsGrid->transform().copy());
                     parms.mNewExtGrid = outPair.second;
@@ -656,7 +656,7 @@ SOP_OpenVDB_Extrapolate::Cache::process(
         }
     } else {
         if (parms.mMode == "dilate") {
-            if (fsGrid->getGridClass() != openvdb::GRID_LEVEL_SET) {
+            if (fsGrid->getGridClass() != laovdb::GRID_LEVEL_SET) {
                 std::string msg = "VDB primitive " + parms.mFSPrimName + " was skipped in dilation because it is not a level set.";
                 addMessage(SOP_MESSAGE, msg.c_str());
                 return false;
@@ -673,7 +673,7 @@ SOP_OpenVDB_Extrapolate::Cache::process(
                 (parms.mPattern == "NN18") ? NN_FACE_EDGE : ((parms.mPattern == "NN26") ? NN_FACE_EDGE_VERTEX : NN_FACE);
             parms.mNewFSGrid = dilateSdf(*fsGrid, parms.mDilate, nn, parms.mNSweeps, parms.mSweepingDomain);
         } else if (parms.mMode == "convert") {
-            if (fsGrid->getGridClass() == openvdb::GRID_LEVEL_SET) {
+            if (fsGrid->getGridClass() == laovdb::GRID_LEVEL_SET) {
                 std::string msg = "VDB primitive " + parms.mFSPrimName + " was not converted to SDF because it is already a level set.";
                 addMessage(SOP_MESSAGE, msg.c_str());
                 return false;
@@ -682,7 +682,7 @@ SOP_OpenVDB_Extrapolate::Cache::process(
             parms.mNewFSGrid = fogToSdf(*fsGrid, fsIsoValue, parms.mNSweeps);
             lsPrim->setVisualization(GEO_VOLUMEVIS_ISO, lsPrim->getVisIso(), lsPrim->getVisDensity());
         } else if (parms.mMode == "renormalize") {
-            if (fsGrid->getGridClass() != openvdb::GRID_LEVEL_SET) {
+            if (fsGrid->getGridClass() != laovdb::GRID_LEVEL_SET) {
                 std::string msg = "VDB primitive " + parms.mFSPrimName + " was not renormalized because it is not a level set.\n"
                     "You may want to convert the FOG VDB into a level set before calling this mode.";
                 addMessage(SOP_MESSAGE, msg.c_str());
@@ -691,7 +691,7 @@ SOP_OpenVDB_Extrapolate::Cache::process(
 
             parms.mNewFSGrid = sdfToSdf(*fsGrid, fsIsoValue, parms.mNSweeps);
         } else if (parms.mMode == "mask") {
-            if (fsGrid->getGridClass() != openvdb::GRID_LEVEL_SET) {
+            if (fsGrid->getGridClass() != laovdb::GRID_LEVEL_SET) {
                 std::string msg = "VDB primitive " + parms.mFSPrimName + " was skipped in mask-operation because it is not a level set.\n"
                     "You may want to convert the FOG VDB into a level set before calling this mode.";
                 addMessage(SOP_MESSAGE, msg.c_str());
@@ -706,14 +706,14 @@ SOP_OpenVDB_Extrapolate::Cache::process(
             }
 
             FastSweepingMaskOp<FSGridT> op(parms, fsGrid);
-            // calling openvdb::tools::maskSdf with mask grid.
+            // calling laovdb::tools::maskSdf with mask grid.
             hvdb::GEOvdbApply<hvdb::AllGridTypes>(*maskPrim, op);
             parms.mNewFSGrid = op.mOutGrid;
         }
 
         // Update the fast sweeping grid
         if (parms.mNewFSGrid) {
-            parms.mNewFSGrid->setGridClass(openvdb::GRID_LEVEL_SET);
+            parms.mNewFSGrid->setGridClass(laovdb::GRID_LEVEL_SET);
         }
     } // !parms.mNeedExt
 
@@ -744,11 +744,11 @@ SOP_OpenVDB_Extrapolate::Cache::evalFastSweepingParms(OP_Context& context, FastS
     UT_String sweepDomain;
     evalString(sweepDomain, "sweepdomain", 0, time);
     if (sweepDomain == "alldirection")
-        parms.mSweepingDomain = openvdb::tools::FastSweepingDomain::SWEEP_ALL;
+        parms.mSweepingDomain = laovdb::tools::FastSweepingDomain::SWEEP_ALL;
     else if (sweepDomain == "greaterthanisovalue")
-        parms.mSweepingDomain = openvdb::tools::FastSweepingDomain::SWEEP_GREATER_THAN_ISOVALUE;
+        parms.mSweepingDomain = laovdb::tools::FastSweepingDomain::SWEEP_GREATER_THAN_ISOVALUE;
     else if (sweepDomain == "lessthanisovalue")
-        parms.mSweepingDomain = openvdb::tools::FastSweepingDomain::SWEEP_LESS_THAN_ISOVALUE;
+        parms.mSweepingDomain = laovdb::tools::FastSweepingDomain::SWEEP_LESS_THAN_ISOVALUE;
 
     return error();
 }
@@ -822,7 +822,7 @@ SOP_OpenVDB_Extrapolate::Cache::cookVDBSop(OP_Context& context)
                                          static_cast<float>(evalFloat("fogisovalue", 0, time)) :
                                          (parms.mMode == "renormalize" || parms.mMode == "sdfext") ?
                                          static_cast<float>(evalFloat("sdfisovalue", 0, time)) : 0.f;
-                    processHelper<openvdb::FloatGrid>(parms, *it /*lsPrim*/, isoValue, maskPrim);
+                    processHelper<laovdb::FloatGrid>(parms, *it /*lsPrim*/, isoValue, maskPrim);
                     parms.mExtFieldProcessed = true;
                     break;
                 }
@@ -832,7 +832,7 @@ SOP_OpenVDB_Extrapolate::Cache::cookVDBSop(OP_Context& context)
                                         static_cast<double>(evalFloat("fogisovalue", 0, time)) :
                                         (parms.mMode == "renormalize" || parms.mMode == "sdfext") ?
                                         static_cast<double>(evalFloat("sdfisovalue", 0, time)) : 0.0;
-                    processHelper<openvdb::DoubleGrid>(parms, *it /*lsPrim*/, isoValue, maskPrim);
+                    processHelper<laovdb::DoubleGrid>(parms, *it /*lsPrim*/, isoValue, maskPrim);
                     parms.mExtFieldProcessed = true;
                     break;
                 }

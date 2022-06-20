@@ -7,13 +7,13 @@
 #include <openvdb/points/PointStatistics.h>
 #include "PointBuilder.h"
 
-using namespace openvdb;
+using namespace laovdb;
 
 class TestPointStatistics: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointStatistics
 
 
@@ -371,7 +371,7 @@ TEST_F(TestPointStatistics, testEvalAverage)
     {
         // different point counts in different nodes
         // with a voxel size of 1.0, creates 3 leaf nodes with 4,3,1 points
-        std::vector<openvdb::Vec3f> boxPoints {
+        std::vector<laovdb::Vec3f> boxPoints {
             { 1,1,1}, { 2,2,2}, { 3,3,3}, {4,4,4},
             {-1,1,1}, {-2,1,1}, {-3,1,1},
             {1,-1,1}

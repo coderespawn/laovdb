@@ -7,7 +7,7 @@
 #include <gtest/gtest.h>
 
 
-using namespace openvdb;
+using namespace laovdb;
 
 class TestMerge: public ::testing::Test
 {

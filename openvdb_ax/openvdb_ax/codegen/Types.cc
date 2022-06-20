@@ -8,7 +8,7 @@
 
 #include "Types.h"
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -136,5 +136,5 @@ tokenFromLLVMType(const llvm::Type* type)
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

@@ -14,7 +14,7 @@
 #include <openvdb/openvdb.h>
 #include <openvdb/version.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -69,7 +69,7 @@ struct OPENVDB_AX_API CompilerOptions
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_COMPILER_FUNCTION_REGISTRY_OPTIONS_HAS_BEEN_INCLUDED
 

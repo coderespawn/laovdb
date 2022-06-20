@@ -14,7 +14,7 @@ class TestStringMetadata : public ::testing::Test
 
 TEST_F(TestStringMetadata, test)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Metadata::Ptr m(new StringMetadata("testing"));
     Metadata::Ptr m2 = m->copy();

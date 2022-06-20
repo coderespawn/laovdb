@@ -14,14 +14,14 @@
 #include <iostream>
 #include <utility>
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestIndexFilter: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 
     void testRandomLeafFilterImpl();
 }; // class TestIndexFilter
@@ -32,11 +32,11 @@ public:
 
 struct OriginLeaf
 {
-    OriginLeaf(const openvdb::Coord& _leafOrigin, const size_t _size = size_t(0)):
+    OriginLeaf(const laovdb::Coord& _leafOrigin, const size_t _size = size_t(0)):
         leafOrigin(_leafOrigin), size(_size) { }
-    openvdb::Coord origin() const { return leafOrigin; }
+    laovdb::Coord origin() const { return leafOrigin; }
     size_t pointCount() const { return size; }
-    const openvdb::Coord leafOrigin;
+    const laovdb::Coord leafOrigin;
     const size_t size;
 };
 
@@ -46,9 +46,9 @@ struct SimpleIter
     SimpleIter() : i(0) { }
     int operator*() const { return i; }
     void operator++() { i++; }
-    openvdb::Coord getCoord() const { return coord; }
+    laovdb::Coord getCoord() const { return coord; }
     int i;
-    openvdb::Coord coord;
+    laovdb::Coord coord;
 };
 
 
@@ -104,17 +104,17 @@ private:
 /// of the background values and tiles! This is implemented in openvdb/tools/LevelSetSphere.h
 template<class GridType>
 inline void
-makeSphere(const openvdb::Coord& dim, const openvdb::Vec3f& center, float radius, GridType& grid)
+makeSphere(const laovdb::Coord& dim, const laovdb::Vec3f& center, float radius, GridType& grid)
 {
     using ValueT = typename GridType::ValueType;
-    const ValueT zero = openvdb::zeroVal<ValueT>();
+    const ValueT zero = laovdb::zeroVal<ValueT>();
 
     typename GridType::Accessor acc = grid.getAccessor();
-    openvdb::Coord xyz;
+    laovdb::Coord xyz;
     for (xyz[0]=0; xyz[0]<dim[0]; ++xyz[0]) {
         for (xyz[1]=0; xyz[1]<dim[1]; ++xyz[1]) {
             for (xyz[2]=0; xyz[2]<dim[2]; ++xyz[2]) {
-                const openvdb::Vec3R p =  grid.transform().indexToWorld(xyz);
+                const laovdb::Vec3R p =  grid.transform().indexToWorld(xyz);
                 const float dist = float((p-center).length() - radius);
                 ValueT val = ValueT(zero + dist);
                 acc.setValue(xyz, val);
@@ -265,7 +265,7 @@ TEST_F(TestIndexFilter, testMultiGroupFilter)
     using AttributeVec3f    = TypedAttributeArray<Vec3f>;
 
     PointDataTree tree;
-    LeafNode* leaf = tree.touchLeaf(openvdb::Coord(0, 0, 0));
+    LeafNode* leaf = tree.touchLeaf(laovdb::Coord(0, 0, 0));
 
     using Descriptor = AttributeSet::Descriptor;
     Descriptor::Ptr descriptor = Descriptor::create(AttributeVec3f::attributeType());
@@ -698,8 +698,8 @@ TEST_F(TestIndexFilter, testLevelSetFilter)
         sphere = FloatGrid::create(/*backgroundValue=*/5.0);
         sphere->setTransform(math::Transform::createLinearTransform(voxelSize));
 
-        const openvdb::Coord dim(10, 10, 10);
-        const openvdb::Vec3f center(0.0f, 0.0f, 0.0f);
+        const laovdb::Coord dim(10, 10, 10);
+        const laovdb::Vec3f center(0.0f, 0.0f, 0.0f);
         const float radius = 2;
         makeSphere<FloatGrid>(dim, center, radius, *sphere);
     }
@@ -799,8 +799,8 @@ TEST_F(TestIndexFilter, testLevelSetFilter)
         sphere = FloatGrid::create(/*backgroundValue=*/5.0);
         sphere->setTransform(math::Transform::createLinearTransform(voxelSize));
 
-        const openvdb::Coord dim(40, 40, 40);
-        const openvdb::Vec3f center(10.0f, 10.0f, 0.1f);
+        const laovdb::Coord dim(40, 40, 40);
+        const laovdb::Vec3f center(10.0f, 10.0f, 0.1f);
         const float radius = 0.2f;
         makeSphere<FloatGrid>(dim, center, radius, *sphere);
     }

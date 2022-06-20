@@ -10,7 +10,7 @@
 #include "openvdb_ax/ast/Tokens.h"
 #include "openvdb_ax/codegen/FunctionTypes.h"
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace ax {
@@ -107,7 +107,7 @@ private:
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_CODEGEN_CODECS_HAS_BEEN_INCLUDED
 

@@ -9,7 +9,7 @@
 #include <string>
 #include <map>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -98,7 +98,7 @@ void variableDependencies(const ast::Variable& var,
     depVisitor.traverse(root);
 
     // The list of nodes which can be considered dependencies to collect
-    using ListT = openvdb::TypeList<
+    using ListT = laovdb::TypeList<
         ast::Attribute,
         ast::Local,
         ast::ExternalVariable>;
@@ -568,6 +568,6 @@ void linearize(const ast::Node& node, std::vector<const ast::Node*>& list)
 } // namespace ast
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 

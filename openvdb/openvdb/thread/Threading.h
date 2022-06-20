@@ -24,7 +24,7 @@
 #include <tbb/task.h>
 #include <tbb/task_group.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace thread {
@@ -55,7 +55,7 @@ inline bool isGroupExecutionCancelled()
 
 } // namespace thread
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #ifdef OPENVDB_THREAD_THREADING_RESTORE_DEPRECATION_MESSAGE_TASK
     #undef __TBB_show_deprecation_message_task_H

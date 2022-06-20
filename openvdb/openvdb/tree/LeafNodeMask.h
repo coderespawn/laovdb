@@ -18,7 +18,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tree {
@@ -1665,6 +1665,6 @@ LeafNode<ValueMask, Log2Dim>::doVisit2(NodeT& self, OtherChildAllIterT& otherIte
 
 } // namespace tree
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TREE_LEAF_NODE_MASK_HAS_BEEN_INCLUDED

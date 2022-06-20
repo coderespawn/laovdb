@@ -5,7 +5,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-using namespace openvdb::points;
+using namespace laovdb::points;
 
 class TestConditional : public unittest_util::AXTestCase
 {

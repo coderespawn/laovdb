@@ -15,7 +15,7 @@
 
 #include <tbb/blocked_range.h> // for tbb::split
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -578,7 +578,7 @@ operator<<(std::ostream& os, const CoordBBox& b)
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 ////////////////////////////////////////
 
@@ -587,13 +587,13 @@ operator<<(std::ostream& os, const CoordBBox& b)
 namespace std {// injected in namespace std
 
 template<>
-struct hash<openvdb::math::Coord>
+struct hash<laovdb::math::Coord>
 {
-    using Coord = openvdb::math::Coord;
+    using Coord = laovdb::math::Coord;
     using argument_type = Coord;
     using result_type = std::size_t;
     std::size_t operator()(const Coord& ijk) const noexcept { return ijk.Coord::hash<>(); }
-};// std::hash<openvdb::math::Coord>
+};// std::hash<laovdb::math::Coord>
 
 }// namespace std
 

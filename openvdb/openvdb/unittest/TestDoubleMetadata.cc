@@ -12,7 +12,7 @@ class TestDoubleMetadata : public ::testing::Test
 
 TEST_F(TestDoubleMetadata, test)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Metadata::Ptr m(new DoubleMetadata(1.23));
     Metadata::Ptr m2 = m->copy();

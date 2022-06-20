@@ -19,14 +19,14 @@
 class TestTreeVisitor: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 
-    void testVisitTreeBool() { visitTree<openvdb::BoolTree>(); }
-    void testVisitTreeInt32() { visitTree<openvdb::Int32Tree>(); }
-    void testVisitTreeFloat() { visitTree<openvdb::FloatTree>(); }
-    void testVisitTreeVec2I() { visitTree<openvdb::Vec2ITree>(); }
-    void testVisitTreeVec3S() { visitTree<openvdb::VectorTree>(); }
+    void testVisitTreeBool() { visitTree<laovdb::BoolTree>(); }
+    void testVisitTreeInt32() { visitTree<laovdb::Int32Tree>(); }
+    void testVisitTreeFloat() { visitTree<laovdb::FloatTree>(); }
+    void testVisitTreeVec2I() { visitTree<laovdb::Vec2ITree>(); }
+    void testVisitTreeVec3S() { visitTree<laovdb::VectorTree>(); }
     void testVisit2Trees();
 
 protected:
@@ -43,25 +43,25 @@ TreeT
 TestTreeVisitor::createTestTree() const
 {
     using ValueT = typename TreeT::ValueType;
-    const ValueT zero = openvdb::zeroVal<ValueT>(), one = zero + 1;
+    const ValueT zero = laovdb::zeroVal<ValueT>(), one = zero + 1;
 
     // Create a sparse test tree comprising the eight corners of
     // a 200 x 200 x 200 cube.
     TreeT tree(/*background=*/one);
-    tree.setValue(openvdb::Coord(  0,   0,   0),  /*value=*/zero);
-    tree.setValue(openvdb::Coord(200,   0,   0),  zero);
-    tree.setValue(openvdb::Coord(  0, 200,   0),  zero);
-    tree.setValue(openvdb::Coord(  0,   0, 200),  zero);
-    tree.setValue(openvdb::Coord(200,   0, 200),  zero);
-    tree.setValue(openvdb::Coord(  0, 200, 200),  zero);
-    tree.setValue(openvdb::Coord(200, 200,   0),  zero);
-    tree.setValue(openvdb::Coord(200, 200, 200),  zero);
+    tree.setValue(laovdb::Coord(  0,   0,   0),  /*value=*/zero);
+    tree.setValue(laovdb::Coord(200,   0,   0),  zero);
+    tree.setValue(laovdb::Coord(  0, 200,   0),  zero);
+    tree.setValue(laovdb::Coord(  0,   0, 200),  zero);
+    tree.setValue(laovdb::Coord(200,   0, 200),  zero);
+    tree.setValue(laovdb::Coord(  0, 200, 200),  zero);
+    tree.setValue(laovdb::Coord(200, 200,   0),  zero);
+    tree.setValue(laovdb::Coord(200, 200, 200),  zero);
 
     // Verify that the bounding box of all On values is 200 x 200 x 200.
-    openvdb::CoordBBox bbox;
+    laovdb::CoordBBox bbox;
     EXPECT_TRUE(tree.evalActiveVoxelBoundingBox(bbox));
-    EXPECT_TRUE(bbox.min() == openvdb::Coord(0, 0, 0));
-    EXPECT_TRUE(bbox.max() == openvdb::Coord(200, 200, 200));
+    EXPECT_TRUE(bbox.min() == laovdb::Coord(0, 0, 0));
+    EXPECT_TRUE(bbox.max() == laovdb::Coord(200, 200, 200));
 
     return tree;
 }
@@ -76,7 +76,7 @@ namespace {
 class Visitor
 {
 public:
-    using NodeMap = std::map<openvdb::Index, std::set<const void*> >;
+    using NodeMap = std::map<laovdb::Index, std::set<const void*> >;
 
     Visitor(): mSkipLeafNodes(false) { reset(); }
 
@@ -106,16 +106,16 @@ public:
         return false;
     }
 
-    openvdb::Index leafCount() const
+    laovdb::Index leafCount() const
     {
         NodeMap::const_iterator it = mNodes.find(0);
-        return openvdb::Index((it != mNodes.end()) ? it->second.size() : 0);
+        return laovdb::Index((it != mNodes.end()) ? it->second.size() : 0);
     }
-    openvdb::Index nonLeafCount() const
+    laovdb::Index nonLeafCount() const
     {
-        openvdb::Index count = 1; // root node
+        laovdb::Index count = 1; // root node
         for (NodeMap::const_iterator i = mNodes.begin(), e = mNodes.end(); i != e; ++i) {
-            if (i->first != 0) count = openvdb::Index(count + i->second.size());
+            if (i->first != 0) count = laovdb::Index(count + i->second.size());
         }
         return count;
     }
@@ -134,7 +134,7 @@ private:
     void insertChild(const ChildT* child)
     {
         if (child != nullptr) {
-            const openvdb::Index level = child->getLevel();
+            const laovdb::Index level = child->getLevel();
             if (!mSkipLeafNodes || level > 0) {
                 mNodes[level].insert(child);
             }
@@ -208,7 +208,7 @@ namespace {
 class Visitor2
 {
 public:
-    using NodeMap = std::map<openvdb::Index, std::set<const void*> >;
+    using NodeMap = std::map<laovdb::Index, std::set<const void*> >;
 
     Visitor2() { reset(); }
 
@@ -222,10 +222,10 @@ public:
     void setSkipALeafNodes(bool b) { mSkipALeafNodes = b; }
     void setSkipBLeafNodes(bool b) { mSkipBLeafNodes = b; }
 
-    openvdb::Index aLeafCount() const { return leafCount(/*useA=*/true); }
-    openvdb::Index bLeafCount() const { return leafCount(/*useA=*/false); }
-    openvdb::Index aNonLeafCount() const { return nonLeafCount(/*useA=*/true); }
-    openvdb::Index bNonLeafCount() const { return nonLeafCount(/*useA=*/false); }
+    laovdb::Index aLeafCount() const { return leafCount(/*useA=*/true); }
+    laovdb::Index bLeafCount() const { return leafCount(/*useA=*/false); }
+    laovdb::Index aNonLeafCount() const { return nonLeafCount(/*useA=*/true); }
+    laovdb::Index bNonLeafCount() const { return nonLeafCount(/*useA=*/false); }
 
     template<typename AIterT, typename BIterT>
     int operator()(AIterT& aIter, BIterT& bIter)
@@ -236,7 +236,7 @@ public:
         typename AIterT::NodeType& aNode = aIter.parent();
         typename BIterT::NodeType& bNode = bIter.parent();
 
-        const openvdb::Index aLevel = aNode.getLevel(), bLevel = bNode.getLevel();
+        const laovdb::Index aLevel = aNode.getLevel(), bLevel = bNode.getLevel();
         mANodeCount[aLevel].insert(&aNode);
         mBNodeCount[bLevel].insert(&bNode);
 
@@ -247,19 +247,19 @@ public:
     }
 
 private:
-    openvdb::Index leafCount(bool useA) const
+    laovdb::Index leafCount(bool useA) const
     {
         const NodeMap& theMap = (useA ? mANodeCount : mBNodeCount);
         NodeMap::const_iterator it = theMap.find(0);
-        if (it != theMap.end()) return openvdb::Index(it->second.size());
+        if (it != theMap.end()) return laovdb::Index(it->second.size());
         return 0;
     }
-    openvdb::Index nonLeafCount(bool useA) const
+    laovdb::Index nonLeafCount(bool useA) const
     {
-        openvdb::Index count = 0;
+        laovdb::Index count = 0;
         const NodeMap& theMap = (useA ? mANodeCount : mBNodeCount);
         for (NodeMap::const_iterator i = theMap.begin(), e = theMap.end(); i != e; ++i) {
-            if (i->first != 0) count = openvdb::Index(count + i->second.size());
+            if (i->first != 0) count = laovdb::Index(count + i->second.size());
         }
         return count;
     }
@@ -271,18 +271,18 @@ private:
 } // unnamed namespace
 
 
-TEST_F(TestTreeVisitor, testVisitTreeBool) { visitTree<openvdb::BoolTree>(); }
-TEST_F(TestTreeVisitor, testVisitTreeInt32) { visitTree<openvdb::Int32Tree>(); }
-TEST_F(TestTreeVisitor, testVisitTreeFloat) { visitTree<openvdb::FloatTree>(); }
-TEST_F(TestTreeVisitor, testVisitTreeVec2I) { visitTree<openvdb::Vec2ITree>(); }
-TEST_F(TestTreeVisitor, testVisitTreeVec3S) { visitTree<openvdb::VectorTree>(); }
+TEST_F(TestTreeVisitor, testVisitTreeBool) { visitTree<laovdb::BoolTree>(); }
+TEST_F(TestTreeVisitor, testVisitTreeInt32) { visitTree<laovdb::Int32Tree>(); }
+TEST_F(TestTreeVisitor, testVisitTreeFloat) { visitTree<laovdb::FloatTree>(); }
+TEST_F(TestTreeVisitor, testVisitTreeVec2I) { visitTree<laovdb::Vec2ITree>(); }
+TEST_F(TestTreeVisitor, testVisitTreeVec3S) { visitTree<laovdb::VectorTree>(); }
 
 TEST_F(TestTreeVisitor, testVisit2Trees)
 {
     OPENVDB_NO_DEPRECATION_WARNING_BEGIN
 
-    using TreeT = openvdb::FloatTree;
-    using Tree2T = openvdb::VectorTree;
+    using TreeT = laovdb::FloatTree;
+    using Tree2T = laovdb::VectorTree;
     using ValueT = TreeT::ValueType;
 
     // Create a test tree.
@@ -303,7 +303,7 @@ TEST_F(TestTreeVisitor, testVisit2Trees)
     visitor.reset();
 
     // Change the topology of the first tree.
-    tree.setValue(openvdb::Coord(-200, -200, -200), openvdb::zeroVal<ValueT>());
+    tree.setValue(laovdb::Coord(-200, -200, -200), laovdb::zeroVal<ValueT>());
 
     // Traverse both trees.
     tree.visit2(tree2, visitor);

@@ -212,21 +212,21 @@ MStatus OpenVDBTransformNode::compute(const MPlug& plug, MDataBlock& data)
 
             // Construct new transform
 
-            openvdb::Mat4R mat(openvdb::Mat4R::identity());
+            laovdb::Mat4R mat(laovdb::Mat4R::identity());
 
-            mat.preTranslate(openvdb::Vec3R(p[0], p[1], p[2]));
+            mat.preTranslate(laovdb::Vec3R(p[0], p[1], p[2]));
 
             const double deg2rad = boost::math::constants::pi<double>() / 180.0;
-            mat.preRotate(openvdb::math::X_AXIS, deg2rad*r[0]);
-            mat.preRotate(openvdb::math::Y_AXIS, deg2rad*r[1]);
-            mat.preRotate(openvdb::math::Z_AXIS, deg2rad*r[2]);
+            mat.preRotate(laovdb::math::X_AXIS, deg2rad*r[0]);
+            mat.preRotate(laovdb::math::Y_AXIS, deg2rad*r[1]);
+            mat.preRotate(laovdb::math::Z_AXIS, deg2rad*r[2]);
 
-            mat.preScale(openvdb::Vec3R(s[0], s[1], s[2]));
-            mat.preTranslate(openvdb::Vec3R(-p[0], -p[1], -p[2]));
-            mat.preTranslate(openvdb::Vec3R(t[0], t[1], t[2]));
+            mat.preScale(laovdb::Vec3R(s[0], s[1], s[2]));
+            mat.preTranslate(laovdb::Vec3R(-p[0], -p[1], -p[2]));
+            mat.preTranslate(laovdb::Vec3R(t[0], t[1], t[2]));
 
-            typedef openvdb::math::AffineMap AffineMap;
-            typedef openvdb::math::Transform Transform;
+            typedef laovdb::math::AffineMap AffineMap;
+            typedef laovdb::math::Transform Transform;
 
             if (data.inputValue(aInvert, &status).asBool()) {
                 mat = mat.inverse();
@@ -244,15 +244,15 @@ MStatus OpenVDBTransformNode::compute(const MPlug& plug, MDataBlock& data)
 
             for (mvdb::GridCPtrVecIter it = grids.begin(); it != grids.end(); ++it) {
 
-                openvdb::GridBase::ConstPtr grid = (*it)->copyGrid(); // shallow copy, shares tree
+                laovdb::GridBase::ConstPtr grid = (*it)->copyGrid(); // shallow copy, shares tree
 
                 // Merge the transform's current affine representation with the new affine map.
                 AffineMap::Ptr compound(
                     new AffineMap(*grid->transform().baseMap()->getAffineMap(), map));
 
                 // Simplify the affine map and replace the transform.
-                openvdb::ConstPtrCast<openvdb::GridBase>(grid)->setTransform(
-                    Transform::Ptr(new Transform(openvdb::math::simplify(compound))));
+                laovdb::ConstPtrCast<laovdb::GridBase>(grid)->setTransform(
+                    Transform::Ptr(new Transform(laovdb::math::simplify(compound))));
 
                 outputVdb->insert(grid);
             }

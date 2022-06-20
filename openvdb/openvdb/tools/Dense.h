@@ -22,7 +22,7 @@
 #include <utility> // for std::pair
 #include <vector>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -577,6 +577,6 @@ copyFromDense(const DenseT& dense, GridOrTreeT& sparse,
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_DENSE_HAS_BEEN_INCLUDED

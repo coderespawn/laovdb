@@ -15,15 +15,15 @@ class TestFilter: public ::testing::Test {};
 ////////////////////////////////////////
 
 
-inline openvdb::FloatGrid::ConstPtr
-createReferenceGrid(const openvdb::Coord& dim)
+inline laovdb::FloatGrid::ConstPtr
+createReferenceGrid(const laovdb::Coord& dim)
 {
-    openvdb::FloatGrid::Ptr referenceGrid =
-        openvdb::FloatGrid::create(/*background=*/5.0);
+    laovdb::FloatGrid::Ptr referenceGrid =
+        laovdb::FloatGrid::create(/*background=*/5.0);
 
-    const openvdb::Vec3f center(25.0f, 20.0f, 20.0f);
+    const laovdb::Vec3f center(25.0f, 20.0f, 20.0f);
     const float radius = 10.0f;
-    unittest_util::makeSphere<openvdb::FloatGrid>(
+    unittest_util::makeSphere<laovdb::FloatGrid>(
         dim, center, radius, *referenceGrid, unittest_util::SPHERE_DENSE);
 
     EXPECT_EQ(dim[0]*dim[1]*dim[2],
@@ -37,14 +37,14 @@ createReferenceGrid(const openvdb::Coord& dim)
 
 TEST_F(TestFilter, testOffset)
 {
-    const openvdb::Coord dim(40);
-    const openvdb::FloatGrid::ConstPtr referenceGrid = createReferenceGrid(dim);
-    const openvdb::FloatTree& sphere = referenceGrid->tree();
+    const laovdb::Coord dim(40);
+    const laovdb::FloatGrid::ConstPtr referenceGrid = createReferenceGrid(dim);
+    const laovdb::FloatTree& sphere = referenceGrid->tree();
 
-    openvdb::Coord xyz;
-    openvdb::FloatGrid::Ptr grid = referenceGrid->deepCopy();
-    openvdb::FloatTree& tree = grid->tree();
-    openvdb::tools::Filter<openvdb::FloatGrid> filter(*grid);
+    laovdb::Coord xyz;
+    laovdb::FloatGrid::Ptr grid = referenceGrid->deepCopy();
+    laovdb::FloatTree& tree = grid->tree();
+    laovdb::tools::Filter<laovdb::FloatGrid> filter(*grid);
     const float offset = 2.34f;
     filter.setGrainSize(0);//i.e. disable threading
     filter.offset(offset);
@@ -79,16 +79,16 @@ TEST_F(TestFilter, testOffset)
 
 TEST_F(TestFilter, testMedian)
 {
-    const openvdb::Coord dim(40);
-    const openvdb::FloatGrid::ConstPtr referenceGrid = createReferenceGrid(dim);
-    const openvdb::FloatTree& sphere = referenceGrid->tree();
+    const laovdb::Coord dim(40);
+    const laovdb::FloatGrid::ConstPtr referenceGrid = createReferenceGrid(dim);
+    const laovdb::FloatTree& sphere = referenceGrid->tree();
 
-    openvdb::Coord xyz;
-    openvdb::FloatGrid::Ptr filteredGrid = referenceGrid->deepCopy();
-    openvdb::FloatTree& filteredTree = filteredGrid->tree();
+    laovdb::Coord xyz;
+    laovdb::FloatGrid::Ptr filteredGrid = referenceGrid->deepCopy();
+    laovdb::FloatTree& filteredTree = filteredGrid->tree();
     const int width = 2;
-    openvdb::math::DenseStencil<openvdb::FloatGrid> stencil(*referenceGrid, width);
-    openvdb::tools::Filter<openvdb::FloatGrid> filter(*filteredGrid);
+    laovdb::math::DenseStencil<laovdb::FloatGrid> stencil(*referenceGrid, width);
+    laovdb::tools::Filter<laovdb::FloatGrid> filter(*filteredGrid);
     filter.median(width, /*interations=*/1);
     std::vector<float> tmp;
     for (int x=0; x<dim[0]; ++x) {
@@ -98,7 +98,7 @@ TEST_F(TestFilter, testMedian)
             for (int z=0; z<dim[2]; ++z) {
                 xyz[2]=z;
                 for (int i = xyz[0] - width, ie= xyz[0] + width; i <= ie; ++i) {
-                    openvdb::Coord ijk(i,0,0);
+                    laovdb::Coord ijk(i,0,0);
                     for (int j = xyz[1] - width, je = xyz[1] + width; j <= je; ++j) {
                         ijk.setY(j);
                         for (int k = xyz[2] - width, ke = xyz[2] + width; k <= ke; ++k) {
@@ -122,16 +122,16 @@ TEST_F(TestFilter, testMedian)
 
 TEST_F(TestFilter, testMean)
 {
-    const openvdb::Coord dim(40);
-    const openvdb::FloatGrid::ConstPtr referenceGrid = createReferenceGrid(dim);
-    const openvdb::FloatTree& sphere = referenceGrid->tree();
+    const laovdb::Coord dim(40);
+    const laovdb::FloatGrid::ConstPtr referenceGrid = createReferenceGrid(dim);
+    const laovdb::FloatTree& sphere = referenceGrid->tree();
 
-    openvdb::Coord xyz;
-    openvdb::FloatGrid::Ptr filteredGrid = referenceGrid->deepCopy();
-    openvdb::FloatTree& filteredTree = filteredGrid->tree();
+    laovdb::Coord xyz;
+    laovdb::FloatGrid::Ptr filteredGrid = referenceGrid->deepCopy();
+    laovdb::FloatTree& filteredTree = filteredGrid->tree();
     const int width = 2;
-    openvdb::math::DenseStencil<openvdb::FloatGrid> stencil(*referenceGrid, width);
-    openvdb::tools::Filter<openvdb::FloatGrid> filter(*filteredGrid);
+    laovdb::math::DenseStencil<laovdb::FloatGrid> stencil(*referenceGrid, width);
+    laovdb::tools::Filter<laovdb::FloatGrid> filter(*filteredGrid);
     filter.mean(width,  /*interations=*/1);
     for (int x=0; x<dim[0]; ++x) {
         xyz[0]=x;
@@ -141,7 +141,7 @@ TEST_F(TestFilter, testMean)
                 xyz[2]=z;
                 double sum =0.0, count=0.0;
                 for (int i = xyz[0] - width, ie= xyz[0] + width; i <= ie; ++i) {
-                    openvdb::Coord ijk(i,0,0);
+                    laovdb::Coord ijk(i,0,0);
                     for (int j = xyz[1] - width, je = xyz[1] + width; j <= je; ++j) {
                         ijk.setY(j);
                         for (int k = xyz[2] - width, ke = xyz[2] + width; k <= ke; ++k) {
@@ -164,13 +164,13 @@ TEST_F(TestFilter, testMean)
 
 TEST_F(TestFilter, testFilterTiles)
 {
-    using openvdb::Coord;
-    using openvdb::Index32;
-    using openvdb::Index64;
+    using laovdb::Coord;
+    using laovdb::Index32;
+    using laovdb::Index64;
 
-    using InternalNode1 = openvdb::FloatTree::RootNodeType::ChildNodeType; // usually 4096^3
+    using InternalNode1 = laovdb::FloatTree::RootNodeType::ChildNodeType; // usually 4096^3
     using InternalNode2 = InternalNode1::ChildNodeType; // usually 128^3
-    using LeafT = openvdb::FloatTree::LeafNodeType;
+    using LeafT = laovdb::FloatTree::LeafNodeType;
 
     struct Settings {
         Settings(Index32 a, Index64 b, Index32 c, Index64 d)
@@ -182,18 +182,18 @@ TEST_F(TestFilter, testFilterTiles)
     };
 
     struct CheckMeanValues {
-        mutable openvdb::math::DenseStencil<openvdb::FloatGrid> mStencil;
-        CheckMeanValues(openvdb::math::DenseStencil<openvdb::FloatGrid>& s) : mStencil(s) {}
-        inline void operator()(const openvdb::FloatTree::ValueOnCIter& iter) const {
+        mutable laovdb::math::DenseStencil<laovdb::FloatGrid> mStencil;
+        CheckMeanValues(laovdb::math::DenseStencil<laovdb::FloatGrid>& s) : mStencil(s) {}
+        inline void operator()(const laovdb::FloatTree::ValueOnCIter& iter) const {
             mStencil.moveTo(iter.getCoord());
             EXPECT_NEAR(mStencil.mean(), *iter, /*tolerance=*/0.0001);
         }
     };
 
     struct CheckMedianValues {
-        mutable openvdb::math::DenseStencil<openvdb::FloatGrid> mStencil;
-        CheckMedianValues(openvdb::math::DenseStencil<openvdb::FloatGrid>& s) : mStencil(s) {}
-        inline void operator()(const openvdb::FloatTree::ValueOnCIter& iter) const {
+        mutable laovdb::math::DenseStencil<laovdb::FloatGrid> mStencil;
+        CheckMedianValues(laovdb::math::DenseStencil<laovdb::FloatGrid>& s) : mStencil(s) {}
+        inline void operator()(const laovdb::FloatTree::ValueOnCIter& iter) const {
             mStencil.moveTo(iter.getCoord());
             EXPECT_NEAR(mStencil.median(), *iter, /*tolerance=*/0.0001);
         }
@@ -206,10 +206,10 @@ TEST_F(TestFilter, testFilterTiles)
     // given a dimension in voxels, compute how many boundary nodes exist
     auto computeBoundaryNodeCount = [](const Index32 voxels, const Index32 nodedim) {
         Index32 leafPerDim = voxels/nodedim;
-        Index32 faceLeafNodes = openvdb::math::Pow2(leafPerDim);
+        Index32 faceLeafNodes = laovdb::math::Pow2(leafPerDim);
         Index32 boundary = faceLeafNodes * 2; // x faces
         boundary += (faceLeafNodes * 2) - ((leafPerDim)*2)*2; // y faces
-        boundary += openvdb::math::Pow2(leafPerDim-2)*2; // z faces
+        boundary += laovdb::math::Pow2(leafPerDim-2)*2; // z faces
         return boundary;
     };
 
@@ -240,9 +240,9 @@ TEST_F(TestFilter, testFilterTiles)
     for(const auto& test : tests)
     {
         { // single tile
-            openvdb::FloatGrid::ConstPtr refTile;
+            laovdb::FloatGrid::ConstPtr refTile;
             {
-                openvdb::FloatGrid::Ptr ref = openvdb::FloatGrid::create(0.0f);
+                laovdb::FloatGrid::Ptr ref = laovdb::FloatGrid::create(0.0f);
                 auto& tree = ref->tree();
                 tree.addTile(test.mLevel, Coord(0), 1.0f, true);
                 EXPECT_EQ(Index32(0), tree.leafCount());
@@ -253,12 +253,12 @@ TEST_F(TestFilter, testFilterTiles)
                 refTile = ref;
             }
 
-            openvdb::math::DenseStencil<openvdb::FloatGrid> stencil(*refTile, width);
+            laovdb::math::DenseStencil<laovdb::FloatGrid> stencil(*refTile, width);
 
             { // offset
-                openvdb::FloatGrid::Ptr grid = refTile->deepCopy();
+                laovdb::FloatGrid::Ptr grid = refTile->deepCopy();
                 auto& tree = grid->tree();
-                openvdb::tools::Filter<openvdb::FloatGrid> filter(*grid);
+                laovdb::tools::Filter<laovdb::FloatGrid> filter(*grid);
                 // disable tile processing, do nothing
                 filter.setProcessTiles(false);
                 filter.offset(1.0f);
@@ -279,9 +279,9 @@ TEST_F(TestFilter, testFilterTiles)
             }
 
             { // mean
-                openvdb::FloatGrid::Ptr grid = refTile->deepCopy();
+                laovdb::FloatGrid::Ptr grid = refTile->deepCopy();
                 auto& tree = grid->tree();
-                openvdb::tools::Filter<openvdb::FloatGrid> filter(*grid);
+                laovdb::tools::Filter<laovdb::FloatGrid> filter(*grid);
                 // disable tile processing, do nothing
                 filter.setProcessTiles(false);
                 filter.mean(width, iter);
@@ -298,13 +298,13 @@ TEST_F(TestFilter, testFilterTiles)
                 EXPECT_EQ(test.mTiles, tree.activeTileCount());
                 EXPECT_EQ(test.mVoxels, tree.activeVoxelCount());
                 CheckMeanValues op(stencil);
-                openvdb::tools::foreach(tree.cbeginValueOn(), op, true, false);
+                laovdb::tools::foreach(tree.cbeginValueOn(), op, true, false);
             }
 
             { // median
-                openvdb::FloatGrid::Ptr grid = refTile->deepCopy();
+                laovdb::FloatGrid::Ptr grid = refTile->deepCopy();
                 auto& tree = grid->tree();
-                openvdb::tools::Filter<openvdb::FloatGrid> filter(*grid);
+                laovdb::tools::Filter<laovdb::FloatGrid> filter(*grid);
                 // disable tile processing, do nothing
                 filter.setProcessTiles(false);
                 filter.median(width, iter);
@@ -321,7 +321,7 @@ TEST_F(TestFilter, testFilterTiles)
                 EXPECT_EQ(test.mTiles, tree.activeTileCount());
                 EXPECT_EQ(test.mVoxels, tree.activeVoxelCount());
                 CheckMedianValues op(stencil);
-                openvdb::tools::foreach(tree.cbeginValueOn(), op, true, false);
+                laovdb::tools::foreach(tree.cbeginValueOn(), op, true, false);
 
             }
         }
@@ -334,9 +334,9 @@ TEST_F(TestFilter, testFilterTiles)
     {
         // Test the behaviour with tiled grids
         { // single tile
-            openvdb::FloatGrid::ConstPtr refTile;
+            laovdb::FloatGrid::ConstPtr refTile;
             {
-                openvdb::FloatGrid::Ptr ref = openvdb::FloatGrid::create(1.0f);
+                laovdb::FloatGrid::Ptr ref = laovdb::FloatGrid::create(1.0f);
                 auto& tree = ref->tree();
                 tree.addTile(test.mLevel, Coord(0), 1.0f, true);
                 EXPECT_EQ(Index32(0), tree.leafCount());
@@ -347,12 +347,12 @@ TEST_F(TestFilter, testFilterTiles)
                 refTile = ref;
             }
 
-            openvdb::math::DenseStencil<openvdb::FloatGrid> stencil(*refTile, width);
+            laovdb::math::DenseStencil<laovdb::FloatGrid> stencil(*refTile, width);
 
             { // mean
-                openvdb::FloatGrid::Ptr grid = refTile->deepCopy();
+                laovdb::FloatGrid::Ptr grid = refTile->deepCopy();
                 auto& tree = grid->tree();
-                openvdb::tools::Filter<openvdb::FloatGrid> filter(*grid);
+                laovdb::tools::Filter<laovdb::FloatGrid> filter(*grid);
                 filter.setProcessTiles(true);
                 filter.mean(width, iter);
                 EXPECT_EQ(Index32(0), tree.leafCount());
@@ -363,9 +363,9 @@ TEST_F(TestFilter, testFilterTiles)
             }
 
             { // median
-                openvdb::FloatGrid::Ptr grid = refTile->deepCopy();
+                laovdb::FloatGrid::Ptr grid = refTile->deepCopy();
                 auto& tree = grid->tree();
-                openvdb::tools::Filter<openvdb::FloatGrid> filter(*grid);
+                laovdb::tools::Filter<laovdb::FloatGrid> filter(*grid);
                 filter.setProcessTiles(true);
                 filter.median(width, iter);
                 EXPECT_EQ(Index32(0), tree.leafCount());
@@ -382,9 +382,9 @@ TEST_F(TestFilter, testFilterTiles)
     // matching background with main tile
 
     { // single tile at level 1
-        openvdb::FloatGrid::ConstPtr refTile;
+        laovdb::FloatGrid::ConstPtr refTile;
         {
-            openvdb::FloatGrid::Ptr ref = openvdb::FloatGrid::create(1.0f);
+            laovdb::FloatGrid::Ptr ref = laovdb::FloatGrid::create(1.0f);
             auto& tree = ref->tree();
             tree.addTile(1, Coord(0), 1.0f, true);
             EXPECT_EQ(Index32(0), tree.leafCount());
@@ -396,9 +396,9 @@ TEST_F(TestFilter, testFilterTiles)
         }
 
         { // mean
-            openvdb::FloatGrid::Ptr grid = refTile->deepCopy();
+            laovdb::FloatGrid::Ptr grid = refTile->deepCopy();
             auto& tree = grid->tree();
-            openvdb::tools::Filter<openvdb::FloatGrid> filter(*grid);
+            laovdb::tools::Filter<laovdb::FloatGrid> filter(*grid);
             //
             filter.setProcessTiles(true);
             filter.mean(1, 1);
@@ -423,7 +423,7 @@ TEST_F(TestFilter, testFilterTiles)
     {
         // single tile at a given level with a leaf and level 1 neighbour
         auto reset = [](const int level) {
-            openvdb::FloatGrid::Ptr ref = openvdb::FloatGrid::create(1.0f);
+            laovdb::FloatGrid::Ptr ref = laovdb::FloatGrid::create(1.0f);
             auto& tree = ref->tree();
             tree.addTile(level, Coord(0), 1.0f, true);
             EXPECT_EQ(Index32(0), tree.leafCount());
@@ -443,9 +443,9 @@ TEST_F(TestFilter, testFilterTiles)
         };
 
         {
-            openvdb::FloatGrid::Ptr grid = reset(3);
+            laovdb::FloatGrid::Ptr grid = reset(3);
             auto& tree = grid->tree();
-            openvdb::tools::Filter<openvdb::FloatGrid> filter(*grid);
+            laovdb::tools::Filter<laovdb::FloatGrid> filter(*grid);
             filter.setProcessTiles(true);
             // with a width = 9 and iter = 1, only face neighbours need to be
             // created. for a leaf at (-8,0,0) which is on the corner, this
@@ -461,9 +461,9 @@ TEST_F(TestFilter, testFilterTiles)
         }
 
         {
-            openvdb::FloatGrid::Ptr grid = reset(3);
+            laovdb::FloatGrid::Ptr grid = reset(3);
             auto& tree = grid->tree();
-            openvdb::tools::Filter<openvdb::FloatGrid> filter(*grid);
+            laovdb::tools::Filter<laovdb::FloatGrid> filter(*grid);
             filter.setProcessTiles(true);
             // with width = 2 and iter = 2, edge/vertex neighbours should also be voxelized
             filter.mean(/*width*/2, /*iter*/2);
@@ -475,9 +475,9 @@ TEST_F(TestFilter, testFilterTiles)
         }
 
         {
-            openvdb::FloatGrid::Ptr grid = reset(2); // test at level 2 for speed
+            laovdb::FloatGrid::Ptr grid = reset(2); // test at level 2 for speed
             auto& tree = grid->tree();
-            openvdb::tools::Filter<openvdb::FloatGrid> filter(*grid);
+            laovdb::tools::Filter<laovdb::FloatGrid> filter(*grid);
             filter.setProcessTiles(true);
             // with width = 1 and iter = 9 - checks an iter count > LeafT::DIM
             filter.mean(/*width*/1, /*iter*/LeafT::DIM+1);

@@ -22,7 +22,7 @@
 #include <type_traits>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -325,10 +325,10 @@ LevelSetFilter<GridT, MaskT, InterruptT>::Filter::offset(ValueType value)
 
     mParent->leafs().removeAuxBuffers();// no auxiliary buffers required
 
-    const ValueType CFL = ValueType(0.5) * mParent->voxelSize(), offset = openvdb::math::Abs(value);
+    const ValueType CFL = ValueType(0.5) * mParent->voxelSize(), offset = laovdb::math::Abs(value);
     ValueType dist = 0.0;
     while (offset-dist > ValueType(0.001)*CFL && mParent->checkInterrupter()) {
-        const ValueType delta = openvdb::math::Min(offset-dist, CFL);
+        const ValueType delta = laovdb::math::Min(offset-dist, CFL);
         dist += delta;
 
         mTask = std::bind(&Filter::offsetImpl,
@@ -523,6 +523,6 @@ OPENVDB_INSTANTIATE_CLASS LevelSetFilter<DoubleGrid, FloatGrid, util::NullInterr
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_LEVELSETFILTER_HAS_BEEN_INCLUDED

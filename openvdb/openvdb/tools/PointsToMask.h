@@ -61,7 +61,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -251,6 +251,6 @@ struct PointsToMask<GridT, InterrupterT>::ReducePool
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_POINTSTOMASK_HAS_BEEN_INCLUDED

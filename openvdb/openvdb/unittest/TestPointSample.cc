@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-using namespace openvdb;
+using namespace laovdb;
 
 class TestPointSample: public ::testing::Test
 {

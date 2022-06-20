@@ -58,7 +58,7 @@ static_assert(std::is_standard_layout<Type>::value, \
 static_assert(std::is_trivial<Type>::value, \
     #Type" must be a POD type (satisfy TrivialType.)");
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -961,6 +961,6 @@ MaxIndex(const Vec3T& v)
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_MATH_MATH_HAS_BEEN_INCLUDED

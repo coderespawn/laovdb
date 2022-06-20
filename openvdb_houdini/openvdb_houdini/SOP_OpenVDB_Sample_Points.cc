@@ -165,7 +165,7 @@ namespace {
 using StringSet = std::set<std::string>;
 using StringVec = std::vector<std::string>;
 using AttrNameMap = std::map<std::string /*gridName*/, StringSet /*attrNames*/>;
-using PointGridPtrVec = std::vector<openvdb::points::PointDataGrid::Ptr>;
+using PointGridPtrVec = std::vector<laovdb::points::PointDataGrid::Ptr>;
 
 
 struct VDBPointsSampler
@@ -183,7 +183,7 @@ struct VDBPointsSampler
     inline void
     pointSample(const hvdb::Grid& sourceGrid,
                 const std::string& attributeName,
-                openvdb::util::NullInterrupter* interrupter)
+                laovdb::util::NullInterrupter* interrupter)
     {
         warnOnExisting(attributeName);
         const GridType& grid = UTvdbGridCast<GridType>(sourceGrid);
@@ -200,7 +200,7 @@ struct VDBPointsSampler
     inline void
     boxSample(const hvdb::Grid& sourceGrid,
               const std::string& attributeName,
-              openvdb::util::NullInterrupter* interrupter)
+              laovdb::util::NullInterrupter* interrupter)
     {
         warnOnExisting(attributeName);
         const GridType& grid = UTvdbGridCast<GridType>(sourceGrid);
@@ -289,7 +289,7 @@ public:
     // constructor. from grid and GU_Detail*
     PointSampler(const hvdb::Grid& grid, const bool threaded,
                  GU_Detail* gdp, GA_RWAttributeRef& handle,
-                 openvdb::util::NullInterrupter* interrupter):
+                 laovdb::util::NullInterrupter* interrupter):
         mGrid(grid),
         mThreaded(threaded),
         mGdp(gdp),
@@ -326,7 +326,7 @@ public:
     {
 
         if (mInterrupter->wasInterrupted()) {
-            openvdb::thread::cancelGroupExecution();
+            laovdb::thread::cancelGroupExecution();
         }
         const GridType& grid = UTvdbGridCast<GridType>(mGrid);
         // task local grid accessor
@@ -389,7 +389,7 @@ private:
     bool                 mThreaded;
     GU_Detail*           mGdp;
     GA_RWPageHandleType  mAttribPageHandle;
-    openvdb::util::NullInterrupter*   mInterrupter;
+    laovdb::util::NullInterrupter*   mInterrupter;
 }; // class PointSampler
 
 } // anonymous namespace

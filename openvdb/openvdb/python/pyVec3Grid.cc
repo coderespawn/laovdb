@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 /// @file pyVec3Grid.cc
-/// @brief Boost.Python wrappers for vector-valued openvdb::Grid types
+/// @brief Boost.Python wrappers for vector-valued laovdb::Grid types
 
 #include "pyGrid.h"
 

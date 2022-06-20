@@ -42,7 +42,7 @@ CMake option OPENVDB_USE_FUTURE_ABI_10 suppresses this error
     #endif
 #endif
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -143,4 +143,4 @@ __pragma(warning(default:1711))
 }
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

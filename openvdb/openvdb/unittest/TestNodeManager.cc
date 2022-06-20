@@ -12,8 +12,8 @@
 class TestNodeManager: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 };
 
 
@@ -48,20 +48,20 @@ struct NodeCountOp {
         ++totalCount;
         return true;
     }
-    std::vector<openvdb::Index64> nodeCount;
-    openvdb::Index64 totalCount;
+    std::vector<laovdb::Index64> nodeCount;
+    laovdb::Index64 totalCount;
 };// NodeCountOp
 
 }//unnamed namespace
 
 TEST_F(TestNodeManager, testAll)
 {
-    using openvdb::CoordBBox;
-    using openvdb::Coord;
-    using openvdb::Vec3f;
-    using openvdb::Index64;
-    using openvdb::FloatGrid;
-    using openvdb::FloatTree;
+    using laovdb::CoordBBox;
+    using laovdb::Coord;
+    using laovdb::Vec3f;
+    using laovdb::Index64;
+    using laovdb::FloatGrid;
+    using laovdb::FloatTree;
 
     const Vec3f center(0.35f, 0.35f, 0.35f);
     const float radius = 0.15f;
@@ -70,16 +70,16 @@ TEST_F(TestNodeManager, testAll)
 
     FloatGrid::Ptr grid = FloatGrid::create(/*background=*/half_width*voxel_size);
     FloatTree& tree = grid->tree();
-    grid->setTransform(openvdb::math::Transform::createLinearTransform(/*voxel size=*/voxel_size));
+    grid->setTransform(laovdb::math::Transform::createLinearTransform(/*voxel size=*/voxel_size));
 
     unittest_util::makeSphere<FloatGrid>(Coord(dim), center,
                                          radius, *grid, unittest_util::SPHERE_SPARSE_NARROW_BAND);
 
     EXPECT_EQ(4, int(FloatTree::DEPTH));
-    EXPECT_EQ(3, int(openvdb::tree::NodeManager<FloatTree>::LEVELS));
+    EXPECT_EQ(3, int(laovdb::tree::NodeManager<FloatTree>::LEVELS));
 
     std::vector<Index64> nodeCount;
-    for (openvdb::Index i=0; i<FloatTree::DEPTH; ++i) nodeCount.push_back(0);
+    for (laovdb::Index i=0; i<FloatTree::DEPTH; ++i) nodeCount.push_back(0);
     for (FloatTree::NodeCIter it = tree.cbeginNode(); it; ++it) ++(nodeCount[it.getLevel()]);
 
     //for (size_t i=0; i<nodeCount.size(); ++i) {//includes the root node
@@ -87,14 +87,14 @@ TEST_F(TestNodeManager, testAll)
     //}
 
     {// test tree constructor
-        openvdb::tree::NodeManager<FloatTree> manager(tree);
+        laovdb::tree::NodeManager<FloatTree> manager(tree);
 
-        //for (openvdb::Index i=0; i<openvdb::tree::NodeManager<FloatTree>::LEVELS; ++i) {
+        //for (laovdb::Index i=0; i<laovdb::tree::NodeManager<FloatTree>::LEVELS; ++i) {
         //    std::cerr << "Level=" << i << " nodes=" << manager.nodeCount(i) << std::endl;
         //}
 
         Index64 totalCount = 0;
-        for (openvdb::Index i=0; i<FloatTree::RootNodeType::LEVEL; ++i) {//exclude root in nodeCount
+        for (laovdb::Index i=0; i<FloatTree::RootNodeType::LEVEL; ++i) {//exclude root in nodeCount
             //std::cerr << "Level=" << i << " expected=" << nodeCount[i]
             //          << " cached=" << manager.nodeCount(i) << std::endl;
             EXPECT_EQ(nodeCount[i], manager.nodeCount(i));
@@ -107,7 +107,7 @@ TEST_F(TestNodeManager, testAll)
         NodeCountOp<FloatTree> topDownOp;
         manager.reduceBottomUp(bottomUpOp);
         manager.reduceTopDown(topDownOp);
-        for (openvdb::Index i=0; i<FloatTree::RootNodeType::LEVEL; ++i) {//exclude root in nodeCount
+        for (laovdb::Index i=0; i<FloatTree::RootNodeType::LEVEL; ++i) {//exclude root in nodeCount
             EXPECT_EQ(bottomUpOp.nodeCount[i], manager.nodeCount(i));
             EXPECT_EQ(topDownOp.nodeCount[i], manager.nodeCount(i));
         }
@@ -116,12 +116,12 @@ TEST_F(TestNodeManager, testAll)
     }
 
     {// test LeafManager constructor
-        typedef openvdb::tree::LeafManager<FloatTree> LeafManagerT;
+        typedef laovdb::tree::LeafManager<FloatTree> LeafManagerT;
         LeafManagerT manager1(tree);
         EXPECT_EQ(nodeCount[0], Index64(manager1.leafCount()));
-        openvdb::tree::NodeManager<LeafManagerT> manager2(manager1);
+        laovdb::tree::NodeManager<LeafManagerT> manager2(manager1);
         Index64 totalCount = 0;
-        for (openvdb::Index i=0; i<FloatTree::RootNodeType::LEVEL; ++i) {//exclude root in nodeCount
+        for (laovdb::Index i=0; i<FloatTree::RootNodeType::LEVEL; ++i) {//exclude root in nodeCount
             //std::cerr << "Level=" << i << " expected=" << nodeCount[i]
             //          << " cached=" << manager2.nodeCount(i) << std::endl;
             EXPECT_EQ(nodeCount[i], Index64(manager2.nodeCount(i)));
@@ -134,7 +134,7 @@ TEST_F(TestNodeManager, testAll)
         NodeCountOp<FloatTree> topDownOp;
         manager2.reduceBottomUp(bottomUpOp);
         manager2.reduceTopDown(topDownOp);
-        for (openvdb::Index i=0; i<FloatTree::RootNodeType::LEVEL; ++i) {//exclude root in nodeCount
+        for (laovdb::Index i=0; i<FloatTree::RootNodeType::LEVEL; ++i) {//exclude root in nodeCount
             EXPECT_EQ(bottomUpOp.nodeCount[i], manager2.nodeCount(i));
             EXPECT_EQ(topDownOp.nodeCount[i], manager2.nodeCount(i));
         }
@@ -147,7 +147,7 @@ TEST_F(TestNodeManager, testAll)
 
 TEST_F(TestNodeManager, testConst)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const Vec3f center(0.35f, 0.35f, 0.35f);
     const int dim = 128, half_width = 5;
@@ -162,11 +162,11 @@ TEST_F(TestNodeManager, testConst)
     nodeManager.reduceTopDown(topDownOp);
 
     std::vector<Index64> nodeCount;
-    for (openvdb::Index i=0; i<FloatTree::DEPTH; ++i) nodeCount.push_back(0);
+    for (laovdb::Index i=0; i<FloatTree::DEPTH; ++i) nodeCount.push_back(0);
     for (FloatTree::NodeCIter it = tree.cbeginNode(); it; ++it) ++(nodeCount[it.getLevel()]);
 
     Index64 totalCount = 0;
-    for (openvdb::Index i=0; i<FloatTree::RootNodeType::LEVEL; ++i) {//exclude root in nodeCount
+    for (laovdb::Index i=0; i<FloatTree::RootNodeType::LEVEL; ++i) {//exclude root in nodeCount
         EXPECT_EQ(nodeCount[i], nodeManager.nodeCount(i));
         totalCount += nodeCount[i];
     }
@@ -199,7 +199,7 @@ struct ExpandOp
     bool operator()(NodeT& node, size_t idx = 1) const
     {
         for (auto iter = node.cbeginValueAll(); iter; ++iter) {
-            const openvdb::Coord ijk = iter.getCoord();
+            const laovdb::Coord ijk = iter.getCoord();
             if (ijk.x() < 256 && ijk.y() < 256 && ijk.z() < 256) {
                 node.addChild(new typename NodeT::ChildNodeType(iter.getCoord(), NodeT::LEVEL, true));
             }
@@ -237,7 +237,7 @@ struct RootOnlyOp
     template<typename NodeOrLeafT>
     bool operator()(NodeOrLeafT&, size_t) const
     {
-        OPENVDB_THROW(openvdb::RuntimeError, "Should not process nodes below root.");
+        OPENVDB_THROW(laovdb::RuntimeError, "Should not process nodes below root.");
     }
 };// RootOnlyOp
 
@@ -272,7 +272,7 @@ struct SumOp {
         }
         return true;
     }
-    openvdb::Index64 totalCount = openvdb::Index64(0);
+    laovdb::Index64 totalCount = laovdb::Index64(0);
     bool mZeroOnly = false;
 };// SumOp
 
@@ -280,10 +280,10 @@ struct SumOp {
 
 TEST_F(TestNodeManager, testDynamic)
 {
-    using openvdb::Coord;
-    using openvdb::Index32;
-    using openvdb::Index64;
-    using openvdb::Int32Tree;
+    using laovdb::Coord;
+    using laovdb::Index32;
+    using laovdb::Index64;
+    using laovdb::Int32Tree;
 
     using RootNodeType = Int32Tree::RootNodeType;
     using Internal1NodeType = RootNodeType::ChildNodeType;
@@ -301,7 +301,7 @@ TEST_F(TestNodeManager, testDynamic)
 
     { // use NodeManager::foreachTopDown
         Int32Tree tree(sourceTree);
-        openvdb::tree::NodeManager<Int32Tree> manager(tree);
+        laovdb::tree::NodeManager<Int32Tree> manager(tree);
         EXPECT_EQ(Index64(1), manager.nodeCount());
         manager.foreachTopDown(expandOp);
         EXPECT_EQ(Index32(0), tree.leafCount());
@@ -314,7 +314,7 @@ TEST_F(TestNodeManager, testDynamic)
 
     { // use DynamicNodeManager::foreachTopDown and filter out nodes below root
         Int32Tree tree(sourceTree);
-        openvdb::tree::DynamicNodeManager<Int32Tree> manager(tree);
+        laovdb::tree::DynamicNodeManager<Int32Tree> manager(tree);
         RootOnlyOp<Int32Tree> rootOnlyOp;
         EXPECT_NO_THROW(manager.foreachTopDown(rootOnlyOp));
         EXPECT_NO_THROW(manager.reduceTopDown(rootOnlyOp));
@@ -322,7 +322,7 @@ TEST_F(TestNodeManager, testDynamic)
 
     { // use DynamicNodeManager::foreachTopDown
         Int32Tree tree(sourceTree);
-        openvdb::tree::DynamicNodeManager<Int32Tree> manager(tree);
+        laovdb::tree::DynamicNodeManager<Int32Tree> manager(tree);
         manager.foreachTopDown(expandOp, /*threaded=*/true, /*leafGrainSize=*/32, /*nonLeafGrainSize=*/8);
         EXPECT_EQ(Index32(32768), tree.leafCount());
 
@@ -337,7 +337,7 @@ TEST_F(TestNodeManager, testDynamic)
 
     { // use DynamicNodeManager::foreachTopDown but filter nodes with non-zero index
         Int32Tree tree(sourceTree);
-        openvdb::tree::DynamicNodeManager<Int32Tree> manager(tree);
+        laovdb::tree::DynamicNodeManager<Int32Tree> manager(tree);
         ExpandOp<Int32Tree> zeroExpandOp(true);
         manager.foreachTopDown(zeroExpandOp);
         EXPECT_EQ(Index32(32768), tree.leafCount());

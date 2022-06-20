@@ -11,14 +11,14 @@
 #include <gtest/gtest.h>
 
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestPointConversion: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointConversion
 
 
@@ -37,12 +37,12 @@ struct AttributeWrapper
             , mStride(attribute.mStride) { }
 
         template <typename ValueType>
-        void set(size_t n, openvdb::Index m, const ValueType& value) {
+        void set(size_t n, laovdb::Index m, const ValueType& value) {
             mBuffer[n * mStride + m] = static_cast<T>(value);
         }
 
         template <typename ValueType>
-        void set(size_t n, openvdb::Index m, const openvdb::math::Vec3<ValueType>& value) {
+        void set(size_t n, laovdb::Index m, const laovdb::math::Vec3<ValueType>& value) {
             mBuffer[n * mStride + m] = static_cast<T>(value);
         }
 
@@ -62,7 +62,7 @@ struct AttributeWrapper
     std::vector<T>& buffer() { return mAttribute; }
 
     template <typename ValueT>
-    void get(ValueT& value, size_t n, openvdb::Index m = 0) const { value = mAttribute[n * mStride + m]; }
+    void get(ValueT& value, size_t n, laovdb::Index m = 0) const { value = mAttribute[n * mStride + m]; }
     template <typename ValueT>
     void getPos(size_t n, ValueT& value) const { this->get<ValueT>(value, n); }
 
@@ -76,7 +76,7 @@ struct GroupWrapper
 {
     GroupWrapper() = default;
 
-    void setOffsetOn(openvdb::Index index) {
+    void setOffsetOn(laovdb::Index index) {
         mGroup[index] = short(1);
     }
 
@@ -98,7 +98,7 @@ struct PointData
     Vec3f position;
     Vec3i xyz;
     float uniform;
-    openvdb::Name string;
+    laovdb::Name string;
     short group;
 
     bool operator<(const PointData& other) const { return id < other.id; }
@@ -113,17 +113,17 @@ genPoints(const int numPoints, const double scale, const bool stride,
     AttributeWrapper<int>& xyz,
     AttributeWrapper<int>& id,
     AttributeWrapper<float>& uniform,
-    AttributeWrapper<openvdb::Name>& string,
+    AttributeWrapper<laovdb::Name>& string,
     GroupWrapper& group)
 {
     // init
-    openvdb::math::Random01 randNumber(0);
+    laovdb::math::Random01 randNumber(0);
     const int n = int(std::sqrt(double(numPoints)));
     const double xScale = (2.0 * M_PI) / double(n);
     const double yScale = M_PI / double(n);
 
     double x, y, theta, phi;
-    openvdb::Vec3f pos;
+    laovdb::Vec3f pos;
 
     position.resize(n*n);
     xyz.resize(stride ? n*n*3 : 1);
@@ -136,7 +136,7 @@ genPoints(const int numPoints, const double scale, const bool stride,
     AttributeWrapper<int>::Handle xyzHandle(xyz);
     AttributeWrapper<int>::Handle idHandle(id);
     AttributeWrapper<float>::Handle uniformHandle(uniform);
-    AttributeWrapper<openvdb::Name>::Handle stringHandle(string);
+    AttributeWrapper<laovdb::Name>::Handle stringHandle(string);
 
     size_t i = 0;
 
@@ -197,7 +197,7 @@ TEST_F(TestPointConversion, testPointConversion)
     AttributeWrapper<int> xyz(1);
     AttributeWrapper<int> id(1);
     AttributeWrapper<float> uniform(1);
-    AttributeWrapper<openvdb::Name> string(1);
+    AttributeWrapper<laovdb::Name> string(1);
     GroupWrapper group;
 
     genPoints(count, /*scale=*/ 100.0, /*stride=*/false,
@@ -212,7 +212,7 @@ TEST_F(TestPointConversion, testPointConversion)
     // convert point positions into a Point Data Grid
 
     const float voxelSize = 1.0f;
-    openvdb::math::Transform::Ptr transform(openvdb::math::Transform::createLinearTransform(voxelSize));
+    laovdb::math::Transform::Ptr transform(laovdb::math::Transform::createLinearTransform(voxelSize));
 
     tools::PointIndexGrid::Ptr pointIndexGrid = tools::createPointIndexGrid<tools::PointIndexGrid>(position, *transform);
     PointDataGrid::Ptr pointDataGrid = createPointDataGrid<NullCodec, PointDataGrid>(*pointIndexGrid, position, *transform);
@@ -242,7 +242,7 @@ TEST_F(TestPointConversion, testPointConversion)
         leafIter->resetDescriptor(newDescriptor);
     }
 
-    populateAttribute<PointDataTree, tools::PointIndexTree, AttributeWrapper<openvdb::Name>>(
+    populateAttribute<PointDataTree, tools::PointIndexTree, AttributeWrapper<laovdb::Name>>(
         tree, indexTree, "string", string);
 
     // add group and set membership
@@ -300,7 +300,7 @@ TEST_F(TestPointConversion, testPointConversion)
     AttributeWrapper<Vec3f> outputPosition(1);
     AttributeWrapper<int> outputId(1);
     AttributeWrapper<float> outputUniform(1);
-    AttributeWrapper<openvdb::Name> outputString(1);
+    AttributeWrapper<laovdb::Name> outputString(1);
     GroupWrapper outputGroup;
 
     // test offset the whole point block by an arbitrary amount
@@ -426,7 +426,7 @@ TEST_F(TestPointConversion, testPointConversionNans)
     AttributeWrapper<int> xyz(1);
     AttributeWrapper<int> id(1);
     AttributeWrapper<float> uniform(1);
-    AttributeWrapper<openvdb::Name> string(1);
+    AttributeWrapper<laovdb::Name> string(1);
     GroupWrapper group;
 
     genPoints(count, /*scale=*/ 1.0, /*stride=*/false,
@@ -451,8 +451,8 @@ TEST_F(TestPointConversion, testPointConversionNans)
 
     // convert point positions into a Point Data Grid
 
-    openvdb::math::Transform::Ptr transform =
-        openvdb::math::Transform::createLinearTransform(/*voxelsize*/1.0f);
+    laovdb::math::Transform::Ptr transform =
+        laovdb::math::Transform::createLinearTransform(/*voxelsize*/1.0f);
 
     tools::PointIndexGrid::Ptr pointIndexGrid = tools::createPointIndexGrid<tools::PointIndexGrid>(position, *transform);
     PointDataGrid::Ptr pointDataGrid = createPointDataGrid<NullCodec, PointDataGrid>(*pointIndexGrid, position, *transform);
@@ -477,7 +477,7 @@ TEST_F(TestPointConversion, testPointConversionNans)
     // add string and populate
 
     appendAttribute<Name>(tree, "string");
-    populateAttribute<PointDataTree, tools::PointIndexTree, AttributeWrapper<openvdb::Name>>(
+    populateAttribute<PointDataTree, tools::PointIndexTree, AttributeWrapper<laovdb::Name>>(
         tree, indexTree, "string", string);
 
     // add group and set membership
@@ -507,7 +507,7 @@ TEST_F(TestPointConversion, testPointConversionNans)
     AttributeWrapper<Vec3f> outputPosition(1);
     AttributeWrapper<int> outputId(1);
     AttributeWrapper<float> outputUniform(1);
-    AttributeWrapper<openvdb::Name> outputString(1);
+    AttributeWrapper<laovdb::Name> outputString(1);
     GroupWrapper outputGroup;
 
     outputPosition.resize(position.size());
@@ -573,7 +573,7 @@ TEST_F(TestPointConversion, testStride)
     AttributeWrapper<int> xyz(3);
     AttributeWrapper<int> id(1);
     AttributeWrapper<float> uniform(1);
-    AttributeWrapper<openvdb::Name> string(1);
+    AttributeWrapper<laovdb::Name> string(1);
     GroupWrapper group;
 
     genPoints(count, /*scale=*/ 100.0, /*stride=*/true,
@@ -586,7 +586,7 @@ TEST_F(TestPointConversion, testStride)
     // convert point positions into a Point Data Grid
 
     const float voxelSize = 1.0f;
-    openvdb::math::Transform::Ptr transform(openvdb::math::Transform::createLinearTransform(voxelSize));
+    laovdb::math::Transform::Ptr transform(laovdb::math::Transform::createLinearTransform(voxelSize));
 
     tools::PointIndexGrid::Ptr pointIndexGrid = tools::createPointIndexGrid<tools::PointIndexGrid>(position, *transform);
     PointDataGrid::Ptr pointDataGrid = createPointDataGrid<NullCodec, PointDataGrid>(*pointIndexGrid, position, *transform);
@@ -911,7 +911,7 @@ TEST_F(TestPointConversion, testComputeVoxelSize)
     {
         position.resize(2000);
         AttributeWrapper<Vec3f>::Handle positionHandle(position);
-        openvdb::math::Random01 randNumber(0);
+        laovdb::math::Random01 randNumber(0);
 
         // positions between -0.5 and 0.5
 
@@ -947,7 +947,7 @@ TEST_F(TestPointConversion, testComputeVoxelSize)
     {
         position.resize(3000);
         AttributeWrapper<Vec3f>::Handle positionHandle(position);
-        openvdb::math::Random01 randNumber(0);
+        laovdb::math::Random01 randNumber(0);
 
         // positions between 0 and 1
 
@@ -997,7 +997,7 @@ TEST_F(TestPointConversion, testComputeVoxelSize)
     AttributeWrapper<int> xyz(1);
     AttributeWrapper<int> id(1);
     AttributeWrapper<float> uniform(1);
-    AttributeWrapper<openvdb::Name> string(1);
+    AttributeWrapper<laovdb::Name> string(1);
     GroupWrapper group;
 
     genPoints(count, /*scale=*/ 100.0, /*stride=*/false, position, xyz, id, uniform, string, group);
@@ -1025,8 +1025,8 @@ TEST_F(TestPointConversion, testComputeVoxelSize)
     {
         // test that a different scale doesn't change the result
 
-        openvdb::math::Transform::Ptr transform1(openvdb::math::Transform::createLinearTransform(0.33));
-        openvdb::math::Transform::Ptr transform2(openvdb::math::Transform::createLinearTransform(0.87));
+        laovdb::math::Transform::Ptr transform1(laovdb::math::Transform::createLinearTransform(0.33));
+        laovdb::math::Transform::Ptr transform2(laovdb::math::Transform::createLinearTransform(0.87));
 
         math::UniformScaleMap::ConstPtr scaleMap1 = transform1->constMap<math::UniformScaleMap>();
         math::UniformScaleMap::ConstPtr scaleMap2 = transform2->constMap<math::UniformScaleMap>();
@@ -1249,58 +1249,58 @@ TEST_F(TestPointConversion, testExample)
 
     { // Vec3R
         // Create a vector with four point positions.
-        std::vector<openvdb::Vec3R> positions;
-        positions.push_back(openvdb::Vec3R(0, 1, 0));
-        positions.push_back(openvdb::Vec3R(1.5, 3.5, 1));
-        positions.push_back(openvdb::Vec3R(-1, 6, -2));
-        positions.push_back(openvdb::Vec3R(1.1, 1.25, 0.06));
+        std::vector<laovdb::Vec3R> positions;
+        positions.push_back(laovdb::Vec3R(0, 1, 0));
+        positions.push_back(laovdb::Vec3R(1.5, 3.5, 1));
+        positions.push_back(laovdb::Vec3R(-1, 6, -2));
+        positions.push_back(laovdb::Vec3R(1.1, 1.25, 0.06));
 
         // The VDB Point-Partioner is used when bucketing points and requires a
         // specific interface. For convenience, we use the PointAttributeVector
         // wrapper around an stl vector wrapper here, however it is also possible to
         // write one for a custom data structure in order to match the interface
         // required.
-        openvdb::points::PointAttributeVector<openvdb::Vec3R> positionsWrapper(positions);
+        laovdb::points::PointAttributeVector<laovdb::Vec3R> positionsWrapper(positions);
 
         // This method computes a voxel-size to match the number of
         // points / voxel requested. Although it won't be exact, it typically offers
         // a good balance of memory against performance.
         int pointsPerVoxel = 8;
         float voxelSize =
-            openvdb::points::computeVoxelSize(positionsWrapper, pointsPerVoxel);
+            laovdb::points::computeVoxelSize(positionsWrapper, pointsPerVoxel);
 
         // Create a transform using this voxel-size.
-        openvdb::math::Transform::Ptr transform =
-            openvdb::math::Transform::createLinearTransform(voxelSize);
+        laovdb::math::Transform::Ptr transform =
+            laovdb::math::Transform::createLinearTransform(voxelSize);
 
         // Create a PointDataGrid containing these four points and using the
         // transform given. This function has two template parameters, (1) the codec
         // to use for storing the position, (2) the grid we want to create
         // (ie a PointDataGrid).
         // We use no compression here for the positions.
-        openvdb::points::PointDataGrid::Ptr grid =
-            openvdb::points::createPointDataGrid<openvdb::points::NullCodec,
-                            openvdb::points::PointDataGrid>(positions, *transform);
+        laovdb::points::PointDataGrid::Ptr grid =
+            laovdb::points::createPointDataGrid<laovdb::points::NullCodec,
+                            laovdb::points::PointDataGrid>(positions, *transform);
 
         // Set the name of the grid
         grid->setName("Points");
 
         // Create a VDB file object and write out the grid.
-        openvdb::io::File("mypoints.vdb").write({grid});
+        laovdb::io::File("mypoints.vdb").write({grid});
 
         // Create a new VDB file object for reading.
-        openvdb::io::File newFile("mypoints.vdb");
+        laovdb::io::File newFile("mypoints.vdb");
 
         // Open the file. This reads the file header, but not any grids.
         newFile.open();
 
         // Read the grid by name.
-        openvdb::GridBase::Ptr baseGrid = newFile.readGrid("Points");
+        laovdb::GridBase::Ptr baseGrid = newFile.readGrid("Points");
         newFile.close();
 
         // From the example above, "Points" is known to be a PointDataGrid,
         // so cast the generic grid pointer to a PointDataGrid pointer.
-        grid = openvdb::gridPtrCast<openvdb::points::PointDataGrid>(baseGrid);
+        grid = laovdb::gridPtrCast<laovdb::points::PointDataGrid>(baseGrid);
 
         std::vector<Vec3R> resultingPositions;
 
@@ -1308,23 +1308,23 @@ TEST_F(TestPointConversion, testExample)
         for (auto leafIter = grid->tree().cbeginLeaf(); leafIter; ++leafIter) {
 
             // Extract the position attribute from the leaf by name (P is position).
-            const openvdb::points::AttributeArray& array =
+            const laovdb::points::AttributeArray& array =
                 leafIter->constAttributeArray("P");
 
             // Create a read-only AttributeHandle. Position always uses Vec3f.
-            openvdb::points::AttributeHandle<openvdb::Vec3f> positionHandle(array);
+            laovdb::points::AttributeHandle<laovdb::Vec3f> positionHandle(array);
 
             // Iterate over the point indices in the leaf.
             for (auto indexIter = leafIter->beginIndexOn(); indexIter; ++indexIter) {
 
                 // Extract the voxel-space position of the point.
-                openvdb::Vec3f voxelPosition = positionHandle.get(*indexIter);
+                laovdb::Vec3f voxelPosition = positionHandle.get(*indexIter);
 
                 // Extract the index-space position of the voxel.
-                const openvdb::Vec3d xyz = indexIter.getCoord().asVec3d();
+                const laovdb::Vec3d xyz = indexIter.getCoord().asVec3d();
 
                 // Compute the world-space position of the point.
-                openvdb::Vec3f worldPosition =
+                laovdb::Vec3f worldPosition =
                     grid->transform().indexToWorld(voxelPosition + xyz);
 
                 resultingPositions.push_back(worldPosition);
@@ -1352,58 +1352,58 @@ TEST_F(TestPointConversion, testExample)
 
     { // Vec3f
         // Create a vector with four point positions.
-        std::vector<openvdb::Vec3f> positions;
-        positions.push_back(openvdb::Vec3f(0.0f, 1.0f, 0.0f));
-        positions.push_back(openvdb::Vec3f(1.5f, 3.5f, 1.0f));
-        positions.push_back(openvdb::Vec3f(-1.0f, 6.0f, -2.0f));
-        positions.push_back(openvdb::Vec3f(1.1f, 1.25f, 0.06f));
+        std::vector<laovdb::Vec3f> positions;
+        positions.push_back(laovdb::Vec3f(0.0f, 1.0f, 0.0f));
+        positions.push_back(laovdb::Vec3f(1.5f, 3.5f, 1.0f));
+        positions.push_back(laovdb::Vec3f(-1.0f, 6.0f, -2.0f));
+        positions.push_back(laovdb::Vec3f(1.1f, 1.25f, 0.06f));
 
         // The VDB Point-Partioner is used when bucketing points and requires a
         // specific interface. For convenience, we use the PointAttributeVector
         // wrapper around an stl vector wrapper here, however it is also possible to
         // write one for a custom data structure in order to match the interface
         // required.
-        openvdb::points::PointAttributeVector<openvdb::Vec3f> positionsWrapper(positions);
+        laovdb::points::PointAttributeVector<laovdb::Vec3f> positionsWrapper(positions);
 
         // This method computes a voxel-size to match the number of
         // points / voxel requested. Although it won't be exact, it typically offers
         // a good balance of memory against performance.
         int pointsPerVoxel = 8;
         float voxelSize =
-            openvdb::points::computeVoxelSize(positionsWrapper, pointsPerVoxel);
+            laovdb::points::computeVoxelSize(positionsWrapper, pointsPerVoxel);
 
         // Create a transform using this voxel-size.
-        openvdb::math::Transform::Ptr transform =
-            openvdb::math::Transform::createLinearTransform(voxelSize);
+        laovdb::math::Transform::Ptr transform =
+            laovdb::math::Transform::createLinearTransform(voxelSize);
 
         // Create a PointDataGrid containing these four points and using the
         // transform given. This function has two template parameters, (1) the codec
         // to use for storing the position, (2) the grid we want to create
         // (ie a PointDataGrid).
         // We use no compression here for the positions.
-        openvdb::points::PointDataGrid::Ptr grid =
-            openvdb::points::createPointDataGrid<openvdb::points::NullCodec,
-                            openvdb::points::PointDataGrid>(positions, *transform);
+        laovdb::points::PointDataGrid::Ptr grid =
+            laovdb::points::createPointDataGrid<laovdb::points::NullCodec,
+                            laovdb::points::PointDataGrid>(positions, *transform);
 
         // Set the name of the grid
         grid->setName("Points");
 
         // Create a VDB file object and write out the grid.
-        openvdb::io::File("mypoints.vdb").write({grid});
+        laovdb::io::File("mypoints.vdb").write({grid});
 
         // Create a new VDB file object for reading.
-        openvdb::io::File newFile("mypoints.vdb");
+        laovdb::io::File newFile("mypoints.vdb");
 
         // Open the file. This reads the file header, but not any grids.
         newFile.open();
 
         // Read the grid by name.
-        openvdb::GridBase::Ptr baseGrid = newFile.readGrid("Points");
+        laovdb::GridBase::Ptr baseGrid = newFile.readGrid("Points");
         newFile.close();
 
         // From the example above, "Points" is known to be a PointDataGrid,
         // so cast the generic grid pointer to a PointDataGrid pointer.
-        grid = openvdb::gridPtrCast<openvdb::points::PointDataGrid>(baseGrid);
+        grid = laovdb::gridPtrCast<laovdb::points::PointDataGrid>(baseGrid);
 
         std::vector<Vec3f> resultingPositions;
 
@@ -1411,23 +1411,23 @@ TEST_F(TestPointConversion, testExample)
         for (auto leafIter = grid->tree().cbeginLeaf(); leafIter; ++leafIter) {
 
             // Extract the position attribute from the leaf by name (P is position).
-            const openvdb::points::AttributeArray& array =
+            const laovdb::points::AttributeArray& array =
                 leafIter->constAttributeArray("P");
 
             // Create a read-only AttributeHandle. Position always uses Vec3f.
-            openvdb::points::AttributeHandle<openvdb::Vec3f> positionHandle(array);
+            laovdb::points::AttributeHandle<laovdb::Vec3f> positionHandle(array);
 
             // Iterate over the point indices in the leaf.
             for (auto indexIter = leafIter->beginIndexOn(); indexIter; ++indexIter) {
 
                 // Extract the voxel-space position of the point.
-                openvdb::Vec3f voxelPosition = positionHandle.get(*indexIter);
+                laovdb::Vec3f voxelPosition = positionHandle.get(*indexIter);
 
                 // Extract the index-space position of the voxel.
-                const openvdb::Vec3d xyz = indexIter.getCoord().asVec3d();
+                const laovdb::Vec3d xyz = indexIter.getCoord().asVec3d();
 
                 // Compute the world-space position of the point.
-                openvdb::Vec3f worldPosition =
+                laovdb::Vec3f worldPosition =
                     grid->transform().indexToWorld(voxelPosition + xyz);
 
                 resultingPositions.push_back(worldPosition);

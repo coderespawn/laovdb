@@ -3,7 +3,7 @@
 
 #include "Proximity.h"
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -128,4 +128,4 @@ closestPointOnSegmentToPoint(const Vec3d& a, const Vec3d& b, const Vec3d& p, dou
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

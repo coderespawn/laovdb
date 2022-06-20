@@ -23,11 +23,11 @@ using BufferT = nanovdb::HostBuffer;
 
 void runOpenVDB(nanovdb::GridHandle<BufferT>& handle, int numIterations, int width, int height, BufferT& imageBuffer)
 {
-    using GridT = openvdb::FloatGrid;
-    using CoordT = openvdb::Coord;
+    using GridT = laovdb::FloatGrid;
+    using CoordT = laovdb::Coord;
     using RealT = float;
-    using Vec3T = openvdb::math::Vec3<RealT>;
-    using RayT = openvdb::math::Ray<RealT>;
+    using Vec3T = laovdb::math::Vec3<RealT>;
+    using RayT = laovdb::math::Ray<RealT>;
 
     auto srcGrid = nanovdb::nanoToOpenVDB(handle);
     std::cout << "Exporting to OpenVDB grid[" << srcGrid->getName() << "]...\n";
@@ -45,7 +45,7 @@ void runOpenVDB(nanovdb::GridHandle<BufferT>& handle, int numIterations, int wid
     RayGenOp<Vec3T> rayGenOp(wBBoxDimZ, wBBoxCenter);
     CompositeOp     compositeOp;
 
-    openvdb::CoordBBox treeIndexBbox;
+    laovdb::CoordBBox treeIndexBbox;
     treeIndexBbox = h_grid->evalActiveVoxelBoundingBox();
     std::cout << "Bounds: " << treeIndexBbox << std::endl;
 

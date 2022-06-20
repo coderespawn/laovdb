@@ -34,7 +34,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -324,9 +324,9 @@ inline FunctionGroup::UniquePtr axdot(const FunctionOptions& op)
         return a->dot(*b);
     };
 
-    using DotD = double(openvdb::math::Vec3<double>*,openvdb::math::Vec3<double>*);
-    using DotF = float(openvdb::math::Vec3<float>*,openvdb::math::Vec3<float>*);
-    using DotI = int32_t(openvdb::math::Vec3<int32_t>*,openvdb::math::Vec3<int32_t>*);
+    using DotD = double(laovdb::math::Vec3<double>*,laovdb::math::Vec3<double>*);
+    using DotF = float(laovdb::math::Vec3<float>*,laovdb::math::Vec3<float>*);
+    using DotI = int32_t(laovdb::math::Vec3<int32_t>*,laovdb::math::Vec3<int32_t>*);
 
     return FunctionBuilder("dot")
         .addSignature<DotD>(generate, (DotD*)(dot))
@@ -384,9 +384,9 @@ inline FunctionGroup::UniquePtr axcross(const FunctionOptions& op)
         *out = a->cross(*b);
     };
 
-    using CrossD = void(openvdb::math::Vec3<double>*,openvdb::math::Vec3<double>*,openvdb::math::Vec3<double>*);
-    using CrossF = void(openvdb::math::Vec3<float>*,openvdb::math::Vec3<float>*,openvdb::math::Vec3<float>*);
-    using CrossI = void(openvdb::math::Vec3<int32_t>*,openvdb::math::Vec3<int32_t>*,openvdb::math::Vec3<int32_t>*);
+    using CrossD = void(laovdb::math::Vec3<double>*,laovdb::math::Vec3<double>*,laovdb::math::Vec3<double>*);
+    using CrossF = void(laovdb::math::Vec3<float>*,laovdb::math::Vec3<float>*,laovdb::math::Vec3<float>*);
+    using CrossI = void(laovdb::math::Vec3<int32_t>*,laovdb::math::Vec3<int32_t>*,laovdb::math::Vec3<int32_t>*);
 
     return FunctionBuilder("cross")
         .addSignature<CrossD, true>(generate, (CrossD*)(cross))
@@ -434,15 +434,15 @@ inline FunctionGroup::UniquePtr axlengthsq(const FunctionOptions& op)
     static auto lengthsq = [](auto in) -> auto { return in->lengthSqr(); };
 
     return FunctionBuilder("lengthsq")
-        .addSignature<double(openvdb::math::Vec2<double>*)>(generate, lengthsq)
-        .addSignature<float(openvdb::math::Vec2<float>*)>(generate, lengthsq)
-        .addSignature<int32_t(openvdb::math::Vec2<int32_t>*)>(generate, lengthsq)
-        .addSignature<double(openvdb::math::Vec3<double>*)>(generate, lengthsq)
-        .addSignature<float(openvdb::math::Vec3<float>*)>(generate, lengthsq)
-        .addSignature<int32_t(openvdb::math::Vec3<int32_t>*)>(generate, lengthsq)
-        .addSignature<double(openvdb::math::Vec4<double>*)>(generate, lengthsq)
-        .addSignature<float(openvdb::math::Vec4<float>*)>(generate, lengthsq)
-        .addSignature<int32_t(openvdb::math::Vec4<int32_t>*)>(generate, lengthsq)
+        .addSignature<double(laovdb::math::Vec2<double>*)>(generate, lengthsq)
+        .addSignature<float(laovdb::math::Vec2<float>*)>(generate, lengthsq)
+        .addSignature<int32_t(laovdb::math::Vec2<int32_t>*)>(generate, lengthsq)
+        .addSignature<double(laovdb::math::Vec3<double>*)>(generate, lengthsq)
+        .addSignature<float(laovdb::math::Vec3<float>*)>(generate, lengthsq)
+        .addSignature<int32_t(laovdb::math::Vec3<int32_t>*)>(generate, lengthsq)
+        .addSignature<double(laovdb::math::Vec4<double>*)>(generate, lengthsq)
+        .addSignature<float(laovdb::math::Vec4<float>*)>(generate, lengthsq)
+        .addSignature<int32_t(laovdb::math::Vec4<int32_t>*)>(generate, lengthsq)
         .setArgumentNames({"v"})
         .addParameterAttribute(0, llvm::Attribute::ReadOnly)
         .addFunctionAttribute(llvm::Attribute::ReadOnly)
@@ -470,22 +470,22 @@ inline FunctionGroup::UniquePtr axlength(const FunctionOptions& op)
     static auto length = [](auto in) -> auto
     {
         using VecType = typename std::remove_pointer<decltype(in)>::type;
-        using ElementT = typename openvdb::VecTraits<VecType>::ElementType;
+        using ElementT = typename laovdb::VecTraits<VecType>::ElementType;
         using RetT = typename std::conditional
             <std::is_floating_point<ElementT>::value, ElementT, double>::type;
         return std::sqrt(RetT(in->lengthSqr()));
     };
 
     return FunctionBuilder("length")
-        .addSignature<double(openvdb::math::Vec2<double>*)>(generate, length)
-        .addSignature<float(openvdb::math::Vec2<float>*)>(generate, length)
-        .addSignature<double(openvdb::math::Vec2<int32_t>*)>(generate, length)
-        .addSignature<double(openvdb::math::Vec3<double>*)>(generate, length)
-        .addSignature<float(openvdb::math::Vec3<float>*)>(generate, length)
-        .addSignature<double(openvdb::math::Vec3<int32_t>*)>(generate, length)
-        .addSignature<double(openvdb::math::Vec4<double>*)>(generate, length)
-        .addSignature<float(openvdb::math::Vec4<float>*)>(generate, length)
-        .addSignature<double(openvdb::math::Vec4<int32_t>*)>(generate, length)
+        .addSignature<double(laovdb::math::Vec2<double>*)>(generate, length)
+        .addSignature<float(laovdb::math::Vec2<float>*)>(generate, length)
+        .addSignature<double(laovdb::math::Vec2<int32_t>*)>(generate, length)
+        .addSignature<double(laovdb::math::Vec3<double>*)>(generate, length)
+        .addSignature<float(laovdb::math::Vec3<float>*)>(generate, length)
+        .addSignature<double(laovdb::math::Vec3<int32_t>*)>(generate, length)
+        .addSignature<double(laovdb::math::Vec4<double>*)>(generate, length)
+        .addSignature<float(laovdb::math::Vec4<float>*)>(generate, length)
+        .addSignature<double(laovdb::math::Vec4<int32_t>*)>(generate, length)
         .addDependency("lengthsq")
         .addDependency("sqrt")
         .setArgumentNames({"v"})
@@ -538,17 +538,17 @@ inline FunctionGroup::UniquePtr axnormalize(const FunctionOptions& op)
 
     static auto norm = [](auto out, auto in) {
         using VecType = typename std::remove_pointer<decltype(out)>::type;
-        using ElementT = typename openvdb::VecTraits<VecType>::ElementType;
+        using ElementT = typename laovdb::VecTraits<VecType>::ElementType;
         *out = *in; // copy
         out->normalize(ElementT(0.0));
     };
 
-    using Normalize3D = void(openvdb::math::Vec3<double>*,openvdb::math::Vec3<double>*);
-    using Normalize3F = void(openvdb::math::Vec3<float>*,openvdb::math::Vec3<float>*);
-    using Normalize3I = void(openvdb::math::Vec3<double>*, openvdb::math::Vec3<int32_t>*);
-    using Normalize4D = void(openvdb::math::Vec4<double>*,openvdb::math::Vec4<double>*);
-    using Normalize4F = void(openvdb::math::Vec4<float>*,openvdb::math::Vec4<float>*);
-    using Normalize4I = void(openvdb::math::Vec4<double>*, openvdb::math::Vec4<int32_t>*);
+    using Normalize3D = void(laovdb::math::Vec3<double>*,laovdb::math::Vec3<double>*);
+    using Normalize3F = void(laovdb::math::Vec3<float>*,laovdb::math::Vec3<float>*);
+    using Normalize3I = void(laovdb::math::Vec3<double>*, laovdb::math::Vec3<int32_t>*);
+    using Normalize4D = void(laovdb::math::Vec4<double>*,laovdb::math::Vec4<double>*);
+    using Normalize4F = void(laovdb::math::Vec4<float>*,laovdb::math::Vec4<float>*);
+    using Normalize4I = void(laovdb::math::Vec4<double>*, laovdb::math::Vec4<int32_t>*);
 
     return FunctionBuilder("normalize")
         .addSignature<Normalize3D, true>(generate, (Normalize3D*)(norm))
@@ -760,10 +760,10 @@ inline FunctionGroup::UniquePtr axclamp(const FunctionOptions& op)
     using ClampL = int64_t(int64_t, int64_t, int64_t);
 
     return FunctionBuilder("clamp")
-        .addSignature<ClampD>(generate, &openvdb::math::Clamp<double>)
-        .addSignature<ClampF>(generate, &openvdb::math::Clamp<float>)
-        .addSignature<ClampL>(generate, &openvdb::math::Clamp<int64_t>)
-        .addSignature<ClampI>(generate, &openvdb::math::Clamp<int32_t>)
+        .addSignature<ClampD>(generate, &laovdb::math::Clamp<double>)
+        .addSignature<ClampF>(generate, &laovdb::math::Clamp<float>)
+        .addSignature<ClampL>(generate, &laovdb::math::Clamp<int64_t>)
+        .addSignature<ClampI>(generate, &laovdb::math::Clamp<int32_t>)
         .addDependency("min")
         .addDependency("max")
         .addFunctionAttribute(llvm::Attribute::ReadOnly)
@@ -1278,16 +1278,16 @@ inline FunctionGroup::UniquePtr axisfinite(const FunctionOptions& op)
     };
 
     return FunctionBuilder("isfinite")
-        .addSignature<bool(openvdb::Vec2d*)>(generate, (bool(*)(openvdb::Vec2d*))(isfinitearray))
-        .addSignature<bool(openvdb::Vec2f*)>(generate, (bool(*)(openvdb::Vec2f*))(isfinitearray))
-        .addSignature<bool(openvdb::Vec3d*)>(generate, (bool(*)(openvdb::Vec3d*))(isfinitearray))
-        .addSignature<bool(openvdb::Vec3f*)>(generate, (bool(*)(openvdb::Vec3f*))(isfinitearray))
-        .addSignature<bool(openvdb::Vec4d*)>(generate, (bool(*)(openvdb::Vec4d*))(isfinitearray))
-        .addSignature<bool(openvdb::Vec4f*)>(generate, (bool(*)(openvdb::Vec4f*))(isfinitearray))
-        .addSignature<bool(openvdb::math::Mat3<float>*)>(generate, (bool(*)(openvdb::math::Mat3<float>*))(isfinitearray))
-        .addSignature<bool(openvdb::math::Mat3<double>*)>(generate, (bool(*)(openvdb::math::Mat3<double>*))(isfinitearray))
-        .addSignature<bool(openvdb::math::Mat4<float>*)>(generate, (bool(*)(openvdb::math::Mat4<float>*))(isfinitearray))
-        .addSignature<bool(openvdb::math::Mat4<double>*)>(generate, (bool(*)(openvdb::math::Mat4<double>*))(isfinitearray))
+        .addSignature<bool(laovdb::Vec2d*)>(generate, (bool(*)(laovdb::Vec2d*))(isfinitearray))
+        .addSignature<bool(laovdb::Vec2f*)>(generate, (bool(*)(laovdb::Vec2f*))(isfinitearray))
+        .addSignature<bool(laovdb::Vec3d*)>(generate, (bool(*)(laovdb::Vec3d*))(isfinitearray))
+        .addSignature<bool(laovdb::Vec3f*)>(generate, (bool(*)(laovdb::Vec3f*))(isfinitearray))
+        .addSignature<bool(laovdb::Vec4d*)>(generate, (bool(*)(laovdb::Vec4d*))(isfinitearray))
+        .addSignature<bool(laovdb::Vec4f*)>(generate, (bool(*)(laovdb::Vec4f*))(isfinitearray))
+        .addSignature<bool(laovdb::math::Mat3<float>*)>(generate, (bool(*)(laovdb::math::Mat3<float>*))(isfinitearray))
+        .addSignature<bool(laovdb::math::Mat3<double>*)>(generate, (bool(*)(laovdb::math::Mat3<double>*))(isfinitearray))
+        .addSignature<bool(laovdb::math::Mat4<float>*)>(generate, (bool(*)(laovdb::math::Mat4<float>*))(isfinitearray))
+        .addSignature<bool(laovdb::math::Mat4<double>*)>(generate, (bool(*)(laovdb::math::Mat4<double>*))(isfinitearray))
             .addParameterAttribute(0, llvm::Attribute::ReadOnly)
         .addSignature<bool(double)>(generate, (bool(*)(double))(std::isfinite))
         .addSignature<bool(float)>(generate, (bool(*)(float))(std::isfinite))
@@ -1354,16 +1354,16 @@ inline FunctionGroup::UniquePtr axisinf(const FunctionOptions& op)
     };
 
     return FunctionBuilder("isinf")
-        .addSignature<bool(openvdb::Vec2d*)>(generate, (bool(*)(openvdb::Vec2d*))(isinfarray))
-        .addSignature<bool(openvdb::Vec2f*)>(generate, (bool(*)(openvdb::Vec2f*))(isinfarray))
-        .addSignature<bool(openvdb::Vec3d*)>(generate, (bool(*)(openvdb::Vec3d*))(isinfarray))
-        .addSignature<bool(openvdb::Vec3f*)>(generate, (bool(*)(openvdb::Vec3f*))(isinfarray))
-        .addSignature<bool(openvdb::Vec4d*)>(generate, (bool(*)(openvdb::Vec4d*))(isinfarray))
-        .addSignature<bool(openvdb::Vec4f*)>(generate, (bool(*)(openvdb::Vec4f*))(isinfarray))
-        .addSignature<bool(openvdb::math::Mat3<float>*)>(generate, (bool(*)(openvdb::math::Mat3<float>*))(isinfarray))
-        .addSignature<bool(openvdb::math::Mat3<double>*)>(generate, (bool(*)(openvdb::math::Mat3<double>*))(isinfarray))
-        .addSignature<bool(openvdb::math::Mat4<float>*)>(generate, (bool(*)(openvdb::math::Mat4<float>*))(isinfarray))
-        .addSignature<bool(openvdb::math::Mat4<double>*)>(generate, (bool(*)(openvdb::math::Mat4<double>*))(isinfarray))
+        .addSignature<bool(laovdb::Vec2d*)>(generate, (bool(*)(laovdb::Vec2d*))(isinfarray))
+        .addSignature<bool(laovdb::Vec2f*)>(generate, (bool(*)(laovdb::Vec2f*))(isinfarray))
+        .addSignature<bool(laovdb::Vec3d*)>(generate, (bool(*)(laovdb::Vec3d*))(isinfarray))
+        .addSignature<bool(laovdb::Vec3f*)>(generate, (bool(*)(laovdb::Vec3f*))(isinfarray))
+        .addSignature<bool(laovdb::Vec4d*)>(generate, (bool(*)(laovdb::Vec4d*))(isinfarray))
+        .addSignature<bool(laovdb::Vec4f*)>(generate, (bool(*)(laovdb::Vec4f*))(isinfarray))
+        .addSignature<bool(laovdb::math::Mat3<float>*)>(generate, (bool(*)(laovdb::math::Mat3<float>*))(isinfarray))
+        .addSignature<bool(laovdb::math::Mat3<double>*)>(generate, (bool(*)(laovdb::math::Mat3<double>*))(isinfarray))
+        .addSignature<bool(laovdb::math::Mat4<float>*)>(generate, (bool(*)(laovdb::math::Mat4<float>*))(isinfarray))
+        .addSignature<bool(laovdb::math::Mat4<double>*)>(generate, (bool(*)(laovdb::math::Mat4<double>*))(isinfarray))
             .addParameterAttribute(0, llvm::Attribute::ReadOnly)
         .addSignature<bool(double)>(generate /*, (bool(*)(double))(std::isinf)*/) // @note: gcc needs _GLIBCXX_NO_OBSOLETE_ISINF_ISNAN_DYNAMIC defined
         .addSignature<bool(float)>(generate, (bool(*)(float))(std::isinf))
@@ -1412,16 +1412,16 @@ inline FunctionGroup::UniquePtr axisnan(const FunctionOptions& op)
     };
 
     return FunctionBuilder("isnan")
-        .addSignature<bool(openvdb::Vec2d*)>(generate, (bool(*)(openvdb::Vec2d*))(isnanarray))
-        .addSignature<bool(openvdb::Vec2f*)>(generate, (bool(*)(openvdb::Vec2f*))(isnanarray))
-        .addSignature<bool(openvdb::Vec3d*)>(generate, (bool(*)(openvdb::Vec3d*))(isnanarray))
-        .addSignature<bool(openvdb::Vec3f*)>(generate, (bool(*)(openvdb::Vec3f*))(isnanarray))
-        .addSignature<bool(openvdb::Vec4d*)>(generate, (bool(*)(openvdb::Vec4d*))(isnanarray))
-        .addSignature<bool(openvdb::Vec4f*)>(generate, (bool(*)(openvdb::Vec4f*))(isnanarray))
-        .addSignature<bool(openvdb::math::Mat3<float>*)>(generate, (bool(*)(openvdb::math::Mat3<float>*))(isnanarray))
-        .addSignature<bool(openvdb::math::Mat3<double>*)>(generate, (bool(*)(openvdb::math::Mat3<double>*))(isnanarray))
-        .addSignature<bool(openvdb::math::Mat4<float>*)>(generate, (bool(*)(openvdb::math::Mat4<float>*))(isnanarray))
-        .addSignature<bool(openvdb::math::Mat4<double>*)>(generate, (bool(*)(openvdb::math::Mat4<double>*))(isnanarray))
+        .addSignature<bool(laovdb::Vec2d*)>(generate, (bool(*)(laovdb::Vec2d*))(isnanarray))
+        .addSignature<bool(laovdb::Vec2f*)>(generate, (bool(*)(laovdb::Vec2f*))(isnanarray))
+        .addSignature<bool(laovdb::Vec3d*)>(generate, (bool(*)(laovdb::Vec3d*))(isnanarray))
+        .addSignature<bool(laovdb::Vec3f*)>(generate, (bool(*)(laovdb::Vec3f*))(isnanarray))
+        .addSignature<bool(laovdb::Vec4d*)>(generate, (bool(*)(laovdb::Vec4d*))(isnanarray))
+        .addSignature<bool(laovdb::Vec4f*)>(generate, (bool(*)(laovdb::Vec4f*))(isnanarray))
+        .addSignature<bool(laovdb::math::Mat3<float>*)>(generate, (bool(*)(laovdb::math::Mat3<float>*))(isnanarray))
+        .addSignature<bool(laovdb::math::Mat3<double>*)>(generate, (bool(*)(laovdb::math::Mat3<double>*))(isnanarray))
+        .addSignature<bool(laovdb::math::Mat4<float>*)>(generate, (bool(*)(laovdb::math::Mat4<float>*))(isnanarray))
+        .addSignature<bool(laovdb::math::Mat4<double>*)>(generate, (bool(*)(laovdb::math::Mat4<double>*))(isnanarray))
             .addParameterAttribute(0, llvm::Attribute::ReadOnly)
         .addSignature<bool(double)>(generate/*, (bool(*)(double))(std::isnan)*/) // @note: gcc needs _GLIBCXX_NO_OBSOLETE_ISINF_ISNAN_DYNAMIC defined
         .addSignature<bool(float)>(generate, (bool(*)(float))(std::isnan))
@@ -1513,10 +1513,10 @@ inline FunctionGroup::UniquePtr axdeterminant(const FunctionOptions& op)
         return mat->det();
     };
 
-    using DeterminantM3D = double(openvdb::math::Mat3<double>*);
-    using DeterminantM3F = float(openvdb::math::Mat3<float>*);
-    using DeterminantM4D = double(openvdb::math::Mat4<double>*);
-    using DeterminantM4F = float(openvdb::math::Mat4<float>*);
+    using DeterminantM3D = double(laovdb::math::Mat3<double>*);
+    using DeterminantM3F = float(laovdb::math::Mat3<float>*);
+    using DeterminantM4D = double(laovdb::math::Mat4<double>*);
+    using DeterminantM4F = float(laovdb::math::Mat4<float>*);
 
     return FunctionBuilder("determinant")
         .addSignature<DeterminantM3D>(generate3, (DeterminantM3D*)(determinant))
@@ -1578,19 +1578,19 @@ inline FunctionGroup::UniquePtr axdiag(const FunctionOptions& op)
     {
         using ValueType = typename std::remove_pointer<decltype(input)>::type;
         using ResultType = typename std::remove_pointer<decltype(result)>::type;
-        using ElementT = typename openvdb::ValueTraits<ValueType>::ElementType;
-        using RElementT = typename openvdb::ValueTraits<ResultType>::ElementType;
+        using ElementT = typename laovdb::ValueTraits<ValueType>::ElementType;
+        using RElementT = typename laovdb::ValueTraits<ResultType>::ElementType;
 
         static_assert(std::is_same<ElementT, RElementT>::value,
             "Input and result arguments for diag are not the same type");
 
-        if (openvdb::ValueTraits<ValueType>::IsVec) {
+        if (laovdb::ValueTraits<ValueType>::IsVec) {
             // input is a vec, result is a matrix
-            const int size = openvdb::ValueTraits<ValueType>::Size;
+            const int size = laovdb::ValueTraits<ValueType>::Size;
             int element = 0;
             for (int i = 0; i < size; ++i) {
                 for (int j = 0; j < size; ++j) {
-                    assert(element < openvdb::ValueTraits<ResultType>::Elements);
+                    assert(element < laovdb::ValueTraits<ResultType>::Elements);
                     if (i == j) result->asPointer()[element] = (input->asPointer())[i];
                     else        result->asPointer()[element] = ElementT(0.0);
                     ++element;
@@ -1598,25 +1598,25 @@ inline FunctionGroup::UniquePtr axdiag(const FunctionOptions& op)
             }
         }
         else {
-            assert(openvdb::ValueTraits<ValueType>::IsMat);
+            assert(laovdb::ValueTraits<ValueType>::IsMat);
             // input is a matrix, result is a vec
-            const int size = openvdb::ValueTraits<ValueType>::Size;
+            const int size = laovdb::ValueTraits<ValueType>::Size;
             for (int i = 0; i < size; ++i) {
-                assert(i < openvdb::ValueTraits<ResultType>::Size);
+                assert(i < laovdb::ValueTraits<ResultType>::Size);
                 result->asPointer()[i] = input->asPointer()[i+(i*size)];
             }
         }
     };
 
-    using DiagV3M3D = void(openvdb::math::Vec3<double>*, openvdb::math::Mat3<double>*);
-    using DiagV3M3F = void(openvdb::math::Vec3<float>*, openvdb::math::Mat3<float>*);
-    using DiagV4M4D = void(openvdb::math::Vec4<double>*, openvdb::math::Mat4<double>*);
-    using DiagV4M4F = void(openvdb::math::Vec4<float>*, openvdb::math::Mat4<float>*);
+    using DiagV3M3D = void(laovdb::math::Vec3<double>*, laovdb::math::Mat3<double>*);
+    using DiagV3M3F = void(laovdb::math::Vec3<float>*, laovdb::math::Mat3<float>*);
+    using DiagV4M4D = void(laovdb::math::Vec4<double>*, laovdb::math::Mat4<double>*);
+    using DiagV4M4F = void(laovdb::math::Vec4<float>*, laovdb::math::Mat4<float>*);
 
-    using DiagM3V3D = void(openvdb::math::Mat3<double>*, openvdb::math::Vec3<double>*);
-    using DiagM3V3F = void(openvdb::math::Mat3<float>*, openvdb::math::Vec3<float>*);
-    using DiagM4V4D = void(openvdb::math::Mat4<double>*, openvdb::math::Vec4<double>*);
-    using DiagM4V4F = void(openvdb::math::Mat4<float>*, openvdb::math::Vec4<float>*);
+    using DiagM3V3D = void(laovdb::math::Mat3<double>*, laovdb::math::Vec3<double>*);
+    using DiagM3V3F = void(laovdb::math::Mat3<float>*, laovdb::math::Vec3<float>*);
+    using DiagM4V4D = void(laovdb::math::Mat4<double>*, laovdb::math::Vec4<double>*);
+    using DiagM4V4F = void(laovdb::math::Mat4<float>*, laovdb::math::Vec4<float>*);
 
     return FunctionBuilder("diag")
         .addSignature<DiagV3M3D, true>(generate, (DiagV3M3D*)(diag))
@@ -1666,7 +1666,7 @@ inline FunctionGroup::UniquePtr axidentity3(const FunctionOptions& op)
     };
 
     return FunctionBuilder("identity3")
-        .addSignature<void(openvdb::math::Mat3<float>*), true>(generate)
+        .addSignature<void(laovdb::math::Mat3<float>*), true>(generate)
         .setConstantFold(false)
         .addFunctionAttribute(llvm::Attribute::NoUnwind)
         .addFunctionAttribute(llvm::Attribute::AlwaysInline)
@@ -1694,7 +1694,7 @@ inline FunctionGroup::UniquePtr axidentity4(const FunctionOptions& op)
     };
 
     return FunctionBuilder("identity4")
-        .addSignature<void(openvdb::math::Mat4<float>*), true>(generate)
+        .addSignature<void(laovdb::math::Mat4<float>*), true>(generate)
         .setConstantFold(false)
         .addFunctionAttribute(llvm::Attribute::NoUnwind)
         .addFunctionAttribute(llvm::Attribute::AlwaysInline)
@@ -1741,10 +1741,10 @@ inline FunctionGroup::UniquePtr axmmmult(const FunctionOptions& op)
         *out = (*mat1) * (*mat2);
     };
 
-    using MMMultM3D = void(openvdb::math::Mat3<double>*, openvdb::math::Mat3<double>*, openvdb::math::Mat3<double>*);
-    using MMMultM3F = void(openvdb::math::Mat3<float>*, openvdb::math::Mat3<float>*, openvdb::math::Mat3<float>*);
-    using MMMultM4D = void(openvdb::math::Mat4<double>*, openvdb::math::Mat4<double>*, openvdb::math::Mat4<double>*);
-    using MMMultM4F = void(openvdb::math::Mat4<float>*, openvdb::math::Mat4<float>*, openvdb::math::Mat4<float>*);
+    using MMMultM3D = void(laovdb::math::Mat3<double>*, laovdb::math::Mat3<double>*, laovdb::math::Mat3<double>*);
+    using MMMultM3F = void(laovdb::math::Mat3<float>*, laovdb::math::Mat3<float>*, laovdb::math::Mat3<float>*);
+    using MMMultM4D = void(laovdb::math::Mat4<double>*, laovdb::math::Mat4<double>*, laovdb::math::Mat4<double>*);
+    using MMMultM4F = void(laovdb::math::Mat4<float>*, laovdb::math::Mat4<float>*, laovdb::math::Mat4<float>*);
 
     return FunctionBuilder("mmmult")
         .addSignature<MMMultM3D, true>(generate, (MMMultM3D*)(mmmult))
@@ -1769,22 +1769,22 @@ inline FunctionGroup::UniquePtr axpolardecompose(const FunctionOptions& op)
     static auto polardecompose = [](auto in, auto orth, auto symm) -> bool {
         bool success = false;
         try {
-            success = openvdb::math::polarDecomposition(*in, *orth, *symm);
+            success = laovdb::math::polarDecomposition(*in, *orth, *symm);
         }
-        catch (const openvdb::ArithmeticError&) {
+        catch (const laovdb::ArithmeticError&) {
             success = false;
         }
         return success;
     };
 
     using PolarDecompositionM3D =
-        bool(openvdb::math::Mat3<double>*,
-            openvdb::math::Mat3<double>*,
-            openvdb::math::Mat3<double>*);
+        bool(laovdb::math::Mat3<double>*,
+            laovdb::math::Mat3<double>*,
+            laovdb::math::Mat3<double>*);
     using PolarDecompositionM3F =
-        bool(openvdb::math::Mat3<float>*,
-            openvdb::math::Mat3<float>*,
-            openvdb::math::Mat3<float>*);
+        bool(laovdb::math::Mat3<float>*,
+            laovdb::math::Mat3<float>*,
+            laovdb::math::Mat3<float>*);
 
     return FunctionBuilder("polardecompose")
         .addSignature<PolarDecompositionM3D>((PolarDecompositionM3D*)(polardecompose))
@@ -1831,8 +1831,8 @@ inline FunctionGroup::UniquePtr axpostscale(const FunctionOptions& op)
         mat->postScale(*vec);
     };
 
-    using PostscaleM4D = void(openvdb::math::Mat4<double>*, openvdb::math::Vec3<double>*);
-    using PostscaleM4F = void(openvdb::math::Mat4<float>*, openvdb::math::Vec3<float>*);
+    using PostscaleM4D = void(laovdb::math::Mat4<double>*, laovdb::math::Vec3<double>*);
+    using PostscaleM4F = void(laovdb::math::Mat4<float>*, laovdb::math::Vec3<float>*);
 
     return FunctionBuilder("postscale")
         .addSignature<PostscaleM4D>(generate, (PostscaleM4D*)(postscale))
@@ -1888,12 +1888,12 @@ inline FunctionGroup::UniquePtr axpretransform(const FunctionOptions& op)
         *out = mat->pretransform(*vec);
     };
 
-    using PretransformM3DV3D = void(openvdb::math::Vec3<double>*, openvdb::math::Mat3<double>*, openvdb::math::Vec3<double>*);
-    using PretransformM3FV3F = void(openvdb::math::Vec3<float>*, openvdb::math::Mat3<float>*, openvdb::math::Vec3<float>*);
-    using PretransformM4DV3D = void(openvdb::math::Vec3<double>*, openvdb::math::Mat4<double>*, openvdb::math::Vec3<double>*);
-    using PretransformM4FV3F = void(openvdb::math::Vec3<float>*, openvdb::math::Mat4<float>*, openvdb::math::Vec3<float>*);
-    using PretransformM4DV4D = void(openvdb::math::Vec4<double>*, openvdb::math::Mat4<double>*, openvdb::math::Vec4<double>*);
-    using PretransformM4FV4F = void(openvdb::math::Vec4<float>*, openvdb::math::Mat4<float>*, openvdb::math::Vec4<float>*);
+    using PretransformM3DV3D = void(laovdb::math::Vec3<double>*, laovdb::math::Mat3<double>*, laovdb::math::Vec3<double>*);
+    using PretransformM3FV3F = void(laovdb::math::Vec3<float>*, laovdb::math::Mat3<float>*, laovdb::math::Vec3<float>*);
+    using PretransformM4DV3D = void(laovdb::math::Vec3<double>*, laovdb::math::Mat4<double>*, laovdb::math::Vec3<double>*);
+    using PretransformM4FV3F = void(laovdb::math::Vec3<float>*, laovdb::math::Mat4<float>*, laovdb::math::Vec3<float>*);
+    using PretransformM4DV4D = void(laovdb::math::Vec4<double>*, laovdb::math::Mat4<double>*, laovdb::math::Vec4<double>*);
+    using PretransformM4FV4F = void(laovdb::math::Vec4<float>*, laovdb::math::Mat4<float>*, laovdb::math::Vec4<float>*);
 
     return FunctionBuilder("pretransform")
         .addSignature<PretransformM3DV3D, true>(generate, (PretransformM3DV3D*)(transform))
@@ -1946,8 +1946,8 @@ inline FunctionGroup::UniquePtr axprescale(const FunctionOptions& op)
         mat->preScale(*vec);
     };
 
-    using PrescaleM4D = void(openvdb::math::Mat4<double>*, openvdb::math::Vec3<double>*);
-    using PrescaleM4F = void(openvdb::math::Mat4<float>*, openvdb::math::Vec3<float>*);
+    using PrescaleM4D = void(laovdb::math::Mat4<double>*, laovdb::math::Vec3<double>*);
+    using PrescaleM4F = void(laovdb::math::Mat4<float>*, laovdb::math::Vec3<float>*);
 
     return FunctionBuilder("prescale")
         .addSignature<PrescaleM4D>(generate, (PrescaleM4D*)(prescale))
@@ -1985,7 +1985,7 @@ inline FunctionGroup::UniquePtr axtrace(const FunctionOptions& op)
     static auto trace = [](const auto input) -> auto
     {
         using MatType = typename std::remove_pointer<decltype(input)>::type;
-        using ElementT = typename openvdb::ValueTraits<MatType>::ElementType;
+        using ElementT = typename laovdb::ValueTraits<MatType>::ElementType;
         ElementT value((*input)(static_cast<int>(0), static_cast<int>(0)));
         for (size_t i = 1; i < MatType::numRows(); ++i) {
            value += (*input)(static_cast<int>(i), static_cast<int>(i));
@@ -1993,10 +1993,10 @@ inline FunctionGroup::UniquePtr axtrace(const FunctionOptions& op)
         return value;
     };
 
-    using TraceM3D = double(openvdb::math::Mat3<double>*);
-    using TraceM3F = float(openvdb::math::Mat3<float>*);
-    using TraceM4D = double(openvdb::math::Mat4<double>*);
-    using TraceM4F = float(openvdb::math::Mat4<float>*);
+    using TraceM3D = double(laovdb::math::Mat3<double>*);
+    using TraceM3F = float(laovdb::math::Mat3<float>*);
+    using TraceM4D = double(laovdb::math::Mat4<double>*);
+    using TraceM4F = float(laovdb::math::Mat4<float>*);
 
     return FunctionBuilder("trace")
         .addSignature<TraceM3D>(generate, (TraceM3D*)(trace))
@@ -2054,12 +2054,12 @@ inline FunctionGroup::UniquePtr axtransform(const FunctionOptions& op)
         *out = mat->transform(*vec);
     };
 
-    using TransformV3DM3D = void(openvdb::math::Vec3<double>*, openvdb::math::Vec3<double>*, openvdb::math::Mat3<double>*);
-    using TransformV3FM3F = void(openvdb::math::Vec3<float>*, openvdb::math::Vec3<float>*, openvdb::math::Mat3<float>*);
-    using TransformV3DM4D = void(openvdb::math::Vec3<double>*, openvdb::math::Vec3<double>*, openvdb::math::Mat4<double>*);
-    using TransformV3FM4F = void(openvdb::math::Vec3<float>*, openvdb::math::Vec3<float>*, openvdb::math::Mat4<float>*);
-    using TransformV4DM4D = void(openvdb::math::Vec4<double>*, openvdb::math::Vec4<double>*, openvdb::math::Mat4<double>*);
-    using TransformV4FM4F = void(openvdb::math::Vec4<float>*, openvdb::math::Vec4<float>*, openvdb::math::Mat4<float>*);
+    using TransformV3DM3D = void(laovdb::math::Vec3<double>*, laovdb::math::Vec3<double>*, laovdb::math::Mat3<double>*);
+    using TransformV3FM3F = void(laovdb::math::Vec3<float>*, laovdb::math::Vec3<float>*, laovdb::math::Mat3<float>*);
+    using TransformV3DM4D = void(laovdb::math::Vec3<double>*, laovdb::math::Vec3<double>*, laovdb::math::Mat4<double>*);
+    using TransformV3FM4F = void(laovdb::math::Vec3<float>*, laovdb::math::Vec3<float>*, laovdb::math::Mat4<float>*);
+    using TransformV4DM4D = void(laovdb::math::Vec4<double>*, laovdb::math::Vec4<double>*, laovdb::math::Mat4<double>*);
+    using TransformV4FM4F = void(laovdb::math::Vec4<float>*, laovdb::math::Vec4<float>*, laovdb::math::Mat4<float>*);
 
     return FunctionBuilder("transform")
         .addSignature<TransformV3DM3D, true>(generate, (TransformV3DM3D*)(transform))
@@ -2110,10 +2110,10 @@ inline FunctionGroup::UniquePtr axtranspose(const FunctionOptions& op)
         *out = in->transpose();
     };
 
-    using TransposeM3D = void(openvdb::math::Mat3<double>*, openvdb::math::Mat3<double>*);
-    using TransposeM3F = void(openvdb::math::Mat3<float>*, openvdb::math::Mat3<float>*);
-    using TransposeM4D = void(openvdb::math::Mat4<double>*, openvdb::math::Mat4<double>*);
-    using TransposeM4F = void(openvdb::math::Mat4<float>*, openvdb::math::Mat4<float>*);
+    using TransposeM3D = void(laovdb::math::Mat3<double>*, laovdb::math::Mat3<double>*);
+    using TransposeM3F = void(laovdb::math::Mat3<float>*, laovdb::math::Mat3<float>*);
+    using TransposeM4D = void(laovdb::math::Mat4<double>*, laovdb::math::Mat4<double>*);
+    using TransposeM4F = void(laovdb::math::Mat4<float>*, laovdb::math::Mat4<float>*);
 
     return FunctionBuilder("transpose")
         .addSignature<TransposeM3D, true>(generate, (TransposeM3D*)(transpose))
@@ -2168,11 +2168,11 @@ inline FunctionGroup::UniquePtr axadjoint(const FunctionOptions& op)
     };
 
     using AdjointM3D =
-        void(openvdb::math::Mat3<double>*,
-             openvdb::math::Mat3<double>*);
+        void(laovdb::math::Mat3<double>*,
+             laovdb::math::Mat3<double>*);
     using AjointM3F =
-        void(openvdb::math::Mat3<float>*,
-             openvdb::math::Mat3<float>*);
+        void(laovdb::math::Mat3<float>*,
+             laovdb::math::Mat3<float>*);
 
     return FunctionBuilder("adjoint")
         .addSignature<AdjointM3D, true>(generate, (AdjointM3D*)(adjoint))
@@ -2225,11 +2225,11 @@ inline FunctionGroup::UniquePtr axcofactor(const FunctionOptions& op)
     };
 
     using CofactorM3D =
-        void(openvdb::math::Mat3<double>*,
-             openvdb::math::Mat3<double>*);
+        void(laovdb::math::Mat3<double>*,
+             laovdb::math::Mat3<double>*);
     using CofactorM3F =
-        void(openvdb::math::Mat3<float>*,
-             openvdb::math::Mat3<float>*);
+        void(laovdb::math::Mat3<float>*,
+             laovdb::math::Mat3<float>*);
 
     return FunctionBuilder("cofactor")
         .addSignature<CofactorM3D, true>(generate, (CofactorM3D*)(cofactor))
@@ -2304,17 +2304,17 @@ inline FunctionGroup::UniquePtr axinverse(const FunctionOptions& op)
         try {
             *out = in->inverse();
         }
-        catch (const openvdb::ArithmeticError&) {
+        catch (const laovdb::ArithmeticError&) {
             *out = *in;
         }
     };
 
     using InverseM3D =
-        void(openvdb::math::Mat3<double>*,
-             openvdb::math::Mat3<double>*);
+        void(laovdb::math::Mat3<double>*,
+             laovdb::math::Mat3<double>*);
     using InverseM3F =
-        void(openvdb::math::Mat3<float>*,
-             openvdb::math::Mat3<float>*);
+        void(laovdb::math::Mat3<float>*,
+             laovdb::math::Mat3<float>*);
 
     return FunctionBuilder("inverse")
         .addSignature<InverseM3D, true>(generate, (InverseM3D*)(inverse))
@@ -2348,7 +2348,7 @@ inline FunctionGroup::UniquePtr axsimplexnoise(const FunctionOptions& op)
     static auto simplexnoisexyz = [](double x, double y, double z) -> double {
         return SimplexNoise::noise(x, y, z);
     };
-    static auto simplexnoisev = [](const openvdb::math::Vec3<double>* v) -> double {
+    static auto simplexnoisev = [](const laovdb::math::Vec3<double>* v) -> double {
         return SimplexNoise::noise((*v)[0], (*v)[1], (*v)[2]);
     };
 
@@ -2362,7 +2362,7 @@ inline FunctionGroup::UniquePtr axsimplexnoise(const FunctionOptions& op)
         .addSignature<double(double,double,double)>(simplexnoisexyz)
             .setArgumentNames({"x", "y", "z"})
             .setConstantFold(false)
-        .addSignature<double(const openvdb::math::Vec3<double>*)>(simplexnoisev)
+        .addSignature<double(const laovdb::math::Vec3<double>*)>(simplexnoisev)
             .setArgumentNames({"pos"})
             .addParameterAttribute(0, llvm::Attribute::ReadOnly)
             .setConstantFold(false)
@@ -2379,7 +2379,7 @@ inline FunctionGroup::UniquePtr axcurlsimplexnoise(const FunctionOptions& op)
 
     return FunctionBuilder("curlsimplexnoise")
         .addSignature<CurlSimplexNoiseV3D, true>(
-            (CurlSimplexNoiseV3D*)(openvdb::ax::math::curlnoise<SimplexNoise>))
+            (CurlSimplexNoiseV3D*)(laovdb::ax::math::curlnoise<SimplexNoise>))
             .setArgumentNames({"pos"})
             .addParameterAttribute(0, llvm::Attribute::NoAlias)   // alloced by the function, always no alias
             .addParameterAttribute(0, llvm::Attribute::WriteOnly)
@@ -2388,7 +2388,7 @@ inline FunctionGroup::UniquePtr axcurlsimplexnoise(const FunctionOptions& op)
             .addFunctionAttribute(llvm::Attribute::InlineHint)
             .setConstantFold(op.mConstantFoldCBindings)
         .addSignature<CurlSimplexNoiseD, true>(
-            (CurlSimplexNoiseD*)(openvdb::ax::math::curlnoise<SimplexNoise>))
+            (CurlSimplexNoiseD*)(laovdb::ax::math::curlnoise<SimplexNoise>))
             .setArgumentNames({"pos"})
             .addParameterAttribute(0, llvm::Attribute::NoAlias)   // alloced by the function, always no alias
             .addParameterAttribute(0, llvm::Attribute::WriteOnly)
@@ -2436,8 +2436,8 @@ inline FunctionGroup::UniquePtr axdegrees(const FunctionOptions& op)
         assert(args.size() == 1);
         llvm::Value* arg = args.front();
         llvm::Value* pi180 = arg->getType()->isFloatTy() ?
-            LLVMType<float>::get(B.getContext(), 180.f / openvdb::math::pi<float>()) :
-            LLVMType<double>::get(B.getContext(), 180.0 / openvdb::math::pi<double>());
+            LLVMType<float>::get(B.getContext(), 180.f / laovdb::math::pi<float>()) :
+            LLVMType<double>::get(B.getContext(), 180.0 / laovdb::math::pi<double>());
         return binaryOperator(arg, pi180, ast::tokens::MULTIPLY, B);
     };
 
@@ -2463,8 +2463,8 @@ inline FunctionGroup::UniquePtr axradians(const FunctionOptions& op)
         assert(args.size() == 1);
         llvm::Value* arg = args.front();
         llvm::Value* pi180 = arg->getType()->isFloatTy() ?
-            LLVMType<float>::get(B.getContext(), openvdb::math::pi<float>() / 180.f) :
-            LLVMType<double>::get(B.getContext(), openvdb::math::pi<double>() / 180.0);
+            LLVMType<float>::get(B.getContext(), laovdb::math::pi<float>() / 180.f) :
+            LLVMType<double>::get(B.getContext(), laovdb::math::pi<double>() / 180.0);
         return binaryOperator(arg, pi180, ast::tokens::MULTIPLY, B);
     };
 
@@ -2623,19 +2623,19 @@ inline FunctionGroup::UniquePtr axprint(const FunctionOptions& op)
             .addFunctionAttribute(llvm::Attribute::AlwaysInline)
             .setConstantFold(false /*never cf*/)
         .addSignature<void(const codegen::String*)>((void(*)(const codegen::String*))(printstr))
-        .addSignature<void(openvdb::math::Vec2<int32_t>*)>((void(*)(openvdb::math::Vec2<int32_t>*))(printv))
-        .addSignature<void(openvdb::math::Vec2<float>*)>((void(*)(openvdb::math::Vec2<float>*))(printv))
-        .addSignature<void(openvdb::math::Vec2<double>*)>((void(*)(openvdb::math::Vec2<double>*))(printv))
-        .addSignature<void(openvdb::math::Vec3<int32_t>*)>((void(*)(openvdb::math::Vec3<int32_t>*))(printv))
-        .addSignature<void(openvdb::math::Vec3<float>*)>((void(*)(openvdb::math::Vec3<float>*))(printv))
-        .addSignature<void(openvdb::math::Vec3<double>*)>((void(*)(openvdb::math::Vec3<double>*))(printv))
-        .addSignature<void(openvdb::math::Vec4<int32_t>*)>((void(*)(openvdb::math::Vec4<int32_t>*))(printv))
-        .addSignature<void(openvdb::math::Vec4<float>*)>((void(*)(openvdb::math::Vec4<float>*))(printv))
-        .addSignature<void(openvdb::math::Vec4<double>*)>((void(*)(openvdb::math::Vec4<double>*))(printv))
-        .addSignature<void(openvdb::math::Mat3<float>*)>((void(*)(openvdb::math::Mat3<float>*))(printv))
-        .addSignature<void(openvdb::math::Mat3<double>*)>((void(*)(openvdb::math::Mat3<double>*))(printv))
-        .addSignature<void(openvdb::math::Mat4<float>*)>((void(*)(openvdb::math::Mat4<float>*))(printv))
-        .addSignature<void(openvdb::math::Mat4<double>*)>((void(*)(openvdb::math::Mat4<double>*))(printv))
+        .addSignature<void(laovdb::math::Vec2<int32_t>*)>((void(*)(laovdb::math::Vec2<int32_t>*))(printv))
+        .addSignature<void(laovdb::math::Vec2<float>*)>((void(*)(laovdb::math::Vec2<float>*))(printv))
+        .addSignature<void(laovdb::math::Vec2<double>*)>((void(*)(laovdb::math::Vec2<double>*))(printv))
+        .addSignature<void(laovdb::math::Vec3<int32_t>*)>((void(*)(laovdb::math::Vec3<int32_t>*))(printv))
+        .addSignature<void(laovdb::math::Vec3<float>*)>((void(*)(laovdb::math::Vec3<float>*))(printv))
+        .addSignature<void(laovdb::math::Vec3<double>*)>((void(*)(laovdb::math::Vec3<double>*))(printv))
+        .addSignature<void(laovdb::math::Vec4<int32_t>*)>((void(*)(laovdb::math::Vec4<int32_t>*))(printv))
+        .addSignature<void(laovdb::math::Vec4<float>*)>((void(*)(laovdb::math::Vec4<float>*))(printv))
+        .addSignature<void(laovdb::math::Vec4<double>*)>((void(*)(laovdb::math::Vec4<double>*))(printv))
+        .addSignature<void(laovdb::math::Mat3<float>*)>((void(*)(laovdb::math::Mat3<float>*))(printv))
+        .addSignature<void(laovdb::math::Mat3<double>*)>((void(*)(laovdb::math::Mat3<double>*))(printv))
+        .addSignature<void(laovdb::math::Mat4<float>*)>((void(*)(laovdb::math::Mat4<float>*))(printv))
+        .addSignature<void(laovdb::math::Mat4<double>*)>((void(*)(laovdb::math::Mat4<double>*))(printv))
             .addParameterAttribute(0, llvm::Attribute::ReadOnly)
             .setArgumentNames({"n"})
             .addFunctionAttribute(llvm::Attribute::ReadOnly)
@@ -2662,12 +2662,12 @@ inline FunctionGroup::UniquePtr axargsort(const FunctionOptions& op)
           [&in](int32_t i1, int32_t i2) {return (*in)[i1] < (*in)[i2];});
     };
 
-    using Argsort3D = void(openvdb::math::Vec3<int>*, openvdb::math::Vec3<double>*);
-    using Argsort3F = void(openvdb::math::Vec3<int>*, openvdb::math::Vec3<float>*);
-    using Argsort3I = void(openvdb::math::Vec3<int>*, openvdb::math::Vec3<int32_t>*);
-    using Argsort4D = void(openvdb::math::Vec4<int>*, openvdb::math::Vec4<double>*);
-    using Argsort4F = void(openvdb::math::Vec4<int>*, openvdb::math::Vec4<float>*);
-    using Argsort4I = void(openvdb::math::Vec4<int>*, openvdb::math::Vec4<int32_t>*);
+    using Argsort3D = void(laovdb::math::Vec3<int>*, laovdb::math::Vec3<double>*);
+    using Argsort3F = void(laovdb::math::Vec3<int>*, laovdb::math::Vec3<float>*);
+    using Argsort3I = void(laovdb::math::Vec3<int>*, laovdb::math::Vec3<int32_t>*);
+    using Argsort4D = void(laovdb::math::Vec4<int>*, laovdb::math::Vec4<double>*);
+    using Argsort4F = void(laovdb::math::Vec4<int>*, laovdb::math::Vec4<float>*);
+    using Argsort4I = void(laovdb::math::Vec4<int>*, laovdb::math::Vec4<int32_t>*);
 
     return FunctionBuilder("argsort")
         .addSignature<Argsort3D, true>((Argsort3D*)(argsort))
@@ -2699,12 +2699,12 @@ inline FunctionGroup::UniquePtr axsort(const FunctionOptions& op)
         std::sort(out->asPointer(), out->asPointer() + VecType::size);
     };
 
-    using Sort3D = void(openvdb::math::Vec3<double>*,openvdb::math::Vec3<double>*);
-    using Sort3F = void(openvdb::math::Vec3<float>*,openvdb::math::Vec3<float>*);
-    using Sort3I = void(openvdb::math::Vec3<int32_t>*, openvdb::math::Vec3<int32_t>*);
-    using Sort4D = void(openvdb::math::Vec4<double>*,openvdb::math::Vec4<double>*);
-    using Sort4F = void(openvdb::math::Vec4<float>*,openvdb::math::Vec4<float>*);
-    using Sort4I = void(openvdb::math::Vec4<int32_t>*, openvdb::math::Vec4<int32_t>*);
+    using Sort3D = void(laovdb::math::Vec3<double>*,laovdb::math::Vec3<double>*);
+    using Sort3F = void(laovdb::math::Vec3<float>*,laovdb::math::Vec3<float>*);
+    using Sort3I = void(laovdb::math::Vec3<int32_t>*, laovdb::math::Vec3<int32_t>*);
+    using Sort4D = void(laovdb::math::Vec4<double>*,laovdb::math::Vec4<double>*);
+    using Sort4F = void(laovdb::math::Vec4<float>*,laovdb::math::Vec4<float>*);
+    using Sort4I = void(laovdb::math::Vec4<int32_t>*, laovdb::math::Vec4<int32_t>*);
 
     return FunctionBuilder("sort")
         .addSignature<Sort3D, true>((Sort3D*)(sort3))
@@ -2871,8 +2871,8 @@ inline FunctionGroup::UniquePtr axhsvtorgb(const FunctionOptions& op)
         return B.CreateRetVoid();
     };
 
-    using HSVtoRGB3D = void(openvdb::math::Vec3<double>*,openvdb::math::Vec3<double>*);
-    using HSVtoRGB3F = void(openvdb::math::Vec3<float>*,openvdb::math::Vec3<float>*);
+    using HSVtoRGB3D = void(laovdb::math::Vec3<double>*,laovdb::math::Vec3<double>*);
+    using HSVtoRGB3F = void(laovdb::math::Vec3<float>*,laovdb::math::Vec3<float>*);
 
     return FunctionBuilder("hsvtorgb")
         .addSignature<HSVtoRGB3D, true>(generate)
@@ -3033,8 +3033,8 @@ inline FunctionGroup::UniquePtr axrgbtohsv(const FunctionOptions& op)
         return B.CreateRetVoid();
     };
 
-    using HSVtoRGB3D = void(openvdb::math::Vec3<double>*,openvdb::math::Vec3<double>*);
-    using HSVtoRGB3F = void(openvdb::math::Vec3<float>*,openvdb::math::Vec3<float>*);
+    using HSVtoRGB3D = void(laovdb::math::Vec3<double>*,laovdb::math::Vec3<double>*);
+    using HSVtoRGB3F = void(laovdb::math::Vec3<float>*,laovdb::math::Vec3<float>*);
 
     return FunctionBuilder("rgbtohsv")
         .addSignature<HSVtoRGB3D, true>(generate)
@@ -3071,7 +3071,7 @@ inline FunctionGroup::UniquePtr ax_external(const FunctionOptions& op)
 
 
     using FindF = void(float*, const void* const, const codegen::String* const);
-    using FindV3F = void(openvdb::math::Vec3<float>*, const void* const, const codegen::String* const);
+    using FindV3F = void(laovdb::math::Vec3<float>*, const void* const, const codegen::String* const);
 
     return FunctionBuilder("_external")
         .addSignature<FindF>((FindF*)(find))
@@ -3150,7 +3150,7 @@ inline FunctionGroup::UniquePtr axexternalv(const FunctionOptions& op)
     };
 
     return FunctionBuilder("externalv")
-        .addSignature<openvdb::math::Vec3<float>*(const codegen::String*)>(generate)
+        .addSignature<laovdb::math::Vec3<float>*(const codegen::String*)>(generate)
         .setArgumentNames({"str"})
         .addDependency("_external")
         .addParameterAttribute(0, llvm::Attribute::ReadOnly)
@@ -3296,5 +3296,5 @@ void insertStandardFunctions(FunctionRegistry& registry,
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

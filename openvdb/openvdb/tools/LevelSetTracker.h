@@ -32,7 +32,7 @@
 #include <functional>
 #include <type_traits>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -272,7 +272,7 @@ LevelSetTracker(GridT& grid, InterruptT* interrupt):
         OPENVDB_THROW(RuntimeError,
             "LevelSetTracker expected a level set, got a grid of class \""
             + grid.gridClassToString(grid.getGridClass())
-            + "\" [hint: Grid::setGridClass(openvdb::GRID_LEVEL_SET)]");
+            + "\" [hint: Grid::setGridClass(laovdb::GRID_LEVEL_SET)]");
     }
 }
 
@@ -695,6 +695,6 @@ OPENVDB_INSTANTIATE_CLASS LevelSetTracker<DoubleGrid, util::NullInterrupter>;
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_LEVEL_SET_TRACKER_HAS_BEEN_INCLUDED

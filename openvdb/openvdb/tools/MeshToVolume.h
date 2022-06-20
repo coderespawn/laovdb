@@ -46,7 +46,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -94,7 +94,7 @@ enum MeshToVolumeFlags {
 ///   size_t vertexCount(size_t n) const; // Vertex count for polygon n
 ///
 ///   // Return position pos in local grid index space for polygon n and vertex v
-///   void getIndexSpacePoint(size_t n, size_t v, openvdb::Vec3d& pos) const;
+///   void getIndexSpacePoint(size_t n, size_t v, laovdb::Vec3d& pos) const;
 /// };
 /// @endcode
 ///
@@ -232,7 +232,7 @@ private:
 template<typename GridType>
 typename GridType::Ptr
 meshToLevelSet(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     float halfWidth = float(LEVEL_SET_HALF_WIDTH));
@@ -242,7 +242,7 @@ template<typename GridType, typename Interrupter>
 typename GridType::Ptr
 meshToLevelSet(
     Interrupter& interrupter,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     float halfWidth = float(LEVEL_SET_HALF_WIDTH));
@@ -266,7 +266,7 @@ meshToLevelSet(
 template<typename GridType>
 typename GridType::Ptr
 meshToLevelSet(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec4I>& quads,
     float halfWidth = float(LEVEL_SET_HALF_WIDTH));
@@ -276,7 +276,7 @@ template<typename GridType, typename Interrupter>
 typename GridType::Ptr
 meshToLevelSet(
     Interrupter& interrupter,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec4I>& quads,
     float halfWidth = float(LEVEL_SET_HALF_WIDTH));
@@ -301,7 +301,7 @@ meshToLevelSet(
 template<typename GridType>
 typename GridType::Ptr
 meshToLevelSet(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -312,7 +312,7 @@ template<typename GridType, typename Interrupter>
 typename GridType::Ptr
 meshToLevelSet(
     Interrupter& interrupter,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -340,7 +340,7 @@ meshToLevelSet(
 template<typename GridType>
 typename GridType::Ptr
 meshToSignedDistanceField(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -352,7 +352,7 @@ template<typename GridType, typename Interrupter>
 typename GridType::Ptr
 meshToSignedDistanceField(
     Interrupter& interrupter,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -377,7 +377,7 @@ meshToSignedDistanceField(
 template<typename GridType>
 typename GridType::Ptr
 meshToUnsignedDistanceField(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -388,7 +388,7 @@ template<typename GridType, typename Interrupter>
 typename GridType::Ptr
 meshToUnsignedDistanceField(
     Interrupter& interrupter,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -407,7 +407,7 @@ meshToUnsignedDistanceField(
 template<typename GridType, typename VecType>
 typename GridType::Ptr
 createLevelSetBox(const math::BBox<VecType>& bbox,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     typename VecType::ValueType halfWidth = LEVEL_SET_HALF_WIDTH);
 
 
@@ -3449,7 +3449,7 @@ inline typename std::enable_if<std::is_floating_point<typename GridType::ValueTy
     typename GridType::Ptr>::type
 doMeshConversion(
     Interrupter& interrupter,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -3544,7 +3544,7 @@ doMeshConversion(
 template<typename GridType>
 typename GridType::Ptr
 meshToLevelSet(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     float halfWidth)
@@ -3558,7 +3558,7 @@ template<typename GridType, typename Interrupter>
 typename GridType::Ptr
 meshToLevelSet(
     Interrupter& interrupter,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     float halfWidth)
@@ -3572,7 +3572,7 @@ meshToLevelSet(
 template<typename GridType>
 typename GridType::Ptr
 meshToLevelSet(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec4I>& quads,
     float halfWidth)
@@ -3586,7 +3586,7 @@ template<typename GridType, typename Interrupter>
 typename GridType::Ptr
 meshToLevelSet(
     Interrupter& interrupter,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec4I>& quads,
     float halfWidth)
@@ -3600,7 +3600,7 @@ meshToLevelSet(
 template<typename GridType>
 typename GridType::Ptr
 meshToLevelSet(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -3616,7 +3616,7 @@ template<typename GridType, typename Interrupter>
 typename GridType::Ptr
 meshToLevelSet(
     Interrupter& interrupter,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -3630,7 +3630,7 @@ meshToLevelSet(
 template<typename GridType>
 typename GridType::Ptr
 meshToSignedDistanceField(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -3647,7 +3647,7 @@ template<typename GridType, typename Interrupter>
 typename GridType::Ptr
 meshToSignedDistanceField(
     Interrupter& interrupter,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -3662,7 +3662,7 @@ meshToSignedDistanceField(
 template<typename GridType>
 typename GridType::Ptr
 meshToUnsignedDistanceField(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -3678,7 +3678,7 @@ template<typename GridType, typename Interrupter>
 typename GridType::Ptr
 meshToUnsignedDistanceField(
     Interrupter& interrupter,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const std::vector<Vec3s>& points,
     const std::vector<Vec3I>& triangles,
     const std::vector<Vec4I>& quads,
@@ -4203,7 +4203,7 @@ MeshToVoxelEdgeData::getEdgeData(
 template<typename GridType, typename VecType>
 typename GridType::Ptr
 createLevelSetBox(const math::BBox<VecType>& bbox,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     typename VecType::ValueType halfWidth)
 {
     const Vec3s pmin = Vec3s(xform.worldToIndex(bbox.min()));
@@ -4246,62 +4246,62 @@ createLevelSetBox(const math::BBox<VecType>& bbox,
 
 #define _FUNCTION(TreeT) \
     Grid<TreeT>::Ptr meshToVolume<Grid<TreeT>>(util::NullInterrupter&, \
-        const QuadAndTriangleDataAdapter<Vec3s, Vec3I>&, const openvdb::math::Transform&, \
+        const QuadAndTriangleDataAdapter<Vec3s, Vec3I>&, const laovdb::math::Transform&, \
         float, float, int, Grid<TreeT>::ValueConverter<Int32>::Type*)
 OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 #undef _FUNCTION
 
 #define _FUNCTION(TreeT) \
     Grid<TreeT>::Ptr meshToVolume<Grid<TreeT>>(util::NullInterrupter&, \
-        const QuadAndTriangleDataAdapter<Vec3s, Vec4I>&, const openvdb::math::Transform&, \
+        const QuadAndTriangleDataAdapter<Vec3s, Vec4I>&, const laovdb::math::Transform&, \
         float, float, int, Grid<TreeT>::ValueConverter<Int32>::Type*)
 OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 #undef _FUNCTION
 
 #define _FUNCTION(TreeT) \
     Grid<TreeT>::Ptr meshToLevelSet<Grid<TreeT>>(util::NullInterrupter&, \
-        const openvdb::math::Transform&, const std::vector<Vec3s>&, const std::vector<Vec3I>&, \
+        const laovdb::math::Transform&, const std::vector<Vec3s>&, const std::vector<Vec3I>&, \
         float)
 OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 #undef _FUNCTION
 
 #define _FUNCTION(TreeT) \
     Grid<TreeT>::Ptr meshToLevelSet<Grid<TreeT>>(util::NullInterrupter&, \
-        const openvdb::math::Transform&, const std::vector<Vec3s>&, const std::vector<Vec4I>&, \
+        const laovdb::math::Transform&, const std::vector<Vec3s>&, const std::vector<Vec4I>&, \
         float)
 OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 #undef _FUNCTION
 
 #define _FUNCTION(TreeT) \
     Grid<TreeT>::Ptr meshToLevelSet<Grid<TreeT>>(util::NullInterrupter&, \
-        const openvdb::math::Transform&, const std::vector<Vec3s>&, \
+        const laovdb::math::Transform&, const std::vector<Vec3s>&, \
         const std::vector<Vec3I>&, const std::vector<Vec4I>&, float)
 OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 #undef _FUNCTION
 
 #define _FUNCTION(TreeT) \
     Grid<TreeT>::Ptr meshToSignedDistanceField<Grid<TreeT>>(util::NullInterrupter&, \
-        const openvdb::math::Transform&, const std::vector<Vec3s>&, \
+        const laovdb::math::Transform&, const std::vector<Vec3s>&, \
         const std::vector<Vec3I>&, const std::vector<Vec4I>&, float, float)
 OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 #undef _FUNCTION
 
 #define _FUNCTION(TreeT) \
     Grid<TreeT>::Ptr meshToUnsignedDistanceField<Grid<TreeT>>(util::NullInterrupter&, \
-        const openvdb::math::Transform&, const std::vector<Vec3s>&, \
+        const laovdb::math::Transform&, const std::vector<Vec3s>&, \
         const std::vector<Vec3I>&, const std::vector<Vec4I>&, float)
 OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 #undef _FUNCTION
 
 #define _FUNCTION(TreeT) \
     Grid<TreeT>::Ptr createLevelSetBox<Grid<TreeT>>(const math::BBox<Vec3s>&, \
-        const openvdb::math::Transform&, float)
+        const laovdb::math::Transform&, float)
 OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 #undef _FUNCTION
 
 #define _FUNCTION(TreeT) \
     Grid<TreeT>::Ptr createLevelSetBox<Grid<TreeT>>(const math::BBox<Vec3d>&, \
-        const openvdb::math::Transform&, double)
+        const laovdb::math::Transform&, double)
 OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 #undef _FUNCTION
 
@@ -4315,6 +4315,6 @@ OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_MESH_TO_VOLUME_HAS_BEEN_INCLUDED

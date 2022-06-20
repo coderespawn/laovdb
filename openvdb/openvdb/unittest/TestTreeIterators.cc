@@ -16,12 +16,12 @@
 class TestTreeIterators: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 };
 
 
-typedef openvdb::FloatTree TreeType;
+typedef laovdb::FloatTree TreeType;
 
 
 TEST_F(TestTreeIterators, testLeafIterator)
@@ -30,22 +30,22 @@ TEST_F(TestTreeIterators, testLeafIterator)
 
     TreeType tree(fillValue);
 
-    tree.setValue(openvdb::Coord(0, 0,  0), 1.0);
-    tree.setValue(openvdb::Coord(1, 0,  0), 1.5);
-    tree.setValue(openvdb::Coord(0, 0,  8), 2.0);
-    tree.setValue(openvdb::Coord(1, 0,  8), 2.5);
-    tree.setValue(openvdb::Coord(0, 0, 16), 3.0);
-    tree.setValue(openvdb::Coord(1, 0, 16), 3.5);
-    tree.setValue(openvdb::Coord(0, 0, 24), 4.0);
-    tree.setValue(openvdb::Coord(1, 0, 24), 4.5);
+    tree.setValue(laovdb::Coord(0, 0,  0), 1.0);
+    tree.setValue(laovdb::Coord(1, 0,  0), 1.5);
+    tree.setValue(laovdb::Coord(0, 0,  8), 2.0);
+    tree.setValue(laovdb::Coord(1, 0,  8), 2.5);
+    tree.setValue(laovdb::Coord(0, 0, 16), 3.0);
+    tree.setValue(laovdb::Coord(1, 0, 16), 3.5);
+    tree.setValue(laovdb::Coord(0, 0, 24), 4.0);
+    tree.setValue(laovdb::Coord(1, 0, 24), 4.5);
 
     float val = 1.f;
     for (TreeType::LeafCIter iter = tree.cbeginLeaf(); iter; ++iter) {
         const TreeType::LeafNodeType* leaf = iter.getLeaf();
         EXPECT_TRUE(leaf != NULL);
-        ASSERT_DOUBLES_EXACTLY_EQUAL(val,       leaf->getValue(openvdb::Coord(0, 0, 0)));
-        ASSERT_DOUBLES_EXACTLY_EQUAL(val + 0.5, iter->getValue(openvdb::Coord(1, 0, 0)));
-        ASSERT_DOUBLES_EXACTLY_EQUAL(fillValue, iter->getValue(openvdb::Coord(1, 1, 1)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(val,       leaf->getValue(laovdb::Coord(0, 0, 0)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(val + 0.5, iter->getValue(laovdb::Coord(1, 0, 0)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(fillValue, iter->getValue(laovdb::Coord(1, 1, 1)));
         val = val + 1.f;
     }
 }
@@ -54,7 +54,7 @@ TEST_F(TestTreeIterators, testLeafIterator)
 // Test the leaf iterator over a tree without any leaf nodes.
 TEST_F(TestTreeIterators, testEmptyLeafIterator)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     TreeType tree(/*fillValue=*/256.0);
 
@@ -86,45 +86,45 @@ TEST_F(TestTreeIterators, testEmptyLeafIterator)
 
 TEST_F(TestTreeIterators, testOnlyNegative)
 {
-    using openvdb::Index64;
+    using laovdb::Index64;
 
     const float fillValue = 5.0f;
 
     TreeType tree(fillValue);
 
     EXPECT_TRUE(tree.empty());
-    ASSERT_DOUBLES_EXACTLY_EQUAL(fillValue, tree.getValue(openvdb::Coord(5, -10, 20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(fillValue, tree.getValue(openvdb::Coord(-500, 200, 300)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(fillValue, tree.getValue(laovdb::Coord(5, -10, 20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(fillValue, tree.getValue(laovdb::Coord(-500, 200, 300)));
 
-    tree.setValue(openvdb::Coord(-5,  10,  20), 0.1f);
-    tree.setValue(openvdb::Coord( 5, -10,  20), 0.2f);
-    tree.setValue(openvdb::Coord( 5,  10, -20), 0.3f);
-    tree.setValue(openvdb::Coord(-5, -10,  20), 0.4f);
-    tree.setValue(openvdb::Coord(-5,  10, -20), 0.5f);
-    tree.setValue(openvdb::Coord( 5, -10, -20), 0.6f);
-    tree.setValue(openvdb::Coord(-5, -10, -20), 0.7f);
-    tree.setValue(openvdb::Coord(-500,  200, -300), 4.5678f);
-    tree.setValue(openvdb::Coord( 500, -200, -300), 4.5678f);
-    tree.setValue(openvdb::Coord(-500, -200,  300), 4.5678f);
+    tree.setValue(laovdb::Coord(-5,  10,  20), 0.1f);
+    tree.setValue(laovdb::Coord( 5, -10,  20), 0.2f);
+    tree.setValue(laovdb::Coord( 5,  10, -20), 0.3f);
+    tree.setValue(laovdb::Coord(-5, -10,  20), 0.4f);
+    tree.setValue(laovdb::Coord(-5,  10, -20), 0.5f);
+    tree.setValue(laovdb::Coord( 5, -10, -20), 0.6f);
+    tree.setValue(laovdb::Coord(-5, -10, -20), 0.7f);
+    tree.setValue(laovdb::Coord(-500,  200, -300), 4.5678f);
+    tree.setValue(laovdb::Coord( 500, -200, -300), 4.5678f);
+    tree.setValue(laovdb::Coord(-500, -200,  300), 4.5678f);
 
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.1f, tree.getValue(openvdb::Coord(-5,  10,  20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.2f, tree.getValue(openvdb::Coord( 5, -10,  20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.3f, tree.getValue(openvdb::Coord( 5,  10, -20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.4f, tree.getValue(openvdb::Coord(-5, -10,  20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.5f, tree.getValue(openvdb::Coord(-5,  10, -20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.6f, tree.getValue(openvdb::Coord( 5, -10, -20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.7f, tree.getValue(openvdb::Coord(-5, -10, -20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(openvdb::Coord(-500,  200, -300)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(openvdb::Coord( 500, -200, -300)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(openvdb::Coord(-500, -200,  300)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.1f, tree.getValue(laovdb::Coord(-5,  10,  20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.2f, tree.getValue(laovdb::Coord( 5, -10,  20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.3f, tree.getValue(laovdb::Coord( 5,  10, -20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.4f, tree.getValue(laovdb::Coord(-5, -10,  20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.5f, tree.getValue(laovdb::Coord(-5,  10, -20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.6f, tree.getValue(laovdb::Coord( 5, -10, -20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.7f, tree.getValue(laovdb::Coord(-5, -10, -20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(laovdb::Coord(-500,  200, -300)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(laovdb::Coord( 500, -200, -300)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(laovdb::Coord(-500, -200,  300)));
 
     int count = 0;
     for (int i = -25; i < 25; ++i) {
         for (int j = -25; j < 25; ++j) {
             for (int k = -25; k < 25; ++k) {
-                if (tree.getValue(openvdb::Coord(i, j, k)) < 1.0f) {
+                if (tree.getValue(laovdb::Coord(i, j, k)) < 1.0f) {
                     //fprintf(stderr, "(%i, %i, %i) = %f\n",
-                    //    i, j, k, tree.getValue(openvdb::Coord(i, j, k)));
+                    //    i, j, k, tree.getValue(laovdb::Coord(i, j, k)));
                     ++count;
                 }
             }
@@ -132,7 +132,7 @@ TEST_F(TestTreeIterators, testOnlyNegative)
     }
     EXPECT_EQ(7, count);
 
-    openvdb::Coord xyz;
+    laovdb::Coord xyz;
     int count2 = 0;
     for (TreeType::ValueOnCIter iter = tree.cbeginValueOn();iter; ++iter) {
         ++count2;
@@ -146,9 +146,9 @@ TEST_F(TestTreeIterators, testOnlyNegative)
 
 TEST_F(TestTreeIterators, testValueAllIterator)
 {
-    const openvdb::Index DIM0 = 3, DIM1 = 2, DIM2 = 3;
+    const laovdb::Index DIM0 = 3, DIM1 = 2, DIM2 = 3;
 
-    typedef openvdb::tree::Tree4<float, DIM2, DIM1, DIM0>::Type Tree323f;
+    typedef laovdb::tree::Tree4<float, DIM2, DIM1, DIM0>::Type Tree323f;
 
     typedef Tree323f::RootNodeType RootT;
     typedef RootT::ChildNodeType Int1T;
@@ -156,8 +156,8 @@ TEST_F(TestTreeIterators, testValueAllIterator)
     typedef Int2T::ChildNodeType LeafT;
 
     Tree323f tree(/*fillValue=*/256.0f);
-    tree.setValue(openvdb::Coord(4), 0.0f);
-    tree.setValue(openvdb::Coord(-4), -1.0f);
+    tree.setValue(laovdb::Coord(4), 0.0f);
+    tree.setValue(laovdb::Coord(-4), -1.0f);
 
     const size_t expectedNumOff =
           2 * ((1 << (3 * DIM2)) - 1)  // 2 8x8x8 InternalNodes - 1 child pointer each
@@ -172,8 +172,8 @@ TEST_F(TestTreeIterators, testValueAllIterator)
         size_t numOn = 0, numOff = 0;
         for ( ; iter; ++iter) {
             EXPECT_TRUE(iter.getLevel() <= 3);
-            const openvdb::Index iterLevel = iter.getLevel();
-            for (openvdb::Index lvl = 0; lvl <= 3; ++lvl) {
+            const laovdb::Index iterLevel = iter.getLevel();
+            for (laovdb::Index lvl = 0; lvl <= 3; ++lvl) {
                 RootT* root; Int1T* int1; Int2T* int2; LeafT* leaf;
                 iter.getNode(root); EXPECT_TRUE(root != NULL);
                 iter.getNode(int1); EXPECT_TRUE(iterLevel < 3 ? int1 != NULL: int1 == NULL);
@@ -184,12 +184,12 @@ TEST_F(TestTreeIterators, testValueAllIterator)
             if (iter.isValueOn()) {
                 ++numOn;
                 const float f = iter.getValue();
-                if (openvdb::math::isZero(f)) {
-                    EXPECT_TRUE(iter.getCoord() == openvdb::Coord(4));
+                if (laovdb::math::isZero(f)) {
+                    EXPECT_TRUE(iter.getCoord() == laovdb::Coord(4));
                     EXPECT_TRUE(iter.isVoxelValue());
                 } else {
                     ASSERT_DOUBLES_EXACTLY_EQUAL(-1.0f, f);
-                    EXPECT_TRUE(iter.getCoord() == openvdb::Coord(-4));
+                    EXPECT_TRUE(iter.getCoord() == laovdb::Coord(-4));
                     EXPECT_TRUE(iter.isVoxelValue());
                 }
             } else {
@@ -203,10 +203,10 @@ TEST_F(TestTreeIterators, testValueAllIterator)
                     };
                     const int lvl = iter.getLevel();
                     EXPECT_TRUE(lvl < 4);
-                    openvdb::CoordBBox bbox;
+                    laovdb::CoordBBox bbox;
                     iter.getBoundingBox(bbox);
                     EXPECT_EQ(
-                        bbox.extents(), openvdb::Coord(dim[lvl], dim[lvl], dim[lvl]));
+                        bbox.extents(), laovdb::Coord(dim[lvl], dim[lvl], dim[lvl]));
                 }
             }
         }
@@ -248,7 +248,7 @@ TEST_F(TestTreeIterators, testValueAllIterator)
 
 TEST_F(TestTreeIterators, testValueOnIterator)
 {
-    typedef openvdb::tree::Tree4<float, 3, 2, 3>::Type Tree323f;
+    typedef laovdb::tree::Tree4<float, 3, 2, 3>::Type Tree323f;
 
     Tree323f tree(/*fillValue=*/256.0f);
 
@@ -259,7 +259,7 @@ TEST_F(TestTreeIterators, testValueOnIterator)
 
     const int STEP = 8/*100*/, NUM_STEPS = 10;
     for (int i = 0; i < NUM_STEPS; ++i) {
-        tree.setValue(openvdb::Coord(STEP * i), 0.0f);
+        tree.setValue(laovdb::Coord(STEP * i), 0.0f);
     }
 
     {
@@ -272,7 +272,7 @@ TEST_F(TestTreeIterators, testValueOnIterator)
             EXPECT_TRUE(iter.isVoxelValue());
             EXPECT_TRUE(iter.isValueOn());
             ASSERT_DOUBLES_EXACTLY_EQUAL(0.0f, iter.getValue());
-            EXPECT_EQ(openvdb::Coord(STEP * numOn), iter.getCoord());
+            EXPECT_EQ(laovdb::Coord(STEP * numOn), iter.getCoord());
             ++numOn;
         }
         EXPECT_EQ(NUM_STEPS, numOn);
@@ -287,7 +287,7 @@ TEST_F(TestTreeIterators, testValueOnIterator)
             EXPECT_TRUE(iter.isVoxelValue());
             EXPECT_TRUE(iter.isValueOn());
             ASSERT_DOUBLES_EXACTLY_EQUAL(0.0f, iter.getValue());
-            EXPECT_EQ(openvdb::Coord(STEP * numOn), iter.getCoord());
+            EXPECT_EQ(laovdb::Coord(STEP * numOn), iter.getCoord());
             ++numOn;
         }
         EXPECT_EQ(NUM_STEPS, numOn);
@@ -305,7 +305,7 @@ TEST_F(TestTreeIterators, testValueOnIterator)
             ASSERT_DOUBLES_EXACTLY_EQUAL(0.0f, iter.getValue());
             iter.setValue(5.0f);
             ASSERT_DOUBLES_EXACTLY_EQUAL(5.0f, iter.getValue());
-            EXPECT_EQ(openvdb::Coord(STEP * numOn), iter.getCoord());
+            EXPECT_EQ(laovdb::Coord(STEP * numOn), iter.getCoord());
             ++numOn;
         }
         EXPECT_EQ(NUM_STEPS, numOn);
@@ -315,13 +315,13 @@ TEST_F(TestTreeIterators, testValueOnIterator)
 
 TEST_F(TestTreeIterators, testValueOffIterator)
 {
-    const openvdb::Index DIM0 = 3, DIM1 = 2, DIM2 = 3;
+    const laovdb::Index DIM0 = 3, DIM1 = 2, DIM2 = 3;
 
-    typedef openvdb::tree::Tree4<float, DIM2, DIM1, DIM0>::Type Tree323f;
+    typedef laovdb::tree::Tree4<float, DIM2, DIM1, DIM0>::Type Tree323f;
 
     Tree323f tree(/*fillValue=*/256.0f);
-    tree.setValue(openvdb::Coord(4), 0.0f);
-    tree.setValue(openvdb::Coord(-4), -1.0f);
+    tree.setValue(laovdb::Coord(4), 0.0f);
+    tree.setValue(laovdb::Coord(-4), -1.0f);
 
     const size_t expectedNumOff =
           2 * ((1 << (3 * DIM2)) - 1)  // 2 8x8x8 InternalNodes - 1 child pointer each
@@ -345,9 +345,9 @@ TEST_F(TestTreeIterators, testValueOffIterator)
                 };
                 const int lvl = iter.getLevel();
                 EXPECT_TRUE(lvl < 4);
-                openvdb::CoordBBox bbox;
+                laovdb::CoordBBox bbox;
                 iter.getBoundingBox(bbox);
-                EXPECT_EQ(bbox.extents(), openvdb::Coord(dim[lvl], dim[lvl], dim[lvl]));
+                EXPECT_EQ(bbox.extents(), laovdb::Coord(dim[lvl], dim[lvl], dim[lvl]));
             }
         }
         EXPECT_EQ(expectedNumOff, numOff);
@@ -382,11 +382,11 @@ TEST_F(TestTreeIterators, testValueOffIterator)
 
 TEST_F(TestTreeIterators, testModifyValue)
 {
-    using openvdb::Coord;
+    using laovdb::Coord;
 
-    const openvdb::Index DIM0 = 3, DIM1 = 2, DIM2 = 3;
+    const laovdb::Index DIM0 = 3, DIM1 = 2, DIM2 = 3;
     {
-        typedef openvdb::tree::Tree4<int32_t, DIM2, DIM1, DIM0>::Type IntTree323f;
+        typedef laovdb::tree::Tree4<int32_t, DIM2, DIM1, DIM0>::Type IntTree323f;
 
         IntTree323f tree(/*background=*/256);
         tree.addTile(/*level=*/3, Coord(-1),                 /*value=*/ 4, /*active=*/true);
@@ -411,7 +411,7 @@ TEST_F(TestTreeIterators, testModifyValue)
         //tree.cbeginValueOn().modifyValue(Local::negate);
     }
     {
-        typedef openvdb::tree::Tree4<bool, DIM2, DIM1, DIM0>::Type BoolTree323f;
+        typedef laovdb::tree::Tree4<bool, DIM2, DIM1, DIM0>::Type BoolTree323f;
 
         BoolTree323f tree;
         tree.addTile(/*level=*/3, Coord(-1),                 /*value=*/false, /*active=*/true);
@@ -437,7 +437,7 @@ TEST_F(TestTreeIterators, testModifyValue)
     {
         // @note  StringTree types as native types are deprecated, but we can
         //   still test tool functionality with them
-        typedef openvdb::tree::Tree4<std::string, DIM2, DIM1, DIM0>::Type StringTree323f;
+        typedef laovdb::tree::Tree4<std::string, DIM2, DIM1, DIM0>::Type StringTree323f;
 
         StringTree323f tree(/*background=*/"");
         tree.addTile(/*level=*/3, Coord(-1),                 /*value=*/"abc", /*active=*/true);
@@ -464,13 +464,13 @@ TEST_F(TestTreeIterators, testModifyValue)
 
 TEST_F(TestTreeIterators, testDepthBounds)
 {
-    const openvdb::Index DIM0 = 3, DIM1 = 2, DIM2 = 3;
+    const laovdb::Index DIM0 = 3, DIM1 = 2, DIM2 = 3;
 
-    typedef openvdb::tree::Tree4<float, DIM2, DIM1, DIM0>::Type Tree323f;
+    typedef laovdb::tree::Tree4<float, DIM2, DIM1, DIM0>::Type Tree323f;
 
     Tree323f tree(/*fillValue=*/256.0f);
-    tree.setValue(openvdb::Coord(4), 0.0f);
-    tree.setValue(openvdb::Coord(-4), -1.0f);
+    tree.setValue(laovdb::Coord(4), 0.0f);
+    tree.setValue(laovdb::Coord(-4), -1.0f);
 
     const size_t
         numDepth1 = 2 * ((1 << (3 * DIM2)) - 1), // 2 8x8x8 InternalNodes - 1 child pointer each
@@ -529,7 +529,7 @@ TEST_F(TestTreeIterators, testDepthBounds)
     }
     {
         // FX-7884 regression test
-        using namespace openvdb;
+        using namespace laovdb;
 
         const float radius = 4.3f, voxelSize = 0.1f, width = 2.0f;
         const Vec3f center(15.8f, 13.2f, 16.7f);
@@ -547,7 +547,7 @@ TEST_F(TestTreeIterators, testDepthBounds)
     {
         // FX-10221 regression test
         // This code generated an infinite loop in OpenVDB 5.1.0 and earlier:
-        openvdb::FloatTree emptyTree;
+        laovdb::FloatTree emptyTree;
         auto iter = emptyTree.cbeginValueAll();
         iter.setMinDepth(2);
         EXPECT_TRUE(!iter);

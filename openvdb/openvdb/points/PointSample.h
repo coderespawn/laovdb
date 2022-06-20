@@ -20,7 +20,7 @@
 #include <sstream>
 #include <type_traits>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -562,6 +562,6 @@ inline void quadraticSample(PointDataGridT& points,
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_POINT_SAMPLE_HAS_BEEN_INCLUDED

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 /// @file pyPointGrid.cc
-/// @brief Boost.Python wrappers for point openvdb::Grid types
+/// @brief Boost.Python wrappers for point laovdb::Grid types
 
 #include <boost/python.hpp>
 

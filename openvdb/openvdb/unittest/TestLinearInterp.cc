@@ -42,43 +42,43 @@ TestLinearInterp::test()
     GridType grid(fillValue);
     typename GridType::TreeType& tree = grid.tree();
 
-    tree.setValue(openvdb::Coord(10, 10, 10), 1.0);
+    tree.setValue(laovdb::Coord(10, 10, 10), 1.0);
 
-    tree.setValue(openvdb::Coord(11, 10, 10), 2.0);
-    tree.setValue(openvdb::Coord(11, 11, 10), 2.0);
-    tree.setValue(openvdb::Coord(10, 11, 10), 2.0);
-    tree.setValue(openvdb::Coord( 9, 11, 10), 2.0);
-    tree.setValue(openvdb::Coord( 9, 10, 10), 2.0);
-    tree.setValue(openvdb::Coord( 9,  9, 10), 2.0);
-    tree.setValue(openvdb::Coord(10,  9, 10), 2.0);
-    tree.setValue(openvdb::Coord(11,  9, 10), 2.0);
+    tree.setValue(laovdb::Coord(11, 10, 10), 2.0);
+    tree.setValue(laovdb::Coord(11, 11, 10), 2.0);
+    tree.setValue(laovdb::Coord(10, 11, 10), 2.0);
+    tree.setValue(laovdb::Coord( 9, 11, 10), 2.0);
+    tree.setValue(laovdb::Coord( 9, 10, 10), 2.0);
+    tree.setValue(laovdb::Coord( 9,  9, 10), 2.0);
+    tree.setValue(laovdb::Coord(10,  9, 10), 2.0);
+    tree.setValue(laovdb::Coord(11,  9, 10), 2.0);
 
-    tree.setValue(openvdb::Coord(10, 10, 11), 3.0);
-    tree.setValue(openvdb::Coord(11, 10, 11), 3.0);
-    tree.setValue(openvdb::Coord(11, 11, 11), 3.0);
-    tree.setValue(openvdb::Coord(10, 11, 11), 3.0);
-    tree.setValue(openvdb::Coord( 9, 11, 11), 3.0);
-    tree.setValue(openvdb::Coord( 9, 10, 11), 3.0);
-    tree.setValue(openvdb::Coord( 9,  9, 11), 3.0);
-    tree.setValue(openvdb::Coord(10,  9, 11), 3.0);
-    tree.setValue(openvdb::Coord(11,  9, 11), 3.0);
+    tree.setValue(laovdb::Coord(10, 10, 11), 3.0);
+    tree.setValue(laovdb::Coord(11, 10, 11), 3.0);
+    tree.setValue(laovdb::Coord(11, 11, 11), 3.0);
+    tree.setValue(laovdb::Coord(10, 11, 11), 3.0);
+    tree.setValue(laovdb::Coord( 9, 11, 11), 3.0);
+    tree.setValue(laovdb::Coord( 9, 10, 11), 3.0);
+    tree.setValue(laovdb::Coord( 9,  9, 11), 3.0);
+    tree.setValue(laovdb::Coord(10,  9, 11), 3.0);
+    tree.setValue(laovdb::Coord(11,  9, 11), 3.0);
 
-    tree.setValue(openvdb::Coord(10, 10, 9), 4.0);
-    tree.setValue(openvdb::Coord(11, 10, 9), 4.0);
-    tree.setValue(openvdb::Coord(11, 11, 9), 4.0);
-    tree.setValue(openvdb::Coord(10, 11, 9), 4.0);
-    tree.setValue(openvdb::Coord( 9, 11, 9), 4.0);
-    tree.setValue(openvdb::Coord( 9, 10, 9), 4.0);
-    tree.setValue(openvdb::Coord( 9,  9, 9), 4.0);
-    tree.setValue(openvdb::Coord(10,  9, 9), 4.0);
-    tree.setValue(openvdb::Coord(11,  9, 9), 4.0);
+    tree.setValue(laovdb::Coord(10, 10, 9), 4.0);
+    tree.setValue(laovdb::Coord(11, 10, 9), 4.0);
+    tree.setValue(laovdb::Coord(11, 11, 9), 4.0);
+    tree.setValue(laovdb::Coord(10, 11, 9), 4.0);
+    tree.setValue(laovdb::Coord( 9, 11, 9), 4.0);
+    tree.setValue(laovdb::Coord( 9, 10, 9), 4.0);
+    tree.setValue(laovdb::Coord( 9,  9, 9), 4.0);
+    tree.setValue(laovdb::Coord(10,  9, 9), 4.0);
+    tree.setValue(laovdb::Coord(11,  9, 9), 4.0);
 
     {//using BoxSampler
 
         // transform used for worldspace interpolation)
-        openvdb::tools::GridSampler<GridType, openvdb::tools::BoxSampler>
+        laovdb::tools::GridSampler<GridType, laovdb::tools::BoxSampler>
             interpolator(grid);
-        //openvdb::tools::LinearInterp<GridType> interpolator(*tree);
+        //laovdb::tools::LinearInterp<GridType> interpolator(*tree);
 
         typename GridType::ValueType val =
             interpolator.sampleVoxel(10.5, 10.5, 10.5);
@@ -124,9 +124,9 @@ TestLinearInterp::test()
     {//using Sampler<1>
 
         // transform used for worldspace interpolation)
-        openvdb::tools::GridSampler<GridType, openvdb::tools::Sampler<1> >
+        laovdb::tools::GridSampler<GridType, laovdb::tools::Sampler<1> >
             interpolator(grid);
-        //openvdb::tools::LinearInterp<GridType> interpolator(*tree);
+        //laovdb::tools::LinearInterp<GridType> interpolator(*tree);
 
         typename GridType::ValueType val =
             interpolator.sampleVoxel(10.5, 10.5, 10.5);
@@ -169,53 +169,53 @@ TestLinearInterp::test()
         EXPECT_NEAR(2.01, val, TOLERANCE);
     }
 }
-TEST_F(TestLinearInterp, testFloat) { test<openvdb::FloatGrid>(); }
-TEST_F(TestLinearInterp, testDouble) { test<openvdb::DoubleGrid>(); }
+TEST_F(TestLinearInterp, testFloat) { test<laovdb::FloatGrid>(); }
+TEST_F(TestLinearInterp, testDouble) { test<laovdb::DoubleGrid>(); }
 
 TEST_F(TestLinearInterp, testVec3S)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Vec3s fillValue = Vec3s(256.0f, 256.0f, 256.0f);
 
     Vec3SGrid grid(fillValue);
     Vec3STree& tree = grid.tree();
 
-    tree.setValue(openvdb::Coord(10, 10, 10), Vec3s(1.0, 1.0, 1.0));
+    tree.setValue(laovdb::Coord(10, 10, 10), Vec3s(1.0, 1.0, 1.0));
 
-    tree.setValue(openvdb::Coord(11, 10, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(10, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9, 10, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9,  9, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(10,  9, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11, 10, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9, 10, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11,  9, 10), Vec3s(2.0, 2.0, 2.0));
 
-    tree.setValue(openvdb::Coord(10, 10, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(11, 10, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(11, 11, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(10, 11, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord( 9, 11, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord( 9, 10, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord( 9,  9, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(10,  9, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(11,  9, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(10, 10, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(11, 10, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(11, 11, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(10, 11, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord( 9, 11, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord( 9, 10, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord( 9,  9, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(10,  9, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(11,  9, 11), Vec3s(3.0, 3.0, 3.0));
 
-    tree.setValue(openvdb::Coord(10, 10, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(11, 10, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(11, 11, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(10, 11, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord( 9, 11, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord( 9, 10, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord( 9,  9, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(10,  9, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(11,  9, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(10, 10, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(11, 10, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(11, 11, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(10, 11, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord( 9, 11, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord( 9, 10, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord( 9,  9, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(10,  9, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(11,  9, 9), Vec3s(4.0, 4.0, 4.0));
 
-    openvdb::tools::GridSampler<Vec3SGrid, openvdb::tools::BoxSampler>
+    laovdb::tools::GridSampler<Vec3SGrid, laovdb::tools::BoxSampler>
         interpolator(grid);
 
-    //openvdb::tools::LinearInterp<Vec3STree> interpolator(*tree);
+    //laovdb::tools::LinearInterp<Vec3STree> interpolator(*tree);
 
     Vec3SGrid::ValueType val = interpolator.sampleVoxel(10.5, 10.5, 10.5);
     EXPECT_TRUE(val.eq(Vec3s(2.375f)));
@@ -265,40 +265,40 @@ TestLinearInterp::testTree()
     typedef typename GridType::TreeType TreeType;
     TreeType tree(fillValue);
 
-    tree.setValue(openvdb::Coord(10, 10, 10), 1.0);
+    tree.setValue(laovdb::Coord(10, 10, 10), 1.0);
 
-    tree.setValue(openvdb::Coord(11, 10, 10), 2.0);
-    tree.setValue(openvdb::Coord(11, 11, 10), 2.0);
-    tree.setValue(openvdb::Coord(10, 11, 10), 2.0);
-    tree.setValue(openvdb::Coord( 9, 11, 10), 2.0);
-    tree.setValue(openvdb::Coord( 9, 10, 10), 2.0);
-    tree.setValue(openvdb::Coord( 9,  9, 10), 2.0);
-    tree.setValue(openvdb::Coord(10,  9, 10), 2.0);
-    tree.setValue(openvdb::Coord(11,  9, 10), 2.0);
+    tree.setValue(laovdb::Coord(11, 10, 10), 2.0);
+    tree.setValue(laovdb::Coord(11, 11, 10), 2.0);
+    tree.setValue(laovdb::Coord(10, 11, 10), 2.0);
+    tree.setValue(laovdb::Coord( 9, 11, 10), 2.0);
+    tree.setValue(laovdb::Coord( 9, 10, 10), 2.0);
+    tree.setValue(laovdb::Coord( 9,  9, 10), 2.0);
+    tree.setValue(laovdb::Coord(10,  9, 10), 2.0);
+    tree.setValue(laovdb::Coord(11,  9, 10), 2.0);
 
-    tree.setValue(openvdb::Coord(10, 10, 11), 3.0);
-    tree.setValue(openvdb::Coord(11, 10, 11), 3.0);
-    tree.setValue(openvdb::Coord(11, 11, 11), 3.0);
-    tree.setValue(openvdb::Coord(10, 11, 11), 3.0);
-    tree.setValue(openvdb::Coord( 9, 11, 11), 3.0);
-    tree.setValue(openvdb::Coord( 9, 10, 11), 3.0);
-    tree.setValue(openvdb::Coord( 9,  9, 11), 3.0);
-    tree.setValue(openvdb::Coord(10,  9, 11), 3.0);
-    tree.setValue(openvdb::Coord(11,  9, 11), 3.0);
+    tree.setValue(laovdb::Coord(10, 10, 11), 3.0);
+    tree.setValue(laovdb::Coord(11, 10, 11), 3.0);
+    tree.setValue(laovdb::Coord(11, 11, 11), 3.0);
+    tree.setValue(laovdb::Coord(10, 11, 11), 3.0);
+    tree.setValue(laovdb::Coord( 9, 11, 11), 3.0);
+    tree.setValue(laovdb::Coord( 9, 10, 11), 3.0);
+    tree.setValue(laovdb::Coord( 9,  9, 11), 3.0);
+    tree.setValue(laovdb::Coord(10,  9, 11), 3.0);
+    tree.setValue(laovdb::Coord(11,  9, 11), 3.0);
 
-    tree.setValue(openvdb::Coord(10, 10, 9), 4.0);
-    tree.setValue(openvdb::Coord(11, 10, 9), 4.0);
-    tree.setValue(openvdb::Coord(11, 11, 9), 4.0);
-    tree.setValue(openvdb::Coord(10, 11, 9), 4.0);
-    tree.setValue(openvdb::Coord( 9, 11, 9), 4.0);
-    tree.setValue(openvdb::Coord( 9, 10, 9), 4.0);
-    tree.setValue(openvdb::Coord( 9,  9, 9), 4.0);
-    tree.setValue(openvdb::Coord(10,  9, 9), 4.0);
-    tree.setValue(openvdb::Coord(11,  9, 9), 4.0);
+    tree.setValue(laovdb::Coord(10, 10, 9), 4.0);
+    tree.setValue(laovdb::Coord(11, 10, 9), 4.0);
+    tree.setValue(laovdb::Coord(11, 11, 9), 4.0);
+    tree.setValue(laovdb::Coord(10, 11, 9), 4.0);
+    tree.setValue(laovdb::Coord( 9, 11, 9), 4.0);
+    tree.setValue(laovdb::Coord( 9, 10, 9), 4.0);
+    tree.setValue(laovdb::Coord( 9,  9, 9), 4.0);
+    tree.setValue(laovdb::Coord(10,  9, 9), 4.0);
+    tree.setValue(laovdb::Coord(11,  9, 9), 4.0);
 
     // transform used for worldspace interpolation)
-    openvdb::tools::GridSampler<TreeType, openvdb::tools::BoxSampler>
-        interpolator(tree, openvdb::math::Transform());
+    laovdb::tools::GridSampler<TreeType, laovdb::tools::BoxSampler>
+        interpolator(tree, laovdb::math::Transform());
 
     typename GridType::ValueType val =
         interpolator.sampleVoxel(10.5, 10.5, 10.5);
@@ -340,52 +340,52 @@ TestLinearInterp::testTree()
     val = interpolator.sampleVoxel(10.5, 10.8, 10.1);
     EXPECT_NEAR(2.01, val, TOLERANCE);
 }
-TEST_F(TestLinearInterp, testTreeFloat) { testTree<openvdb::FloatGrid>(); }
-TEST_F(TestLinearInterp, testTreeDouble) { testTree<openvdb::DoubleGrid>(); }
+TEST_F(TestLinearInterp, testTreeFloat) { testTree<laovdb::FloatGrid>(); }
+TEST_F(TestLinearInterp, testTreeDouble) { testTree<laovdb::DoubleGrid>(); }
 
 TEST_F(TestLinearInterp, testTreeVec3S)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Vec3s fillValue = Vec3s(256.0f, 256.0f, 256.0f);
 
     Vec3STree tree(fillValue);
 
-    tree.setValue(openvdb::Coord(10, 10, 10), Vec3s(1.0, 1.0, 1.0));
+    tree.setValue(laovdb::Coord(10, 10, 10), Vec3s(1.0, 1.0, 1.0));
 
-    tree.setValue(openvdb::Coord(11, 10, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(10, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9, 10, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9,  9, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(10,  9, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11, 10, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9, 10, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11,  9, 10), Vec3s(2.0, 2.0, 2.0));
 
-    tree.setValue(openvdb::Coord(10, 10, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(11, 10, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(11, 11, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(10, 11, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord( 9, 11, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord( 9, 10, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord( 9,  9, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(10,  9, 11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(11,  9, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(10, 10, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(11, 10, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(11, 11, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(10, 11, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord( 9, 11, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord( 9, 10, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord( 9,  9, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(10,  9, 11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(11,  9, 11), Vec3s(3.0, 3.0, 3.0));
 
-    tree.setValue(openvdb::Coord(10, 10, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(11, 10, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(11, 11, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(10, 11, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord( 9, 11, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord( 9, 10, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord( 9,  9, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(10,  9, 9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(11,  9, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(10, 10, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(11, 10, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(11, 11, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(10, 11, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord( 9, 11, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord( 9, 10, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord( 9,  9, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(10,  9, 9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(11,  9, 9), Vec3s(4.0, 4.0, 4.0));
 
-    openvdb::tools::GridSampler<Vec3STree, openvdb::tools::BoxSampler>
-        interpolator(tree, openvdb::math::Transform());
+    laovdb::tools::GridSampler<Vec3STree, laovdb::tools::BoxSampler>
+        interpolator(tree, laovdb::math::Transform());
 
-    //openvdb::tools::LinearInterp<Vec3STree> interpolator(*tree);
+    //laovdb::tools::LinearInterp<Vec3STree> interpolator(*tree);
 
     Vec3SGrid::ValueType val = interpolator.sampleVoxel(10.5, 10.5, 10.5);
     EXPECT_TRUE(val.eq(Vec3s(2.375f)));
@@ -438,39 +438,39 @@ TestLinearInterp::testAccessor()
 
     AccessorType acc = grid.getAccessor();
 
-    acc.setValue(openvdb::Coord(10, 10, 10), 1.0);
+    acc.setValue(laovdb::Coord(10, 10, 10), 1.0);
 
-    acc.setValue(openvdb::Coord(11, 10, 10), 2.0);
-    acc.setValue(openvdb::Coord(11, 11, 10), 2.0);
-    acc.setValue(openvdb::Coord(10, 11, 10), 2.0);
-    acc.setValue(openvdb::Coord( 9, 11, 10), 2.0);
-    acc.setValue(openvdb::Coord( 9, 10, 10), 2.0);
-    acc.setValue(openvdb::Coord( 9,  9, 10), 2.0);
-    acc.setValue(openvdb::Coord(10,  9, 10), 2.0);
-    acc.setValue(openvdb::Coord(11,  9, 10), 2.0);
+    acc.setValue(laovdb::Coord(11, 10, 10), 2.0);
+    acc.setValue(laovdb::Coord(11, 11, 10), 2.0);
+    acc.setValue(laovdb::Coord(10, 11, 10), 2.0);
+    acc.setValue(laovdb::Coord( 9, 11, 10), 2.0);
+    acc.setValue(laovdb::Coord( 9, 10, 10), 2.0);
+    acc.setValue(laovdb::Coord( 9,  9, 10), 2.0);
+    acc.setValue(laovdb::Coord(10,  9, 10), 2.0);
+    acc.setValue(laovdb::Coord(11,  9, 10), 2.0);
 
-    acc.setValue(openvdb::Coord(10, 10, 11), 3.0);
-    acc.setValue(openvdb::Coord(11, 10, 11), 3.0);
-    acc.setValue(openvdb::Coord(11, 11, 11), 3.0);
-    acc.setValue(openvdb::Coord(10, 11, 11), 3.0);
-    acc.setValue(openvdb::Coord( 9, 11, 11), 3.0);
-    acc.setValue(openvdb::Coord( 9, 10, 11), 3.0);
-    acc.setValue(openvdb::Coord( 9,  9, 11), 3.0);
-    acc.setValue(openvdb::Coord(10,  9, 11), 3.0);
-    acc.setValue(openvdb::Coord(11,  9, 11), 3.0);
+    acc.setValue(laovdb::Coord(10, 10, 11), 3.0);
+    acc.setValue(laovdb::Coord(11, 10, 11), 3.0);
+    acc.setValue(laovdb::Coord(11, 11, 11), 3.0);
+    acc.setValue(laovdb::Coord(10, 11, 11), 3.0);
+    acc.setValue(laovdb::Coord( 9, 11, 11), 3.0);
+    acc.setValue(laovdb::Coord( 9, 10, 11), 3.0);
+    acc.setValue(laovdb::Coord( 9,  9, 11), 3.0);
+    acc.setValue(laovdb::Coord(10,  9, 11), 3.0);
+    acc.setValue(laovdb::Coord(11,  9, 11), 3.0);
 
-    acc.setValue(openvdb::Coord(10, 10, 9), 4.0);
-    acc.setValue(openvdb::Coord(11, 10, 9), 4.0);
-    acc.setValue(openvdb::Coord(11, 11, 9), 4.0);
-    acc.setValue(openvdb::Coord(10, 11, 9), 4.0);
-    acc.setValue(openvdb::Coord( 9, 11, 9), 4.0);
-    acc.setValue(openvdb::Coord( 9, 10, 9), 4.0);
-    acc.setValue(openvdb::Coord( 9,  9, 9), 4.0);
-    acc.setValue(openvdb::Coord(10,  9, 9), 4.0);
-    acc.setValue(openvdb::Coord(11,  9, 9), 4.0);
+    acc.setValue(laovdb::Coord(10, 10, 9), 4.0);
+    acc.setValue(laovdb::Coord(11, 10, 9), 4.0);
+    acc.setValue(laovdb::Coord(11, 11, 9), 4.0);
+    acc.setValue(laovdb::Coord(10, 11, 9), 4.0);
+    acc.setValue(laovdb::Coord( 9, 11, 9), 4.0);
+    acc.setValue(laovdb::Coord( 9, 10, 9), 4.0);
+    acc.setValue(laovdb::Coord( 9,  9, 9), 4.0);
+    acc.setValue(laovdb::Coord(10,  9, 9), 4.0);
+    acc.setValue(laovdb::Coord(11,  9, 9), 4.0);
 
     // transform used for worldspace interpolation)
-    openvdb::tools::GridSampler<AccessorType, openvdb::tools::BoxSampler>
+    laovdb::tools::GridSampler<AccessorType, laovdb::tools::BoxSampler>
         interpolator(acc, grid.transform());
 
     typename GridType::ValueType val =
@@ -513,12 +513,12 @@ TestLinearInterp::testAccessor()
     val = interpolator.sampleVoxel(10.5, 10.8, 10.1);
     EXPECT_NEAR(2.01, val, TOLERANCE);
 }
-TEST_F(TestLinearInterp, testAccessorFloat) { testAccessor<openvdb::FloatGrid>(); }
-TEST_F(TestLinearInterp, testAccessorDouble) { testAccessor<openvdb::DoubleGrid>(); }
+TEST_F(TestLinearInterp, testAccessorFloat) { testAccessor<laovdb::FloatGrid>(); }
+TEST_F(TestLinearInterp, testAccessorDouble) { testAccessor<laovdb::DoubleGrid>(); }
 
 TEST_F(TestLinearInterp, testAccessorVec3S)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Vec3s fillValue = Vec3s(256.0f, 256.0f, 256.0f);
 
@@ -526,38 +526,38 @@ TEST_F(TestLinearInterp, testAccessorVec3S)
     typedef Vec3SGrid::Accessor AccessorType;
     AccessorType acc = grid.getAccessor();
 
-    acc.setValue(openvdb::Coord(10, 10, 10), Vec3s(1.0, 1.0, 1.0));
+    acc.setValue(laovdb::Coord(10, 10, 10), Vec3s(1.0, 1.0, 1.0));
 
-    acc.setValue(openvdb::Coord(11, 10, 10), Vec3s(2.0, 2.0, 2.0));
-    acc.setValue(openvdb::Coord(11, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    acc.setValue(openvdb::Coord(10, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    acc.setValue(openvdb::Coord( 9, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    acc.setValue(openvdb::Coord( 9, 10, 10), Vec3s(2.0, 2.0, 2.0));
-    acc.setValue(openvdb::Coord( 9,  9, 10), Vec3s(2.0, 2.0, 2.0));
-    acc.setValue(openvdb::Coord(10,  9, 10), Vec3s(2.0, 2.0, 2.0));
-    acc.setValue(openvdb::Coord(11,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    acc.setValue(laovdb::Coord(11, 10, 10), Vec3s(2.0, 2.0, 2.0));
+    acc.setValue(laovdb::Coord(11, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    acc.setValue(laovdb::Coord(10, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    acc.setValue(laovdb::Coord( 9, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    acc.setValue(laovdb::Coord( 9, 10, 10), Vec3s(2.0, 2.0, 2.0));
+    acc.setValue(laovdb::Coord( 9,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    acc.setValue(laovdb::Coord(10,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    acc.setValue(laovdb::Coord(11,  9, 10), Vec3s(2.0, 2.0, 2.0));
 
-    acc.setValue(openvdb::Coord(10, 10, 11), Vec3s(3.0, 3.0, 3.0));
-    acc.setValue(openvdb::Coord(11, 10, 11), Vec3s(3.0, 3.0, 3.0));
-    acc.setValue(openvdb::Coord(11, 11, 11), Vec3s(3.0, 3.0, 3.0));
-    acc.setValue(openvdb::Coord(10, 11, 11), Vec3s(3.0, 3.0, 3.0));
-    acc.setValue(openvdb::Coord( 9, 11, 11), Vec3s(3.0, 3.0, 3.0));
-    acc.setValue(openvdb::Coord( 9, 10, 11), Vec3s(3.0, 3.0, 3.0));
-    acc.setValue(openvdb::Coord( 9,  9, 11), Vec3s(3.0, 3.0, 3.0));
-    acc.setValue(openvdb::Coord(10,  9, 11), Vec3s(3.0, 3.0, 3.0));
-    acc.setValue(openvdb::Coord(11,  9, 11), Vec3s(3.0, 3.0, 3.0));
+    acc.setValue(laovdb::Coord(10, 10, 11), Vec3s(3.0, 3.0, 3.0));
+    acc.setValue(laovdb::Coord(11, 10, 11), Vec3s(3.0, 3.0, 3.0));
+    acc.setValue(laovdb::Coord(11, 11, 11), Vec3s(3.0, 3.0, 3.0));
+    acc.setValue(laovdb::Coord(10, 11, 11), Vec3s(3.0, 3.0, 3.0));
+    acc.setValue(laovdb::Coord( 9, 11, 11), Vec3s(3.0, 3.0, 3.0));
+    acc.setValue(laovdb::Coord( 9, 10, 11), Vec3s(3.0, 3.0, 3.0));
+    acc.setValue(laovdb::Coord( 9,  9, 11), Vec3s(3.0, 3.0, 3.0));
+    acc.setValue(laovdb::Coord(10,  9, 11), Vec3s(3.0, 3.0, 3.0));
+    acc.setValue(laovdb::Coord(11,  9, 11), Vec3s(3.0, 3.0, 3.0));
 
-    acc.setValue(openvdb::Coord(10, 10, 9), Vec3s(4.0, 4.0, 4.0));
-    acc.setValue(openvdb::Coord(11, 10, 9), Vec3s(4.0, 4.0, 4.0));
-    acc.setValue(openvdb::Coord(11, 11, 9), Vec3s(4.0, 4.0, 4.0));
-    acc.setValue(openvdb::Coord(10, 11, 9), Vec3s(4.0, 4.0, 4.0));
-    acc.setValue(openvdb::Coord( 9, 11, 9), Vec3s(4.0, 4.0, 4.0));
-    acc.setValue(openvdb::Coord( 9, 10, 9), Vec3s(4.0, 4.0, 4.0));
-    acc.setValue(openvdb::Coord( 9,  9, 9), Vec3s(4.0, 4.0, 4.0));
-    acc.setValue(openvdb::Coord(10,  9, 9), Vec3s(4.0, 4.0, 4.0));
-    acc.setValue(openvdb::Coord(11,  9, 9), Vec3s(4.0, 4.0, 4.0));
+    acc.setValue(laovdb::Coord(10, 10, 9), Vec3s(4.0, 4.0, 4.0));
+    acc.setValue(laovdb::Coord(11, 10, 9), Vec3s(4.0, 4.0, 4.0));
+    acc.setValue(laovdb::Coord(11, 11, 9), Vec3s(4.0, 4.0, 4.0));
+    acc.setValue(laovdb::Coord(10, 11, 9), Vec3s(4.0, 4.0, 4.0));
+    acc.setValue(laovdb::Coord( 9, 11, 9), Vec3s(4.0, 4.0, 4.0));
+    acc.setValue(laovdb::Coord( 9, 10, 9), Vec3s(4.0, 4.0, 4.0));
+    acc.setValue(laovdb::Coord( 9,  9, 9), Vec3s(4.0, 4.0, 4.0));
+    acc.setValue(laovdb::Coord(10,  9, 9), Vec3s(4.0, 4.0, 4.0));
+    acc.setValue(laovdb::Coord(11,  9, 9), Vec3s(4.0, 4.0, 4.0));
 
-    openvdb::tools::GridSampler<AccessorType, openvdb::tools::BoxSampler>
+    laovdb::tools::GridSampler<AccessorType, laovdb::tools::BoxSampler>
         interpolator(acc, grid.transform());
 
     Vec3SGrid::ValueType val = interpolator.sampleVoxel(10.5, 10.5, 10.5);
@@ -611,39 +611,39 @@ TestLinearInterp::testConstantValues()
     TreeType& tree = grid.tree();
 
     // Add values to buffer zero.
-    tree.setValue(openvdb::Coord(10, 10, 10), 2.0);
+    tree.setValue(laovdb::Coord(10, 10, 10), 2.0);
 
-    tree.setValue(openvdb::Coord(11, 10, 10), 2.0);
-    tree.setValue(openvdb::Coord(11, 11, 10), 2.0);
-    tree.setValue(openvdb::Coord(10, 11, 10), 2.0);
-    tree.setValue(openvdb::Coord( 9, 11, 10), 2.0);
-    tree.setValue(openvdb::Coord( 9, 10, 10), 2.0);
-    tree.setValue(openvdb::Coord( 9,  9, 10), 2.0);
-    tree.setValue(openvdb::Coord(10,  9, 10), 2.0);
-    tree.setValue(openvdb::Coord(11,  9, 10), 2.0);
+    tree.setValue(laovdb::Coord(11, 10, 10), 2.0);
+    tree.setValue(laovdb::Coord(11, 11, 10), 2.0);
+    tree.setValue(laovdb::Coord(10, 11, 10), 2.0);
+    tree.setValue(laovdb::Coord( 9, 11, 10), 2.0);
+    tree.setValue(laovdb::Coord( 9, 10, 10), 2.0);
+    tree.setValue(laovdb::Coord( 9,  9, 10), 2.0);
+    tree.setValue(laovdb::Coord(10,  9, 10), 2.0);
+    tree.setValue(laovdb::Coord(11,  9, 10), 2.0);
 
-    tree.setValue(openvdb::Coord(10, 10, 11), 2.0);
-    tree.setValue(openvdb::Coord(11, 10, 11), 2.0);
-    tree.setValue(openvdb::Coord(11, 11, 11), 2.0);
-    tree.setValue(openvdb::Coord(10, 11, 11), 2.0);
-    tree.setValue(openvdb::Coord( 9, 11, 11), 2.0);
-    tree.setValue(openvdb::Coord( 9, 10, 11), 2.0);
-    tree.setValue(openvdb::Coord( 9,  9, 11), 2.0);
-    tree.setValue(openvdb::Coord(10,  9, 11), 2.0);
-    tree.setValue(openvdb::Coord(11,  9, 11), 2.0);
+    tree.setValue(laovdb::Coord(10, 10, 11), 2.0);
+    tree.setValue(laovdb::Coord(11, 10, 11), 2.0);
+    tree.setValue(laovdb::Coord(11, 11, 11), 2.0);
+    tree.setValue(laovdb::Coord(10, 11, 11), 2.0);
+    tree.setValue(laovdb::Coord( 9, 11, 11), 2.0);
+    tree.setValue(laovdb::Coord( 9, 10, 11), 2.0);
+    tree.setValue(laovdb::Coord( 9,  9, 11), 2.0);
+    tree.setValue(laovdb::Coord(10,  9, 11), 2.0);
+    tree.setValue(laovdb::Coord(11,  9, 11), 2.0);
 
-    tree.setValue(openvdb::Coord(10, 10, 9), 2.0);
-    tree.setValue(openvdb::Coord(11, 10, 9), 2.0);
-    tree.setValue(openvdb::Coord(11, 11, 9), 2.0);
-    tree.setValue(openvdb::Coord(10, 11, 9), 2.0);
-    tree.setValue(openvdb::Coord( 9, 11, 9), 2.0);
-    tree.setValue(openvdb::Coord( 9, 10, 9), 2.0);
-    tree.setValue(openvdb::Coord( 9,  9, 9), 2.0);
-    tree.setValue(openvdb::Coord(10,  9, 9), 2.0);
-    tree.setValue(openvdb::Coord(11,  9, 9), 2.0);
+    tree.setValue(laovdb::Coord(10, 10, 9), 2.0);
+    tree.setValue(laovdb::Coord(11, 10, 9), 2.0);
+    tree.setValue(laovdb::Coord(11, 11, 9), 2.0);
+    tree.setValue(laovdb::Coord(10, 11, 9), 2.0);
+    tree.setValue(laovdb::Coord( 9, 11, 9), 2.0);
+    tree.setValue(laovdb::Coord( 9, 10, 9), 2.0);
+    tree.setValue(laovdb::Coord( 9,  9, 9), 2.0);
+    tree.setValue(laovdb::Coord(10,  9, 9), 2.0);
+    tree.setValue(laovdb::Coord(11,  9, 9), 2.0);
 
-    openvdb::tools::GridSampler<TreeType, openvdb::tools::BoxSampler>  interpolator(grid);
-    //openvdb::tools::LinearInterp<GridType> interpolator(*tree);
+    laovdb::tools::GridSampler<TreeType, laovdb::tools::BoxSampler>  interpolator(grid);
+    //laovdb::tools::LinearInterp<GridType> interpolator(*tree);
 
     typename GridType::ValueType val =
         interpolator.sampleVoxel(10.5, 10.5, 10.5);
@@ -670,12 +670,12 @@ TestLinearInterp::testConstantValues()
     val = interpolator.sampleVoxel(10.5, 10.8, 10.1);
     EXPECT_NEAR(2.0, val, TOLERANCE);
 }
-TEST_F(TestLinearInterp, testConstantValuesFloat) { testConstantValues<openvdb::FloatGrid>(); }
-TEST_F(TestLinearInterp, testConstantValuesDouble) { testConstantValues<openvdb::DoubleGrid>(); }
+TEST_F(TestLinearInterp, testConstantValuesFloat) { testConstantValues<laovdb::FloatGrid>(); }
+TEST_F(TestLinearInterp, testConstantValuesDouble) { testConstantValues<laovdb::DoubleGrid>(); }
 
 TEST_F(TestLinearInterp, testConstantValuesVec3S)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Vec3s fillValue = Vec3s(256.0f, 256.0f, 256.0f);
 
@@ -683,39 +683,39 @@ TEST_F(TestLinearInterp, testConstantValuesVec3S)
     Vec3STree& tree = grid.tree();
 
     // Add values to buffer zero.
-    tree.setValue(openvdb::Coord(10, 10, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10, 10, 10), Vec3s(2.0, 2.0, 2.0));
 
-    tree.setValue(openvdb::Coord(11, 10, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(10, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9, 11, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9, 10, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9,  9, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(10,  9, 10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11, 10, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9, 11, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9, 10, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10,  9, 10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11,  9, 10), Vec3s(2.0, 2.0, 2.0));
 
-    tree.setValue(openvdb::Coord(10, 10, 11), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11, 10, 11), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11, 11, 11), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(10, 11, 11), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9, 11, 11), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9, 10, 11), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9,  9, 11), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(10,  9, 11), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11,  9, 11), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10, 10, 11), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11, 10, 11), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11, 11, 11), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10, 11, 11), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9, 11, 11), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9, 10, 11), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9,  9, 11), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10,  9, 11), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11,  9, 11), Vec3s(2.0, 2.0, 2.0));
 
-    tree.setValue(openvdb::Coord(10, 10, 9), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11, 10, 9), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11, 11, 9), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(10, 11, 9), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9, 11, 9), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9, 10, 9), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( 9,  9, 9), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(10,  9, 9), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(11,  9, 9), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10, 10, 9), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11, 10, 9), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11, 11, 9), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10, 11, 9), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9, 11, 9), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9, 10, 9), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( 9,  9, 9), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(10,  9, 9), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(11,  9, 9), Vec3s(2.0, 2.0, 2.0));
 
-    openvdb::tools::GridSampler<Vec3STree, openvdb::tools::BoxSampler>  interpolator(grid);
-    //openvdb::tools::LinearInterp<Vec3STree> interpolator(*tree);
+    laovdb::tools::GridSampler<Vec3STree, laovdb::tools::BoxSampler>  interpolator(grid);
+    //laovdb::tools::LinearInterp<Vec3STree> interpolator(*tree);
 
     Vec3SGrid::ValueType val = interpolator.sampleVoxel(10.5, 10.5, 10.5);
     EXPECT_TRUE(val.eq(Vec3s(2.0, 2.0, 2.0)));
@@ -753,9 +753,9 @@ TestLinearInterp::testFillValues()
     GridType grid(fillValue);
     //typename GridType::TreeType& tree = grid.tree();
 
-    openvdb::tools::GridSampler<GridType, openvdb::tools::BoxSampler>
+    laovdb::tools::GridSampler<GridType, laovdb::tools::BoxSampler>
         interpolator(grid);
-    //openvdb::tools::LinearInterp<GridType> interpolator(*tree);
+    //laovdb::tools::LinearInterp<GridType> interpolator(*tree);
 
     typename GridType::ValueType val =
         interpolator.sampleVoxel(10.5, 10.5, 10.5);
@@ -782,21 +782,21 @@ TestLinearInterp::testFillValues()
     val = interpolator.sampleVoxel(10.5, 10.8, 10.1);
     EXPECT_NEAR(256.0, val, TOLERANCE);
 }
-TEST_F(TestLinearInterp, testFillValuesFloat) { testFillValues<openvdb::FloatGrid>(); }
-TEST_F(TestLinearInterp, testFillValuesDouble) { testFillValues<openvdb::DoubleGrid>(); }
+TEST_F(TestLinearInterp, testFillValuesFloat) { testFillValues<laovdb::FloatGrid>(); }
+TEST_F(TestLinearInterp, testFillValuesDouble) { testFillValues<laovdb::DoubleGrid>(); }
 
 TEST_F(TestLinearInterp, testFillValuesVec3S)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Vec3s fillValue = Vec3s(256.0f, 256.0f, 256.0f);
 
     Vec3SGrid grid(fillValue);
     //Vec3STree& tree = grid.tree();
 
-    openvdb::tools::GridSampler<Vec3SGrid, openvdb::tools::BoxSampler>
+    laovdb::tools::GridSampler<Vec3SGrid, laovdb::tools::BoxSampler>
         interpolator(grid);
-    //openvdb::tools::LinearInterp<Vec3STree> interpolator(*tree);
+    //laovdb::tools::LinearInterp<Vec3STree> interpolator(*tree);
 
     Vec3SGrid::ValueType val = interpolator.sampleVoxel(10.5, 10.5, 10.5);
     EXPECT_TRUE(val.eq(Vec3s(256.0, 256.0, 256.0)));
@@ -834,39 +834,39 @@ TestLinearInterp::testNegativeIndices()
     GridType grid(fillValue);
     TreeType& tree = grid.tree();
 
-    tree.setValue(openvdb::Coord(-10, -10, -10), 1.0);
+    tree.setValue(laovdb::Coord(-10, -10, -10), 1.0);
 
-    tree.setValue(openvdb::Coord(-11, -10, -10), 2.0);
-    tree.setValue(openvdb::Coord(-11, -11, -10), 2.0);
-    tree.setValue(openvdb::Coord(-10, -11, -10), 2.0);
-    tree.setValue(openvdb::Coord( -9, -11, -10), 2.0);
-    tree.setValue(openvdb::Coord( -9, -10, -10), 2.0);
-    tree.setValue(openvdb::Coord( -9,  -9, -10), 2.0);
-    tree.setValue(openvdb::Coord(-10,  -9, -10), 2.0);
-    tree.setValue(openvdb::Coord(-11,  -9, -10), 2.0);
+    tree.setValue(laovdb::Coord(-11, -10, -10), 2.0);
+    tree.setValue(laovdb::Coord(-11, -11, -10), 2.0);
+    tree.setValue(laovdb::Coord(-10, -11, -10), 2.0);
+    tree.setValue(laovdb::Coord( -9, -11, -10), 2.0);
+    tree.setValue(laovdb::Coord( -9, -10, -10), 2.0);
+    tree.setValue(laovdb::Coord( -9,  -9, -10), 2.0);
+    tree.setValue(laovdb::Coord(-10,  -9, -10), 2.0);
+    tree.setValue(laovdb::Coord(-11,  -9, -10), 2.0);
 
-    tree.setValue(openvdb::Coord(-10, -10, -11), 3.0);
-    tree.setValue(openvdb::Coord(-11, -10, -11), 3.0);
-    tree.setValue(openvdb::Coord(-11, -11, -11), 3.0);
-    tree.setValue(openvdb::Coord(-10, -11, -11), 3.0);
-    tree.setValue(openvdb::Coord( -9, -11, -11), 3.0);
-    tree.setValue(openvdb::Coord( -9, -10, -11), 3.0);
-    tree.setValue(openvdb::Coord( -9,  -9, -11), 3.0);
-    tree.setValue(openvdb::Coord(-10,  -9, -11), 3.0);
-    tree.setValue(openvdb::Coord(-11,  -9, -11), 3.0);
+    tree.setValue(laovdb::Coord(-10, -10, -11), 3.0);
+    tree.setValue(laovdb::Coord(-11, -10, -11), 3.0);
+    tree.setValue(laovdb::Coord(-11, -11, -11), 3.0);
+    tree.setValue(laovdb::Coord(-10, -11, -11), 3.0);
+    tree.setValue(laovdb::Coord( -9, -11, -11), 3.0);
+    tree.setValue(laovdb::Coord( -9, -10, -11), 3.0);
+    tree.setValue(laovdb::Coord( -9,  -9, -11), 3.0);
+    tree.setValue(laovdb::Coord(-10,  -9, -11), 3.0);
+    tree.setValue(laovdb::Coord(-11,  -9, -11), 3.0);
 
-    tree.setValue(openvdb::Coord(-10, -10, -9), 4.0);
-    tree.setValue(openvdb::Coord(-11, -10, -9), 4.0);
-    tree.setValue(openvdb::Coord(-11, -11, -9), 4.0);
-    tree.setValue(openvdb::Coord(-10, -11, -9), 4.0);
-    tree.setValue(openvdb::Coord( -9, -11, -9), 4.0);
-    tree.setValue(openvdb::Coord( -9, -10, -9), 4.0);
-    tree.setValue(openvdb::Coord( -9,  -9, -9), 4.0);
-    tree.setValue(openvdb::Coord(-10,  -9, -9), 4.0);
-    tree.setValue(openvdb::Coord(-11,  -9, -9), 4.0);
+    tree.setValue(laovdb::Coord(-10, -10, -9), 4.0);
+    tree.setValue(laovdb::Coord(-11, -10, -9), 4.0);
+    tree.setValue(laovdb::Coord(-11, -11, -9), 4.0);
+    tree.setValue(laovdb::Coord(-10, -11, -9), 4.0);
+    tree.setValue(laovdb::Coord( -9, -11, -9), 4.0);
+    tree.setValue(laovdb::Coord( -9, -10, -9), 4.0);
+    tree.setValue(laovdb::Coord( -9,  -9, -9), 4.0);
+    tree.setValue(laovdb::Coord(-10,  -9, -9), 4.0);
+    tree.setValue(laovdb::Coord(-11,  -9, -9), 4.0);
 
-    //openvdb::tools::LinearInterp<GridType> interpolator(*tree);
-    openvdb::tools::GridSampler<TreeType, openvdb::tools::BoxSampler>  interpolator(grid);
+    //laovdb::tools::LinearInterp<GridType> interpolator(*tree);
+    laovdb::tools::GridSampler<TreeType, laovdb::tools::BoxSampler>  interpolator(grid);
 
     typename GridType::ValueType val =
         interpolator.sampleVoxel(-10.5, -10.5, -10.5);
@@ -908,51 +908,51 @@ TestLinearInterp::testNegativeIndices()
     val = interpolator.sampleVoxel(-10.5, -10.8, -10.1);
     EXPECT_NEAR(2.01, val, TOLERANCE);
 }
-TEST_F(TestLinearInterp, testNegativeIndicesFloat) { testNegativeIndices<openvdb::FloatGrid>(); }
-TEST_F(TestLinearInterp, testNegativeIndicesDouble) { testNegativeIndices<openvdb::DoubleGrid>(); }
+TEST_F(TestLinearInterp, testNegativeIndicesFloat) { testNegativeIndices<laovdb::FloatGrid>(); }
+TEST_F(TestLinearInterp, testNegativeIndicesDouble) { testNegativeIndices<laovdb::DoubleGrid>(); }
 
 TEST_F(TestLinearInterp, testNegativeIndicesVec3S)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Vec3s fillValue = Vec3s(256.0f, 256.0f, 256.0f);
 
     Vec3SGrid grid(fillValue);
     Vec3STree& tree = grid.tree();
 
-    tree.setValue(openvdb::Coord(-10, -10, -10), Vec3s(1.0, 1.0, 1.0));
+    tree.setValue(laovdb::Coord(-10, -10, -10), Vec3s(1.0, 1.0, 1.0));
 
-    tree.setValue(openvdb::Coord(-11, -10, -10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(-11, -11, -10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(-10, -11, -10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( -9, -11, -10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( -9, -10, -10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord( -9,  -9, -10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(-10,  -9, -10), Vec3s(2.0, 2.0, 2.0));
-    tree.setValue(openvdb::Coord(-11,  -9, -10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(-11, -10, -10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(-11, -11, -10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(-10, -11, -10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( -9, -11, -10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( -9, -10, -10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord( -9,  -9, -10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(-10,  -9, -10), Vec3s(2.0, 2.0, 2.0));
+    tree.setValue(laovdb::Coord(-11,  -9, -10), Vec3s(2.0, 2.0, 2.0));
 
-    tree.setValue(openvdb::Coord(-10, -10, -11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(-11, -10, -11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(-11, -11, -11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(-10, -11, -11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord( -9, -11, -11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord( -9, -10, -11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord( -9,  -9, -11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(-10,  -9, -11), Vec3s(3.0, 3.0, 3.0));
-    tree.setValue(openvdb::Coord(-11,  -9, -11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(-10, -10, -11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(-11, -10, -11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(-11, -11, -11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(-10, -11, -11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord( -9, -11, -11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord( -9, -10, -11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord( -9,  -9, -11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(-10,  -9, -11), Vec3s(3.0, 3.0, 3.0));
+    tree.setValue(laovdb::Coord(-11,  -9, -11), Vec3s(3.0, 3.0, 3.0));
 
-    tree.setValue(openvdb::Coord(-10, -10, -9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(-11, -10, -9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(-11, -11, -9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(-10, -11, -9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord( -9, -11, -9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord( -9, -10, -9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord( -9,  -9, -9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(-10,  -9, -9), Vec3s(4.0, 4.0, 4.0));
-    tree.setValue(openvdb::Coord(-11,  -9, -9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(-10, -10, -9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(-11, -10, -9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(-11, -11, -9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(-10, -11, -9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord( -9, -11, -9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord( -9, -10, -9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord( -9,  -9, -9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(-10,  -9, -9), Vec3s(4.0, 4.0, 4.0));
+    tree.setValue(laovdb::Coord(-11,  -9, -9), Vec3s(4.0, 4.0, 4.0));
 
-    openvdb::tools::GridSampler<Vec3SGrid, openvdb::tools::BoxSampler>  interpolator(grid);
-    //openvdb::tools::LinearInterp<Vec3STree> interpolator(*tree);
+    laovdb::tools::GridSampler<Vec3SGrid, laovdb::tools::BoxSampler>  interpolator(grid);
+    //laovdb::tools::LinearInterp<Vec3STree> interpolator(*tree);
 
     Vec3SGrid::ValueType val = interpolator.sampleVoxel(-10.5, -10.5, -10.5);
     EXPECT_TRUE(val.eq(Vec3s(2.375f)));
@@ -1006,23 +1006,23 @@ TestLinearInterp::testStencilsMatch()
 
     // using mostly recurring numbers
 
-    tree.setValue(openvdb::Coord(0, 0, 0), ValueType(1.0/3.0));
-    tree.setValue(openvdb::Coord(0, 1, 0), ValueType(1.0/11.0));
-    tree.setValue(openvdb::Coord(0, 0, 1), ValueType(1.0/81.0));
-    tree.setValue(openvdb::Coord(1, 0, 0), ValueType(1.0/97.0));
-    tree.setValue(openvdb::Coord(1, 1, 0), ValueType(1.0/61.0));
-    tree.setValue(openvdb::Coord(0, 1, 1), ValueType(9.0/7.0));
-    tree.setValue(openvdb::Coord(1, 0, 1), ValueType(9.0/11.0));
-    tree.setValue(openvdb::Coord(1, 1, 1), ValueType(22.0/7.0));
+    tree.setValue(laovdb::Coord(0, 0, 0), ValueType(1.0/3.0));
+    tree.setValue(laovdb::Coord(0, 1, 0), ValueType(1.0/11.0));
+    tree.setValue(laovdb::Coord(0, 0, 1), ValueType(1.0/81.0));
+    tree.setValue(laovdb::Coord(1, 0, 0), ValueType(1.0/97.0));
+    tree.setValue(laovdb::Coord(1, 1, 0), ValueType(1.0/61.0));
+    tree.setValue(laovdb::Coord(0, 1, 1), ValueType(9.0/7.0));
+    tree.setValue(laovdb::Coord(1, 0, 1), ValueType(9.0/11.0));
+    tree.setValue(laovdb::Coord(1, 1, 1), ValueType(22.0/7.0));
 
-    const openvdb::Vec3f pos(7.0f/12.0f, 1.0f/3.0f, 2.0f/3.0f);
+    const laovdb::Vec3f pos(7.0f/12.0f, 1.0f/3.0f, 2.0f/3.0f);
 
     {//using BoxSampler and BoxStencil
 
-        openvdb::tools::GridSampler<GridType, openvdb::tools::BoxSampler>
+        laovdb::tools::GridSampler<GridType, laovdb::tools::BoxSampler>
             interpolator(grid);
 
-        openvdb::math::BoxStencil<const GridType>
+        laovdb::math::BoxStencil<const GridType>
             stencil(grid);
 
         typename GridType::ValueType val1 = interpolator.sampleVoxel(pos.x(), pos.y(), pos.z());
@@ -1032,5 +1032,5 @@ TestLinearInterp::testStencilsMatch()
         EXPECT_EQ(val1, val2);
     }
 }
-TEST_F(TestLinearInterp, testStencilsMatchFloat) { testStencilsMatch<openvdb::FloatGrid>(); }
-TEST_F(TestLinearInterp, testStencilsMatchDouble) { testStencilsMatch<openvdb::DoubleGrid>(); }
+TEST_F(TestLinearInterp, testStencilsMatchFloat) { testStencilsMatch<laovdb::FloatGrid>(); }
+TEST_F(TestLinearInterp, testStencilsMatchDouble) { testStencilsMatch<laovdb::DoubleGrid>(); }

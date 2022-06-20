@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 //
 /// @file pyIntGrid.cc
-/// @brief Boost.Python wrappers for scalar, integer-valued openvdb::Grid types
+/// @brief Boost.Python wrappers for scalar, integer-valued laovdb::Grid types
 
 #include "pyGrid.h"
 

@@ -45,7 +45,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -939,11 +939,11 @@ ParticleAtlas<PointIndexGridType>::Iterator::worldSpaceSearchAndUpdate(
         const double maxRadius = mAtlas->maxRadius(n);
         const bool uniformRadius = math::isApproxEqual(mAtlas->minRadius(n), maxRadius);
 
-        const openvdb::math::Transform& xform = mAtlas->pointIndexGrid(n).transform();
+        const laovdb::math::Transform& xform = mAtlas->pointIndexGrid(n).transform();
 
         ConstAccessor& acc = *mAccessorList[n];
 
-        openvdb::CoordBBox inscribedRegion(
+        laovdb::CoordBBox inscribedRegion(
             xform.worldToIndexCellCentered(ibMin),
             xform.worldToIndexCellCentered(ibMax));
 
@@ -954,7 +954,7 @@ ParticleAtlas<PointIndexGridType>::Iterator::worldSpaceSearchAndUpdate(
 
         searchRegions.clear();
 
-        const openvdb::CoordBBox region(
+        const laovdb::CoordBBox region(
             xform.worldToIndexCellCentered(bMin - maxRadius),
             xform.worldToIndexCellCentered(bMax + maxRadius));
 
@@ -991,11 +991,11 @@ ParticleAtlas<PointIndexGridType>::Iterator::worldSpaceSearchAndUpdate(
 
         const double maxRadius = mAtlas->maxRadius(n);
         const bool uniformRadius = math::isApproxEqual(mAtlas->minRadius(n), maxRadius);
-        const openvdb::math::Transform& xform = mAtlas->pointIndexGrid(n).transform();
+        const laovdb::math::Transform& xform = mAtlas->pointIndexGrid(n).transform();
 
         ConstAccessor& acc = *mAccessorList[n];
 
-        openvdb::CoordBBox inscribedRegion(
+        laovdb::CoordBBox inscribedRegion(
             xform.worldToIndexCellCentered(bbox.min()),
             xform.worldToIndexCellCentered(bbox.max()));
 
@@ -1006,7 +1006,7 @@ ParticleAtlas<PointIndexGridType>::Iterator::worldSpaceSearchAndUpdate(
 
         searchRegions.clear();
 
-        const openvdb::CoordBBox region(
+        const laovdb::CoordBBox region(
             xform.worldToIndexCellCentered(bbox.min() - maxRadius),
             xform.worldToIndexCellCentered(bbox.max() + maxRadius));
 
@@ -1030,6 +1030,6 @@ ParticleAtlas<PointIndexGridType>::Iterator::worldSpaceSearchAndUpdate(
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_PARTICLE_ATLAS_HAS_BEEN_INCLUDED

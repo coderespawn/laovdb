@@ -22,7 +22,7 @@
 #include <cmath>
 #include <functional>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -154,8 +154,8 @@ public:
 /// where @c xform is a functor that implements the following methods:
 /// @code
 /// bool isAffine() const
-/// openvdb::Vec3d transform(const openvdb::Vec3d&) const
-/// openvdb::Vec3d invTransform(const openvdb::Vec3d&) const
+/// laovdb::Vec3d transform(const laovdb::Vec3d&) const
+/// laovdb::Vec3d invTransform(const laovdb::Vec3d&) const
 /// @endcode
 /// @note When the transform is affine and can be expressed as a 4 x 4 matrix,
 /// a GridTransformer is much more efficient than a GridResampler.
@@ -402,12 +402,12 @@ public:
 
     bool isIdentity() const { return mIsIdentity; }
 
-    openvdb::Vec3R transform(const openvdb::Vec3R& pos) const
+    laovdb::Vec3R transform(const laovdb::Vec3R& pos) const
     {
         return mBXform.worldToIndex(mAXform.indexToWorld(pos));
     }
 
-    openvdb::Vec3R invTransform(const openvdb::Vec3R& pos) const
+    laovdb::Vec3R invTransform(const laovdb::Vec3R& pos) const
     {
         return mAXform.worldToIndex(mBXform.indexToWorld(pos));
     }
@@ -498,7 +498,7 @@ resampleToMatch(const GridType& inGrid, GridType& outGrid, Interrupter& interrup
         // If the output grid is a level set, resample the input grid to have the output grid's
         // background value.  Otherwise, preserve the input grid's background value.
         using ValueT = typename GridType::ValueType;
-        const bool outIsLevelSet = outGrid.getGridClass() == openvdb::GRID_LEVEL_SET;
+        const bool outIsLevelSet = outGrid.getGridClass() == laovdb::GRID_LEVEL_SET;
 
         const ValueT halfWidth = outIsLevelSet
             ? HalfWidthOp<ValueT>::eval(outGrid.background(), outGrid.voxelSize())
@@ -1073,6 +1073,6 @@ OPENVDB_VEC3_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_GRIDTRANSFORMER_HAS_BEEN_INCLUDED

@@ -32,14 +32,14 @@
 
 class TestPointDataLeaf;
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
 namespace io
 {
 
-/// @brief openvdb::io::readCompressedValues specialized on PointDataIndex32 arrays to
+/// @brief laovdb::io::readCompressedValues specialized on PointDataIndex32 arrays to
 /// ignore the value mask, use a larger block size and use 16-bit size instead of 64-bit
 template<>
 inline void
@@ -53,7 +53,7 @@ readCompressedValues(   std::istream& is, PointDataIndex32* destBuf, Index destC
     const size_t destBytes = destCount*sizeof(PointDataIndex32);
     const size_t maximumBytes = std::numeric_limits<uint16_t>::max();
     if (destBytes >= maximumBytes) {
-        OPENVDB_THROW(openvdb::IoError, "Cannot read more than " <<
+        OPENVDB_THROW(laovdb::IoError, "Cannot read more than " <<
                                 maximumBytes << " bytes in voxel values.")
     }
 
@@ -99,7 +99,7 @@ readCompressedValues(   std::istream& is, PointDataIndex32* destBuf, Index destC
     }
 }
 
-/// @brief openvdb::io::writeCompressedValues specialized on PointDataIndex32 arrays to
+/// @brief laovdb::io::writeCompressedValues specialized on PointDataIndex32 arrays to
 /// ignore the value mask, use a larger block size and use 16-bit size instead of 64-bit
 template<>
 inline void
@@ -112,7 +112,7 @@ writeCompressedValues(  std::ostream& os, PointDataIndex32* srcBuf, Index srcCou
     const size_t srcBytes = srcCount*sizeof(PointDataIndex32);
     const size_t maximumBytes = std::numeric_limits<uint16_t>::max();
     if (srcBytes >= maximumBytes) {
-        OPENVDB_THROW(openvdb::IoError, "Cannot write more than " <<
+        OPENVDB_THROW(laovdb::IoError, "Cannot write more than " <<
                                 maximumBytes << " bytes in voxel values.")
     }
 
@@ -143,7 +143,7 @@ writeCompressedValuesSize(std::ostream& os, const T* srcBuf, Index srcCount)
     const size_t srcBytes = srcCount*sizeof(T);
     const size_t maximumBytes = std::numeric_limits<uint16_t>::max();
     if (srcBytes >= maximumBytes) {
-        OPENVDB_THROW(openvdb::IoError, "Cannot write more than " <<
+        OPENVDB_THROW(laovdb::IoError, "Cannot write more than " <<
                                 maximumBytes << " bytes in voxel values.")
     }
 
@@ -1661,17 +1661,17 @@ prefetch(PointDataTreeT& tree, bool position, bool otherAttributes)
 namespace internal {
 
 /// @brief Global registration of point data-related types
-/// @note This is called from @c openvdb::initialize, so there is
+/// @note This is called from @c laovdb::initialize, so there is
 /// no need to call it directly.
 void initialize();
 
 /// @brief Global deregistration of point data-related types
-/// @note This is called from @c openvdb::uninitialize, so there is
+/// @note This is called from @c laovdb::uninitialize, so there is
 /// no need to call it directly.
 void uninitialize();
 
 
-/// @brief Recursive node chain which generates a openvdb::TypeList value
+/// @brief Recursive node chain which generates a laovdb::TypeList value
 /// converted types of nodes to PointDataGrid nodes of the same configuration,
 /// rooted at RootNodeType in reverse order, from LeafNode to RootNode.
 /// See also TreeConverter<>.
@@ -1733,6 +1733,6 @@ struct SameLeafConfig<Dim1, points::PointDataLeafNode<T2, Dim1>> { static const 
 
 } // namespace tree
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_POINT_DATA_GRID_HAS_BEEN_INCLUDED

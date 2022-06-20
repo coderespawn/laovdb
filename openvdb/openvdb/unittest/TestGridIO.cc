@@ -11,17 +11,17 @@
 class TestGridIO: public ::testing::Test
 {
 public:
-    typedef openvdb::tree::Tree<
-        openvdb::tree::RootNode<
-        openvdb::tree::InternalNode<
-        openvdb::tree::InternalNode<
-        openvdb::tree::InternalNode<
-        openvdb::tree::LeafNode<float, 2>, 3>, 4>, 5> > >
+    typedef laovdb::tree::Tree<
+        laovdb::tree::RootNode<
+        laovdb::tree::InternalNode<
+        laovdb::tree::InternalNode<
+        laovdb::tree::InternalNode<
+        laovdb::tree::LeafNode<float, 2>, 3>, 4>, 5> > >
         Float5432Tree;
-    typedef openvdb::Grid<Float5432Tree> Float5432Grid;
+    typedef laovdb::Grid<Float5432Tree> Float5432Grid;
 
-    void SetUp() override    { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override    { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 
 protected:
     template<typename GridType> void readAllTest();
@@ -35,7 +35,7 @@ template<typename GridType>
 void
 TestGridIO::readAllTest()
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     typedef typename GridType::TreeType TreeType;
     typedef typename TreeType::Ptr TreePtr;
@@ -131,7 +131,7 @@ TestGridIO::readAllTest()
     grids.reset();
 
     io::File vdbfile("something.vdb2");
-    EXPECT_THROW(vdbfile.getGrids(), openvdb::IoError); // file has not been opened
+    EXPECT_THROW(vdbfile.getGrids(), laovdb::IoError); // file has not been opened
 
     // Read the grids back in.
     vdbfile.open();
@@ -190,7 +190,7 @@ TestGridIO::readAllTest()
     ::remove("something.vdb2");
 }
 
-TEST_F(TestGridIO, testReadAllBool) { readAllTest<openvdb::BoolGrid>(); }
-TEST_F(TestGridIO, testReadAllFloat) { readAllTest<openvdb::FloatGrid>(); }
-TEST_F(TestGridIO, testReadAllVec3S) { readAllTest<openvdb::Vec3SGrid>(); }
+TEST_F(TestGridIO, testReadAllBool) { readAllTest<laovdb::BoolGrid>(); }
+TEST_F(TestGridIO, testReadAllFloat) { readAllTest<laovdb::FloatGrid>(); }
+TEST_F(TestGridIO, testReadAllVec3S) { readAllTest<laovdb::Vec3SGrid>(); }
 TEST_F(TestGridIO, testReadAllFloat5432) { Float5432Grid::registerGrid(); readAllTest<Float5432Grid>(); }

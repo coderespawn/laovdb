@@ -16,7 +16,7 @@
 #include <cstring> // for std::memcpy()
 #include <type_traits>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tree {
@@ -165,6 +165,6 @@ template<> struct CopyTraits<math::Coord> { static const bool IsCopyable = true;
 
 } // namespace tree
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TREE_NODEUNION_HAS_BEEN_INCLUDED

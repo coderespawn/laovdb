@@ -121,7 +121,7 @@ private:
 class TreeTopologyModule: public RenderModule
 {
 public:
-    TreeTopologyModule(const openvdb::GridBase::ConstPtr&);
+    TreeTopologyModule(const laovdb::GridBase::ConstPtr&);
     ~TreeTopologyModule() override = default;
 
     void render() override;
@@ -129,7 +129,7 @@ public:
 private:
     void init();
 
-    const openvdb::GridBase::ConstPtr& mGrid;
+    const laovdb::GridBase::ConstPtr& mGrid;
     BufferObject mBufferObject;
     bool mIsInitialized;
     ShaderProgram mShader;
@@ -143,7 +143,7 @@ private:
 class VoxelModule: public RenderModule
 {
 public:
-    VoxelModule(const openvdb::GridBase::ConstPtr&);
+    VoxelModule(const laovdb::GridBase::ConstPtr&);
     ~VoxelModule() override = default;
 
     void render() override;
@@ -151,7 +151,7 @@ public:
 private:
     void init();
 
-    const openvdb::GridBase::ConstPtr& mGrid;
+    const laovdb::GridBase::ConstPtr& mGrid;
     BufferObject mInteriorBuffer, mSurfaceBuffer, mVectorBuffer;
     bool mIsInitialized;
     ShaderProgram mFlatShader, mSurfaceShader;
@@ -166,7 +166,7 @@ private:
 class MeshModule: public RenderModule
 {
 public:
-    MeshModule(const openvdb::GridBase::ConstPtr&);
+    MeshModule(const laovdb::GridBase::ConstPtr&);
     ~MeshModule() override = default;
 
     void render() override;
@@ -174,7 +174,7 @@ public:
 private:
     void init();
 
-    const openvdb::GridBase::ConstPtr& mGrid;
+    const laovdb::GridBase::ConstPtr& mGrid;
     BufferObject mBufferObject;
     bool mIsInitialized;
     ShaderProgram mShader;

@@ -14,7 +14,7 @@
 #include <type_traits>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -249,6 +249,6 @@ std::ostream& operator<<(std::ostream& ostr, const Tuple<SIZE, T>& classname)
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_MATH_TUPLE_HAS_BEEN_INCLUDED

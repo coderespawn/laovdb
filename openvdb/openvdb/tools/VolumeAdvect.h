@@ -28,7 +28,7 @@
 #include <functional>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -565,6 +565,6 @@ OPENVDB_INSTANTIATE Vec3SGrid::Ptr VolumeAdvection<Vec3SGrid, false, util::NullI
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_VOLUME_ADVECT_HAS_BEEN_INCLUDED

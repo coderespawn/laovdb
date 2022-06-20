@@ -29,27 +29,27 @@ class TestPointInstantiate: public ::testing::Test
 
 TEST_F(TestPointInstantiate, test)
 {
-    openvdb::initialize();
+    laovdb::initialize();
 
-    std::vector<openvdb::Vec3f> positions;
+    std::vector<laovdb::Vec3f> positions;
     positions.emplace_back(1.0f, 2.0f, 3.0f);
-    openvdb::points::PointAttributeVector<openvdb::Vec3f> wrapper(positions);
+    laovdb::points::PointAttributeVector<laovdb::Vec3f> wrapper(positions);
 
-    auto transform = openvdb::math::Transform::createLinearTransform(0.5);
+    auto transform = laovdb::math::Transform::createLinearTransform(0.5);
 
     // these custom grid types use a 64-bit value type instead of a 32-bit value type
     // and have a 16^3 leaf node instead of a 8^3 leaf node
 
-    using CustomPointIndexGrid = openvdb::Grid<openvdb::tree::Tree<openvdb::tree::RootNode<
-        openvdb::tree::InternalNode<openvdb::tree::InternalNode<
-        openvdb::tools::PointIndexLeafNode<openvdb::PointIndex64, 4>, 4>, 5>>>>;
-    using CustomPointDataGrid = openvdb::Grid<openvdb::tree::Tree<openvdb::tree::RootNode<
-        openvdb::tree::InternalNode<openvdb::tree::InternalNode<
-        openvdb::points::PointDataLeafNode<openvdb::PointDataIndex64, 4>, 4>, 5>>>>;
+    using CustomPointIndexGrid = laovdb::Grid<laovdb::tree::Tree<laovdb::tree::RootNode<
+        laovdb::tree::InternalNode<laovdb::tree::InternalNode<
+        laovdb::tools::PointIndexLeafNode<laovdb::PointIndex64, 4>, 4>, 5>>>>;
+    using CustomPointDataGrid = laovdb::Grid<laovdb::tree::Tree<laovdb::tree::RootNode<
+        laovdb::tree::InternalNode<laovdb::tree::InternalNode<
+        laovdb::points::PointDataLeafNode<laovdb::PointDataIndex64, 4>, 4>, 5>>>>;
 
-    auto pointIndexGrid = openvdb::tools::createPointIndexGrid<CustomPointIndexGrid>(
+    auto pointIndexGrid = laovdb::tools::createPointIndexGrid<CustomPointIndexGrid>(
         wrapper, *transform);
-    auto points = openvdb::points::createPointDataGrid<openvdb::points::NullCodec, CustomPointDataGrid>(
+    auto points = laovdb::points::createPointDataGrid<laovdb::points::NullCodec, CustomPointDataGrid>(
         *pointIndexGrid, wrapper, *transform);
 
     EXPECT_TRUE(points);

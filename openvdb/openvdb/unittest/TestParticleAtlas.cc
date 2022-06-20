@@ -24,7 +24,7 @@ namespace {
 class ParticleList
 {
 public:
-    typedef openvdb::Vec3R          PosType;
+    typedef laovdb::Vec3R          PosType;
     typedef PosType::value_type     ScalarType;
 
     ParticleList(const std::vector<PosType>& points,
@@ -82,7 +82,7 @@ TEST_F(TestParticleAtlas, testParticleAtlas)
     const size_t numParticle = 40000;
     const double minVoxelSize = 0.01;
 
-    std::vector<openvdb::Vec3R> points;
+    std::vector<laovdb::Vec3R> points;
     unittest_util::genPoints(numParticle, points);
 
     std::vector<double> radius;
@@ -98,7 +98,7 @@ TEST_F(TestParticleAtlas, testParticleAtlas)
 
     // construct data structure
 
-    typedef openvdb::tools::ParticleAtlas<> ParticleAtlas;
+    typedef laovdb::tools::ParticleAtlas<> ParticleAtlas;
 
     ParticleAtlas atlas;
 
@@ -111,12 +111,12 @@ TEST_F(TestParticleAtlas, testParticleAtlas)
     EXPECT_TRUE(atlas.levels() == 2);
 
     EXPECT_TRUE(
-        openvdb::math::isApproxEqual(atlas.minRadius(0), minVoxelSize));
+        laovdb::math::isApproxEqual(atlas.minRadius(0), minVoxelSize));
 
     EXPECT_TRUE(
-        openvdb::math::isApproxEqual(atlas.minRadius(1), minVoxelSize * 2.0));
+        laovdb::math::isApproxEqual(atlas.minRadius(1), minVoxelSize * 2.0));
 
-    typedef openvdb::tools::ParticleAtlas<>::Iterator ParticleAtlasIterator;
+    typedef laovdb::tools::ParticleAtlas<>::Iterator ParticleAtlasIterator;
 
     ParticleAtlasIterator it(atlas);
 
@@ -150,7 +150,7 @@ TEST_F(TestParticleAtlas, testParticleAtlas)
     EXPECT_TRUE(!hasDuplicates(indices));
 
 
-    openvdb::Vec3R center = points[0];
+    laovdb::Vec3R center = points[0];
     double searchRadius = minVoxelSize * 10.0;
 
     it.worldSpaceSearchAndUpdate(center, searchRadius, particles);
@@ -165,7 +165,7 @@ TEST_F(TestParticleAtlas, testParticleAtlas)
     EXPECT_TRUE(!hasDuplicates(indices));
 
 
-    openvdb::BBoxd bbox;
+    laovdb::BBoxd bbox;
     for (size_t n = 0, N = points.size() / 2; n < N; ++n) {
         bbox.expand(points[n]);
     }

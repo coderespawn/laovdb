@@ -21,8 +21,8 @@
 #include <functional>
 #include <random>
 
-using namespace openvdb::points;
-using namespace openvdb::ax;
+using namespace laovdb::points;
+using namespace laovdb::ax;
 
 class TestStandardFunctions : public unittest_util::AXTestCase
 {
@@ -30,7 +30,7 @@ public:
 #ifdef PROFILE
     void setUp() override {
         // if PROFILE, generate more data for each test
-        mHarness.reset(/*ppv*/8, openvdb::CoordBBox({0,0,0},{50,50,50}));
+        mHarness.reset(/*ppv*/8, laovdb::CoordBBox({0,0,0},{50,50,50}));
     }
 #endif
 
@@ -166,7 +166,7 @@ inline void testFunctionOptions(unittest_util::AXTestHarness& harness,
     const std::string file = "test/snippets/function/" + name;
 
 #ifdef PROFILE
-    struct Timer : public openvdb::util::CpuTimer {} timer;
+    struct Timer : public laovdb::util::CpuTimer {} timer;
 
     const std::string code = unittest_util::loadText(file);
     timer.start(std::string("\n") + name + std::string(": Parsing"));
@@ -180,14 +180,14 @@ inline void testFunctionOptions(unittest_util::AXTestHarness& harness,
     //           This also profiles execution AND compilation.
 
     auto profile = [&syntaxTree, &timer, &data]
-        (const openvdb::ax::CompilerOptions& opts,
-        std::vector<openvdb::points::PointDataGrid::Ptr>& points,
-        openvdb::GridPtrVec& volumes,
+        (const laovdb::ax::CompilerOptions& opts,
+        std::vector<laovdb::points::PointDataGrid::Ptr>& points,
+        laovdb::GridPtrVec& volumes,
         const bool doubleCompile = true)
     {
         if (!points.empty())
         {
-            openvdb::ax::Compiler compiler(opts);
+            laovdb::ax::Compiler compiler(opts);
             if (doubleCompile) {
                 compiler.compile<PointExecutable>(*syntaxTree, data);
             }
@@ -204,7 +204,7 @@ inline void testFunctionOptions(unittest_util::AXTestHarness& harness,
 
         if (!volumes.empty())
         {
-            openvdb::ax::Compiler compiler(opts);
+            laovdb::ax::Compiler compiler(opts);
             if (doubleCompile) {
                 compiler.compile<VolumeExecutable>(*syntaxTree, data);
             }
@@ -221,7 +221,7 @@ inline void testFunctionOptions(unittest_util::AXTestHarness& harness,
     };
 #endif
 
-    openvdb::ax::CompilerOptions opts;
+    laovdb::ax::CompilerOptions opts;
     opts.mFunctionOptions.mConstantFoldCBindings = false;
     opts.mFunctionOptions.mPrioritiseIR = false;
 #ifdef PROFILE
@@ -296,50 +296,50 @@ TestStandardFunctions::acos()
 void
 TestStandardFunctions::adjoint()
 {
-    const openvdb::math::Mat3<double> inputd(
+    const laovdb::math::Mat3<double> inputd(
             1.0, -1.0, 0.0,
             2.0, 2.0, 0.0,
             0.0, 0.0, -1.0);
 
-    openvdb::math::Mat3<double> add = inputd.adjoint();
+    laovdb::math::Mat3<double> add = inputd.adjoint();
 
-    const openvdb::math::Mat3<float> inputf(
+    const laovdb::math::Mat3<float> inputf(
             1.0f, -1.0f, 0.0f,
             2.0f, 2.0f, 0.0f,
             0.0f, 0.0f, -1.0f);
 
-    openvdb::math::Mat3<float> adf = inputf.adjoint();
+    laovdb::math::Mat3<float> adf = inputf.adjoint();
 
-    mHarness.addAttribute<openvdb::math::Mat3<double>>("test1", add);
-    mHarness.addAttribute<openvdb::math::Mat3<float>>("test2", adf);
+    mHarness.addAttribute<laovdb::math::Mat3<double>>("test1", add);
+    mHarness.addAttribute<laovdb::math::Mat3<float>>("test2", adf);
     testFunctionOptions(mHarness, "adjoint");
 }
 
 void
 TestStandardFunctions::argsort()
 {
-    // const openvdb::Vec3d input3d(1.0, -1.0, 0.0);
-    // const openvdb::Vec3f input3f(1.0f, -1.0f, 0.0f);
-    // const openvdb::Vec3i input3i(1, -1, 0);
+    // const laovdb::Vec3d input3d(1.0, -1.0, 0.0);
+    // const laovdb::Vec3f input3f(1.0f, -1.0f, 0.0f);
+    // const laovdb::Vec3i input3i(1, -1, 0);
 
-    // const openvdb::Vec4d input4d(1.0, -1.0, 0.0, 5.0);
-    // const openvdb::Vec4f input4f(1.0f, -1.0f, 0.0f, 5.0f);
-    // const openvdb::Vec4i input4i(1, -1, 0, 5);
+    // const laovdb::Vec4d input4d(1.0, -1.0, 0.0, 5.0);
+    // const laovdb::Vec4f input4f(1.0f, -1.0f, 0.0f, 5.0f);
+    // const laovdb::Vec4i input4i(1, -1, 0, 5);
 
-    const openvdb::Vec3i arg3d(1,2,0);
-    const openvdb::Vec3i arg3f(1,2,0);
-    const openvdb::Vec3i arg3i(1,2,0);
+    const laovdb::Vec3i arg3d(1,2,0);
+    const laovdb::Vec3i arg3f(1,2,0);
+    const laovdb::Vec3i arg3i(1,2,0);
 
-    const openvdb::Vec4i arg4d(1,2,0,3);
-    const openvdb::Vec4i arg4f(1,2,0,3);
-    const openvdb::Vec4i arg4i(1,2,0,3);
+    const laovdb::Vec4i arg4d(1,2,0,3);
+    const laovdb::Vec4i arg4f(1,2,0,3);
+    const laovdb::Vec4i arg4i(1,2,0,3);
 
-    mHarness.addAttribute<openvdb::Vec3i>("test1", arg3d);
-    mHarness.addAttribute<openvdb::Vec3i>("test2", arg3f);
-    mHarness.addAttribute<openvdb::Vec3i>("test3", arg3i);
-    mHarness.addAttribute<openvdb::Vec4i>("test4", arg4d);
-    mHarness.addAttribute<openvdb::Vec4i>("test5", arg4f);
-    mHarness.addAttribute<openvdb::Vec4i>("test6", arg4i);
+    mHarness.addAttribute<laovdb::Vec3i>("test1", arg3d);
+    mHarness.addAttribute<laovdb::Vec3i>("test2", arg3f);
+    mHarness.addAttribute<laovdb::Vec3i>("test3", arg3i);
+    mHarness.addAttribute<laovdb::Vec4i>("test4", arg4d);
+    mHarness.addAttribute<laovdb::Vec4i>("test5", arg4f);
+    mHarness.addAttribute<laovdb::Vec4i>("test6", arg4i);
 
     testFunctionOptions(mHarness, "argsort");
 }
@@ -435,22 +435,22 @@ TestStandardFunctions::clamp()
 void
 TestStandardFunctions::cofactor()
 {
-    const openvdb::math::Mat3<double> inputd(
+    const laovdb::math::Mat3<double> inputd(
             1.0, -1.0, 0.0,
             2.0, 2.0, 0.0,
             0.0, 0.0, -1.0);
 
-    openvdb::math::Mat3<double> cd = inputd.cofactor();
+    laovdb::math::Mat3<double> cd = inputd.cofactor();
 
-    const openvdb::math::Mat3<float> inputf(
+    const laovdb::math::Mat3<float> inputf(
             1.0f, -1.0f, 0.0f,
             2.0f, 2.0f, 0.0f,
             0.0f, 0.0f, -1.0f);
 
-    openvdb::math::Mat3<float> cf = inputf.cofactor();
+    laovdb::math::Mat3<float> cf = inputf.cofactor();
 
-    mHarness.addAttribute<openvdb::math::Mat3<double>>("test1", cd);
-    mHarness.addAttribute<openvdb::math::Mat3<float>>("test2", cf);
+    mHarness.addAttribute<laovdb::math::Mat3<double>>("test1", cd);
+    mHarness.addAttribute<laovdb::math::Mat3<float>>("test2", cf);
     testFunctionOptions(mHarness, "cofactor");
 }
 
@@ -466,12 +466,12 @@ TestStandardFunctions::cosh()
 void
 TestStandardFunctions::cross()
 {
-    const openvdb::Vec3d ad(1.0,2.2,3.4), bd(4.1,5.3,6.2);
-    const openvdb::Vec3f af(1.0f,2.2f,3.4f), bf(4.1f,5.3f,6.2f);
-    const openvdb::Vec3i ai(1,2,3), bi(4,5,6);
-    mHarness.addAttribute<openvdb::Vec3d>("test1", ad.cross(bd));
-    mHarness.addAttribute<openvdb::Vec3f>("test2", af.cross(bf));
-    mHarness.addAttribute<openvdb::Vec3i>("test3", ai.cross(bi));
+    const laovdb::Vec3d ad(1.0,2.2,3.4), bd(4.1,5.3,6.2);
+    const laovdb::Vec3f af(1.0f,2.2f,3.4f), bf(4.1f,5.3f,6.2f);
+    const laovdb::Vec3i ai(1,2,3), bi(4,5,6);
+    mHarness.addAttribute<laovdb::Vec3d>("test1", ad.cross(bd));
+    mHarness.addAttribute<laovdb::Vec3f>("test2", af.cross(bf));
+    mHarness.addAttribute<laovdb::Vec3i>("test3", ai.cross(bi));
     testFunctionOptions(mHarness, "cross");
 }
 
@@ -487,10 +487,10 @@ TestStandardFunctions::curlsimplexnoise()
     };
 
     double result[3];
-    openvdb::ax::math::curlnoise<Local>(&result, 4.3, 5.7, -6.2);
-    const openvdb::Vec3d expected(result[0], result[1], result[2]);
+    laovdb::ax::math::curlnoise<Local>(&result, 4.3, 5.7, -6.2);
+    const laovdb::Vec3d expected(result[0], result[1], result[2]);
 
-    mHarness.addAttributes<openvdb::Vec3d>
+    mHarness.addAttributes<laovdb::Vec3d>
         (unittest_util::nameSequence("test", 2), {expected,expected});
     testFunctionOptions(mHarness, "curlsimplexnoise");
 }
@@ -498,8 +498,8 @@ TestStandardFunctions::curlsimplexnoise()
 void
 TestStandardFunctions::degrees()
 {
-    mHarness.addAttribute<double>("test1", 1.5708 * (180.0 / openvdb::math::pi<double>()));
-    mHarness.addAttribute<float>("test2", -1.1344f * (180.0f / openvdb::math::pi<float>()));
+    mHarness.addAttribute<double>("test1", 1.5708 * (180.0 / laovdb::math::pi<double>()));
+    mHarness.addAttribute<float>("test2", -1.1344f * (180.0f / laovdb::math::pi<float>()));
     testFunctionOptions(mHarness, "degrees");
 }
 
@@ -516,27 +516,27 @@ TestStandardFunctions::determinant()
 void
 TestStandardFunctions::diag()
 {
-    mHarness.addAttribute<openvdb::math::Mat3<double>>
-        ("test1", openvdb::math::Mat3<double>(-1,0,0, 0,-2,0, 0,0,-3));
-    mHarness.addAttribute<openvdb::math::Mat3<float>>
-        ("test2", openvdb::math::Mat3<float>(-1,0,0, 0,-2,0, 0,0,-3));
-    mHarness.addAttribute<openvdb::math::Mat4<double>>
-        ("test3", openvdb::math::Mat4<double>(-1,0,0,0, 0,-2,0,0, 0,0,-3,0, 0,0,0,-4));
-    mHarness.addAttribute<openvdb::math::Mat4<float>>
-        ("test4", openvdb::math::Mat4<float>(-1,0,0,0, 0,-2,0,0, 0,0,-3,0, 0,0,0,-4));
-    mHarness.addAttribute<openvdb::math::Vec3<double>>("test5", openvdb::math::Vec3<float>(-1,-5,-9));
-    mHarness.addAttribute<openvdb::math::Vec3<float>>("test6", openvdb::math::Vec3<float>(-1,-5,-9));
-    mHarness.addAttribute<openvdb::math::Vec4<double>>("test7", openvdb::math::Vec4<double>(-1,-6,-11,-16));
-    mHarness.addAttribute<openvdb::math::Vec4<float>>("test8", openvdb::math::Vec4<float>(-1,-6,-11,-16));
+    mHarness.addAttribute<laovdb::math::Mat3<double>>
+        ("test1", laovdb::math::Mat3<double>(-1,0,0, 0,-2,0, 0,0,-3));
+    mHarness.addAttribute<laovdb::math::Mat3<float>>
+        ("test2", laovdb::math::Mat3<float>(-1,0,0, 0,-2,0, 0,0,-3));
+    mHarness.addAttribute<laovdb::math::Mat4<double>>
+        ("test3", laovdb::math::Mat4<double>(-1,0,0,0, 0,-2,0,0, 0,0,-3,0, 0,0,0,-4));
+    mHarness.addAttribute<laovdb::math::Mat4<float>>
+        ("test4", laovdb::math::Mat4<float>(-1,0,0,0, 0,-2,0,0, 0,0,-3,0, 0,0,0,-4));
+    mHarness.addAttribute<laovdb::math::Vec3<double>>("test5", laovdb::math::Vec3<float>(-1,-5,-9));
+    mHarness.addAttribute<laovdb::math::Vec3<float>>("test6", laovdb::math::Vec3<float>(-1,-5,-9));
+    mHarness.addAttribute<laovdb::math::Vec4<double>>("test7", laovdb::math::Vec4<double>(-1,-6,-11,-16));
+    mHarness.addAttribute<laovdb::math::Vec4<float>>("test8", laovdb::math::Vec4<float>(-1,-6,-11,-16));
     testFunctionOptions(mHarness, "diag");
 }
 
 void
 TestStandardFunctions::dot()
 {
-    const openvdb::Vec3d ad(1.0,2.2,3.4), bd(4.1,5.3,6.2);
-    const openvdb::Vec3f af(1.0f,2.2f,3.4f), bf(4.1f,5.3f,6.2f);
-    const openvdb::Vec3i ai(1,2,3), bi(4,5,6);
+    const laovdb::Vec3d ad(1.0,2.2,3.4), bd(4.1,5.3,6.2);
+    const laovdb::Vec3f af(1.0f,2.2f,3.4f), bf(4.1f,5.3f,6.2f);
+    const laovdb::Vec3i ai(1,2,3), bi(4,5,6);
     mHarness.addAttribute<double>("test1", ad.dot(bd));
     mHarness.addAttribute<float>("test2", af.dot(bf));
     mHarness.addAttribute<int32_t>("test3", ai.dot(bi));
@@ -565,13 +565,13 @@ void
 TestStandardFunctions::external()
 {
     mHarness.addAttribute<float>("foo", 2.0f);
-    mHarness.addAttribute<openvdb::Vec3f>("v", openvdb::Vec3f(1.0f, 2.0f, 3.0f));
+    mHarness.addAttribute<laovdb::Vec3f>("v", laovdb::Vec3f(1.0f, 2.0f, 3.0f));
 
-    using FloatMeta = openvdb::TypedMetadata<float>;
-    using VectorFloatMeta = openvdb::TypedMetadata<openvdb::math::Vec3<float>>;
+    using FloatMeta = laovdb::TypedMetadata<float>;
+    using VectorFloatMeta = laovdb::TypedMetadata<laovdb::math::Vec3<float>>;
 
     FloatMeta customFloatData(2.0f);
-    VectorFloatMeta customVecData(openvdb::math::Vec3<float>(1.0f, 2.0f, 3.0f));
+    VectorFloatMeta customVecData(laovdb::math::Vec3<float>(1.0f, 2.0f, 3.0f));
 
     // test initialising the data before compile
 
@@ -583,7 +583,7 @@ TestStandardFunctions::external()
 
     mHarness.reset();
     mHarness.addAttribute<float>("foo", 2.0f);
-    mHarness.addAttribute<openvdb::Vec3f>("v", openvdb::Vec3f(1.0f, 2.0f, 3.0f));
+    mHarness.addAttribute<laovdb::Vec3f>("v", laovdb::Vec3f(1.0f, 2.0f, 3.0f));
 
     // test post compilation
 
@@ -597,7 +597,7 @@ TestStandardFunctions::external()
     data->insertData("float1", customFloatData.copy());
 
     VectorFloatMeta::Ptr customTypedVecData =
-        openvdb::StaticPtrCast<VectorFloatMeta>(customVecData.copy());
+        laovdb::StaticPtrCast<VectorFloatMeta>(customVecData.copy());
     data->insertData<VectorFloatMeta>("vector1", customTypedVecData);
 
     for (auto& grid : mHarness.mInputPointGrids) {
@@ -671,11 +671,11 @@ TestStandardFunctions::hsvtorgb()
     // HSV to RGB conversion. Taken from OpenEXR's ImathColorAlgo
     // @note  AX adds flooredmod of input hue to wrap to [0,1] domain
     // @note  AX also clamp saturation to [0,1]
-    auto convert = [&](const openvdb::Vec3d& hsv) {
+    auto convert = [&](const laovdb::Vec3d& hsv) {
         double hue = hsv.x();
         double sat = hsv.y();
         double val = hsv.z();
-        openvdb::Vec3d rgb(0.0);
+        laovdb::Vec3d rgb(0.0);
 
         // additions
         hue = axmod(hue, 1.0);
@@ -716,7 +716,7 @@ TestStandardFunctions::hsvtorgb()
         return rgb;
     };
 
-    const std::vector<openvdb::Vec3d> values{
+    const std::vector<laovdb::Vec3d> values{
         convert({0,0,0}),
         convert({1,1,1}),
         convert({5.8,1,1}),
@@ -726,21 +726,21 @@ TestStandardFunctions::hsvtorgb()
         convert({0.5,0.5,0.5}),
         convert({0.3,1.0,10.0})
     };
-    mHarness.addAttributes<openvdb::Vec3d>(unittest_util::nameSequence("test", 8), values);
+    mHarness.addAttributes<laovdb::Vec3d>(unittest_util::nameSequence("test", 8), values);
     testFunctionOptions(mHarness, "hsvtorgb");
 }
 
 void
 TestStandardFunctions::identity3()
 {
-    mHarness.addAttribute<openvdb::Mat3d>("test", openvdb::Mat3d::identity());
+    mHarness.addAttribute<laovdb::Mat3d>("test", laovdb::Mat3d::identity());
     testFunctionOptions(mHarness, "identity3");
 }
 
 void
 TestStandardFunctions::identity4()
 {
-    mHarness.addAttribute<openvdb::Mat4d>("test", openvdb::Mat4d::identity());
+    mHarness.addAttribute<laovdb::Mat4d>("test", laovdb::Mat4d::identity());
     testFunctionOptions(mHarness, "identity4");
 }
 
@@ -783,35 +783,35 @@ TestStandardFunctions::intrinsic()
 void
 TestStandardFunctions::inverse()
 {
-    const openvdb::math::Mat3<double> inputd(
+    const laovdb::math::Mat3<double> inputd(
             1.0, -1.0, 0.0,
             2.0, 2.0, 0.0,
             0.0, 0.0, -1.0);
 
-    const openvdb::math::Mat3<double> singulard(
+    const laovdb::math::Mat3<double> singulard(
             1.0, 2.0, 3.0,
             4.0, 5.0, 6.0,
             7.0, 8.0, 9.0);
 
-    const openvdb::math::Mat3<float> inputf(
+    const laovdb::math::Mat3<float> inputf(
             1.0f, -1.0f, 0.0f,
             2.0f, 2.0f, 0.0f,
             0.0f, 0.0f, -1.0f);
 
-    const openvdb::math::Mat3<float> singularf(
+    const laovdb::math::Mat3<float> singularf(
             1.0f, 2.0f, 3.0f,
             4.0f, 5.0f, 6.0f,
             7.0f, 8.0f, 9.0f);
 
-    openvdb::math::Mat3<double> invd = inputd.inverse();
-    openvdb::math::Mat3<float> invf = inputf.inverse();
+    laovdb::math::Mat3<double> invd = inputd.inverse();
+    laovdb::math::Mat3<float> invf = inputf.inverse();
 
-    mHarness.addAttribute<openvdb::math::Mat3<double>>("test1", invd);
-    mHarness.addAttribute<openvdb::math::Mat3<float>>("test2", invf);
+    mHarness.addAttribute<laovdb::math::Mat3<double>>("test1", invd);
+    mHarness.addAttribute<laovdb::math::Mat3<float>>("test2", invf);
 
     // inverse(singular) returns the original matrix
-    mHarness.addAttribute<openvdb::math::Mat3<double>>("test3", singulard);
-    mHarness.addAttribute<openvdb::math::Mat3<float>>("test4", singularf);
+    mHarness.addAttribute<laovdb::math::Mat3<double>>("test3", singulard);
+    mHarness.addAttribute<laovdb::math::Mat3<float>>("test4", singularf);
 
     testFunctionOptions(mHarness, "inverse");
 }
@@ -856,34 +856,34 @@ TestStandardFunctions::isnan()
 void
 TestStandardFunctions::length()
 {
-    mHarness.addAttribute("test1", openvdb::Vec2d(2.2, 3.3).length());
-    mHarness.addAttribute("test2", openvdb::Vec2f(2.2f, 3.3f).length());
-    mHarness.addAttribute("test3", std::sqrt(double(openvdb::Vec2i(2, 3).lengthSqr())));
+    mHarness.addAttribute("test1", laovdb::Vec2d(2.2, 3.3).length());
+    mHarness.addAttribute("test2", laovdb::Vec2f(2.2f, 3.3f).length());
+    mHarness.addAttribute("test3", std::sqrt(double(laovdb::Vec2i(2, 3).lengthSqr())));
 
-    mHarness.addAttribute("test4", openvdb::Vec3d(2.2, 3.3, 6.6).length());
-    mHarness.addAttribute("test5", openvdb::Vec3f(2.2f, 3.3f, 6.6f).length());
-    mHarness.addAttribute("test6", std::sqrt(double(openvdb::Vec3i(2, 3, 6).lengthSqr())));
+    mHarness.addAttribute("test4", laovdb::Vec3d(2.2, 3.3, 6.6).length());
+    mHarness.addAttribute("test5", laovdb::Vec3f(2.2f, 3.3f, 6.6f).length());
+    mHarness.addAttribute("test6", std::sqrt(double(laovdb::Vec3i(2, 3, 6).lengthSqr())));
 
-    mHarness.addAttribute("test7", openvdb::Vec4d(2.2, 3.3, 6.6, 7.7).length());
-    mHarness.addAttribute("test8", openvdb::Vec4f(2.2f, 3.3f, 6.6f, 7.7f).length());
-    mHarness.addAttribute("test9", std::sqrt(double(openvdb::Vec4i(2, 3, 6, 7).lengthSqr())));
+    mHarness.addAttribute("test7", laovdb::Vec4d(2.2, 3.3, 6.6, 7.7).length());
+    mHarness.addAttribute("test8", laovdb::Vec4f(2.2f, 3.3f, 6.6f, 7.7f).length());
+    mHarness.addAttribute("test9", std::sqrt(double(laovdb::Vec4i(2, 3, 6, 7).lengthSqr())));
     testFunctionOptions(mHarness, "length");
 }
 
 void
 TestStandardFunctions::lengthsq()
 {
-    mHarness.addAttribute("test1", openvdb::Vec2d(2.2, 3.3).lengthSqr());
-    mHarness.addAttribute("test2", openvdb::Vec2f(2.2f, 3.3f).lengthSqr());
-    mHarness.addAttribute("test3", openvdb::Vec2i(2, 3).lengthSqr());
+    mHarness.addAttribute("test1", laovdb::Vec2d(2.2, 3.3).lengthSqr());
+    mHarness.addAttribute("test2", laovdb::Vec2f(2.2f, 3.3f).lengthSqr());
+    mHarness.addAttribute("test3", laovdb::Vec2i(2, 3).lengthSqr());
 
-    mHarness.addAttribute("test4", openvdb::Vec3d(2.2, 3.3, 6.6).lengthSqr());
-    mHarness.addAttribute("test5", openvdb::Vec3f(2.2f, 3.3f, 6.6f).lengthSqr());
-    mHarness.addAttribute("test6", openvdb::Vec3i(2, 3, 6).lengthSqr());
+    mHarness.addAttribute("test4", laovdb::Vec3d(2.2, 3.3, 6.6).lengthSqr());
+    mHarness.addAttribute("test5", laovdb::Vec3f(2.2f, 3.3f, 6.6f).lengthSqr());
+    mHarness.addAttribute("test6", laovdb::Vec3i(2, 3, 6).lengthSqr());
 
-    mHarness.addAttribute("test7", openvdb::Vec4d(2.2, 3.3, 6.6, 7.7).lengthSqr());
-    mHarness.addAttribute("test8", openvdb::Vec4f(2.2f, 3.3f, 6.6f, 7.7f).lengthSqr());
-    mHarness.addAttribute("test9", openvdb::Vec4i(2, 3, 6, 7).lengthSqr());
+    mHarness.addAttribute("test7", laovdb::Vec4d(2.2, 3.3, 6.6, 7.7).lengthSqr());
+    mHarness.addAttribute("test8", laovdb::Vec4f(2.2f, 3.3f, 6.6f, 7.7f).lengthSqr());
+    mHarness.addAttribute("test9", laovdb::Vec4i(2, 3, 6, 7).lengthSqr());
     testFunctionOptions(mHarness, "lengthsq");
 }
 
@@ -917,13 +917,13 @@ TestStandardFunctions::min()
 void
 TestStandardFunctions::normalize()
 {
-    openvdb::Vec3f expected3f(1.f, 2.f, 3.f);
-    openvdb::Vec3d expected3d(1., 2., 3.);
-    openvdb::Vec3d expected3i(1, 2, 3);
+    laovdb::Vec3f expected3f(1.f, 2.f, 3.f);
+    laovdb::Vec3d expected3d(1., 2., 3.);
+    laovdb::Vec3d expected3i(1, 2, 3);
 
-    openvdb::Vec4f expected4f(1.f, 2.f, 3.f, 4.f);
-    openvdb::Vec4d expected4d(1., 2., 3., 4.);
-    openvdb::Vec4d expected4i(1, 2, 3, 4);
+    laovdb::Vec4f expected4f(1.f, 2.f, 3.f, 4.f);
+    laovdb::Vec4d expected4d(1., 2., 3., 4.);
+    laovdb::Vec4d expected4i(1, 2, 3, 4);
 
     expected3f.normalize();
     expected3d.normalize();
@@ -945,16 +945,16 @@ void
 TestStandardFunctions::polardecompose()
 {
     // See snippet/polardecompose for details
-    const openvdb::Mat3d composite(
+    const laovdb::Mat3d composite(
         1.41421456236949,  0.0,  -5.09116882455613,
         0.0,               3.3,  0.0,
         -1.41421356237670, 0.0, -5.09116882453015);
 
-    openvdb::Mat3d rot, symm;
-    openvdb::math::polarDecomposition(composite, rot, symm);
+    laovdb::Mat3d rot, symm;
+    laovdb::math::polarDecomposition(composite, rot, symm);
 
-    mHarness.addAttribute<openvdb::Mat3d>("rotation", rot);
-    mHarness.addAttribute<openvdb::Mat3d>("symm", symm);
+    mHarness.addAttribute<laovdb::Mat3d>("rotation", rot);
+    mHarness.addAttribute<laovdb::Mat3d>("symm", symm);
     testFunctionOptions(mHarness, "polardecompose");
 }
 
@@ -962,38 +962,38 @@ void
 TestStandardFunctions::postscale()
 {
 
-    mHarness.addAttributes<openvdb::math::Mat4<float>>
+    mHarness.addAttributes<laovdb::math::Mat4<float>>
         ({"mat1", "mat3", "mat5"}, {
-            openvdb::math::Mat4<float>(
+            laovdb::math::Mat4<float>(
                 10.0f, 22.0f, 36.0f, 4.0f,
                 50.0f, 66.0f, 84.0f, 8.0f,
                 90.0f, 110.0f,132.0f,12.0f,
                 130.0f,154.0f,180.0f,16.0f),
-            openvdb::math::Mat4<float>(
+            laovdb::math::Mat4<float>(
                 -1.0f, -4.0f, -9.0f, 4.0f,
                 -5.0f, -12.0f,-21.0f, 8.0f,
                 -9.0f, -20.0f,-33.0f,12.0f,
                 -13.0f,-28.0f,-45.0f,16.0f),
-            openvdb::math::Mat4<float>(
+            laovdb::math::Mat4<float>(
                 0.0f, 100.0f, 200.0f, 100.0f,
                 0.0f, 200.0f, 400.0f, 200.0f,
                 0.0f, 300.0f, 600.0f, 300.0f,
                 0.0f, 400.0f, 800.0f, 400.0f)
         });
 
-    mHarness.addAttributes<openvdb::math::Mat4<double>>
+    mHarness.addAttributes<laovdb::math::Mat4<double>>
         ({"mat2", "mat4", "mat6"}, {
-            openvdb::math::Mat4<double>(
+            laovdb::math::Mat4<double>(
                 10.0, 22.0, 36.0, 4.0,
                 50.0, 66.0, 84.0, 8.0,
                 90.0, 110.0,132.0,12.0,
                 130.0,154.0,180.0,16.0),
-            openvdb::math::Mat4<double>(
+            laovdb::math::Mat4<double>(
                 -1.0, -4.0, -9.0, 4.0,
                 -5.0, -12.0,-21.0, 8.0,
                 -9.0, -20.0,-33.0,12.0,
                 -13.0,-28.0,-45.0,16.0),
-            openvdb::math::Mat4<double>(
+            laovdb::math::Mat4<double>(
                 0.0, 100.0, 200.0, 100.0,
                 0.0, 200.0, 400.0, 200.0,
                 0.0, 300.0, 600.0, 300.0,
@@ -1022,38 +1022,38 @@ void
 TestStandardFunctions::prescale()
 {
 
-    mHarness.addAttributes<openvdb::math::Mat4<float>>
+    mHarness.addAttributes<laovdb::math::Mat4<float>>
         ({"mat1", "mat3", "mat5"}, {
-            openvdb::math::Mat4<float>(
+            laovdb::math::Mat4<float>(
                 10.0f, 20.0f, 30.0f, 40.0f,
                 55.0f, 66.0f, 77.0f, 88.0f,
                 108.0f, 120.0f,132.0f,144.0f,
                 13.0f,14.0f,15.0f,16.0f),
-            openvdb::math::Mat4<float>(
+            laovdb::math::Mat4<float>(
                 -1.0f,-2.0f,-3.0f,-4.0f,
                 -10.0f,-12.0f,-14.0f,-16.0f,
                 -27.0f,-30.0f,-33.0f,-36.0f,
                 13.0f,14.0f,15.0f,16.0f),
-            openvdb::math::Mat4<float>(
+            laovdb::math::Mat4<float>(
                 0.0f, 0.0f, 0.0f, 0.0f,
                 200.0f, 200.0f, 200.0f, 200.0f,
                 600.0f, 600.0f, 600.0f, 600.0f,
                 400.0f, 400.0f, 400.0f, 400.0f)
         });
 
-    mHarness.addAttributes<openvdb::math::Mat4<double>>
+    mHarness.addAttributes<laovdb::math::Mat4<double>>
         ({"mat2", "mat4", "mat6"}, {
-            openvdb::math::Mat4<double>(
+            laovdb::math::Mat4<double>(
                 10.0, 20.0, 30.0, 40.0,
                 55.0, 66.0, 77.0, 88.0,
                 108.0, 120.0,132.0,144.0,
                 13.0,14.0,15.0,16.0),
-            openvdb::math::Mat4<double>(
+            laovdb::math::Mat4<double>(
                 -1.0,-2.0,-3.0,-4.0,
                 -10.0,-12.0,-14.0,-16.0,
                 -27.0,-30.0,-33.0,-36.0,
                 13.0,14.0,15.0,16.0),
-            openvdb::math::Mat4<double>(
+            laovdb::math::Mat4<double>(
                 0.0, 0.0, 0.0, 0.0,
                 200.0, 200.0, 200.0, 200.0,
                 600.0, 600.0, 600.0, 600.0,
@@ -1066,25 +1066,25 @@ TestStandardFunctions::prescale()
 void
 TestStandardFunctions::pretransform()
 {
-    mHarness.addAttributes<openvdb::math::Vec3<double>>
+    mHarness.addAttributes<laovdb::math::Vec3<double>>
         ({"test1", "test3", "test7"}, {
-            openvdb::math::Vec3<double>(14.0, 32.0, 50.0),
-            openvdb::math::Vec3<double>(18.0, 46.0, 74.0),
-            openvdb::math::Vec3<double>(18.0, 46.0, 74.0),
+            laovdb::math::Vec3<double>(14.0, 32.0, 50.0),
+            laovdb::math::Vec3<double>(18.0, 46.0, 74.0),
+            laovdb::math::Vec3<double>(18.0, 46.0, 74.0),
         });
 
-    mHarness.addAttribute<openvdb::math::Vec4<double>>("test5",
-        openvdb::math::Vec4<double>(30.0, 70.0, 110.0, 150.0));
+    mHarness.addAttribute<laovdb::math::Vec4<double>>("test5",
+        laovdb::math::Vec4<double>(30.0, 70.0, 110.0, 150.0));
 
-    mHarness.addAttributes<openvdb::math::Vec3<float>>
+    mHarness.addAttributes<laovdb::math::Vec3<float>>
         ({"test2", "test4", "test8"}, {
-            openvdb::math::Vec3<float>(14.0f, 32.0f, 50.0f),
-            openvdb::math::Vec3<float>(18.0f, 46.0f, 74.0f),
-            openvdb::math::Vec3<float>(18.0f, 46.0f, 74.0f),
+            laovdb::math::Vec3<float>(14.0f, 32.0f, 50.0f),
+            laovdb::math::Vec3<float>(18.0f, 46.0f, 74.0f),
+            laovdb::math::Vec3<float>(18.0f, 46.0f, 74.0f),
         });
 
-    mHarness.addAttribute<openvdb::math::Vec4<float>>("test6",
-        openvdb::math::Vec4<float>(30.0f, 70.0f, 110.0f, 150.0f));
+    mHarness.addAttribute<laovdb::math::Vec4<float>>("test6",
+        laovdb::math::Vec4<float>(30.0f, 70.0f, 110.0f, 150.0f));
 
     testFunctionOptions(mHarness, "pretransform");
 }
@@ -1092,22 +1092,22 @@ TestStandardFunctions::pretransform()
 void
 TestStandardFunctions::print()
 {
-    openvdb::math::Transform::Ptr transform =
-        openvdb::math::Transform::createLinearTransform();
-    const std::vector<openvdb::Vec3d> single = {
-        openvdb::Vec3d::zero()
+    laovdb::math::Transform::Ptr transform =
+        laovdb::math::Transform::createLinearTransform();
+    const std::vector<laovdb::Vec3d> single = {
+        laovdb::Vec3d::zero()
     };
 
-    openvdb::points::PointDataGrid::Ptr grid =
-        openvdb::points::createPointDataGrid
-            <openvdb::points::NullCodec, openvdb::points::PointDataGrid>
+    laovdb::points::PointDataGrid::Ptr grid =
+        laovdb::points::createPointDataGrid
+            <laovdb::points::NullCodec, laovdb::points::PointDataGrid>
                 (single, *transform);
 
     const std::string code = unittest_util::loadText("test/snippets/function/print");
 
-    openvdb::ax::Compiler::UniquePtr compiler = openvdb::ax::Compiler::create();
-    openvdb::ax::PointExecutable::Ptr executable =
-        compiler->compile<openvdb::ax::PointExecutable>(code);
+    laovdb::ax::Compiler::UniquePtr compiler = laovdb::ax::Compiler::create();
+    laovdb::ax::PointExecutable::Ptr executable =
+        compiler->compile<laovdb::ax::PointExecutable>(code);
 
     std::streambuf* sbuf = std::cout.rdbuf();
 
@@ -1120,7 +1120,7 @@ TestStandardFunctions::print()
         const std::string& result = buffer.str();
 
         std::string expected = "a\n1\n2e-10\n";
-        expected += openvdb::Vec4i(3,4,5,6).str() + "\n";
+        expected += laovdb::Vec4i(3,4,5,6).str() + "\n";
         expected += "bcd\n";
 
         CPPUNIT_ASSERT_EQUAL(expected, result);
@@ -1136,8 +1136,8 @@ TestStandardFunctions::print()
 void
 TestStandardFunctions::radians()
 {
-    mHarness.addAttribute<double>("test1", 90.0 * (openvdb::math::pi<double>() / 180.0));
-    mHarness.addAttribute<float>("test2", -65.0f * (openvdb::math::pi<float>() / 180.0f ));
+    mHarness.addAttribute<double>("test1", 90.0 * (laovdb::math::pi<double>() / 180.0));
+    mHarness.addAttribute<float>("test2", -65.0f * (laovdb::math::pi<float>() / 180.0f ));
     testFunctionOptions(mHarness, "radians");
 }
 
@@ -1199,7 +1199,7 @@ void
 TestStandardFunctions::rgbtohsv()
 {
     // RGB to HSV conversion. Taken from OpenEXR's ImathColorAlgo
-    auto convert = [](const openvdb::Vec3d& rgb) {
+    auto convert = [](const laovdb::Vec3d& rgb) {
         const double& x = rgb.x();
         const double& y = rgb.y();
         const double& z = rgb.z();
@@ -1222,16 +1222,16 @@ TestStandardFunctions::rgbtohsv()
             if (hue < 0.) hue += 1.0;
         }
 
-        return openvdb::Vec3d(hue, sat, val);
+        return laovdb::Vec3d(hue, sat, val);
     };
 
-    const std::vector<openvdb::Vec3d> values{
+    const std::vector<laovdb::Vec3d> values{
         convert({0,0,0}),
         convert({1,1,1}),
         convert({20.5,40.3,100.1}),
         convert({-10,1.3,0.25})
     };
-    mHarness.addAttributes<openvdb::Vec3d>(unittest_util::nameSequence("test", 4), values);
+    mHarness.addAttributes<laovdb::Vec3d>(unittest_util::nameSequence("test", 4), values);
     testFunctionOptions(mHarness, "rgbtohsv");
 }
 
@@ -1279,28 +1279,28 @@ TestStandardFunctions::sinh()
 void
 TestStandardFunctions::sort()
 {
-    // const openvdb::Vec3d input3d(1.0, -1.0, 0.0);
-    // const openvdb::Vec3f input3f(1.0f, -1.0f, 0.0f);
-    // const openvdb::Vec3i input3i(1, -1, 0);
+    // const laovdb::Vec3d input3d(1.0, -1.0, 0.0);
+    // const laovdb::Vec3f input3f(1.0f, -1.0f, 0.0f);
+    // const laovdb::Vec3i input3i(1, -1, 0);
 
-    // const openvdb::Vec4d input4d(1.0, -1.0, 0.0, 5.0);
-    // const openvdb::Vec4f input4f(1.0f, -1.0f, 0.0f, 5.0f);
-    // const openvdb::Vec4i input4i(1, -1, 0, 5);
+    // const laovdb::Vec4d input4d(1.0, -1.0, 0.0, 5.0);
+    // const laovdb::Vec4f input4f(1.0f, -1.0f, 0.0f, 5.0f);
+    // const laovdb::Vec4i input4i(1, -1, 0, 5);
 
-    const openvdb::Vec3d sorted3d(-1.0,0.0,1.0);
-    const openvdb::Vec3f sorted3f(-1.0f,0.0f,1.0f);
-    const openvdb::Vec3i sorted3i(-1,0,1);
+    const laovdb::Vec3d sorted3d(-1.0,0.0,1.0);
+    const laovdb::Vec3f sorted3f(-1.0f,0.0f,1.0f);
+    const laovdb::Vec3i sorted3i(-1,0,1);
 
-    const openvdb::Vec4d sorted4d(-1.0,0.0,1.0,5.0);
-    const openvdb::Vec4f sorted4f(-1.0f,0.0f,1.0f,5.0f);
-    const openvdb::Vec4i sorted4i(-1,0,1,5);
+    const laovdb::Vec4d sorted4d(-1.0,0.0,1.0,5.0);
+    const laovdb::Vec4f sorted4f(-1.0f,0.0f,1.0f,5.0f);
+    const laovdb::Vec4i sorted4i(-1,0,1,5);
 
-    mHarness.addAttribute<openvdb::Vec3d>("test1", sorted3d);
-    mHarness.addAttribute<openvdb::Vec3f>("test2", sorted3f);
-    mHarness.addAttribute<openvdb::Vec3i>("test3", sorted3i);
-    mHarness.addAttribute<openvdb::Vec4d>("test4", sorted4d);
-    mHarness.addAttribute<openvdb::Vec4f>("test5", sorted4f);
-    mHarness.addAttribute<openvdb::Vec4i>("test6", sorted4i);
+    mHarness.addAttribute<laovdb::Vec3d>("test1", sorted3d);
+    mHarness.addAttribute<laovdb::Vec3f>("test2", sorted3f);
+    mHarness.addAttribute<laovdb::Vec3i>("test3", sorted3i);
+    mHarness.addAttribute<laovdb::Vec4d>("test4", sorted4d);
+    mHarness.addAttribute<laovdb::Vec4f>("test5", sorted4f);
+    mHarness.addAttribute<laovdb::Vec4i>("test6", sorted4i);
 
     testFunctionOptions(mHarness, "sort");
 }
@@ -1345,25 +1345,25 @@ TestStandardFunctions::truncatemod()
 void
 TestStandardFunctions::transform()
 {
-    mHarness.addAttributes<openvdb::math::Vec3<double>>
+    mHarness.addAttributes<laovdb::math::Vec3<double>>
         ({"test1", "test3", "test7"}, {
-            openvdb::math::Vec3<double>(30.0, 36.0, 42.0),
-            openvdb::math::Vec3<double>(51.0, 58, 65.0),
-            openvdb::math::Vec3<double>(51.0, 58, 65.0),
+            laovdb::math::Vec3<double>(30.0, 36.0, 42.0),
+            laovdb::math::Vec3<double>(51.0, 58, 65.0),
+            laovdb::math::Vec3<double>(51.0, 58, 65.0),
         });
 
-    mHarness.addAttribute<openvdb::math::Vec4<double>>("test5",
-        openvdb::math::Vec4<double>(90.0, 100.0, 110.0, 120.0));
+    mHarness.addAttribute<laovdb::math::Vec4<double>>("test5",
+        laovdb::math::Vec4<double>(90.0, 100.0, 110.0, 120.0));
 
-    mHarness.addAttributes<openvdb::math::Vec3<float>>
+    mHarness.addAttributes<laovdb::math::Vec3<float>>
         ({"test2", "test4", "test8"}, {
-            openvdb::math::Vec3<float>(30.0f, 36.0f, 42.0f),
-            openvdb::math::Vec3<float>(51.0f, 58.0f, 65.0f),
-            openvdb::math::Vec3<float>(51.0f, 58.0f, 65.0f),
+            laovdb::math::Vec3<float>(30.0f, 36.0f, 42.0f),
+            laovdb::math::Vec3<float>(51.0f, 58.0f, 65.0f),
+            laovdb::math::Vec3<float>(51.0f, 58.0f, 65.0f),
         });
 
-    mHarness.addAttribute<openvdb::math::Vec4<float>>("test6",
-        openvdb::math::Vec4<float>(90.0f, 100.0f, 110.0f, 120.0f));
+    mHarness.addAttribute<laovdb::math::Vec4<float>>("test6",
+        laovdb::math::Vec4<float>(90.0f, 100.0f, 110.0f, 120.0f));
 
     testFunctionOptions(mHarness, "transform");
 }
@@ -1373,23 +1373,23 @@ TestStandardFunctions::transpose()
 {
 
     mHarness.addAttribute("test1",
-        openvdb::math::Mat3<double>(
+        laovdb::math::Mat3<double>(
             1.0, 4.0, 7.0,
             2.0, 5.0, 8.0,
             3.0, 6.0, 9.0));
     mHarness.addAttribute("test2",
-        openvdb::math::Mat3<float>(
+        laovdb::math::Mat3<float>(
             1.0f, 4.0f, 7.0f,
             2.0f, 5.0f, 8.0f,
             3.0f, 6.0f, 9.0f));
     mHarness.addAttribute("test3",
-        openvdb::math::Mat4<double>(
+        laovdb::math::Mat4<double>(
             1.0, 5.0, 9.0,13.0,
             2.0, 6.0,10.0,14.0,
             3.0, 7.0,11.0,15.0,
             4.0, 8.0,12.0,16.0));
     mHarness.addAttribute("test4",
-        openvdb::math::Mat4<float>(
+        laovdb::math::Mat4<float>(
             1.0f, 5.0f, 9.0f,13.0f,
             2.0f, 6.0f,10.0f,14.0f,
             3.0f, 7.0f,11.0f,15.0f,

@@ -16,7 +16,7 @@
 
 #include <openvdb/version.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -40,7 +40,7 @@ namespace ast {
 /// @param code    The code to parse
 /// @param logger  The logger to collect syntax errors
 ///
-OPENVDB_AX_API openvdb::ax::ast::Tree::ConstPtr
+OPENVDB_AX_API laovdb::ax::ast::Tree::ConstPtr
 parse(const char* code, ax::Logger& logger);
 
 /// @brief   Construct an abstract syntax tree from a code snippet.
@@ -50,14 +50,14 @@ parse(const char* code, ax::Logger& logger);
 ///
 /// @param code The code to parse
 ///
-OPENVDB_AX_API openvdb::ax::ast::Tree::Ptr
+OPENVDB_AX_API laovdb::ax::ast::Tree::Ptr
 parse(const char* code);
 
 } // namespace ast
 } // namespace ax
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_AST_HAS_BEEN_INCLUDED
 

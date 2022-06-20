@@ -14,7 +14,7 @@
 #include <type_traits>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -150,6 +150,6 @@ OPENVDB_VEC3_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_VECTORTRANSFORMER_HAS_BEEN_INCLUDED

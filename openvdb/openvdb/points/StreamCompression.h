@@ -27,7 +27,7 @@
 
 class TestStreamCompression;
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace compression {
@@ -280,6 +280,6 @@ private:
 
 } // namespace compression
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_STREAM_COMPRESSION_HAS_BEEN_INCLUDED

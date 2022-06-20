@@ -333,7 +333,7 @@ SOP_OpenVDB_To_Spheres::Cache::cookVDBSop(OP_Context& context)
             maxRadius = !useMaxRadius ? fmax : static_cast<float>(evalFloat("radiusmax", 0, time));
 
         const int scatter = static_cast<int>(evalInt("scatter", 0, time));
-        const openvdb::Vec2i sphereCount(
+        const laovdb::Vec2i sphereCount(
             !useMinSpheres ? 0 : static_cast<int>(evalInt("spheresmin", 0, time)),
             !useMaxSpheres ? scatter : static_cast<int>(evalInt("spheresmax", 0, time)));
 
@@ -374,7 +374,7 @@ SOP_OpenVDB_To_Spheres::Cache::cookVDBSop(OP_Context& context)
         for (; vdbIt; ++vdbIt) {
             if (boss.wasInterrupted()) break;
 
-            openvdb::Vec2s radiusRange(minRadius, maxRadius);
+            laovdb::Vec2s radiusRange(minRadius, maxRadius);
             if (worldUnits) {
                 const float voxelScale = float(1.0 / vdbIt->getGrid().voxelSize()[0]);
                 radiusRange *= voxelScale;
@@ -382,23 +382,23 @@ SOP_OpenVDB_To_Spheres::Cache::cookVDBSop(OP_Context& context)
 
             radiusRange[1] = std::max(radiusRange[1], radiusRange[0] + float(1e-5));
 
-            std::vector<openvdb::Vec4s> spheres;
+            std::vector<laovdb::Vec4s> spheres;
 
-            if (vdbIt->getGrid().type() == openvdb::FloatGrid::gridType()) {
+            if (vdbIt->getGrid().type() == laovdb::FloatGrid::gridType()) {
 
-                openvdb::FloatGrid::ConstPtr gridPtr =
-                    openvdb::gridConstPtrCast<openvdb::FloatGrid>(vdbIt->getGridPtr());
+                laovdb::FloatGrid::ConstPtr gridPtr =
+                    laovdb::gridConstPtrCast<laovdb::FloatGrid>(vdbIt->getGridPtr());
 
-                openvdb::tools::fillWithSpheres(*gridPtr, spheres, sphereCount, overlapping,
+                laovdb::tools::fillWithSpheres(*gridPtr, spheres, sphereCount, overlapping,
                     radiusRange[0], radiusRange[1], isovalue, scatter, &boss.interrupter());
 
 
-            } else if (vdbIt->getGrid().type() == openvdb::DoubleGrid::gridType()) {
+            } else if (vdbIt->getGrid().type() == laovdb::DoubleGrid::gridType()) {
 
-                openvdb::DoubleGrid::ConstPtr gridPtr =
-                    openvdb::gridConstPtrCast<openvdb::DoubleGrid>(vdbIt->getGridPtr());
+                laovdb::DoubleGrid::ConstPtr gridPtr =
+                    laovdb::gridConstPtrCast<laovdb::DoubleGrid>(vdbIt->getGridPtr());
 
-                openvdb::tools::fillWithSpheres(*gridPtr, spheres, sphereCount, overlapping,
+                laovdb::tools::fillWithSpheres(*gridPtr, spheres, sphereCount, overlapping,
                     radiusRange[0], radiusRange[1], isovalue, scatter, &boss.interrupter());
 
             } else {
@@ -411,7 +411,7 @@ SOP_OpenVDB_To_Spheres::Cache::cookVDBSop(OP_Context& context)
             // copy spheres to Houdini
             for (size_t n = 0, N = spheres.size(); n < N; ++n) {
 
-                const openvdb::Vec4s& sphere = spheres[n];
+                const laovdb::Vec4s& sphere = spheres[n];
 
                 GA_Offset ptoff = gdp->appendPointOffset();
 

@@ -3,7 +3,7 @@
 
 #include "QuantizedUnitVec.h"
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -2079,4 +2079,4 @@ float QuantizedUnitVec::sNormalizationWeights[8192] = {
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

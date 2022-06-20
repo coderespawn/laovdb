@@ -24,7 +24,7 @@
 #include <sstream>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace io {
@@ -830,4 +830,4 @@ File::endName() const
 
 } // namespace io
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

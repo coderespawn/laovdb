@@ -22,7 +22,7 @@
 
 class TestLogger;
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -122,7 +122,7 @@ public:
     /// @brief Clear the tree-code mapping and reset the number of errors/warnings
     /// @note  The tree-code mapping must be repopulated to retrieve line and
     ///   column numbers during AST traversal i.e. code generation. The
-    ///   openvdb::ax::ast::parse() function does this for a given input code
+    ///   laovdb::ax::ast::parse() function does this for a given input code
     ///   string.
     void clear();
 
@@ -184,7 +184,7 @@ public:
     ///   ensure traversal of original source tree is possible, when adding
     ///   messages using Node* which may correspond to modified trees
     /// @param tree Pointer to const AST
-    void setSourceTree(openvdb::ax::ast::Tree::ConstPtr tree);
+    void setSourceTree(laovdb::ax::ast::Tree::ConstPtr tree);
 
     /// @brief Add a node to the code location map
     /// @param node     Pointer to AST node
@@ -216,7 +216,7 @@ private:
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_COMPILER_LOGGER_HAS_BEEN_INCLUDED
 

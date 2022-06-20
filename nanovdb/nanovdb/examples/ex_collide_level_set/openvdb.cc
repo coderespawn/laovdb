@@ -22,11 +22,11 @@ using BufferT = nanovdb::HostBuffer;
 
 void runOpenVDB(nanovdb::GridHandle<BufferT>& handle, int numIterations, int numPoints, BufferT& positionBuffer, BufferT& velocityBuffer)
 {
-    using GridT = openvdb::FloatGrid;
-    using CoordT = openvdb::Coord;
+    using GridT = laovdb::FloatGrid;
+    using CoordT = laovdb::Coord;
     using RealT = float;
-    using Vec3T = openvdb::math::Vec3<RealT>;
-    using RayT = openvdb::math::Ray<RealT>;
+    using Vec3T = laovdb::math::Vec3<RealT>;
+    using RayT = laovdb::math::Ray<RealT>;
 
     auto srcGrid = nanovdb::nanoToOpenVDB(handle);
     std::cout << "Exporting to OpenVDB grid[" << srcGrid->getName() << "]...\n";

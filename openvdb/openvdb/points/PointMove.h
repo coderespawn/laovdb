@@ -50,7 +50,7 @@
 class TestPointMove;
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -820,20 +820,20 @@ void CachedDeformer<T>::apply(Vec3d& position, const IndexIterT& iter) const
     if (mLeafMap) {
         auto it = mLeafMap->find(*iter);
         if (it == mLeafMap->end())      return;
-        position = static_cast<openvdb::Vec3d>(it->second);
+        position = static_cast<laovdb::Vec3d>(it->second);
     }
     else {
         assert(mLeafVec);
 
         if (mLeafVec->empty())          return;
         assert(*iter < mLeafVec->size());
-        position = static_cast<openvdb::Vec3d>((*mLeafVec)[*iter]);
+        position = static_cast<laovdb::Vec3d>((*mLeafVec)[*iter]);
     }
 }
 
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_POINT_MOVE_HAS_BEEN_INCLUDED

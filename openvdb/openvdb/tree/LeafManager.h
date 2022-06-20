@@ -25,7 +25,7 @@
 #include <type_traits>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tree {
@@ -864,6 +864,6 @@ struct LeafManagerImpl<LeafManager<const TreeT> >
 
 } // namespace tree
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TREE_LEAFMANAGER_HAS_BEEN_INCLUDED

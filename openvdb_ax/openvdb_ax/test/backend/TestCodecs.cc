@@ -12,11 +12,11 @@
 
 #include <limits>
 
-using namespace openvdb;
-using namespace openvdb::ax;
-using namespace openvdb::ax::codegen;
-using namespace openvdb::points;
-using HalfTy = openvdb::math::half;
+using namespace laovdb;
+using namespace laovdb::ax;
+using namespace laovdb::ax::codegen;
+using namespace laovdb::points;
+using HalfTy = laovdb::math::half;
 
 struct UFxpt8   { static const bool OneByte = true;  using type = FixedPointCodec<OneByte, UnitRange>; };
 struct UFxpt16  { static const bool OneByte = false; using type = FixedPointCodec<OneByte, UnitRange>; };

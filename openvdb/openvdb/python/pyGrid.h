@@ -3,7 +3,7 @@
 //
 /// @file pyGrid.h
 /// @author Peter Cucka
-/// @brief Boost.Python wrapper for openvdb::Grid
+/// @brief Boost.Python wrapper for laovdb::Grid
 
 #ifndef OPENVDB_PYGRID_HAS_BEEN_INCLUDED
 #define OPENVDB_PYGRID_HAS_BEEN_INCLUDED
@@ -47,7 +47,7 @@ namespace py = boost::python;
 #pragma clang diagnostic ignored "-Wheader-hygiene"
 #endif
 
-using namespace openvdb::OPENVDB_VERSION_NAME;
+using namespace laovdb::OPENVDB_VERSION_NAME;
 
 #ifdef __clang__
 #pragma clang diagnostic pop
@@ -83,7 +83,7 @@ getPyObjectFromGrid(const GridBase::Ptr& grid)
 }
 
 
-inline openvdb::GridBase::Ptr
+inline laovdb::GridBase::Ptr
 getGridFromPyObject(const boost::python::object& gridObj)
 {
     if (!gridObj) return GridBase::Ptr();
@@ -114,7 +114,7 @@ getGridFromPyObject(const boost::python::object& gridObj)
 }
 
 
-inline openvdb::GridBase::Ptr
+inline laovdb::GridBase::Ptr
 getGridFromPyObject(PyObject* gridObj)
 {
     return getGridFromPyObject(pyutil::pyBorrow(gridObj));
@@ -133,8 +133,8 @@ getGridFromGridBase(GridBase::Ptr grid)
 {
     py::object obj;
     try {
-        obj = pyopenvdb::getPyObjectFromGrid(grid);
-    } catch (openvdb::TypeError& e) {
+        obj = pylaovdb::getPyObjectFromGrid(grid);
+    } catch (laovdb::TypeError& e) {
         PyErr_SetString(PyExc_TypeError, e.what());
         py::throw_error_already_set();
         return py::object();
@@ -153,8 +153,8 @@ getGridBaseFromGrid(py::object gridObj)
 {
     GridBase::Ptr grid;
     try {
-        grid = pyopenvdb::getGridFromPyObject(gridObj);
-    } catch (openvdb::TypeError& e) {
+        grid = pylaovdb::getGridFromPyObject(gridObj);
+    } catch (laovdb::TypeError& e) {
         PyErr_SetString(PyExc_TypeError, e.what());
         py::throw_error_already_set();
         return GridBase::Ptr();
@@ -234,7 +234,7 @@ template<typename GridType>
 inline typename GridType::ValueType
 getZeroValue()
 {
-    return openvdb::zeroVal<typename GridType::ValueType>();
+    return laovdb::zeroVal<typename GridType::ValueType>();
 }
 
 
@@ -243,7 +243,7 @@ inline typename GridType::ValueType
 getOneValue()
 {
     using ValueT = typename GridType::ValueType;
-    return ValueT(openvdb::zeroVal<ValueT>() + 1);
+    return ValueT(laovdb::zeroVal<ValueT>() + 1);
 }
 
 
@@ -810,7 +810,7 @@ arrayTypeId(const py::numpy::ndarray& arrayObj)
             case DtId::UINT32: case DtId::UINT64:
                 return typeId;
         }
-        throw openvdb::TypeError{};
+        throw laovdb::TypeError{};
     }
 #else
     if (np::equivalent(dtype, np::dtype::get_builtin<float>())) return DtId::FLOAT;
@@ -823,7 +823,7 @@ arrayTypeId(const py::numpy::ndarray& arrayObj)
     if (np::equivalent(dtype, np::dtype::get_builtin<Index64>())) return DtId::UINT64;
     //if (np::equivalent(dtype, np::dtype::get_builtin<math::half>())) return DtId::HALF;
 #endif
-    throw openvdb::TypeError{};
+    throw laovdb::TypeError{};
 }
 
 
@@ -857,7 +857,7 @@ arrayTypeId(const py::numeric::array& arrayObj)
         dtype = PyArray_DESCR(arrayObjPtr);
     }
     if (dtype) return static_cast<DtId>(dtype->type_num);
-    throw openvdb::TypeError{};
+    throw laovdb::TypeError{};
 }
 
 
@@ -959,7 +959,7 @@ public:
             } else {
                 copyToArray(); // copy data from the grid to the array
             }
-        } catch (openvdb::TypeError&) {
+        } catch (laovdb::TypeError&) {
             PyErr_Format(PyExc_TypeError,
                 "unsupported NumPy data type %s", mArrayTypeName.c_str());
             boost::python::throw_error_already_set();
@@ -1042,7 +1042,7 @@ protected:
         case DtId::INT64: this->template fromArray<typename NumPyToCpp<DtId::INT64>::type>(); break;
         case DtId::UINT32:this->template fromArray<typename NumPyToCpp<DtId::UINT32>::type>();break;
         case DtId::UINT64:this->template fromArray<typename NumPyToCpp<DtId::UINT64>::type>();break;
-        default: throw openvdb::TypeError(); break;
+        default: throw laovdb::TypeError(); break;
         }
     }
 
@@ -1057,7 +1057,7 @@ protected:
         case DtId::INT64:  this->template toArray<typename NumPyToCpp<DtId::INT64>::type>(); break;
         case DtId::UINT32: this->template toArray<typename NumPyToCpp<DtId::UINT32>::type>(); break;
         case DtId::UINT64: this->template toArray<typename NumPyToCpp<DtId::UINT64>::type>(); break;
-        default: throw openvdb::TypeError(); break;
+        default: throw laovdb::TypeError(); break;
         }
     }
 
@@ -1124,7 +1124,7 @@ protected:
             this->template fromArray<math::Vec3<typename NumPyToCpp<DtId::UINT32>::type>>(); break;
         case DtId::UINT64:
             this->template fromArray<math::Vec3<typename NumPyToCpp<DtId::UINT64>::type>>(); break;
-        default: throw openvdb::TypeError(); break;
+        default: throw laovdb::TypeError(); break;
         }
     }
 
@@ -1147,7 +1147,7 @@ protected:
             this->template toArray<math::Vec3<typename NumPyToCpp<DtId::UINT32>::type>>(); break;
         case DtId::UINT64:
             this->template toArray<math::Vec3<typename NumPyToCpp<DtId::UINT64>::type>>(); break;
-        default: throw openvdb::TypeError(); break;
+        default: throw laovdb::TypeError(); break;
         }
     }
 
@@ -1552,7 +1552,7 @@ applyMap(const char* methodName, GridType& grid, py::object funcObj)
                 "expected callable argument to %s.%s() to return %s, found %s",
                 pyutil::GridTraits<GridType>::name(),
                 methodName,
-                openvdb::typeNameAsString<ValueT>(),
+                laovdb::typeNameAsString<ValueT>(),
                 pyutil::className(result).c_str());
             py::throw_error_already_set();
         }
@@ -1605,7 +1605,7 @@ struct TreeCombineOp
             PyErr_Format(PyExc_TypeError,
                 "expected callable argument to %s.combine() to return %s, found %s",
                 pyutil::GridTraits<GridType>::name(),
-                openvdb::typeNameAsString<ValueT>(),
+                laovdb::typeNameAsString<ValueT>(),
                 pyutil::className(resultObj).c_str());
             py::throw_error_already_set();
         }
@@ -1633,7 +1633,7 @@ combine(GridType& grid, py::object otherGridObj, py::object funcObj)
 
 template<typename GridType>
 inline typename GridType::Ptr
-createLevelSetSphere(float radius, const openvdb::Vec3f& center, float voxelSize, float halfWidth)
+createLevelSetSphere(float radius, const laovdb::Vec3f& center, float voxelSize, float halfWidth)
 {
     return tools::createLevelSetSphere<GridType>(radius, center, voxelSize, halfWidth);
 }
@@ -2051,9 +2051,9 @@ struct PickleSuite: public py::pickle_suite
             // Serialize the Grid to a string.
             std::ostringstream ostr(std::ios_base::binary);
             {
-                openvdb::io::Stream strm(ostr);
+                laovdb::io::Stream strm(ostr);
                 strm.setGridStatsMetadataEnabled(false);
-                strm.write(openvdb::GridPtrVec(1, grid));
+                strm.write(laovdb::GridPtrVec(1, grid));
             }
             // Construct a state tuple comprising the Python object's __dict__
             // and the serialized Grid.
@@ -2371,14 +2371,14 @@ exportGrid()
                      py::arg("tolerance")=pyGrid::getZeroValue<GridType>()),
                 ("copyFromArray(array, ijk=(0, 0, 0), tolerance=0)\n\n"
                 "Populate this grid, starting at voxel (i, j, k), with values\nfrom a "
-                + std::string(openvdb::VecTraits<ValueT>::IsVec ? "four" : "three")
+                + std::string(laovdb::VecTraits<ValueT>::IsVec ? "four" : "three")
                 + "-dimensional array.  Mark voxels as inactive\n"
                 "if and only if their values are equal to this grid's\n"
                 "background value within the given tolerance.").c_str())
             .def("copyToArray", &pyGrid::copyToArray<GridType>,
                 (py::arg("array"), py::arg("ijk")=Coord(0)),
                 ("copyToArray(array, ijk=(0, 0, 0))\n\nPopulate a "
-                + std::string(openvdb::VecTraits<ValueT>::IsVec ? "four" : "three")
+                + std::string(laovdb::VecTraits<ValueT>::IsVec ? "four" : "three")
                 + "-dimensional array with values\n"
                 "from this grid, starting at voxel (i, j, k).").c_str())
 
@@ -2408,10 +2408,10 @@ exportGrid()
                      py::arg("triangles")=py::object(),
                      py::arg("quads")=py::object(),
                      py::arg("transform")=py::object(),
-                     py::arg("halfWidth")=openvdb::LEVEL_SET_HALF_WIDTH),
+                     py::arg("halfWidth")=laovdb::LEVEL_SET_HALF_WIDTH),
                 ("createLevelSetFromPolygons(points, triangles=None, quads=None,\n"
                  "    transform=None, halfWidth="
-                 + std::to_string(openvdb::LEVEL_SET_HALF_WIDTH) + ") -> "
+                 + std::to_string(laovdb::LEVEL_SET_HALF_WIDTH) + ") -> "
                  + pyGridTypeName + "\n\n"
                 "Convert a triangle and/or quad mesh to a narrow-band level set volume.\n"
                 "The mesh must form a closed surface, but the surface need not be\n"

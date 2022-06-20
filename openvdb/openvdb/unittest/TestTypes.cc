@@ -10,7 +10,7 @@
 #include <string>
 
 
-using namespace openvdb;
+using namespace laovdb;
 
 class TestTypes: public ::testing::Test
 {
@@ -523,14 +523,14 @@ TEST_F(TestTypes, testTypeList)
     //
 
     // Tests on VDB grid node chains - reverse node chains from leaf->root
-    using Tree4Float = openvdb::tree::Tree4<float, 5, 4, 3>::Type; // usually the same as FloatTree
+    using Tree4Float = laovdb::tree::Tree4<float, 5, 4, 3>::Type; // usually the same as FloatTree
     using NodeChainT = Tree4Float::RootNodeType::NodeChainType;
 
     // Expected types
-    using LeafT = openvdb::tree::LeafNode<float, 3>;
-    using IternalT1 = openvdb::tree::InternalNode<LeafT, 4>;
-    using IternalT2 = openvdb::tree::InternalNode<IternalT1, 5>;
-    using RootT = openvdb::tree::RootNode<IternalT2>;
+    using LeafT = laovdb::tree::LeafNode<float, 3>;
+    using IternalT1 = laovdb::tree::InternalNode<LeafT, 4>;
+    using IternalT2 = laovdb::tree::InternalNode<IternalT1, 5>;
+    using RootT = laovdb::tree::RootNode<IternalT2>;
 
     STATIC_ASSERT((std::is_same<NodeChainT::Get<0>, LeafT>::value));
     STATIC_ASSERT((std::is_same<NodeChainT::Get<1>, IternalT1>::value));
@@ -881,7 +881,7 @@ template <typename GridT> struct AttrListContains { inline void operator()() { S
 
 TEST_F(TestTypes, testOpenVDBTypeLists)
 {
-    openvdb::initialize();
+    laovdb::initialize();
 
 #define CHECK_TYPE_LIST_IS_VALID(LIST_T) \
     STATIC_ASSERT((LIST_T::Size > 0));   \
@@ -947,5 +947,5 @@ TEST_F(TestTypes, testOpenVDBTypeLists)
     const TreeBase& treeBase = tree;
     EXPECT_TRUE(TreeTypes::apply([](const auto&) {}, treeBase));
 
-    openvdb::uninitialize();
+    laovdb::uninitialize();
 }

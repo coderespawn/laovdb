@@ -27,7 +27,7 @@
 
 #include <type_traits>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -94,7 +94,7 @@ template <typename PointDataTreeT, typename PointIndexTreeT, typename PointArray
 inline void
 populateAttribute(  PointDataTreeT& tree,
                     const PointIndexTreeT& pointIndexTree,
-                    const openvdb::Name& attributeName,
+                    const laovdb::Name& attributeName,
                     const PointArrayT& data,
                     const Index stride = 1,
                     const bool insertMetadata = true);
@@ -187,7 +187,7 @@ struct ValueTypeTraits <T, void_t<typename T::value_type>> { using Type = typena
 /// @note if none or one point provided in positions, the default voxel size of 0.1 will be returned
 ///
 template<   typename PositionWrapper,
-            typename InterrupterT = openvdb::util::NullInterrupter,
+            typename InterrupterT = laovdb::util::NullInterrupter,
             typename VecT = typename internal::ValueTypeTraits<PositionWrapper>::Type>
 inline float
 computeVoxelSize(  const PositionWrapper& positions,
@@ -215,7 +215,7 @@ public:
     size_t size() const { return mData.size(); }
     void getPos(size_t n, ValueType& xyz) const { xyz = mData[n]; }
     void get(ValueType& value, size_t n) const { value = mData[n]; }
-    void get(ValueType& value, size_t n, openvdb::Index m) const { value = mData[n * mStride + m]; }
+    void get(ValueType& value, size_t n, laovdb::Index m) const { value = mData[n * mStride + m]; }
 
 private:
     const std::vector<value_type>& mData;
@@ -247,11 +247,11 @@ template <typename T> struct ConversionTraits
         return std::make_unique<WriteHandle>(array);
     }
 }; // ConversionTraits
-template <> struct ConversionTraits<openvdb::Name>
+template <> struct ConversionTraits<laovdb::Name>
 {
     using Handle = StringAttributeHandle;
     using WriteHandle = StringAttributeWriteHandle;
-    static openvdb::Name zero() { return ""; }
+    static laovdb::Name zero() { return ""; }
     template <typename LeafT>
     static std::unique_ptr<Handle> handleFromLeaf(const LeafT& leaf, const Index index) {
         const AttributeArray& array = leaf.constAttributeArray(index);
@@ -264,7 +264,7 @@ template <> struct ConversionTraits<openvdb::Name>
         const AttributeSet::Descriptor& descriptor = leaf.attributeSet().descriptor();
         return std::make_unique<WriteHandle>(array, descriptor.getMetadata());
     }
-}; // ConversionTraits<openvdb::Name>
+}; // ConversionTraits<laovdb::Name>
 
 template<   typename PointDataTreeType,
             typename PointIndexTreeType,
@@ -753,7 +753,7 @@ createPointDataGrid(const std::vector<ValueT>& positions,
 template <typename PointDataTreeT, typename PointIndexTreeT, typename PointArrayT>
 inline void
 populateAttribute(PointDataTreeT& tree, const PointIndexTreeT& pointIndexTree,
-    const openvdb::Name& attributeName, const PointArrayT& data, const Index stride,
+    const laovdb::Name& attributeName, const PointArrayT& data, const Index stride,
     const bool insertMetadata)
 {
     using point_conversion_internal::PopulateAttributeOp;
@@ -1055,6 +1055,6 @@ computeVoxelSize(  const PositionWrapper& positions,
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_POINT_CONVERSION_HAS_BEEN_INCLUDED

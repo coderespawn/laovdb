@@ -15,7 +15,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -409,6 +409,6 @@ StringMetadata::writeValue(std::ostream& os) const
 }
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_METADATA_HAS_BEEN_INCLUDED

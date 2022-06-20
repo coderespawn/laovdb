@@ -201,7 +201,7 @@ public:
             hvdb::AttributeDetailList &vertexAttributes,
             hvdb::AttributeDetailList &primitiveAttributes,
             const GU_Detail&,
-            const openvdb::Int32Grid& closestPrimGrid,
+            const laovdb::Int32Grid& closestPrimGrid,
             const float time);
 
         template <class ValueType>
@@ -210,7 +210,7 @@ public:
             const GA_Attribute *attribute,
             const GA_AIFTuple *tupleAIF,
             const int attrTupleSize,
-            const openvdb::Int32Grid& closestPrimGrid,
+            const laovdb::Int32Grid& closestPrimGrid,
             std::string& customName,
             int vecType = -1);
 
@@ -218,8 +218,8 @@ public:
             hvdb::AttributeDetailList &pointAttributes,
             hvdb::AttributeDetailList &vertexAttributes,
             hvdb::AttributeDetailList &primitiveAttributes,
-            const openvdb::Int32Grid&,
-            openvdb::math::Transform::Ptr& transform,
+            const laovdb::Int32Grid&,
+            laovdb::math::Transform::Ptr& transform,
             const GU_Detail&);
 
         float mVoxelSize = 0.1f;
@@ -418,9 +418,9 @@ newSopOperator(OP_OperatorTable* table)
     // Vec type menu
     {
         std::vector<std::string> items;
-        for (int i = 0; i < openvdb::NUM_VEC_TYPES ; ++i) {
-            items.push_back(openvdb::GridBase::vecTypeToString(openvdb::VecType(i)));
-            items.push_back(openvdb::GridBase::vecTypeExamples(openvdb::VecType(i)));
+        for (int i = 0; i < laovdb::NUM_VEC_TYPES ; ++i) {
+            items.push_back(laovdb::GridBase::vecTypeToString(laovdb::VecType(i)));
+            items.push_back(laovdb::GridBase::vecTypeExamples(laovdb::VecType(i)));
         }
 
         attrParms.add(hutil::ParmFactory(PRM_ORD, "vecType#", "Vector Type")
@@ -771,7 +771,7 @@ SOP_OpenVDB_From_Polygons::Cache::cookVDBSop(OP_Context& context)
             return error();
         }
 
-        openvdb::math::Transform::Ptr transform;
+        laovdb::math::Transform::Ptr transform;
 
         float inBand = std::numeric_limits<float>::max(), exBand = 0.0;
 
@@ -816,7 +816,7 @@ SOP_OpenVDB_From_Polygons::Cache::cookVDBSop(OP_Context& context)
                 }
             }
             // Create a new transform
-            transform = openvdb::math::Transform::createLinearTransform(mVoxelSize);
+            transform = laovdb::math::Transform::createLinearTransform(mVoxelSize);
         }
 
         if (mVoxelSize < 1e-5) {
@@ -847,8 +847,8 @@ SOP_OpenVDB_From_Polygons::Cache::cookVDBSop(OP_Context& context)
         //////////
         // Copy the input mesh and transform to local grid space.
 
-        std::vector<openvdb::Vec3s> pointList;
-        std::vector<openvdb::Vec4I> primList;
+        std::vector<laovdb::Vec3s> pointList;
+        std::vector<laovdb::Vec4I> primList;
 
         if (!boss.wasInterrupted()) {
 
@@ -866,20 +866,20 @@ SOP_OpenVDB_From_Polygons::Cache::cookVDBSop(OP_Context& context)
         // Mesh to volume conversion
 
 
-        openvdb::tools::QuadAndTriangleDataAdapter<openvdb::Vec3s, openvdb::Vec4I>
+        laovdb::tools::QuadAndTriangleDataAdapter<laovdb::Vec3s, laovdb::Vec4I>
             mesh(pointList, primList);
 
         int conversionFlags = unsignedDistanceFieldConversion ?
-            openvdb::tools::UNSIGNED_DISTANCE_FIELD : 0;
+            laovdb::tools::UNSIGNED_DISTANCE_FIELD : 0;
 
 
-        openvdb::Int32Grid::Ptr primitiveIndexGrid;
+        laovdb::Int32Grid::Ptr primitiveIndexGrid;
 
         if (outputAttributeGrid) {
-            primitiveIndexGrid.reset(new openvdb::Int32Grid(0));
+            primitiveIndexGrid.reset(new laovdb::Int32Grid(0));
         }
 
-        openvdb::FloatGrid::Ptr grid = openvdb::tools::meshToVolume<openvdb::FloatGrid>(
+        laovdb::FloatGrid::Ptr grid = laovdb::tools::meshToVolume<laovdb::FloatGrid>(
             boss.interrupter(), mesh, *transform, exBand, inBand, conversionFlags, primitiveIndexGrid.get());
 
         //////////
@@ -896,7 +896,7 @@ SOP_OpenVDB_From_Polygons::Cache::cookVDBSop(OP_Context& context)
 
             // If no level set grid is exported the original level set
             // grid is modified in place.
-            openvdb::FloatGrid::Ptr outputGrid;
+            laovdb::FloatGrid::Ptr outputGrid;
 
             if (outputDistanceField) {
                 outputGrid = grid->deepCopy();
@@ -904,7 +904,7 @@ SOP_OpenVDB_From_Polygons::Cache::cookVDBSop(OP_Context& context)
                 outputGrid = grid;
             }
 
-            openvdb::tools::sdfToFogVolume(*outputGrid);
+            laovdb::tools::sdfToFogVolume(*outputGrid);
 
             hvdb::createVdbPrimitive(*gdp, outputGrid, evalStdString("fogname", time).c_str());
         }
@@ -957,7 +957,7 @@ SOP_OpenVDB_From_Polygons::Cache::constructGenericAtttributeLists(
     hvdb::AttributeDetailList &vertexAttributes,
     hvdb::AttributeDetailList &primitiveAttributes,
     const GU_Detail& meshGdp,
-    const openvdb::Int32Grid& closestPrimGrid,
+    const laovdb::Int32Grid& closestPrimGrid,
     const float time)
 {
     UT_String attrStr, attrName;
@@ -1042,23 +1042,23 @@ SOP_OpenVDB_From_Polygons::Cache::constructGenericAtttributeLists(
             case GA_STORE_INT32:
 
                 if (interpertAsVector || attrTupleSize == 3) {
-                    addAttributeDetails<openvdb::Vec3i>(*attributeList, attr, tupleAIF,
+                    addAttributeDetails<laovdb::Vec3i>(*attributeList, attr, tupleAIF,
                         attrTupleSize, closestPrimGrid, customName, vecType);
                 } else {
-                    addAttributeDetails<openvdb::Int32>(*attributeList, attr, tupleAIF,
+                    addAttributeDetails<laovdb::Int32>(*attributeList, attr, tupleAIF,
                         attrTupleSize, closestPrimGrid, customName);
                 }
 
                 break;
             case GA_STORE_INT64:
-                addAttributeDetails<openvdb::Int64>
+                addAttributeDetails<laovdb::Int64>
                     (*attributeList, attr, tupleAIF, attrTupleSize, closestPrimGrid, customName);
                 break;
             case GA_STORE_REAL16:
             case GA_STORE_REAL32:
 
                 if (interpertAsVector || attrTupleSize == 3) {
-                    addAttributeDetails<openvdb::Vec3s>(*attributeList, attr, tupleAIF,
+                    addAttributeDetails<laovdb::Vec3s>(*attributeList, attr, tupleAIF,
                         attrTupleSize, closestPrimGrid, customName, vecType);
                 } else {
                     addAttributeDetails<float>(*attributeList, attr, tupleAIF,
@@ -1069,7 +1069,7 @@ SOP_OpenVDB_From_Polygons::Cache::constructGenericAtttributeLists(
             case GA_STORE_REAL64:
 
                 if (interpertAsVector || attrTupleSize == 3) {
-                    addAttributeDetails<openvdb::Vec3d>(*attributeList, attr, tupleAIF,
+                    addAttributeDetails<laovdb::Vec3d>(*attributeList, attr, tupleAIF,
                         attrTupleSize, closestPrimGrid, customName, vecType);
                 } else {
                     addAttributeDetails<double>(*attributeList, attr, tupleAIF,
@@ -1097,14 +1097,14 @@ SOP_OpenVDB_From_Polygons::Cache::addAttributeDetails(
     const GA_Attribute *attribute,
     const GA_AIFTuple *tupleAIF,
     const int attrTupleSize,
-    const openvdb::Int32Grid& closestPrimGrid,
+    const laovdb::Int32Grid& closestPrimGrid,
     std::string& customName,
     int vecType)
 {
     // Defines a new type of a tree having the same hierarchy as the incoming
     // Int32Grid's tree but potentially a different value type.
-    using TreeType = typename openvdb::Int32Grid::TreeType::ValueConverter<ValueType>::Type;
-    using GridType = typename openvdb::Grid<TreeType>;
+    using TreeType = typename laovdb::Int32Grid::TreeType::ValueConverter<ValueType>::Type;
+    using GridType = typename laovdb::Grid<TreeType>;
 
     if (vecType != -1) { // Vector grid
          // Get the attribute's default value.
@@ -1113,10 +1113,10 @@ SOP_OpenVDB_From_Polygons::Cache::addAttributeDetails(
 
         // Construct a new tree that matches the closestPrimGrid's active voxel topology.
         typename TreeType::Ptr tree(
-            new TreeType(closestPrimGrid.tree(), defValue, openvdb::TopologyCopy()));
+            new TreeType(closestPrimGrid.tree(), defValue, laovdb::TopologyCopy()));
         typename GridType::Ptr grid(GridType::create(tree));
 
-        grid->setVectorType(openvdb::VecType(vecType));
+        grid->setVectorType(laovdb::VecType(vecType));
 
         attributeList.push_back(hvdb::AttributeDetailBase::Ptr(
             new hvdb::AttributeDetail<GridType>(grid, attribute, tupleAIF, 0, true)));
@@ -1133,7 +1133,7 @@ SOP_OpenVDB_From_Polygons::Cache::addAttributeDetails(
 
             // Construct a new tree that matches the closestPrimGrid's active voxel topology.
             typename TreeType::Ptr tree(
-                new TreeType(closestPrimGrid.tree(), defValue, openvdb::TopologyCopy()));
+                new TreeType(closestPrimGrid.tree(), defValue, laovdb::TopologyCopy()));
             typename GridType::Ptr grid(GridType::create(tree));
 
             attributeList.push_back(hvdb::AttributeDetailBase::Ptr(
@@ -1159,8 +1159,8 @@ SOP_OpenVDB_From_Polygons::Cache::transferAttributes(
     hvdb::AttributeDetailList &pointAttributes,
     hvdb::AttributeDetailList &vertexAttributes,
     hvdb::AttributeDetailList &primitiveAttributes,
-    const openvdb::Int32Grid& closestPrimGrid,
-    openvdb::math::Transform::Ptr& transform,
+    const laovdb::Int32Grid& closestPrimGrid,
+    laovdb::math::Transform::Ptr& transform,
     const GU_Detail& meshGdp)
 {
 

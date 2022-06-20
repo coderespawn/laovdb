@@ -17,7 +17,7 @@ class TestMath: public ::testing::Test
 // This suite of tests obviously needs to be expanded!
 TEST_F(TestMath, testAll)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     {// Sign
         EXPECT_EQ(math::Sign( 3   ), 1);
@@ -80,7 +80,7 @@ TEST_F(TestMath, testAll)
 
 TEST_F(TestMath, testRandomInt)
 {
-    using openvdb::math::RandomInt;
+    using laovdb::math::RandomInt;
 
     int imin = -3, imax = 11;
     RandomInt rnd(/*seed=*/42, imin, imax);
@@ -141,8 +141,8 @@ TEST_F(TestMath, testRandomInt)
 
 TEST_F(TestMath, testRandom01)
 {
-    using openvdb::math::Random01;
-    using openvdb::math::isApproxEqual;
+    using laovdb::math::Random01;
+    using laovdb::math::isApproxEqual;
 
     Random01 rnd(/*seed=*/42);
 
@@ -172,34 +172,34 @@ TEST_F(TestMath, testRandom01)
 
 TEST_F(TestMath, testMinMaxIndex)
 {
-    const openvdb::Vec3R a(-1, 2, 0);
-    EXPECT_EQ(size_t(0), openvdb::math::MinIndex(a));
-    EXPECT_EQ(size_t(1), openvdb::math::MaxIndex(a));
-    const openvdb::Vec3R b(-1, -2, 0);
-    EXPECT_EQ(size_t(1), openvdb::math::MinIndex(b));
-    EXPECT_EQ(size_t(2), openvdb::math::MaxIndex(b));
-    const openvdb::Vec3R c(5, 2, 1);
-    EXPECT_EQ(size_t(2), openvdb::math::MinIndex(c));
-    EXPECT_EQ(size_t(0), openvdb::math::MaxIndex(c));
-    const openvdb::Vec3R d(0, 0, 1);
-    EXPECT_EQ(size_t(1), openvdb::math::MinIndex(d));
-    EXPECT_EQ(size_t(2), openvdb::math::MaxIndex(d));
-    const openvdb::Vec3R e(1, 0, 0);
-    EXPECT_EQ(size_t(2), openvdb::math::MinIndex(e));
-    EXPECT_EQ(size_t(0), openvdb::math::MaxIndex(e));
-    const openvdb::Vec3R f(0, 1, 0);
-    EXPECT_EQ(size_t(2), openvdb::math::MinIndex(f));
-    EXPECT_EQ(size_t(1), openvdb::math::MaxIndex(f));
-    const openvdb::Vec3R g(1, 1, 0);
-    EXPECT_EQ(size_t(2), openvdb::math::MinIndex(g));
-    EXPECT_EQ(size_t(1), openvdb::math::MaxIndex(g));
-    const openvdb::Vec3R h(1, 0, 1);
-    EXPECT_EQ(size_t(1), openvdb::math::MinIndex(h));
-    EXPECT_EQ(size_t(2), openvdb::math::MaxIndex(h));
-    const openvdb::Vec3R i(0, 1, 1);
-    EXPECT_EQ(size_t(0), openvdb::math::MinIndex(i));
-    EXPECT_EQ(size_t(2), openvdb::math::MaxIndex(i));
-    const openvdb::Vec3R j(1, 1, 1);
-    EXPECT_EQ(size_t(2), openvdb::math::MinIndex(j));
-    EXPECT_EQ(size_t(2), openvdb::math::MaxIndex(j));
+    const laovdb::Vec3R a(-1, 2, 0);
+    EXPECT_EQ(size_t(0), laovdb::math::MinIndex(a));
+    EXPECT_EQ(size_t(1), laovdb::math::MaxIndex(a));
+    const laovdb::Vec3R b(-1, -2, 0);
+    EXPECT_EQ(size_t(1), laovdb::math::MinIndex(b));
+    EXPECT_EQ(size_t(2), laovdb::math::MaxIndex(b));
+    const laovdb::Vec3R c(5, 2, 1);
+    EXPECT_EQ(size_t(2), laovdb::math::MinIndex(c));
+    EXPECT_EQ(size_t(0), laovdb::math::MaxIndex(c));
+    const laovdb::Vec3R d(0, 0, 1);
+    EXPECT_EQ(size_t(1), laovdb::math::MinIndex(d));
+    EXPECT_EQ(size_t(2), laovdb::math::MaxIndex(d));
+    const laovdb::Vec3R e(1, 0, 0);
+    EXPECT_EQ(size_t(2), laovdb::math::MinIndex(e));
+    EXPECT_EQ(size_t(0), laovdb::math::MaxIndex(e));
+    const laovdb::Vec3R f(0, 1, 0);
+    EXPECT_EQ(size_t(2), laovdb::math::MinIndex(f));
+    EXPECT_EQ(size_t(1), laovdb::math::MaxIndex(f));
+    const laovdb::Vec3R g(1, 1, 0);
+    EXPECT_EQ(size_t(2), laovdb::math::MinIndex(g));
+    EXPECT_EQ(size_t(1), laovdb::math::MaxIndex(g));
+    const laovdb::Vec3R h(1, 0, 1);
+    EXPECT_EQ(size_t(1), laovdb::math::MinIndex(h));
+    EXPECT_EQ(size_t(2), laovdb::math::MaxIndex(h));
+    const laovdb::Vec3R i(0, 1, 1);
+    EXPECT_EQ(size_t(0), laovdb::math::MinIndex(i));
+    EXPECT_EQ(size_t(2), laovdb::math::MaxIndex(i));
+    const laovdb::Vec3R j(1, 1, 1);
+    EXPECT_EQ(size_t(2), laovdb::math::MinIndex(j));
+    EXPECT_EQ(size_t(2), laovdb::math::MaxIndex(j));
 }

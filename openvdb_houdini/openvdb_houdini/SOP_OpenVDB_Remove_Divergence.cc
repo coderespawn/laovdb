@@ -35,9 +35,9 @@ namespace hvdb = openvdb_houdini;
 namespace hutil = houdini_utils;
 
 namespace {
-using ColliderMaskGrid = openvdb::BoolGrid; ///< @todo really should derive from velocity grid
-using ColliderBBox = openvdb::BBoxd;
-using Coord = openvdb::Coord;
+using ColliderMaskGrid = laovdb::BoolGrid; ///< @todo really should derive from velocity grid
+using ColliderBBox = laovdb::BBoxd;
+using Coord = laovdb::Coord;
 
 enum ColliderType { CT_NONE, CT_BBOX, CT_STATIC, CT_DYNAMIC };
 
@@ -114,7 +114,7 @@ newSopOperator(OP_OperatorTable* table)
             << int(std::log10(DEFAULT_MAX_ERROR)) << "</sup>.";
 
         parms.add(hutil::ParmFactory(PRM_FLT_J, "tolerance", "Tolerance")
-            .setDefault(openvdb::math::Delta<float>::value())
+            .setDefault(laovdb::math::Delta<float>::value())
             .setRange(PRM_RANGE_RESTRICTED, 0, PRM_RANGE_UI, 0.01)
             .setTooltip(
                 "The pressure solver is deemed to have converged when\n"
@@ -252,7 +252,7 @@ struct SolverParms {
         , colliderType(CT_NONE)
         , iterations(1)
         , absoluteError(-1.0)
-        , outputState(openvdb::math::pcg::terminationDefaults<double>())
+        , outputState(laovdb::math::pcg::terminationDefaults<double>())
         , interrupter(nullptr)
     {}
 
@@ -265,8 +265,8 @@ struct SolverParms {
     ColliderType colliderType;
     int iterations;
     double absoluteError;
-    openvdb::math::pcg::State outputState;
-    openvdb::util::NullInterrupter* interrupter;
+    laovdb::math::pcg::State outputState;
+    laovdb::util::NullInterrupter* interrupter;
 };
 
 
@@ -278,7 +278,7 @@ struct SolverParms {
 struct LevelSetMaskOp
 {
     template<typename GridType>
-    void operator()(const GridType& grid) { outputGrid = openvdb::tools::sdfInteriorMask(grid); }
+    void operator()(const GridType& grid) { outputGrid = laovdb::tools::sdfInteriorMask(grid); }
 
     hvdb::GridPtr outputGrid;
 };
@@ -352,7 +352,7 @@ public:
 private:
     BBoxConstAccessor& operator=(const BBoxConstAccessor&);
 
-    const openvdb::CoordBBox mBBox;
+    const laovdb::CoordBBox mBBox;
 }; // class BBoxConstAccessor
 
 
@@ -388,7 +388,7 @@ struct PressureProjectionOp
             const ValueType* gradientOfPressureData = mGradientOfPressureNodes[n]->buffer().data();
 
             for (typename LeafNodeType::ValueOnIter it = velocityNode.beginValueOn(); it; ++it) {
-                const openvdb::Index pos = it.pos();
+                const laovdb::Index pos = it.pos();
                 velocityData[pos] -= scale * gradientOfPressureData[pos];
             }
         }
@@ -434,10 +434,10 @@ public:
         const MaskGridType& domainMaskGrid =
             static_cast<const MaskGridType&>(*mParms->domainMaskGrid);
         typename MaskTreeType::Ptr interiorMask(
-            new MaskTreeType(domainMaskGrid.tree(), /*background=*/false, openvdb::TopologyCopy()));
+            new MaskTreeType(domainMaskGrid.tree(), /*background=*/false, laovdb::TopologyCopy()));
         mBorderMask.reset(new MaskTreeType(*interiorMask));
-        openvdb::tools::erodeActiveValues(*interiorMask, /*iterations=*/1,
-            openvdb::tools::NN_FACE, openvdb::tools::IGNORE_TILES);
+        laovdb::tools::erodeActiveValues(*interiorMask, /*iterations=*/1,
+            laovdb::tools::NN_FACE, laovdb::tools::IGNORE_TILES);
         mBorderMask->topologyDifference(*interiorMask);
     }
 
@@ -583,7 +583,7 @@ public:
             const VectorType& velocity = mVelocity.getValue(ijkNeighbor);
             double delta = 0.0;
             if (mDynamic) { // exterior neighbor is a solid obstacle with nonzero velocity
-                const openvdb::Vec3d colliderVelocity(mCollider.getValue(ijkNeighbor));
+                const laovdb::Vec3d colliderVelocity(mCollider.getValue(ijkNeighbor));
                 if (ijkNeighbor[0] < ijk[0]) { delta +=  velocity[0] - colliderVelocity[0]; }
                 if (ijkNeighbor[0] > ijk[0]) { delta -= (velocity[0] - colliderVelocity[0]); }
                 if (ijkNeighbor[1] < ijk[1]) { delta +=  velocity[1] - colliderVelocity[1]; }
@@ -637,26 +637,26 @@ removeDivergenceWithColliderGrid(SolverParms& parms, const BoundaryOpType& bound
 
     VectorGridType& velocityGrid = static_cast<VectorGridType&>(*parms.velocityGrid);
 
-    const bool staggered = ((velocityGrid.getGridClass() == openvdb::GRID_STAGGERED)
-        && (openvdb::VecTraits<VectorType>::Size == 3));
+    const bool staggered = ((velocityGrid.getGridClass() == laovdb::GRID_STAGGERED)
+        && (laovdb::VecTraits<VectorType>::Size == 3));
 
     // Compute the divergence of the incoming velocity field.
     /// @todo Consider neighboring collider velocities at border voxels?
-    openvdb::tools::Divergence<VectorGridType> divergenceOp(velocityGrid);
+    laovdb::tools::Divergence<VectorGridType> divergenceOp(velocityGrid);
     typename ScalarGrid::ConstPtr divGrid = divergenceOp.process();
 
-    parms.outputState = openvdb::math::pcg::terminationDefaults<VectorElementType>();
+    parms.outputState = laovdb::math::pcg::terminationDefaults<VectorElementType>();
     parms.outputState.iterations = parms.iterations;
     parms.outputState.absoluteError = (parms.absoluteError >= 0.0 ?
         parms.absoluteError : DEFAULT_MAX_ERROR);
     parms.outputState.relativeError = 0.0;
 
-    using PCT = openvdb::math::pcg::JacobiPreconditioner<openvdb::tools::poisson::LaplacianMatrix>;
+    using PCT = laovdb::math::pcg::JacobiPreconditioner<laovdb::tools::poisson::LaplacianMatrix>;
 
     // Solve for pressure using Poisson's equation.
     typename ScalarTree::Ptr pressure;
     if (parms.colliderType == CT_NONE) {
-        pressure = openvdb::tools::poisson::solveWithBoundaryConditionsAndPreconditioner<PCT>(
+        pressure = laovdb::tools::poisson::solveWithBoundaryConditionsAndPreconditioner<PCT>(
             divGrid->tree(), boundaryOp, parms.outputState, *parms.interrupter, staggered);
     } else {
         // Create a domain mask by clipping the velocity grid's topology against the collider's.
@@ -666,7 +666,7 @@ removeDivergenceWithColliderGrid(SolverParms& parms, const BoundaryOpType& bound
         if (parms.colliderType == CT_BBOX) {
             if (parms.invertCollider) {
                 // Solve for pressure only outside the bounding box.
-                const openvdb::CoordBBox colliderISBBox =
+                const laovdb::CoordBBox colliderISBBox =
                     velocityGrid.transform().worldToIndexNodeCentered(parms.colliderBBox);
                 domainMaskGrid->fill(colliderISBBox, false, false);
             } else {
@@ -684,7 +684,7 @@ removeDivergenceWithColliderGrid(SolverParms& parms, const BoundaryOpType& bound
                 domainMaskGrid->topologyDifference(colliderGrid);
             }
         }
-        pressure = openvdb::tools::poisson::solveWithBoundaryConditionsAndPreconditioner<PCT>(
+        pressure = laovdb::tools::poisson::solveWithBoundaryConditionsAndPreconditioner<PCT>(
             divGrid->tree(), domainMaskGrid->tree(), boundaryOp, parms.outputState,
                 *parms.interrupter, staggered);
     }
@@ -700,7 +700,7 @@ removeDivergenceWithColliderGrid(SolverParms& parms, const BoundaryOpType& bound
     }
 
     // Compute the gradient of the pressure.
-    openvdb::tools::Gradient<ScalarGrid> gradientOp(static_cast<ScalarGrid&>(*parms.pressureGrid));
+    laovdb::tools::Gradient<ScalarGrid> gradientOp(static_cast<ScalarGrid&>(*parms.pressureGrid));
     typename VectorGridType::Ptr gradientOfPressure = gradientOp.process();
 
     // Compute pressure projection in parallel over leaf nodes.
@@ -711,7 +711,7 @@ removeDivergenceWithColliderGrid(SolverParms& parms, const BoundaryOpType& bound
         velocityGrid.tree().voxelizeActiveTiles();
         gradientOfPressure->topologyUnion(velocityGrid);
         gradientOfPressure->topologyIntersection(velocityGrid);
-        openvdb::tools::pruneInactive(gradientOfPressure->tree());
+        laovdb::tools::pruneInactive(gradientOfPressure->tree());
 
         std::vector<VectorLeafNodeType*> velNodes;
         velocityGrid.tree().getNodes(velNodes);
@@ -779,7 +779,7 @@ processGrid(SolverParms& parms)
         case CT_NONE:
             // No collider
             success = removeDivergence<VelocityGridType>(
-                parms, openvdb::tools::poisson::DirichletBoundaryOp<double>());
+                parms, laovdb::tools::poisson::DirichletBoundaryOp<double>());
             break;
         case CT_BBOX:
             // If collider geometry was supplied, the faces of its bounding box
@@ -874,8 +874,8 @@ SOP_OpenVDB_Remove_Divergence::Cache::cookVDBSop(
                 // Use the bounding box of the reference geometry as a collider.
                 UT_BoundingBox box;
                 colliderGeo->getBBox(&box);
-                parms.colliderBBox.min() = openvdb::Vec3d(box.xmin(), box.ymin(), box.zmin());
-                parms.colliderBBox.max() = openvdb::Vec3d(box.xmax(), box.ymax(), box.zmax());
+                parms.colliderBBox.min() = laovdb::Vec3d(box.xmin(), box.ymin(), box.zmin());
+                parms.colliderBBox.max() = laovdb::Vec3d(box.xmax(), box.ymax(), box.zmax());
                 parms.colliderType = CT_BBOX;
             } else {
                 // Retrieve the collider grid.
@@ -886,7 +886,7 @@ SOP_OpenVDB_Remove_Divergence::Cache::cookVDBSop(
                 if (hvdb::VdbPrimCIterator colliderIt =
                     hvdb::VdbPrimCIterator(colliderGeo, colliderGroup))
                 {
-                    if (colliderIt->getConstGrid().getGridClass() == openvdb::GRID_LEVEL_SET) {
+                    if (colliderIt->getConstGrid().getGridClass() == laovdb::GRID_LEVEL_SET) {
                         // If the collider grid is a level set, extract an interior mask from it.
                         LevelSetMaskOp op;
                         if (hvdb::GEOvdbApply<hvdb::NumericGridTypes>(**colliderIt, op)) {
@@ -955,7 +955,7 @@ SOP_OpenVDB_Remove_Divergence::Cache::cookVDBSop(
                 vdbIt->makeGridUnique(); // ensure that the grid's tree is not shared
                 parms.velocityGrid = vdbIt->getGridPtr();
 
-                const openvdb::math::Transform& xform = parms.velocityGrid->constTransform();
+                const laovdb::math::Transform& xform = parms.velocityGrid->constTransform();
 
                 if (!xform.hasUniformScale()) {
                     nonuniformGridNames.append(getPrimitiveIndexAndName(*vdbIt));
@@ -968,9 +968,9 @@ SOP_OpenVDB_Remove_Divergence::Cache::cookVDBSop(
                 // Remove divergence.
                 bool success = false;
                 if (velocityType == UT_VDB_VEC3F) {
-                    success = processGrid<openvdb::Vec3SGrid>(parms);
+                    success = processGrid<laovdb::Vec3SGrid>(parms);
                 } else if (velocityType == UT_VDB_VEC3D) {
-                    success = processGrid<openvdb::Vec3DGrid>(parms);
+                    success = processGrid<laovdb::Vec3DGrid>(parms);
                 }
 
                 if (!success) {

@@ -26,9 +26,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestFunctionRegistry);
 void
 TestFunctionRegistry::testCreateAllVerify()
 {
-    openvdb::ax::codegen::FunctionRegistry::UniquePtr reg =
-        openvdb::ax::codegen::createDefaultRegistry();
-    openvdb::ax::FunctionOptions opts;
+    laovdb::ax::codegen::FunctionRegistry::UniquePtr reg =
+        laovdb::ax::codegen::createDefaultRegistry();
+    laovdb::ax::FunctionOptions opts;
 
     // check that no warnings are printed during registration
     // @todo  Replace this with a better logger once AX has one!

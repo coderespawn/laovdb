@@ -20,7 +20,7 @@ class TestActivate: public ::testing::Test
 // migrated from TestTools::testActivate()
 TEST_F(TestActivate, testActivate)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const Vec3s background(0.0, -1.0, 1.0), foreground(42.0);
 
@@ -59,11 +59,11 @@ TEST_F(TestActivate, testActivate)
 
 TEST_F(TestActivate, testActivateLeafValues)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     { // activate leaf with a single inactive voxel
         FloatTree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
         EXPECT_TRUE(leaf->isEmpty());
 
         // all values are 0.0f so activate with value = 1.0f is a noop
@@ -80,7 +80,7 @@ TEST_F(TestActivate, testActivateLeafValues)
 
     { // activate leaf with a single inactive voxel within the tolerance
         FloatTree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         // set leaf[0] to a small tolerance above 1.0f
 
@@ -98,7 +98,7 @@ TEST_F(TestActivate, testActivateLeafValues)
 
     { // activate leaf with a single inactive voxel with 0.1f value
         FloatTree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         // set leaf[0] to 0.1f (which cannot be represented exactly in floating-point)
 
@@ -109,7 +109,7 @@ TEST_F(TestActivate, testActivateLeafValues)
 
     { // activate leaf with a few active and inactive voxels
         FloatTree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         leaf->setValueOff(0, 1.0f);
         leaf->setValueOff(1, 3.0f);
@@ -124,7 +124,7 @@ TEST_F(TestActivate, testActivateLeafValues)
 
     { // activate an integer leaf
         Int32Tree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         leaf->setValueOff(0, 10);
         leaf->setValueOff(1, 9);
@@ -137,7 +137,7 @@ TEST_F(TestActivate, testActivateLeafValues)
 
     { // activate a Vec3s leaf
         Vec3STree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         leaf->setValueOff(0, Vec3s(10));
         leaf->setValueOff(1, Vec3s(2, 3, 4));
@@ -152,7 +152,7 @@ TEST_F(TestActivate, testActivateLeafValues)
 
     { // activate a mask leaf
         MaskTree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         leaf->setValueOnly(0, true);
         leaf->setValueOnly(1, true);
@@ -166,7 +166,7 @@ TEST_F(TestActivate, testActivateLeafValues)
 
 TEST_F(TestActivate, testActivateTiles)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     auto getActiveTiles = [](const auto& node) -> Index
     {
@@ -249,11 +249,11 @@ TEST_F(TestActivate, testActivateTiles)
 
 TEST_F(TestActivate, testDeactivateLeafValues)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     { // deactivate leaf with a single active voxel
         FloatTree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
         EXPECT_TRUE(leaf->isEmpty());
 
         // all values are 0.0f so deactivate with value = 1.0f is a noop
@@ -270,7 +270,7 @@ TEST_F(TestActivate, testDeactivateLeafValues)
 
     { // deactivate leaf with a single active voxel within the tolerance
         FloatTree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         // set leaf[0] to a small tolerance above 1.0f
 
@@ -288,7 +288,7 @@ TEST_F(TestActivate, testDeactivateLeafValues)
 
     { // deactivate leaf with a single active voxel with 0.1f value
         FloatTree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         // set leaf[0] to 0.1f (which cannot be represented exactly in floating-point)
 
@@ -299,7 +299,7 @@ TEST_F(TestActivate, testDeactivateLeafValues)
 
     { // deactivate leaf with a few active and inactive voxels
         FloatTree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         leaf->setValueOff(0, 1.0f);
         leaf->setValueOff(1, 3.0f);
@@ -314,7 +314,7 @@ TEST_F(TestActivate, testDeactivateLeafValues)
 
     { // deactivate an integer leaf
         Int32Tree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         leaf->setValueOn(0, 10);
         leaf->setValueOn(1, 9);
@@ -327,7 +327,7 @@ TEST_F(TestActivate, testDeactivateLeafValues)
 
     { // deactivate a Vec3s leaf
         Vec3STree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         leaf->setValueOn(0, Vec3s(10));
         leaf->setValueOn(1, Vec3s(2, 3, 4));
@@ -342,7 +342,7 @@ TEST_F(TestActivate, testDeactivateLeafValues)
 
     { // deactivate a mask leaf
         MaskTree tree;
-        auto* leaf = tree.touchLeaf(openvdb::Coord(0));
+        auto* leaf = tree.touchLeaf(laovdb::Coord(0));
 
         leaf->setValueOnly(0, true);
         leaf->setValueOnly(1, true);
@@ -356,7 +356,7 @@ TEST_F(TestActivate, testDeactivateLeafValues)
 
 TEST_F(TestActivate, testDeactivateTiles)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     auto getActiveTiles = [](const auto& node) -> Index
     {

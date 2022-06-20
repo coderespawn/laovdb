@@ -8,7 +8,7 @@
 #include <openvdb/version.h>
 #include "Vec3.h"
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -116,6 +116,6 @@ QuantizedUnitVec::flipSignBits(uint16_t& v)
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_MATH_QUANTIZED_UNIT_VEC_HAS_BEEN_INCLUDED

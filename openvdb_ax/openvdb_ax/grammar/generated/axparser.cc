@@ -76,14 +76,14 @@
     OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
 
     extern int axlex();
-    extern openvdb::ax::Logger* axlog;
+    extern laovdb::ax::Logger* axlog;
 
-    using namespace openvdb::ax::ast;
-    using namespace openvdb::ax;
+    using namespace laovdb::ax::ast;
+    using namespace laovdb::ax;
 
     void axerror(Tree** tree, const char* s);
 
-    using ExpList = std::vector<openvdb::ax::ast::Expression*>;
+    using ExpList = std::vector<laovdb::ax::ast::Expression*>;
 
 /* Substitute the type names.  */
 #define YYSTYPE         AXSTYPE
@@ -1249,7 +1249,7 @@ do {                                                                      \
 
 static void
 yy_symbol_value_print (FILE *yyo,
-                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, openvdb::ax::ast::Tree** tree)
+                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, laovdb::ax::ast::Tree** tree)
 {
   FILE *yyoutput = yyo;
   YY_USE (yyoutput);
@@ -1269,7 +1269,7 @@ yy_symbol_value_print (FILE *yyo,
 
 static void
 yy_symbol_print (FILE *yyo,
-                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, openvdb::ax::ast::Tree** tree)
+                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, laovdb::ax::ast::Tree** tree)
 {
   YYFPRINTF (yyo, "%s %s (",
              yykind < YYNTOKENS ? "token" : "nterm", yysymbol_name (yykind));
@@ -1310,7 +1310,7 @@ do {                                                            \
 
 static void
 yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp, YYLTYPE *yylsp,
-                 int yyrule, openvdb::ax::ast::Tree** tree)
+                 int yyrule, laovdb::ax::ast::Tree** tree)
 {
   int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
@@ -1641,7 +1641,7 @@ yysyntax_error (YYPTRDIFF_T *yymsg_alloc, char **yymsg,
 
 static void
 yydestruct (const char *yymsg,
-            yysymbol_kind_t yykind, YYSTYPE *yyvaluep, YYLTYPE *yylocationp, openvdb::ax::ast::Tree** tree)
+            yysymbol_kind_t yykind, YYSTYPE *yyvaluep, YYLTYPE *yylocationp, laovdb::ax::ast::Tree** tree)
 {
   YY_USE (yyvaluep);
   YY_USE (yylocationp);
@@ -1850,7 +1850,7 @@ int yynerrs;
 `----------*/
 
 int
-yyparse (openvdb::ax::ast::Tree** tree)
+yyparse (laovdb::ax::ast::Tree** tree)
 {
     yy_state_fast_t yystate = 0;
     /* Number of tokens to shift before error messages enabled.  */

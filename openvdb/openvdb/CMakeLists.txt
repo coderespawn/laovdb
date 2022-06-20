@@ -22,10 +22,10 @@ if(NOT OPENVDB_NAMESPACE_SUFFIX)
     "An optional custom string to append to the OpenVDB namespace. This is used to configure version.h.")
 endif()
 
-set(OPENVDB_SHARED_LIBRARY_NAME "openvdb" CACHE STRING
+set(OPENVDB_SHARED_LIBRARY_NAME "laopenvdb" CACHE STRING
   "The base name of the built shared openvdb library. Prefixed by \"lib\" on UNIX platforms."
 )
-set(OPENVDB_STATIC_LIBRARY_NAME "openvdb" CACHE STRING
+set(OPENVDB_STATIC_LIBRARY_NAME "laopenvdb" CACHE STRING
   "The base name of the built static openvdb library. Prefixed by \"lib\"."
 )
 

@@ -30,7 +30,7 @@
 //
 #include <llvm/Support/raw_ostream.h> // llvm::errs()
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -809,7 +809,7 @@ scalarToMatrix(llvm::Value* scalar,
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_CODEGEN_UTILS_HAS_BEEN_INCLUDED
 

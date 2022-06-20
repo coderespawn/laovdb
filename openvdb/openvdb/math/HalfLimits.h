@@ -54,7 +54,7 @@
 namespace std {
 
 template <>
-class numeric_limits <openvdb::OPENVDB_VERSION_NAME::math::half>
+class numeric_limits <laovdb::OPENVDB_VERSION_NAME::math::half>
 {
   public:
 

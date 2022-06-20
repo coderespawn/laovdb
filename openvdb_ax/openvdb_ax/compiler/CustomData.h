@@ -19,7 +19,7 @@
 #include <unordered_map>
 #include <memory>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -167,13 +167,13 @@ private:
 // fwd declare the codegen::String and alias deprecated metadata type
 namespace codegen { struct String; }
 using AXStringMetadata [[deprecated("The ax::AXStringMetadata type has "
-    "been replaced with openvdb::TypedMetadata<ax::codegen::String>. The "
+    "been replaced with laovdb::TypedMetadata<ax::codegen::String>. The "
     "new backend string definition can be found in ax/codegen/String.h")]] =
         TypedMetadata<ax::codegen::String>;
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_COMPILER_CUSTOM_DATA_HAS_BEEN_INCLUDED
 

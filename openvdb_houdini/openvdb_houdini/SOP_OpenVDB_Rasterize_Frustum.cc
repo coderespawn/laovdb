@@ -45,23 +45,23 @@ namespace {
 
 struct MaskOp
 {
-    using MaskGridType = openvdb::MaskGrid;
+    using MaskGridType = laovdb::MaskGrid;
 
     template<typename GridType>
     void operator()(const GridType& grid)
     {
         // TODO: interiorMask should be made to support MaskGrids
-        auto boolGrid = openvdb::tools::interiorMask(grid);
+        auto boolGrid = laovdb::tools::interiorMask(grid);
 
         mMaskGrid.reset(new MaskGridType(*boolGrid));
         mMaskGrid->setTransform(grid.constTransform().copy());
-        mMaskGrid->setGridClass(openvdb::GRID_UNKNOWN);
+        mMaskGrid->setGridClass(laovdb::GRID_UNKNOWN);
     }
 
     MaskGridType::Ptr mMaskGrid;
 };
 
-inline openvdb::MaskGrid::Ptr
+inline laovdb::MaskGrid::Ptr
 getMaskGridVDB(const GU_Detail * geoPt, const GA_PrimitiveGroup *group = nullptr)
 {
     if (geoPt) {
@@ -82,14 +82,14 @@ getMaskGridVDB(const GU_Detail * geoPt, const GA_PrimitiveGroup *group = nullptr
     return {};
 }
 
-inline std::unique_ptr<openvdb::BBoxd>
+inline std::unique_ptr<laovdb::BBoxd>
 getMaskGeoBBox(const GU_Detail * geoPt)
 {
     if (geoPt) {
         UT_BoundingBox box;
         geoPt->computeQuickBounds(box);
 
-        std::unique_ptr<openvdb::BBoxd> bbox(new openvdb::BBoxd());
+        std::unique_ptr<laovdb::BBoxd> bbox(new laovdb::BBoxd());
         bbox->min()[0] = box.xmin();
         bbox->min()[1] = box.ymin();
         bbox->min()[2] = box.zmin();
@@ -105,7 +105,7 @@ getMaskGeoBBox(const GU_Detail * geoPt)
 
 
 inline bool
-isScalarType(const std::string& type, const openvdb::Index stride)
+isScalarType(const std::string& type, const laovdb::Index stride)
 {
     return  stride == 1 &&
             (   type == "bool" ||
@@ -123,7 +123,7 @@ isScalarType(const std::string& type, const openvdb::Index stride)
 
 
 inline bool
-isVectorType(const std::string& type, const openvdb::Index stride)
+isVectorType(const std::string& type, const laovdb::Index stride)
 {
     if (stride == 1 &&
         (   type == "vec3s" ||
@@ -204,7 +204,7 @@ getAttributeNames(
         const GU_PrimVDB* vdbPrim = *vdbIt;
         if (vdbPrim->getStorageType() != UT_VDB_POINTDATA)  continue;
 
-        const auto& points = static_cast<const openvdb::points::PointDataGrid&>(vdbPrim->getConstGrid());
+        const auto& points = static_cast<const laovdb::points::PointDataGrid&>(vdbPrim->getConstGrid());
         auto leaf = points.constTree().cbeginLeaf();
         if (!leaf)  continue;
         auto descriptor = leaf->attributeSet().descriptor();
@@ -217,8 +217,8 @@ getAttributeNames(
             const auto* attributeArray = leaf->attributeSet().getConst(it.first);
             if (!attributeArray)    continue;
 
-            const openvdb::Index stride = attributeArray->stride();
-            const openvdb::Name& valueType = descriptor.valueType(it.second);
+            const laovdb::Index stride = attributeArray->stride();
+            const laovdb::Name& valueType = descriptor.valueType(it.second);
             if (isScalarType(valueType, stride)) {
                 scalarAttribNames.push_back(it.first);
             } else if (isVectorType(valueType, stride)) {
@@ -238,7 +238,7 @@ getAttributeNames(
 
 
 /// Returns a null pointer if geoPt is null or if no reference vdb is found.
-inline openvdb::math::Transform::Ptr
+inline laovdb::math::Transform::Ptr
 getReferenceTransform(const GU_Detail* geoPt, const GA_PrimitiveGroup* group = nullptr,
     UT_ErrorManager* log = nullptr)
 {
@@ -314,7 +314,7 @@ populateMeshMenu(void* data, PRM_Name* choicenames, int themenusize,
             const GU_PrimVDB* vdbPrim = *vdbIt;
             if (vdbPrim->getStorageType() != UT_VDB_POINTDATA)  continue;
 
-            const auto& points = static_cast<const openvdb::points::PointDataGrid&>(vdbPrim->getConstGrid());
+            const auto& points = static_cast<const laovdb::points::PointDataGrid&>(vdbPrim->getConstGrid());
             auto leaf = points.constTree().cbeginLeaf();
             if (!leaf)  continue;
             const auto& descriptor = leaf->attributeSet().descriptor();
@@ -324,8 +324,8 @@ populateMeshMenu(void* data, PRM_Name* choicenames, int themenusize,
                 if (it.first == "P")   continue;
                 const auto* attributeArray = leaf->attributeSet().getConst(it.second);
                 if (!attributeArray)    continue;
-                const openvdb::Index stride = attributeArray->stride();
-                const openvdb::Name& valueType = descriptor.valueType(it.second);
+                const laovdb::Index stride = attributeArray->stride();
+                const laovdb::Name& valueType = descriptor.valueType(it.second);
                 if (isScalarType(valueType, stride)) {
                     scalarNames.push_back(it.first);
                 } else if (isVectorType(valueType, stride)) {
@@ -406,7 +406,7 @@ populateVelocityMenu(void* data, PRM_Name* choicenames, int themenusize,
             const GU_PrimVDB* vdbPrim = *vdbIt;
             if (vdbPrim->getStorageType() != UT_VDB_POINTDATA)  continue;
 
-            const auto& points = static_cast<const openvdb::points::PointDataGrid&>(vdbPrim->getConstGrid());
+            const auto& points = static_cast<const laovdb::points::PointDataGrid&>(vdbPrim->getConstGrid());
             auto leaf = points.constTree().cbeginLeaf();
             if (!leaf)  continue;
             const auto& descriptor = leaf->attributeSet().descriptor();
@@ -479,7 +479,7 @@ populateRadiusMenu(void* data, PRM_Name* choicenames, int themenusize,
             const GU_PrimVDB* vdbPrim = *vdbIt;
             if (vdbPrim->getStorageType() != UT_VDB_POINTDATA)  continue;
 
-            const auto& points = static_cast<const openvdb::points::PointDataGrid&>(vdbPrim->getConstGrid());
+            const auto& points = static_cast<const laovdb::points::PointDataGrid&>(vdbPrim->getConstGrid());
             auto leaf = points.constTree().cbeginLeaf();
             if (!leaf)  continue;
             const auto& descriptor = leaf->attributeSet().descriptor();
@@ -510,7 +510,7 @@ populateRadiusMenu(void* data, PRM_Name* choicenames, int themenusize,
 
 struct GridsToRasterize
 {
-    using GridType = openvdb::points::PointDataGrid;
+    using GridType = laovdb::points::PointDataGrid;
     using TreeType = GridType::TreeType;
     using ConstPtr = GridType::ConstPtr;
 
@@ -519,7 +519,7 @@ struct GridsToRasterize
     private:
         static bool isTreeOutOfCore(const TreeType& tree)
         {
-            using LeafManagerT = openvdb::tree::LeafManager<const TreeType>;
+            using LeafManagerT = laovdb::tree::LeafManager<const TreeType>;
             using LeafRangeT = typename LeafManagerT::LeafRange;
             LeafManagerT leafManager(tree);
             return tbb::parallel_reduce(leafManager.leafRange(), true,
@@ -986,8 +986,8 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
 
         const GU_Detail* maskGeo = inputGeo(2, context);
 
-        std::unique_ptr<openvdb::BBoxd> maskBBox;
-        openvdb::MaskGrid::Ptr maskGrid;
+        std::unique_ptr<laovdb::BBoxd> maskBBox;
+        laovdb::MaskGrid::Ptr maskGrid;
         if (maskGeo) {
             bool expectingVDBMask = false;
             const auto groupStr = evalStdString("maskvdb", time);
@@ -1024,17 +1024,17 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
 
             // Set rasterization settings
 
-            openvdb::math::Transform::Ptr xform = getReferenceTransform(refGeo, refGroup, log);
+            laovdb::math::Transform::Ptr xform = getReferenceTransform(refGeo, refGroup, log);
             if (xform) {
                 voxelSize = float(xform->voxelSize().x());
             } else {
                 voxelSize = static_cast<float>(evalFloat("voxelsize", 0, time));
-                xform = openvdb::math::Transform::createLinearTransform(voxelSize);
+                xform = laovdb::math::Transform::createLinearTransform(voxelSize);
             }
 
             assert(xform);
 
-            std::vector<openvdb::GridBase::Ptr> outputGrids;
+            std::vector<laovdb::GridBase::Ptr> outputGrids;
 
             std::vector<GA_Offset> vdbPrimOffsets;
             for (hvdb::VdbPrimCIterator vdbIt(pointGeo, group); vdbIt; ++vdbIt) {
@@ -1051,7 +1051,7 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
             const std::string velocityAttribute = evalStdString("velocityattribute", time);
             const std::string radiusAttribute = evalStdString("radiusattribute", time);
 
-            openvdb::points::FrustumRasterizerSettings settings(*xform);
+            laovdb::points::FrustumRasterizerSettings settings(*xform);
             // settings.threaded = false;
             settings.threshold = static_cast<float>(evalFloat("contributionthreshold", 0, time));
             settings.useRadius = 0 != evalInt("enableradius", 0, time);
@@ -1065,9 +1065,9 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
             settings.framesPerSecond = static_cast<float>(evalFloat("framespersecond", 0, time));
             settings.motionSamples = std::max(2, static_cast<int>(evalInt("motionsamples", 0, time)));
 
-            openvdb::points::FrustumRasterizerMask mask(*xform,
+            laovdb::points::FrustumRasterizerMask mask(*xform,
                 maskGrid ? maskGrid.get() : nullptr,
-                maskBBox ? *maskBBox : openvdb::BBoxd(), clipToFrustum, invertMask);
+                maskBBox ? *maskBBox : laovdb::BBoxd(), clipToFrustum, invertMask);
 
             const bool mergeVDBPoints = 0 != evalInt("mergevdbpoints", 0, time);
             const bool reduceMemory = 0 == evalInt("optimizeformemory", 0, time);
@@ -1079,7 +1079,7 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
                 const GU_PrimVDB* vdbPrim = *vdbIt;
 
                 // only process if grid is a PointDataGrid
-                auto gridPtr = openvdb::gridConstPtrCast<openvdb::points::PointDataGrid>(vdbPrim->getConstGridPtr());
+                auto gridPtr = laovdb::gridConstPtrCast<laovdb::points::PointDataGrid>(vdbPrim->getConstGridPtr());
                 if(!gridPtr) continue;
                 pointGrids.push_back(gridPtr);
             }
@@ -1088,11 +1088,11 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
 
             if (pointGeo->getNumPoints() > vdbPrimOffsets.size()) {
                 // compute auto voxel-size based on point distribution
-                openvdb::math::Mat4d matrix(openvdb::math::Mat4d::identity());
+                laovdb::math::Mat4d matrix(laovdb::math::Mat4d::identity());
                 voxelSize = hvdb::computeVoxelSizeFromHoudini(*pointGeo, /*pointsPerVoxel=*/8,
                     matrix, /*rounding=*/5, boss);
-                matrix.preScale(openvdb::Vec3d(voxelSize) / openvdb::math::getScale(matrix));
-                auto pointsTransform = openvdb::math::Transform::createLinearTransform(matrix);
+                matrix.preScale(laovdb::Vec3d(voxelSize) / laovdb::math::getScale(matrix));
+                auto pointsTransform = laovdb::math::Transform::createLinearTransform(matrix);
 
                 // convert Houdini points to VDB Points
                 openvdb_houdini::AttributeInfoMap attributes;
@@ -1110,18 +1110,18 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
                     attributes[name] = {0, false};
                 }
 
-                openvdb::points::PointDataGrid::Ptr houdiniPointsAsGridNonConst = hvdb::convertHoudiniToPointDataGrid(
+                laovdb::points::PointDataGrid::Ptr houdiniPointsAsGridNonConst = hvdb::convertHoudiniToPointDataGrid(
                     *pointGeo, /*compression=*/1, attributes, *pointsTransform);
-                openvdb::points::PointDataGrid::ConstPtr houdiniPointsAsGrid = openvdb::ConstPtrCast<
-                    const openvdb::points::PointDataGrid>(houdiniPointsAsGridNonConst);
+                laovdb::points::PointDataGrid::ConstPtr houdiniPointsAsGrid = laovdb::ConstPtrCast<
+                    const laovdb::points::PointDataGrid>(houdiniPointsAsGridNonConst);
                 pointGrids.push_back(houdiniPointsAsGrid);
             }
 
             if (!pointGrids.empty()) {
                 const std::string groups = evalStdString("vdbpointsgroups", time);
                 // Get and parse the vdb points groups
-                openvdb::points::RasterGroups rasterGroups;
-                openvdb::points::AttributeSet::Descriptor::parseNames(
+                laovdb::points::RasterGroups rasterGroups;
+                laovdb::points::AttributeSet::Descriptor::parseNames(
                     rasterGroups.includeNames, rasterGroups.excludeNames, groups);
 
                 const float shutter = static_cast<float>(evalFloat("shutter", 0, time));
@@ -1189,13 +1189,13 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
                         float adjustedFrameSample(frameSample);
                         if (continuousSampling) refContext.setFrame(frameSample);
                         else {
-                            if (!openvdb::math::isApproxEqual(frameSample, frame, tolerance)) {
+                            if (!laovdb::math::isApproxEqual(frameSample, frame, tolerance)) {
                                 if (frameSample < frame) {
                                     adjustedFrameSample =
-                                        static_cast<float>(openvdb::math::Floor(adjustedFrameSample-tolerance));
+                                        static_cast<float>(laovdb::math::Floor(adjustedFrameSample-tolerance));
                                 } else {
                                     adjustedFrameSample =
-                                        static_cast<float>(openvdb::math::Ceil(adjustedFrameSample+tolerance));
+                                        static_cast<float>(laovdb::math::Ceil(adjustedFrameSample+tolerance));
                                 }
                             }
                             refContext.setFrame(adjustedFrameSample);
@@ -1209,7 +1209,7 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
                         if (continuousSampling) camera.appendTransform(*transform);
                         else {
                             float transformWeight = 1.0f;
-                            if (!openvdb::math::isApproxZero(adjustedFrameSample, tolerance)) {
+                            if (!laovdb::math::isApproxZero(adjustedFrameSample, tolerance)) {
                                 transformWeight = (frameSample - frame) / (adjustedFrameSample - frame);
                             }
                             camera.appendTransform(*transform, transformWeight);
@@ -1225,26 +1225,26 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
                 const exint scalarCompositing = evalInt("scalarmode", 0, time);
                 const exint vectorCompositing = evalInt("vectormode", 0, time);
 
-                const openvdb::points::RasterMode accumulateMode(openvdb::points::RasterMode::ACCUMULATE);
-                const openvdb::points::RasterMode maximumMode(openvdb::points::RasterMode::MAXIMUM);
-                const openvdb::points::RasterMode averageMode(openvdb::points::RasterMode::AVERAGE);
+                const laovdb::points::RasterMode accumulateMode(laovdb::points::RasterMode::ACCUMULATE);
+                const laovdb::points::RasterMode maximumMode(laovdb::points::RasterMode::MAXIMUM);
+                const laovdb::points::RasterMode averageMode(laovdb::points::RasterMode::AVERAGE);
 
-                openvdb::points::RasterMode          densityMode = accumulateMode;
+                laovdb::points::RasterMode          densityMode = accumulateMode;
                 if (densityCompositing == 1)        densityMode = maximumMode;
                 else if (densityCompositing == 2)   densityMode = averageMode;
 
-                openvdb::points::RasterMode          scalarMode = accumulateMode;
+                laovdb::points::RasterMode          scalarMode = accumulateMode;
                 if (scalarCompositing == 1)         scalarMode = maximumMode;
                 else if (scalarCompositing == 2)    scalarMode = averageMode;
 
-                openvdb::points::RasterMode          vectorMode = accumulateMode;
+                laovdb::points::RasterMode          vectorMode = accumulateMode;
                 if (vectorCompositing == 1)         vectorMode = averageMode;
 
                 const float densityScale = static_cast<float>(evalFloat("densityscale", 0, time));
                 const float scale = 1.0f;
 
-                openvdb::points::FrustumRasterizer<
-                    openvdb::points::PointDataGrid> rasterizer(settings, mask, &boss);
+                laovdb::points::FrustumRasterizer<
+                    laovdb::points::PointDataGrid> rasterizer(settings, mask, &boss);
 
                 size_t iterations = pointGrids.size();
 
@@ -1261,7 +1261,7 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
                         pointGrids.addGridToRasterizer(rasterizer, i);
                     }
 
-                    openvdb::GridBase::Ptr velocity;
+                    laovdb::GridBase::Ptr velocity;
 
                     // rasterize velocity as the first attribute (but retain ordering)
                     // otherwise the velocity attribute can be discarded through streaming when
@@ -1294,7 +1294,7 @@ SOP_OpenVDB_Rasterize_Frustum::cookVDBSop(OP_Context& context)
                     // rasterize mask
 
                     if (createMask) {
-                        auto mask = rasterizer.rasterizeMask<openvdb::BoolGrid>(reduceMemory, rasterGroups);
+                        auto mask = rasterizer.rasterizeMask<laovdb::BoolGrid>(reduceMemory, rasterGroups);
                         outputGrids.push_back(mask);
                     }
 

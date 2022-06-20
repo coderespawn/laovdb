@@ -175,7 +175,7 @@ SOP_OpenVDB_LOD::SOP_OpenVDB_LOD(OP_Network* net,
 
 namespace {
 
-template<openvdb::Index Order>
+template<laovdb::Index Order>
 struct MultiResGridFractionalOp
 {
     MultiResGridFractionalOp(float f) : level(f) {}
@@ -186,20 +186,20 @@ struct MultiResGridFractionalOp
         if ( level <= 0.0f ) {
             outputGrid = typename GridType::Ptr( new GridType(grid) );
         } else {
-            const size_t levels = openvdb::math::Ceil(level) + 1;
+            const size_t levels = laovdb::math::Ceil(level) + 1;
             const GridType* gridPtr = &grid;
             // if grid already has MultiResGrid_Level metadata with type int64, remove it
             typename GridType::ConstPtr newGridPtr;
-            auto meta = grid.template getMetadata<openvdb::Int64Metadata>("MultiResGrid_Level");
+            auto meta = grid.template getMetadata<laovdb::Int64Metadata>("MultiResGrid_Level");
             if (meta) {
                 // deep copy meta map and remove element
-                openvdb::MetaMap metaMap(static_cast<const openvdb::MetaMap&>(grid));
+                laovdb::MetaMap metaMap(static_cast<const laovdb::MetaMap&>(grid));
                 metaMap.removeMeta("MultiResGrid_Level");
                 // the tree and transform are shared with the input grid, but meta map is different
                 newGridPtr = grid.copyReplacingMetadata(metaMap);
                 gridPtr = newGridPtr.get();
             }
-            openvdb::tools::MultiResGrid<TreeT> mrg( levels, *gridPtr );
+            laovdb::tools::MultiResGrid<TreeT> mrg( levels, *gridPtr );
             outputGrid = mrg.template createGrid<Order>( level );
         }
     }
@@ -207,10 +207,10 @@ struct MultiResGridFractionalOp
     hvdb::GridPtr outputGrid;
 };
 
-template<openvdb::Index Order>
+template<laovdb::Index Order>
 struct MultiResGridRangeOp
 {
-    MultiResGridRangeOp(float start_, float end_, float step_, openvdb::util::NullInterrupter& boss_)
+    MultiResGridRangeOp(float start_, float end_, float step_, laovdb::util::NullInterrupter& boss_)
         : start(start_), end(end_), step(step_), outputGrids(), boss(&boss_)
     {}
 
@@ -219,20 +219,20 @@ struct MultiResGridRangeOp
     {
         using TreeT = typename GridType::TreeType;
         if ( end > 0.0f ) {
-            const size_t levels = openvdb::math::Ceil(end) + 1;
+            const size_t levels = laovdb::math::Ceil(end) + 1;
             const GridType* gridPtr = &grid;
             // if grid already has MultiResGrid_Level metadata with type int64, remove it
             typename GridType::ConstPtr newGridPtr;
-            auto meta = grid.template getMetadata<openvdb::Int64Metadata>("MultiResGrid_Level");
+            auto meta = grid.template getMetadata<laovdb::Int64Metadata>("MultiResGrid_Level");
             if (meta) {
                 // deep copy meta map and remove element
-                openvdb::MetaMap metaMap(static_cast<const openvdb::MetaMap&>(grid));
+                laovdb::MetaMap metaMap(static_cast<const laovdb::MetaMap&>(grid));
                 metaMap.removeMeta("MultiResGrid_Level");
                 // the tree and transform are shared with the input grid, but meta map is different
                 newGridPtr = grid.copyReplacingMetadata(metaMap);
                 gridPtr = newGridPtr.get();
             }
-            openvdb::tools::MultiResGrid<TreeT> mrg( levels, *gridPtr );
+            laovdb::tools::MultiResGrid<TreeT> mrg( levels, *gridPtr );
 
             // inclusive range
             for (float level = start; !(level > end); level += step) {
@@ -245,7 +245,7 @@ struct MultiResGridRangeOp
     }
     const float start, end, step;
     std::vector<hvdb::GridPtr> outputGrids;
-    openvdb::util::NullInterrupter * const boss;
+    laovdb::util::NullInterrupter * const boss;
 };
 
 struct MultiResGridIntegerOp
@@ -258,20 +258,20 @@ struct MultiResGridIntegerOp
         const GridType* gridPtr = &grid;
         // if grid already has MultiResGrid_Level metadata with type float, remove it
         typename GridType::ConstPtr newGridPtr;
-        auto meta = grid.template getMetadata<openvdb::FloatMetadata>("MultiResGrid_Level");
+        auto meta = grid.template getMetadata<laovdb::FloatMetadata>("MultiResGrid_Level");
         if (meta) {
             // deep copy meta map and remove element
-            openvdb::MetaMap metaMap(static_cast<const openvdb::MetaMap&>(grid));
+            laovdb::MetaMap metaMap(static_cast<const laovdb::MetaMap&>(grid));
             metaMap.removeMeta("MultiResGrid_Level");
             // the tree and transform are shared with the input grid, but meta map is different
             newGridPtr = grid.copyReplacingMetadata(metaMap);
             gridPtr = newGridPtr.get();
         }
-        openvdb::tools::MultiResGrid<TreeT> mrg( levels, *gridPtr );
+        laovdb::tools::MultiResGrid<TreeT> mrg( levels, *gridPtr );
         outputGrids = mrg.grids();
     }
     const size_t levels;
-    openvdb::GridPtrVecPtr outputGrids;
+    laovdb::GridPtrVecPtr outputGrids;
 };
 
 

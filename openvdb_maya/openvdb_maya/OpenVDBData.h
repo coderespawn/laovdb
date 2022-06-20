@@ -31,26 +31,26 @@ public:
     size_t numberOfGrids() const;
 
     /// @brief  return a constant reference to the specified grid.
-    const openvdb::GridBase& grid(size_t index) const;
+    const laovdb::GridBase& grid(size_t index) const;
 
     /// @brief  return a constant pointer to the specified grid.
-    openvdb::GridBase::ConstPtr gridPtr(size_t index) const;
+    laovdb::GridBase::ConstPtr gridPtr(size_t index) const;
 
     /// @brief clears this container and duplicates the @c rhs grid container.
     void duplicate(const OpenVDBData& rhs);
 
     /// @brief Append the given grid to this container.
-    void insert(const openvdb::GridBase::ConstPtr&);
+    void insert(const laovdb::GridBase::ConstPtr&);
     /// @brief Append a shallow copy of the given grid to this container.
-    void insert(const openvdb::GridBase&);
+    void insert(const laovdb::GridBase&);
     /// @brief Append shallow copies of the given grids to this container.
-    void insert(const openvdb::GridPtrVec&);
+    void insert(const laovdb::GridPtrVec&);
     /// @brief Append shallow copies of the given grids to this container.
-    void insert(const openvdb::GridCPtrVec&);
+    void insert(const laovdb::GridCPtrVec&);
 
 
-    void write(const openvdb::io::File& file,
-        const openvdb::MetaMap& = openvdb::MetaMap()) const;
+    void write(const laovdb::io::File& file,
+        const laovdb::MetaMap& = laovdb::MetaMap()) const;
 
 
     /// @{
@@ -72,7 +72,7 @@ public:
     /// @}
 
 private:
-    openvdb::GridCPtrVec mGrids;
+    laovdb::GridCPtrVec mGrids;
 };
 
 

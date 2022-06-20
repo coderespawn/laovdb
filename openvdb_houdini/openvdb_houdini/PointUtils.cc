@@ -33,8 +33,8 @@
 #include <type_traits>
 #include <vector>
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 namespace hvdb = openvdb_houdini;
 
@@ -42,7 +42,7 @@ namespace hvdb = openvdb_houdini;
 namespace {
 
 inline GA_Storage
-gaStorageFromAttrString(const openvdb::Name& type)
+gaStorageFromAttrString(const laovdb::Name& type)
 {
     if (type == "string")           return GA_STORE_STRING;
     else if (type == "bool")        return GA_STORE_BOOL;
@@ -79,23 +79,23 @@ template<> struct GAHandleTraits<float>       { using RW = GA_RWHandleF; using R
 template<> struct GAHandleTraits<double>      { using RW = GA_RWHandleD; using RO = GA_ROHandleD; };
 template<> struct GAHandleTraits<std::string> { using RW = GA_RWHandleS; using RO = GA_ROHandleS; };
 template<>
-struct GAHandleTraits<openvdb::math::Vec3<int>> { using RW=GA_RWHandleV3; using RO=GA_ROHandleV3; };
+struct GAHandleTraits<laovdb::math::Vec3<int>> { using RW=GA_RWHandleV3; using RO=GA_ROHandleV3; };
 template<>
-struct GAHandleTraits<openvdb::Vec3s> { using RW = GA_RWHandleV3; using RO = GA_ROHandleV3; };
+struct GAHandleTraits<laovdb::Vec3s> { using RW = GA_RWHandleV3; using RO = GA_ROHandleV3; };
 template<>
-struct GAHandleTraits<openvdb::Vec3d> { using RW = GA_RWHandleV3D; using RO = GA_ROHandleV3D; };
+struct GAHandleTraits<laovdb::Vec3d> { using RW = GA_RWHandleV3D; using RO = GA_ROHandleV3D; };
 template<>
-struct GAHandleTraits<openvdb::math::Mat3s> { using RW = GA_RWHandleM3; using RO = GA_ROHandleM3; };
+struct GAHandleTraits<laovdb::math::Mat3s> { using RW = GA_RWHandleM3; using RO = GA_ROHandleM3; };
 template<>
-struct GAHandleTraits<openvdb::math::Mat3d> { using RW = GA_RWHandleM3D; using RO = GA_ROHandleM3D; };
+struct GAHandleTraits<laovdb::math::Mat3d> { using RW = GA_RWHandleM3D; using RO = GA_ROHandleM3D; };
 template<>
-struct GAHandleTraits<openvdb::Mat4s> { using RW = GA_RWHandleM4; using RO = GA_ROHandleM4; };
+struct GAHandleTraits<laovdb::Mat4s> { using RW = GA_RWHandleM4; using RO = GA_ROHandleM4; };
 template<>
-struct GAHandleTraits<openvdb::Mat4d> { using RW = GA_RWHandleM4D; using RO = GA_ROHandleM4D; };
+struct GAHandleTraits<laovdb::Mat4d> { using RW = GA_RWHandleM4D; using RO = GA_ROHandleM4D; };
 template<>
-struct GAHandleTraits<openvdb::math::Quats> { using RW = GA_RWHandleQ; using RO = GA_ROHandleQ; };
+struct GAHandleTraits<laovdb::math::Quats> { using RW = GA_RWHandleQ; using RO = GA_ROHandleQ; };
 template<>
-struct GAHandleTraits<openvdb::math::Quatd> { using RW = GA_RWHandleQD; using RO = GA_ROHandleQD; };
+struct GAHandleTraits<laovdb::math::Quatd> { using RW = GA_RWHandleQD; using RO = GA_ROHandleQD; };
 
 // @}
 
@@ -103,28 +103,28 @@ struct GAHandleTraits<openvdb::math::Quatd> { using RW = GA_RWHandleQD; using RO
 template<typename HandleType, typename ValueType>
 inline ValueType
 readAttributeValue(const HandleType& handle, const GA_Offset offset,
-    const openvdb::Index component = 0)
+    const laovdb::Index component = 0)
 {
     return ValueType(handle.get(offset, component));
 }
 
 template<>
-inline openvdb::math::Vec3<float>
+inline laovdb::math::Vec3<float>
 readAttributeValue(const GA_ROHandleV3& handle, const GA_Offset offset,
-    const openvdb::Index component)
+    const laovdb::Index component)
 {
-    openvdb::math::Vec3<float> dstValue;
+    laovdb::math::Vec3<float> dstValue;
     const UT_Vector3F value(handle.get(offset, component));
     dstValue[0] = value[0]; dstValue[1] = value[1]; dstValue[2] = value[2];
     return dstValue;
 }
 
 template<>
-inline openvdb::math::Vec3<int>
+inline laovdb::math::Vec3<int>
 readAttributeValue(const GA_ROHandleV3& handle, const GA_Offset offset,
-    const openvdb::Index component)
+    const laovdb::Index component)
 {
-    openvdb::math::Vec3<int> dstValue;
+    laovdb::math::Vec3<int> dstValue;
     const UT_Vector3 value(handle.get(offset, component));
     dstValue[0] = static_cast<int>(value[0]);
     dstValue[1] = static_cast<int>(value[1]);
@@ -133,99 +133,99 @@ readAttributeValue(const GA_ROHandleV3& handle, const GA_Offset offset,
 }
 
 template<>
-inline openvdb::math::Vec3<double>
+inline laovdb::math::Vec3<double>
 readAttributeValue(const GA_ROHandleV3D& handle, const GA_Offset offset,
-    const openvdb::Index component)
+    const laovdb::Index component)
 {
-    openvdb::math::Vec3<double> dstValue;
+    laovdb::math::Vec3<double> dstValue;
     const UT_Vector3D value(handle.get(offset, component));
     dstValue[0] = value[0]; dstValue[1] = value[1]; dstValue[2] = value[2];
     return dstValue;
 }
 
 template<>
-inline openvdb::math::Quat<float>
+inline laovdb::math::Quat<float>
 readAttributeValue(const GA_ROHandleQ& handle, const GA_Offset offset,
-    const openvdb::Index component)
+    const laovdb::Index component)
 {
-    openvdb::math::Quat<float> dstValue;
+    laovdb::math::Quat<float> dstValue;
     const UT_QuaternionF value(handle.get(offset, component));
     dstValue[0] = value[0]; dstValue[1] = value[1]; dstValue[2] = value[2]; dstValue[3] = value[3];
     return dstValue;
 }
 
 template<>
-inline openvdb::math::Quat<double>
+inline laovdb::math::Quat<double>
 readAttributeValue(const GA_ROHandleQD& handle, const GA_Offset offset,
-    const openvdb::Index component)
+    const laovdb::Index component)
 {
-    openvdb::math::Quat<double> dstValue;
+    laovdb::math::Quat<double> dstValue;
     const UT_QuaternionD value(handle.get(offset, component));
     dstValue[0] = value[0]; dstValue[1] = value[1]; dstValue[2] = value[2]; dstValue[3] = value[3];
     return dstValue;
 }
 
 template<>
-inline openvdb::math::Mat3<float>
+inline laovdb::math::Mat3<float>
 readAttributeValue(const GA_ROHandleM3& handle, const GA_Offset offset,
-    const openvdb::Index component)
+    const laovdb::Index component)
 {
     // read transposed matrix because Houdini uses column-major order so as
     // to be compatible with OpenGL
     const UT_Matrix3F value(handle.get(offset, component));
-    openvdb::math::Mat3<float> dstValue(value.data());
+    laovdb::math::Mat3<float> dstValue(value.data());
     return dstValue.transpose();
 }
 
 template<>
-inline openvdb::math::Mat3<double>
+inline laovdb::math::Mat3<double>
 readAttributeValue(const GA_ROHandleM3D& handle, const GA_Offset offset,
-    const openvdb::Index component)
+    const laovdb::Index component)
 {
     // read transposed matrix because Houdini uses column-major order so as
     // to be compatible with OpenGL
     const UT_Matrix3D value(handle.get(offset, component));
-    openvdb::math::Mat3<double> dstValue(value.data());
+    laovdb::math::Mat3<double> dstValue(value.data());
     return dstValue.transpose();
 }
 
 template<>
-inline openvdb::math::Mat4<float>
+inline laovdb::math::Mat4<float>
 readAttributeValue(const GA_ROHandleM4& handle, const GA_Offset offset,
-    const openvdb::Index component)
+    const laovdb::Index component)
 {
     // read transposed matrix because Houdini uses column-major order so as
     // to be compatible with OpenGL
     const UT_Matrix4F value(handle.get(offset, component));
-    openvdb::math::Mat4<float> dstValue(value.data());
+    laovdb::math::Mat4<float> dstValue(value.data());
     return dstValue.transpose();
 }
 
 template<>
-inline openvdb::math::Mat4<double>
+inline laovdb::math::Mat4<double>
 readAttributeValue(const GA_ROHandleM4D& handle, const GA_Offset offset,
-    const openvdb::Index component)
+    const laovdb::Index component)
 {
     // read transposed matrix because Houdini uses column-major order so as
     // to be compatible with OpenGL
     const UT_Matrix4D value(handle.get(offset, component));
-    openvdb::math::Mat4<double> dstValue(value.data());
+    laovdb::math::Mat4<double> dstValue(value.data());
     return dstValue.transpose();
 }
 
 template<>
-inline openvdb::Name
+inline laovdb::Name
 readAttributeValue(const GA_ROHandleS& handle, const GA_Offset offset,
-    const openvdb::Index component)
+    const laovdb::Index component)
 {
-    return openvdb::Name(UT_String(handle.get(offset, component)).toStdString());
+    return laovdb::Name(UT_String(handle.get(offset, component)).toStdString());
 }
 
 
 template<typename HandleType, typename ValueType>
 inline void
 writeAttributeValue(const HandleType& handle, const GA_Offset offset,
-    const openvdb::Index component, const ValueType& value)
+    const laovdb::Index component, const ValueType& value)
 {
     handle.set(offset, component, static_cast<typename HandleType::BASETYPE>(value));
 }
@@ -233,7 +233,7 @@ writeAttributeValue(const HandleType& handle, const GA_Offset offset,
 template<>
 inline void
 writeAttributeValue(const GA_RWHandleV3& handle, const GA_Offset offset,
-    const openvdb::Index component, const openvdb::math::Vec3<int>& value)
+    const laovdb::Index component, const laovdb::math::Vec3<int>& value)
 {
     handle.set(offset, component, UT_Vector3F(
         static_cast<float>(value.x()),
@@ -244,7 +244,7 @@ writeAttributeValue(const GA_RWHandleV3& handle, const GA_Offset offset,
 template<>
 inline void
 writeAttributeValue(const GA_RWHandleV3& handle, const GA_Offset offset,
-    const openvdb::Index component, const openvdb::math::Vec3<float>& value)
+    const laovdb::Index component, const laovdb::math::Vec3<float>& value)
 {
     handle.set(offset, component, UT_Vector3(value.x(), value.y(), value.z()));
 }
@@ -252,7 +252,7 @@ writeAttributeValue(const GA_RWHandleV3& handle, const GA_Offset offset,
 template<>
 inline void
 writeAttributeValue(const GA_RWHandleV3D& handle, const GA_Offset offset,
-    const openvdb::Index component, const openvdb::math::Vec3<double>& value)
+    const laovdb::Index component, const laovdb::math::Vec3<double>& value)
 {
     handle.set(offset, component, UT_Vector3D(value.x(), value.y(), value.z()));
 }
@@ -260,7 +260,7 @@ writeAttributeValue(const GA_RWHandleV3D& handle, const GA_Offset offset,
 template<>
 inline void
 writeAttributeValue(const GA_RWHandleQ& handle, const GA_Offset offset,
-    const openvdb::Index component, const openvdb::math::Quat<float>& value)
+    const laovdb::Index component, const laovdb::math::Quat<float>& value)
 {
     handle.set(offset, component, UT_QuaternionF(value.x(), value.y(), value.z(), value.w()));
 }
@@ -268,7 +268,7 @@ writeAttributeValue(const GA_RWHandleQ& handle, const GA_Offset offset,
 template<>
 inline void
 writeAttributeValue(const GA_RWHandleQD& handle, const GA_Offset offset,
-    const openvdb::Index component, const openvdb::math::Quat<double>& value)
+    const laovdb::Index component, const laovdb::math::Quat<double>& value)
 {
     handle.set(offset, component, UT_QuaternionD(value.x(), value.y(), value.z(), value.w()));
 }
@@ -276,7 +276,7 @@ writeAttributeValue(const GA_RWHandleQD& handle, const GA_Offset offset,
 template<>
 inline void
 writeAttributeValue(const GA_RWHandleM3& handle, const GA_Offset offset,
-    const openvdb::Index component, const openvdb::math::Mat3<float>& value)
+    const laovdb::Index component, const laovdb::math::Mat3<float>& value)
 {
     // write transposed matrix because Houdini uses column-major order so as
     // to be compatible with OpenGL
@@ -289,7 +289,7 @@ writeAttributeValue(const GA_RWHandleM3& handle, const GA_Offset offset,
 template<>
 inline void
 writeAttributeValue(const GA_RWHandleM3D& handle, const GA_Offset offset,
-    const openvdb::Index component, const openvdb::math::Mat3<double>& value)
+    const laovdb::Index component, const laovdb::math::Mat3<double>& value)
 {
     // write transposed matrix because Houdini uses column-major order so as
     // to be compatible with OpenGL
@@ -302,7 +302,7 @@ writeAttributeValue(const GA_RWHandleM3D& handle, const GA_Offset offset,
 template<>
 inline void
 writeAttributeValue(const GA_RWHandleM4& handle, const GA_Offset offset,
-    const openvdb::Index component, const openvdb::math::Mat4<float>& value)
+    const laovdb::Index component, const laovdb::math::Mat4<float>& value)
 {
     // write transposed matrix because Houdini uses column-major order so as
     // to be compatible with OpenGL
@@ -316,7 +316,7 @@ writeAttributeValue(const GA_RWHandleM4& handle, const GA_Offset offset,
 template<>
 inline void
 writeAttributeValue(const GA_RWHandleM4D& handle, const GA_Offset offset,
-    const openvdb::Index component, const openvdb::math::Mat4<double>& value)
+    const laovdb::Index component, const laovdb::math::Mat4<double>& value)
 {
     // write transposed matrix because Houdini uses column-major order so as
     // to be compatible with OpenGL
@@ -330,7 +330,7 @@ writeAttributeValue(const GA_RWHandleM4D& handle, const GA_Offset offset,
 template<>
 inline void
 writeAttributeValue(const GA_RWHandleS& handle, const GA_Offset offset,
-    const openvdb::Index component, const openvdb::Name& value)
+    const laovdb::Index component, const laovdb::Name& value)
 {
     handle.set(offset, component, value.c_str());
 }
@@ -349,7 +349,7 @@ struct HoudiniWriteAttribute
             : mHandle(&attribute.mAttribute) { }
 
         template <typename ValueType>
-        void set(openvdb::Index offset, openvdb::Index stride, const ValueType& value) {
+        void set(laovdb::Index offset, laovdb::Index stride, const ValueType& value) {
             writeAttributeValue(mHandle, GA_Offset(offset), stride, T(value));
         }
 
@@ -389,14 +389,14 @@ struct HoudiniReadAttribute
         , mOffsets(offsets) { }
 
     static void get(const GA_Attribute& attribute, T& value, const GA_Offset offset,
-        const openvdb::Index component)
+        const laovdb::Index component)
     {
         const ReadHandleType handle(&attribute);
         value = readAttributeValue<ReadHandleType, T>(handle, offset, component);
     }
 
     // Return the value of the nth point in the array (scalar type only)
-    void get(T& value, const size_t n, const openvdb::Index component = 0) const
+    void get(T& value, const size_t n, const laovdb::Index component = 0) const
     {
         value = readAttributeValue<ReadHandleType, T>(mHandle, getOffset(n), component);
     }
@@ -423,7 +423,7 @@ private:
 struct HoudiniGroup
 {
     explicit HoudiniGroup(GA_PointGroup& group,
-        openvdb::Index64 startOffset, openvdb::Index64 total)
+        laovdb::Index64 startOffset, laovdb::Index64 total)
         : mGroup(group)
         , mStartOffset(startOffset)
         , mTotal(total)
@@ -434,10 +434,10 @@ struct HoudiniGroup
     HoudiniGroup(const HoudiniGroup &) = delete;
     HoudiniGroup& operator=(const HoudiniGroup &) = delete;
 
-    void setOffsetOn(openvdb::Index index) { mBackingArray[index - mStartOffset] = 1; }
+    void setOffsetOn(laovdb::Index index) { mBackingArray[index - mStartOffset] = 1; }
 
     void finalize() {
-        for (openvdb::Index64 i = 0, n = mTotal; i < n; i++) {
+        for (laovdb::Index64 i = 0, n = mTotal; i < n; i++) {
             if (mBackingArray[i]) {
                 mGroup.addOffset(GA_Offset(i + mStartOffset));
             }
@@ -446,8 +446,8 @@ struct HoudiniGroup
 
 private:
     GA_PointGroup& mGroup;
-    openvdb::Index64 mStartOffset;
-    openvdb::Index64 mTotal;
+    laovdb::Index64 mStartOffset;
+    laovdb::Index64 mTotal;
 
     // This is not a bit field as we need to allow threadsafe updates:
     std::vector<unsigned char> mBackingArray;
@@ -489,7 +489,7 @@ inline void
 convertAttributeFromHoudini(PointDataTree& tree, const tools::PointIndexTree& indexTree,
     const Name& name, const GA_Attribute* const attribute, const int compression = 0)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     using HoudiniStringAttribute = HoudiniReadAttribute<Name>;
 
@@ -674,7 +674,7 @@ convertAttributeFromHoudini(PointDataTree& tree, const tools::PointIndexTree& in
 
 template <typename ValueType>
 void
-populateHoudiniDetailAttribute(GA_RWAttributeRef& attrib, const openvdb::MetaMap& metaMap,
+populateHoudiniDetailAttribute(GA_RWAttributeRef& attrib, const laovdb::MetaMap& metaMap,
                                const Name& key, const int index)
 {
     using WriteHandleType = typename GAHandleTraits<ValueType>::RW;
@@ -697,7 +697,7 @@ createTypedMetadataFromAttribute(const GA_Attribute* const attribute, const uint
 
     ValueType value;
     HoudiniAttribute::get(*attribute, value, GA_Offset(0), component);
-    return openvdb::TypedMetadata<ValueType>(value).copy();
+    return laovdb::TypedMetadata<ValueType>(value).copy();
 }
 
 template<typename HoudiniType, typename ValueType>
@@ -711,7 +711,7 @@ buildDefaults(const ValueType& value)
 
 template<>
 GA_Defaults
-buildDefaults<int32>(const openvdb::math::Vec3<int>& value)
+buildDefaults<int32>(const laovdb::math::Vec3<int>& value)
 {
     int32 values[3];
     for (unsigned i = 0; i < 3; ++i) {
@@ -722,7 +722,7 @@ buildDefaults<int32>(const openvdb::math::Vec3<int>& value)
 
 template<>
 GA_Defaults
-buildDefaults<fpreal32>(const openvdb::math::Vec3<float>& value)
+buildDefaults<fpreal32>(const laovdb::math::Vec3<float>& value)
 {
     fpreal32 values[3];
     for (unsigned i = 0; i < 3; ++i) {
@@ -733,7 +733,7 @@ buildDefaults<fpreal32>(const openvdb::math::Vec3<float>& value)
 
 template<>
 GA_Defaults
-buildDefaults<fpreal64>(const openvdb::math::Vec3<double>& value)
+buildDefaults<fpreal64>(const laovdb::math::Vec3<double>& value)
 {
     fpreal64 values[3];
     for (unsigned i = 0; i < 3; ++i) {
@@ -744,7 +744,7 @@ buildDefaults<fpreal64>(const openvdb::math::Vec3<double>& value)
 
 template<>
 GA_Defaults
-buildDefaults<fpreal32>(const openvdb::math::Quat<float>& value)
+buildDefaults<fpreal32>(const laovdb::math::Quat<float>& value)
 {
     fpreal32 values[4];
     for (unsigned i = 0; i < 4; ++i) {
@@ -755,7 +755,7 @@ buildDefaults<fpreal32>(const openvdb::math::Quat<float>& value)
 
 template<>
 GA_Defaults
-buildDefaults<fpreal64>(const openvdb::math::Quat<double>& value)
+buildDefaults<fpreal64>(const laovdb::math::Quat<double>& value)
 {
     fpreal64 values[4];
     for (unsigned i = 0; i < 4; ++i) {
@@ -766,7 +766,7 @@ buildDefaults<fpreal64>(const openvdb::math::Quat<double>& value)
 
 template<>
 GA_Defaults
-buildDefaults<fpreal32>(const openvdb::math::Mat3<float>& value)
+buildDefaults<fpreal32>(const laovdb::math::Mat3<float>& value)
 {
     fpreal32 values[9];
     const float* data = value.asPointer();
@@ -778,7 +778,7 @@ buildDefaults<fpreal32>(const openvdb::math::Mat3<float>& value)
 
 template<>
 GA_Defaults
-buildDefaults<fpreal64>(const openvdb::math::Mat3<double>& value)
+buildDefaults<fpreal64>(const laovdb::math::Mat3<double>& value)
 {
     fpreal64 values[9];
     const double* data = value.asPointer();
@@ -790,7 +790,7 @@ buildDefaults<fpreal64>(const openvdb::math::Mat3<double>& value)
 
 template<>
 GA_Defaults
-buildDefaults<fpreal32>(const openvdb::math::Mat4<float>& value)
+buildDefaults<fpreal32>(const laovdb::math::Mat4<float>& value)
 {
     fpreal32 values[16];
     const float* data = value.asPointer();
@@ -802,7 +802,7 @@ buildDefaults<fpreal32>(const openvdb::math::Mat4<float>& value)
 
 template<>
 GA_Defaults
-buildDefaults<fpreal64>(const openvdb::math::Mat4<double>& value)
+buildDefaults<fpreal64>(const laovdb::math::Mat4<double>& value)
 {
     fpreal64 values[16];
     const double* data = value.asPointer();
@@ -814,8 +814,8 @@ buildDefaults<fpreal64>(const openvdb::math::Mat4<double>& value)
 
 template <typename ValueType, typename HoudiniType>
 GA_Defaults
-gaDefaultsFromDescriptorTyped(const openvdb::points::AttributeSet::Descriptor& descriptor,
-    const openvdb::Name& name)
+gaDefaultsFromDescriptorTyped(const laovdb::points::AttributeSet::Descriptor& descriptor,
+    const laovdb::Name& name)
 {
     ValueType defaultValue = descriptor.getDefaultValue<ValueType>(name);
 
@@ -823,14 +823,14 @@ gaDefaultsFromDescriptorTyped(const openvdb::points::AttributeSet::Descriptor& d
 }
 
 inline GA_Defaults
-gaDefaultsFromDescriptor(const openvdb::points::AttributeSet::Descriptor& descriptor,
-    const openvdb::Name& name)
+gaDefaultsFromDescriptor(const laovdb::points::AttributeSet::Descriptor& descriptor,
+    const laovdb::Name& name)
 {
     const size_t pos = descriptor.find(name);
 
-    if (pos == openvdb::points::AttributeSet::INVALID_POS) return GA_Defaults(0);
+    if (pos == laovdb::points::AttributeSet::INVALID_POS) return GA_Defaults(0);
 
-    const openvdb::Name type = descriptor.type(pos).first;
+    const laovdb::Name type = descriptor.type(pos).first;
 
     if (type == "bool") {
         return gaDefaultsFromDescriptorTyped<bool, int32>(descriptor, name);
@@ -847,23 +847,23 @@ gaDefaultsFromDescriptor(const openvdb::points::AttributeSet::Descriptor& descri
     } else if (type == "double") {
         return gaDefaultsFromDescriptorTyped<double, fpreal64>(descriptor, name);
     } else if (type == "vec3i") {
-         return gaDefaultsFromDescriptorTyped<openvdb::math::Vec3<int>, int32>(descriptor, name);
+         return gaDefaultsFromDescriptorTyped<laovdb::math::Vec3<int>, int32>(descriptor, name);
     } else if (type == "vec3s") {
-         return gaDefaultsFromDescriptorTyped<openvdb::math::Vec3s, fpreal32>(descriptor, name);
+         return gaDefaultsFromDescriptorTyped<laovdb::math::Vec3s, fpreal32>(descriptor, name);
     } else if (type == "vec3d") {
-         return gaDefaultsFromDescriptorTyped<openvdb::math::Vec3d, fpreal64>(descriptor, name);
+         return gaDefaultsFromDescriptorTyped<laovdb::math::Vec3d, fpreal64>(descriptor, name);
     } else if (type == "quats") {
-         return gaDefaultsFromDescriptorTyped<openvdb::math::Quats, fpreal32>(descriptor, name);
+         return gaDefaultsFromDescriptorTyped<laovdb::math::Quats, fpreal32>(descriptor, name);
     } else if (type == "quatd") {
-         return gaDefaultsFromDescriptorTyped<openvdb::math::Quatd, fpreal64>(descriptor, name);
+         return gaDefaultsFromDescriptorTyped<laovdb::math::Quatd, fpreal64>(descriptor, name);
     } else if (type == "mat3s") {
-         return gaDefaultsFromDescriptorTyped<openvdb::math::Mat3s, fpreal32>(descriptor, name);
+         return gaDefaultsFromDescriptorTyped<laovdb::math::Mat3s, fpreal32>(descriptor, name);
     } else if (type == "mat3d") {
-         return gaDefaultsFromDescriptorTyped<openvdb::math::Mat3d, fpreal64>(descriptor, name);
+         return gaDefaultsFromDescriptorTyped<laovdb::math::Mat3d, fpreal64>(descriptor, name);
     } else if (type == "mat4s") {
-         return gaDefaultsFromDescriptorTyped<openvdb::math::Mat4s, fpreal32>(descriptor, name);
+         return gaDefaultsFromDescriptorTyped<laovdb::math::Mat4s, fpreal32>(descriptor, name);
     } else if (type == "mat4d") {
-         return gaDefaultsFromDescriptorTyped<openvdb::math::Mat4d, fpreal64>(descriptor, name);
+         return gaDefaultsFromDescriptorTyped<laovdb::math::Mat4d, fpreal64>(descriptor, name);
     }
     return GA_Defaults(0);
 }
@@ -875,18 +875,18 @@ gaDefaultsFromDescriptor(const openvdb::points::AttributeSet::Descriptor& descri
 ////////////////////////////////////////
 
 
-namespace openvdb_houdini {
+namespace laovdb_houdini {
 
 
 float
 computeVoxelSizeFromHoudini(const GU_Detail& detail,
                             const uint32_t pointsPerVoxel,
-                            const openvdb::math::Mat4d& matrix,
+                            const laovdb::math::Mat4d& matrix,
                             const Index decimalPlaces,
-                            openvdb::util::NullInterrupter& interrupter)
+                            laovdb::util::NullInterrupter& interrupter)
 {
-    HoudiniReadAttribute<openvdb::Vec3R> positions(*(detail.getP()));
-    return openvdb::points::computeVoxelSize(
+    HoudiniReadAttribute<laovdb::Vec3R> positions(*(detail.getP()));
+    return laovdb::points::computeVoxelSize(
             positions, pointsPerVoxel, matrix, decimalPlaces, &interrupter);
 }
 
@@ -894,9 +894,9 @@ computeVoxelSizeFromHoudini(const GU_Detail& detail,
 // deprecated
 float
 computeVoxelSizeFromHoudini(const GU_Detail& detail,
-                            const openvdb::Index pointsPerVoxel,
-                            const openvdb::math::Mat4d& matrix,
-                            const openvdb::Index decimalPlaces,
+                            const laovdb::Index pointsPerVoxel,
+                            const laovdb::math::Mat4d& matrix,
+                            const laovdb::Index decimalPlaces,
                             Interrupter& interrupter)
 {
     return computeVoxelSizeFromHoudini(detail, pointsPerVoxel, matrix, decimalPlaces,
@@ -1089,7 +1089,7 @@ convertPointDataGridToHoudini(
     const std::vector<std::string>& excludeGroups,
     const bool inCoreOnly)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     const PointDataTree& tree = grid.tree();
 
@@ -1307,11 +1307,11 @@ convertPointDataGridToHoudini(
 
 
 void
-populateMetadataFromHoudini(openvdb::points::PointDataGrid& grid,
+populateMetadataFromHoudini(laovdb::points::PointDataGrid& grid,
                             const GU_Detail& detail,
                             const WarnFunc& warnings)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     for (GA_AttributeDict::iterator iter = detail.attribs().begin(GA_SCOPE_PUBLIC);
         !iter.atEnd(); ++iter)
@@ -1411,7 +1411,7 @@ populateMetadataFromHoudini(openvdb::points::PointDataGrid& grid,
                 } else if (storage == GA_STORE_REAL64) {
                     metadata = createTypedMetadataFromAttribute<double>(attribute, i);
                 } else if (storage == GA_STORE_STRING) {
-                    metadata = createTypedMetadataFromAttribute<openvdb::Name>(attribute, i);
+                    metadata = createTypedMetadataFromAttribute<laovdb::Name>(attribute, i);
                 } else {
                     std::stringstream ss;
                     ss << "Detail attribute \"" << attribute->getName() << "\" " <<
@@ -1435,7 +1435,7 @@ populateMetadataFromHoudini(openvdb::points::PointDataGrid& grid,
 
 void
 convertMetadataToHoudini(GU_Detail& detail,
-                         const openvdb::MetaMap& metaMap,
+                         const laovdb::MetaMap& metaMap,
                          const WarnFunc& warnings)
 {
     struct Local {
@@ -1468,7 +1468,7 @@ convertMetadataToHoudini(GU_Detail& detail,
         }
     };
 
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     using DetailInfo = std::pair<Name, int>;
     using DetailMap = std::map<Name, DetailInfo>;
@@ -1545,17 +1545,17 @@ convertMetadataToHoudini(GU_Detail& detail,
         GA_RWAttributeRef attrib = detail.findGlobalAttribute(name);
         UT_ASSERT(!attrib.isInvalid());
 
-        if (type == openvdb::typeNameAsString<bool>())                 populateHoudiniDetailAttribute<bool>(attrib, metaMap, key, index);
-        else if (type == openvdb::typeNameAsString<int8_t>())          populateHoudiniDetailAttribute<int8_t>(attrib, metaMap, key, index);
-        else if (type == openvdb::typeNameAsString<int16_t>())         populateHoudiniDetailAttribute<int16_t>(attrib, metaMap, key, index);
-        else if (type == openvdb::typeNameAsString<int32_t>())         populateHoudiniDetailAttribute<int32_t>(attrib, metaMap, key, index);
-        else if (type == openvdb::typeNameAsString<int64_t>())         populateHoudiniDetailAttribute<int64_t>(attrib, metaMap, key, index);
-        else if (type == openvdb::typeNameAsString<float>())           populateHoudiniDetailAttribute<float>(attrib, metaMap, key, index);
-        else if (type == openvdb::typeNameAsString<double>())          populateHoudiniDetailAttribute<double>(attrib, metaMap, key, index);
-        else if (type == openvdb::typeNameAsString<Vec3<int32_t> >())  populateHoudiniDetailAttribute<Vec3<int32_t> >(attrib, metaMap, key, index);
-        else if (type == openvdb::typeNameAsString<Vec3<float> >())    populateHoudiniDetailAttribute<Vec3<float> >(attrib, metaMap, key, index);
-        else if (type == openvdb::typeNameAsString<Vec3<double> >())   populateHoudiniDetailAttribute<Vec3<double> >(attrib, metaMap, key, index);
-        else if (type == openvdb::typeNameAsString<Name>())            populateHoudiniDetailAttribute<Name>(attrib, metaMap, key, index);
+        if (type == laovdb::typeNameAsString<bool>())                 populateHoudiniDetailAttribute<bool>(attrib, metaMap, key, index);
+        else if (type == laovdb::typeNameAsString<int8_t>())          populateHoudiniDetailAttribute<int8_t>(attrib, metaMap, key, index);
+        else if (type == laovdb::typeNameAsString<int16_t>())         populateHoudiniDetailAttribute<int16_t>(attrib, metaMap, key, index);
+        else if (type == laovdb::typeNameAsString<int32_t>())         populateHoudiniDetailAttribute<int32_t>(attrib, metaMap, key, index);
+        else if (type == laovdb::typeNameAsString<int64_t>())         populateHoudiniDetailAttribute<int64_t>(attrib, metaMap, key, index);
+        else if (type == laovdb::typeNameAsString<float>())           populateHoudiniDetailAttribute<float>(attrib, metaMap, key, index);
+        else if (type == laovdb::typeNameAsString<double>())          populateHoudiniDetailAttribute<double>(attrib, metaMap, key, index);
+        else if (type == laovdb::typeNameAsString<Vec3<int32_t> >())  populateHoudiniDetailAttribute<Vec3<int32_t> >(attrib, metaMap, key, index);
+        else if (type == laovdb::typeNameAsString<Vec3<float> >())    populateHoudiniDetailAttribute<Vec3<float> >(attrib, metaMap, key, index);
+        else if (type == laovdb::typeNameAsString<Vec3<double> >())   populateHoudiniDetailAttribute<Vec3<double> >(attrib, metaMap, key, index);
+        else if (type == laovdb::typeNameAsString<Name>())            populateHoudiniDetailAttribute<Name>(attrib, metaMap, key, index);
         else {
             std::stringstream ss;
             ss << "Metadata value \"" << key
@@ -1623,8 +1623,8 @@ collectPointInfo(const PointDataGrid& grid,
                  std::string& groupStr,
                  std::string& attributeStr)
 {
-    using AttributeSet = openvdb::points::AttributeSet;
-    using Descriptor = openvdb::points::AttributeSet::Descriptor;
+    using AttributeSet = laovdb::points::AttributeSet;
+    using Descriptor = laovdb::points::AttributeSet::Descriptor;
 
     const PointDataTree& tree = grid.constTree();
 
@@ -1637,7 +1637,7 @@ collectPointInfo(const PointDataGrid& grid,
         }
     }
 
-    openvdb::Index64 totalPointCount = 0;
+    laovdb::Index64 totalPointCount = 0;
 
     // it is more technically correct to rely on the voxel count as this may be
     // out of sync with the attribute size, however for faster node preview when
@@ -1652,11 +1652,11 @@ collectPointInfo(const PointDataGrid& grid,
         }
     }
     else {
-        totalPointCount = openvdb::points::pointCount(tree);
+        totalPointCount = laovdb::points::pointCount(tree);
     }
 
     std::ostringstream os;
-    os << openvdb::util::formattedInt(totalPointCount);
+    os << laovdb::util::formattedInt(totalPointCount);
     countStr = os.str();
 
     os.clear();
@@ -1694,8 +1694,8 @@ collectPointInfo(const PointDataGrid& grid,
 
         if (allOutOfCore) os << "out-of-core";
         else {
-            const openvdb::points::GroupFilter filter(it.first, attributeSet);
-            os << openvdb::util::formattedInt(pointCount(tree, filter));
+            const laovdb::points::GroupFilter filter(it.first, attributeSet);
+            os << laovdb::util::formattedInt(pointCount(tree, filter));
         }
         os << ")";
     }
@@ -1709,14 +1709,14 @@ collectPointInfo(const PointDataGrid& grid,
 
     first = true;
     for (const auto& it : nameToPosMap) {
-        const openvdb::points::AttributeArray& array = *(attributeSet.getConst(it.second));
+        const laovdb::points::AttributeArray& array = *(attributeSet.getConst(it.second));
         if (isGroup(array)) continue;
 
         if (first) first = false;
         else os << ", ";
 
-        const openvdb::NamePair& type = descriptor.type(it.second);
-        const openvdb::Name& codecType = type.second;
+        const laovdb::NamePair& type = descriptor.type(it.second);
+        const laovdb::Name& codecType = type.second;
 
         if (isString(array)) {
             os << it.first << "[str]";
@@ -1847,4 +1847,4 @@ const PRM_ChoiceList VDBPointsGroupMenu(PRM_CHOICELIST_TOGGLE,
 
 #endif
 
-} // namespace openvdb_houdini
+} // namespace laovdb_houdini

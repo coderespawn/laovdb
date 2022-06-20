@@ -42,7 +42,7 @@ TestVolumeExecutable::testConstructionDestruction()
     // must be initialized, otherwise construction/destruction of llvm objects won't
     // exhibit correct behaviour
 
-    CPPUNIT_ASSERT(openvdb::ax::isInitialized());
+    CPPUNIT_ASSERT(laovdb::ax::isInitialized());
 
     std::shared_ptr<llvm::LLVMContext> C(new llvm::LLVMContext);
     std::unique_ptr<llvm::Module> M(new llvm::Module("test_module", *C));
@@ -58,11 +58,11 @@ TestVolumeExecutable::testConstructionDestruction()
 
     // Basic construction
 
-    openvdb::ax::ast::Tree tree;
-    openvdb::ax::AttributeRegistry::ConstPtr emptyReg =
-        openvdb::ax::AttributeRegistry::create(tree);
-    openvdb::ax::VolumeExecutable::Ptr volumeExecutable
-        (new openvdb::ax::VolumeExecutable(C, E, emptyReg, nullptr, {}, tree));
+    laovdb::ax::ast::Tree tree;
+    laovdb::ax::AttributeRegistry::ConstPtr emptyReg =
+        laovdb::ax::AttributeRegistry::create(tree);
+    laovdb::ax::VolumeExecutable::Ptr volumeExecutable
+        (new laovdb::ax::VolumeExecutable(C, E, emptyReg, nullptr, {}, tree));
 
     CPPUNIT_ASSERT_EQUAL(2, int(wE.use_count()));
     CPPUNIT_ASSERT_EQUAL(2, int(wC.use_count()));
@@ -84,33 +84,33 @@ TestVolumeExecutable::testConstructionDestruction()
 void
 TestVolumeExecutable::testCreateMissingGrids()
 {
-    openvdb::ax::Compiler::UniquePtr compiler = openvdb::ax::Compiler::create();
-    openvdb::ax::VolumeExecutable::Ptr executable =
-        compiler->compile<openvdb::ax::VolumeExecutable>("@a=v@b.x;");
+    laovdb::ax::Compiler::UniquePtr compiler = laovdb::ax::Compiler::create();
+    laovdb::ax::VolumeExecutable::Ptr executable =
+        compiler->compile<laovdb::ax::VolumeExecutable>("@a=v@b.x;");
     CPPUNIT_ASSERT(executable);
 
     executable->setCreateMissing(false);
-    executable->setValueIterator(openvdb::ax::VolumeExecutable::IterType::ON);
+    executable->setValueIterator(laovdb::ax::VolumeExecutable::IterType::ON);
 
-    openvdb::GridPtrVec grids;
-    CPPUNIT_ASSERT_THROW(executable->execute(grids), openvdb::AXExecutionError);
+    laovdb::GridPtrVec grids;
+    CPPUNIT_ASSERT_THROW(executable->execute(grids), laovdb::AXExecutionError);
     CPPUNIT_ASSERT(grids.empty());
 
     executable->setCreateMissing(true);
-    executable->setValueIterator(openvdb::ax::VolumeExecutable::IterType::ON);
+    executable->setValueIterator(laovdb::ax::VolumeExecutable::IterType::ON);
     executable->execute(grids);
 
-    openvdb::math::Transform::Ptr defaultTransform =
-        openvdb::math::Transform::createLinearTransform();
+    laovdb::math::Transform::Ptr defaultTransform =
+        laovdb::math::Transform::createLinearTransform();
 
     CPPUNIT_ASSERT_EQUAL(size_t(2), grids.size());
     CPPUNIT_ASSERT(grids[0]->getName() == "b");
-    CPPUNIT_ASSERT(grids[0]->isType<openvdb::Vec3fGrid>());
+    CPPUNIT_ASSERT(grids[0]->isType<laovdb::Vec3fGrid>());
     CPPUNIT_ASSERT(grids[0]->empty());
     CPPUNIT_ASSERT(grids[0]->transform() == *defaultTransform);
 
     CPPUNIT_ASSERT(grids[1]->getName() == "a");
-    CPPUNIT_ASSERT(grids[1]->isType<openvdb::FloatGrid>());
+    CPPUNIT_ASSERT(grids[1]->isType<laovdb::FloatGrid>());
     CPPUNIT_ASSERT(grids[1]->empty());
     CPPUNIT_ASSERT(grids[1]->transform() == *defaultTransform);
 }
@@ -118,45 +118,45 @@ TestVolumeExecutable::testCreateMissingGrids()
 void
 TestVolumeExecutable::testTreeExecutionLevel()
 {
-    openvdb::ax::CustomData::Ptr data = openvdb::ax::CustomData::create();
-    openvdb::FloatMetadata* const meta =
-        data->getOrInsertData<openvdb::FloatMetadata>("value");
+    laovdb::ax::CustomData::Ptr data = laovdb::ax::CustomData::create();
+    laovdb::FloatMetadata* const meta =
+        data->getOrInsertData<laovdb::FloatMetadata>("value");
 
-    openvdb::ax::Compiler::UniquePtr compiler = openvdb::ax::Compiler::create();
+    laovdb::ax::Compiler::UniquePtr compiler = laovdb::ax::Compiler::create();
     // generate an executable which does not stream active tiles
-    openvdb::ax::VolumeExecutable::Ptr executable =
-        compiler->compile<openvdb::ax::VolumeExecutable>("f@test = $value;", data);
+    laovdb::ax::VolumeExecutable::Ptr executable =
+        compiler->compile<laovdb::ax::VolumeExecutable>("f@test = $value;", data);
     CPPUNIT_ASSERT(executable);
-    CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::OFF ==
+    CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::OFF ==
         executable->getActiveTileStreaming());
 
-    using NodeT0 = openvdb::FloatGrid::Accessor::NodeT0;
-    using NodeT1 = openvdb::FloatGrid::Accessor::NodeT1;
-    using NodeT2 = openvdb::FloatGrid::Accessor::NodeT2;
+    using NodeT0 = laovdb::FloatGrid::Accessor::NodeT0;
+    using NodeT1 = laovdb::FloatGrid::Accessor::NodeT1;
+    using NodeT2 = laovdb::FloatGrid::Accessor::NodeT2;
 
-    openvdb::FloatGrid grid;
+    laovdb::FloatGrid grid;
     grid.setName("test");
-    openvdb::FloatTree& tree = grid.tree();
-    tree.addTile(3, openvdb::Coord(0), -1.0f, /*active*/true); // NodeT2 tile
-    tree.addTile(2, openvdb::Coord(NodeT2::DIM), -1.0f, /*active*/true); // NodeT1 tile
-    tree.addTile(1, openvdb::Coord(NodeT2::DIM+NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
-    auto leaf = tree.touchLeaf(openvdb::Coord(NodeT2::DIM + NodeT1::DIM + NodeT0::DIM));
+    laovdb::FloatTree& tree = grid.tree();
+    tree.addTile(3, laovdb::Coord(0), -1.0f, /*active*/true); // NodeT2 tile
+    tree.addTile(2, laovdb::Coord(NodeT2::DIM), -1.0f, /*active*/true); // NodeT1 tile
+    tree.addTile(1, laovdb::Coord(NodeT2::DIM+NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
+    auto leaf = tree.touchLeaf(laovdb::Coord(NodeT2::DIM + NodeT1::DIM + NodeT0::DIM));
     CPPUNIT_ASSERT(leaf);
     leaf->fill(-1.0f, true);
 
-    const openvdb::FloatTree copy = tree;
+    const laovdb::FloatTree copy = tree;
     // check config
     auto CHECK_CONFIG = [&]() {
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index32(1), tree.leafCount());
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(3), tree.activeTileCount());
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-4), tree.getValueDepth(openvdb::Coord(0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT2::DIM)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-2), tree.getValueDepth(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
-        CPPUNIT_ASSERT_EQUAL(leaf, tree.probeLeaf(openvdb::Coord(NodeT2::DIM + NodeT1::DIM + NodeT0::DIM)));
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(NodeT2::NUM_VOXELS) +
-            openvdb::Index64(NodeT1::NUM_VOXELS) +
-            openvdb::Index64(NodeT0::NUM_VOXELS) +
-            openvdb::Index64(NodeT0::NUM_VOXELS), // leaf
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index32(1), tree.leafCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(3), tree.activeTileCount());
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-4), tree.getValueDepth(laovdb::Coord(0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT2::DIM)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-2), tree.getValueDepth(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+        CPPUNIT_ASSERT_EQUAL(leaf, tree.probeLeaf(laovdb::Coord(NodeT2::DIM + NodeT1::DIM + NodeT0::DIM)));
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(NodeT2::NUM_VOXELS) +
+            laovdb::Index64(NodeT1::NUM_VOXELS) +
+            laovdb::Index64(NodeT0::NUM_VOXELS) +
+            laovdb::Index64(NodeT0::NUM_VOXELS), // leaf
                 tree.activeVoxelCount());
         CPPUNIT_ASSERT(copy.hasSameTopology(tree));
     };
@@ -164,25 +164,25 @@ TestVolumeExecutable::testTreeExecutionLevel()
     float constant; bool active;
 
     CHECK_CONFIG();
-    CPPUNIT_ASSERT_EQUAL(-1.0f, tree.getValue(openvdb::Coord(0)));
-    CPPUNIT_ASSERT_EQUAL(-1.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
-    CPPUNIT_ASSERT_EQUAL(-1.0f, tree.getValue(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-1.0f, tree.getValue(laovdb::Coord(0)));
+    CPPUNIT_ASSERT_EQUAL(-1.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-1.0f, tree.getValue(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
     CPPUNIT_ASSERT(leaf->isConstant(constant, active));
     CPPUNIT_ASSERT_EQUAL(-1.0f, constant);
     CPPUNIT_ASSERT(active);
 
-    openvdb::Index min,max;
+    laovdb::Index min,max;
 
     // process default config, all should change
     executable->getTreeExecutionLevel(min,max);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(openvdb::FloatTree::DEPTH-1), max);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(laovdb::FloatTree::DEPTH-1), max);
     meta->setValue(-2.0f);
     executable->execute(grid);
     CHECK_CONFIG();
-    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(openvdb::Coord(0)));
-    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
-    CPPUNIT_ASSERT_EQUAL(-2.0f,  tree.getValue(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(laovdb::Coord(0)));
+    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-2.0f,  tree.getValue(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
     CPPUNIT_ASSERT(leaf->isConstant(constant, active));
     CPPUNIT_ASSERT_EQUAL(-2.0f, constant);
     CPPUNIT_ASSERT(active);
@@ -191,13 +191,13 @@ TestVolumeExecutable::testTreeExecutionLevel()
     meta->setValue(1.0f);
     executable->setTreeExecutionLevel(0);
     executable->getTreeExecutionLevel(min,max);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), max);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), max);
     executable->execute(grid);
     CHECK_CONFIG();
-    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(openvdb::Coord(0)));
-    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
-    CPPUNIT_ASSERT_EQUAL(-2.0f,  tree.getValue(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(laovdb::Coord(0)));
+    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-2.0f,  tree.getValue(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
     CPPUNIT_ASSERT(leaf->isConstant(constant, active));
     CPPUNIT_ASSERT_EQUAL(1.0f, constant);
     CPPUNIT_ASSERT(active);
@@ -206,13 +206,13 @@ TestVolumeExecutable::testTreeExecutionLevel()
     meta->setValue(3.0f);
     executable->setTreeExecutionLevel(1);
     executable->getTreeExecutionLevel(min,max);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(1), min);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(1), max);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(1), min);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(1), max);
     executable->execute(grid);
     CHECK_CONFIG();
-    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(openvdb::Coord(0)));
-    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
-    CPPUNIT_ASSERT_EQUAL(3.0f, tree.getValue(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(laovdb::Coord(0)));
+    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
+    CPPUNIT_ASSERT_EQUAL(3.0f, tree.getValue(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
     CPPUNIT_ASSERT(leaf->isConstant(constant, active));
     CPPUNIT_ASSERT_EQUAL(1.0f, constant);
     CPPUNIT_ASSERT(active);
@@ -221,13 +221,13 @@ TestVolumeExecutable::testTreeExecutionLevel()
     meta->setValue(5.0f);
     executable->setTreeExecutionLevel(2);
     executable->getTreeExecutionLevel(min,max);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(2), min);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(2), max);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(2), min);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(2), max);
     executable->execute(grid);
     CHECK_CONFIG();
-    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(openvdb::Coord(0)));
-    CPPUNIT_ASSERT_EQUAL(5.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
-    CPPUNIT_ASSERT_EQUAL(3.0f, tree.getValue(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-2.0f, tree.getValue(laovdb::Coord(0)));
+    CPPUNIT_ASSERT_EQUAL(5.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
+    CPPUNIT_ASSERT_EQUAL(3.0f, tree.getValue(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
     CPPUNIT_ASSERT(leaf->isConstant(constant, active));
     CPPUNIT_ASSERT_EQUAL(1.0f, constant);
     CPPUNIT_ASSERT(active);
@@ -236,31 +236,31 @@ TestVolumeExecutable::testTreeExecutionLevel()
     meta->setValue(10.0f);
     executable->setTreeExecutionLevel(3);
     executable->getTreeExecutionLevel(min,max);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(3), min);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(3), max);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(3), min);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(3), max);
     executable->execute(grid);
     CHECK_CONFIG();
-    CPPUNIT_ASSERT_EQUAL(10.0f, tree.getValue(openvdb::Coord(0)));
-    CPPUNIT_ASSERT_EQUAL(5.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
-    CPPUNIT_ASSERT_EQUAL(3.0f, tree.getValue(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+    CPPUNIT_ASSERT_EQUAL(10.0f, tree.getValue(laovdb::Coord(0)));
+    CPPUNIT_ASSERT_EQUAL(5.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
+    CPPUNIT_ASSERT_EQUAL(3.0f, tree.getValue(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
     CPPUNIT_ASSERT(leaf->isConstant(constant, active));
     CPPUNIT_ASSERT_EQUAL(1.0f, constant);
     CPPUNIT_ASSERT(active);
 
     // test higher values throw
-    CPPUNIT_ASSERT_THROW(executable->setTreeExecutionLevel(4), openvdb::RuntimeError);
+    CPPUNIT_ASSERT_THROW(executable->setTreeExecutionLevel(4), laovdb::RuntimeError);
 
     // test level range 0-1
     meta->setValue(-4.0f);
     executable->setTreeExecutionLevel(0,1);
     executable->getTreeExecutionLevel(min,max);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(1), max);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(1), max);
     executable->execute(grid);
     CHECK_CONFIG();
-    CPPUNIT_ASSERT_EQUAL(10.0f, tree.getValue(openvdb::Coord(0)));
-    CPPUNIT_ASSERT_EQUAL(5.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
-    CPPUNIT_ASSERT_EQUAL(-4.0f, tree.getValue(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+    CPPUNIT_ASSERT_EQUAL(10.0f, tree.getValue(laovdb::Coord(0)));
+    CPPUNIT_ASSERT_EQUAL(5.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-4.0f, tree.getValue(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
     CPPUNIT_ASSERT(leaf->isConstant(constant, active));
     CPPUNIT_ASSERT_EQUAL(-4.0f, constant);
     CPPUNIT_ASSERT(active);
@@ -269,13 +269,13 @@ TestVolumeExecutable::testTreeExecutionLevel()
     meta->setValue(-6.0f);
     executable->setTreeExecutionLevel(1,2);
     executable->getTreeExecutionLevel(min,max);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(1), min);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(2), max);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(1), min);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(2), max);
     executable->execute(grid);
     CHECK_CONFIG();
-    CPPUNIT_ASSERT_EQUAL(10.0f, tree.getValue(openvdb::Coord(0)));
-    CPPUNIT_ASSERT_EQUAL(-6.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
-    CPPUNIT_ASSERT_EQUAL(-6.0f, tree.getValue(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+    CPPUNIT_ASSERT_EQUAL(10.0f, tree.getValue(laovdb::Coord(0)));
+    CPPUNIT_ASSERT_EQUAL(-6.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-6.0f, tree.getValue(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
     CPPUNIT_ASSERT(leaf->isConstant(constant, active));
     CPPUNIT_ASSERT_EQUAL(-4.0f, constant);
     CPPUNIT_ASSERT(active);
@@ -284,13 +284,13 @@ TestVolumeExecutable::testTreeExecutionLevel()
     meta->setValue(-11.0f);
     executable->setTreeExecutionLevel(2,3);
     executable->getTreeExecutionLevel(min,max);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(2), min);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(3), max);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(2), min);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(3), max);
     executable->execute(grid);
     CHECK_CONFIG();
-    CPPUNIT_ASSERT_EQUAL(-11.0f, tree.getValue(openvdb::Coord(0)));
-    CPPUNIT_ASSERT_EQUAL(-11.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
-    CPPUNIT_ASSERT_EQUAL(-6.0f, tree.getValue(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-11.0f, tree.getValue(laovdb::Coord(0)));
+    CPPUNIT_ASSERT_EQUAL(-11.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
+    CPPUNIT_ASSERT_EQUAL(-6.0f, tree.getValue(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
     CPPUNIT_ASSERT(leaf->isConstant(constant, active));
     CPPUNIT_ASSERT_EQUAL(-4.0f, constant);
     CPPUNIT_ASSERT(active);
@@ -299,13 +299,13 @@ TestVolumeExecutable::testTreeExecutionLevel()
     meta->setValue(20.0f);
     executable->setTreeExecutionLevel(0,3);
     executable->getTreeExecutionLevel(min,max);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-    CPPUNIT_ASSERT_EQUAL(openvdb::Index(3), max);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+    CPPUNIT_ASSERT_EQUAL(laovdb::Index(3), max);
     executable->execute(grid);
     CHECK_CONFIG();
-    CPPUNIT_ASSERT_EQUAL(20.0f, tree.getValue(openvdb::Coord(0)));
-    CPPUNIT_ASSERT_EQUAL(20.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
-    CPPUNIT_ASSERT_EQUAL(20.0f, tree.getValue(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+    CPPUNIT_ASSERT_EQUAL(20.0f, tree.getValue(laovdb::Coord(0)));
+    CPPUNIT_ASSERT_EQUAL(20.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
+    CPPUNIT_ASSERT_EQUAL(20.0f, tree.getValue(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
     CPPUNIT_ASSERT(leaf->isConstant(constant, active));
     CPPUNIT_ASSERT_EQUAL(20.0f, constant);
     CPPUNIT_ASSERT(active);
@@ -314,56 +314,56 @@ TestVolumeExecutable::testTreeExecutionLevel()
 void
 TestVolumeExecutable::testActiveTileStreaming()
 {
-    using NodeT0 = openvdb::FloatGrid::Accessor::NodeT0;
-    using NodeT1 = openvdb::FloatGrid::Accessor::NodeT1;
-    using NodeT2 = openvdb::FloatGrid::Accessor::NodeT2;
+    using NodeT0 = laovdb::FloatGrid::Accessor::NodeT0;
+    using NodeT1 = laovdb::FloatGrid::Accessor::NodeT1;
+    using NodeT2 = laovdb::FloatGrid::Accessor::NodeT2;
 
     //
 
-    openvdb::Index min,max;
-    openvdb::ax::VolumeExecutable::Ptr executable;
-    openvdb::ax::Compiler::UniquePtr compiler = openvdb::ax::Compiler::create();
+    laovdb::Index min,max;
+    laovdb::ax::VolumeExecutable::Ptr executable;
+    laovdb::ax::Compiler::UniquePtr compiler = laovdb::ax::Compiler::create();
 
     // test no streaming
     {
-        openvdb::FloatGrid grid;
+        laovdb::FloatGrid grid;
         grid.setName("test");
-        openvdb::FloatTree& tree = grid.tree();
-        tree.addTile(3, openvdb::Coord(0), -1.0f, /*active*/true); // NodeT2 tile
-        tree.addTile(2, openvdb::Coord(NodeT2::DIM), -1.0f, /*active*/true); // NodeT1 tile
-        tree.addTile(1, openvdb::Coord(NodeT2::DIM+NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
-        auto leaf = tree.touchLeaf(openvdb::Coord(NodeT2::DIM + NodeT1::DIM + NodeT0::DIM));
+        laovdb::FloatTree& tree = grid.tree();
+        tree.addTile(3, laovdb::Coord(0), -1.0f, /*active*/true); // NodeT2 tile
+        tree.addTile(2, laovdb::Coord(NodeT2::DIM), -1.0f, /*active*/true); // NodeT1 tile
+        tree.addTile(1, laovdb::Coord(NodeT2::DIM+NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
+        auto leaf = tree.touchLeaf(laovdb::Coord(NodeT2::DIM + NodeT1::DIM + NodeT0::DIM));
         CPPUNIT_ASSERT(leaf);
         leaf->fill(-1.0f, true);
 
-        executable = compiler->compile<openvdb::ax::VolumeExecutable>("f@test = 2.0f;");
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::OFF ==
+        executable = compiler->compile<laovdb::ax::VolumeExecutable>("f@test = 2.0f;");
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::OFF ==
             executable->getActiveTileStreaming());
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::OFF ==
-            executable->getActiveTileStreaming("test", openvdb::ax::ast::tokens::CoreType::FLOAT));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::OFF ==
-            executable->getActiveTileStreaming("empty", openvdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::OFF ==
+            executable->getActiveTileStreaming("test", laovdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::OFF ==
+            executable->getActiveTileStreaming("empty", laovdb::ax::ast::tokens::CoreType::FLOAT));
 
         executable->getTreeExecutionLevel(min,max);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(openvdb::FloatTree::DEPTH-1), max);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(laovdb::FloatTree::DEPTH-1), max);
         executable->execute(grid);
 
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index32(1), tree.leafCount());
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(3), tree.activeTileCount());
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-4), tree.getValueDepth(openvdb::Coord(0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT2::DIM)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-2), tree.getValueDepth(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-1), tree.getValueDepth(openvdb::Coord(NodeT2::DIM+NodeT1::DIM+NodeT0::DIM)));
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(NodeT2::NUM_VOXELS) +
-            openvdb::Index64(NodeT1::NUM_VOXELS) +
-            openvdb::Index64(NodeT0::NUM_VOXELS) +
-            openvdb::Index64(NodeT0::NUM_VOXELS), tree.activeVoxelCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index32(1), tree.leafCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(3), tree.activeTileCount());
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-4), tree.getValueDepth(laovdb::Coord(0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT2::DIM)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-2), tree.getValueDepth(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-1), tree.getValueDepth(laovdb::Coord(NodeT2::DIM+NodeT1::DIM+NodeT0::DIM)));
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(NodeT2::NUM_VOXELS) +
+            laovdb::Index64(NodeT1::NUM_VOXELS) +
+            laovdb::Index64(NodeT0::NUM_VOXELS) +
+            laovdb::Index64(NodeT0::NUM_VOXELS), tree.activeVoxelCount());
 
-        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(openvdb::Coord(0)));
-        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
-        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
-        CPPUNIT_ASSERT_EQUAL(leaf, tree.probeLeaf(openvdb::Coord(NodeT2::DIM + NodeT1::DIM + NodeT0::DIM)));
+        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(laovdb::Coord(0)));
+        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
+        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+        CPPUNIT_ASSERT_EQUAL(leaf, tree.probeLeaf(laovdb::Coord(NodeT2::DIM + NodeT1::DIM + NodeT0::DIM)));
         float constant; bool active;
         CPPUNIT_ASSERT(leaf->isConstant(constant, active));
         CPPUNIT_ASSERT_EQUAL(2.0f, constant);
@@ -372,41 +372,41 @@ TestVolumeExecutable::testActiveTileStreaming()
 
     // test getvoxelpws which densifies everything
     {
-        openvdb::FloatGrid grid;
+        laovdb::FloatGrid grid;
         grid.setName("test");
-        openvdb::FloatTree& tree = grid.tree();
-        tree.addTile(2, openvdb::Coord(0), -1.0f, /*active*/true); // NodeT1 tile
-        tree.addTile(1, openvdb::Coord(NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
+        laovdb::FloatTree& tree = grid.tree();
+        tree.addTile(2, laovdb::Coord(0), -1.0f, /*active*/true); // NodeT1 tile
+        tree.addTile(1, laovdb::Coord(NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
 
-        executable = compiler->compile<openvdb::ax::VolumeExecutable>("vec3d p = getvoxelpws(); f@test = p.x;");
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+        executable = compiler->compile<laovdb::ax::VolumeExecutable>("vec3d p = getvoxelpws(); f@test = p.x;");
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
             executable->getActiveTileStreaming());
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("test", openvdb::ax::ast::tokens::CoreType::FLOAT));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("empty", openvdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("test", laovdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("empty", laovdb::ax::ast::tokens::CoreType::FLOAT));
 
         executable->getTreeExecutionLevel(min,max);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(openvdb::FloatTree::DEPTH-1), max);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(laovdb::FloatTree::DEPTH-1), max);
 
         executable->execute(grid);
 
-        const openvdb::Index64 voxels =
-            openvdb::Index64(NodeT1::NUM_VOXELS) +
-            openvdb::Index64(NodeT0::NUM_VOXELS);
+        const laovdb::Index64 voxels =
+            laovdb::Index64(NodeT1::NUM_VOXELS) +
+            laovdb::Index64(NodeT0::NUM_VOXELS);
 
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index32(voxels / openvdb::FloatTree::LeafNodeType::NUM_VOXELS), tree.leafCount());
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(0), tree.activeTileCount());
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-1), tree.getValueDepth(openvdb::Coord(0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-1), tree.getValueDepth(openvdb::Coord(NodeT1::DIM)));
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index32(voxels / laovdb::FloatTree::LeafNodeType::NUM_VOXELS), tree.leafCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(0), tree.activeTileCount());
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-1), tree.getValueDepth(laovdb::Coord(0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-1), tree.getValueDepth(laovdb::Coord(NodeT1::DIM)));
         CPPUNIT_ASSERT_EQUAL(voxels, tree.activeVoxelCount());
 
         // test values - this isn't strictly necessary for this group of tests
         // as we really just want to check topology results
 
-        openvdb::tools::foreach(tree.cbeginValueOn(), [&](const auto& it) {
-            const openvdb::Coord& coord = it.getCoord();
+        laovdb::tools::foreach(tree.cbeginValueOn(), [&](const auto& it) {
+            const laovdb::Coord& coord = it.getCoord();
             const double pos = grid.indexToWorld(coord).x();
             CPPUNIT_ASSERT_EQUAL(*it, float(pos));
         });
@@ -415,56 +415,56 @@ TestVolumeExecutable::testActiveTileStreaming()
     // test spatially varying voxelization
     // @note this tests execution over a NodeT2 which is slow
     {
-        openvdb::FloatGrid grid;
+        laovdb::FloatGrid grid;
         grid.setName("test");
-        openvdb::FloatTree& tree = grid.tree();
-        tree.addTile(3, openvdb::Coord(0), -1.0f, /*active*/true); // NodeT2 tile
-        tree.addTile(2, openvdb::Coord(NodeT2::DIM), -1.0f, /*active*/true); // NodeT1 tile
-        tree.addTile(1, openvdb::Coord(NodeT2::DIM+NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
+        laovdb::FloatTree& tree = grid.tree();
+        tree.addTile(3, laovdb::Coord(0), -1.0f, /*active*/true); // NodeT2 tile
+        tree.addTile(2, laovdb::Coord(NodeT2::DIM), -1.0f, /*active*/true); // NodeT1 tile
+        tree.addTile(1, laovdb::Coord(NodeT2::DIM+NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
 
         // sets all x == 0 coordinates to 2.0f. These all reside in the NodeT2 tile
-        executable = compiler->compile<openvdb::ax::VolumeExecutable>("int x = getcoordx(); if (x == 0) f@test = 2.0f;");
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+        executable = compiler->compile<laovdb::ax::VolumeExecutable>("int x = getcoordx(); if (x == 0) f@test = 2.0f;");
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
             executable->getActiveTileStreaming());
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("test", openvdb::ax::ast::tokens::CoreType::FLOAT));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("empty", openvdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("test", laovdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("empty", laovdb::ax::ast::tokens::CoreType::FLOAT));
 
         executable->getTreeExecutionLevel(min,max);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(openvdb::FloatTree::DEPTH-1), max);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(laovdb::FloatTree::DEPTH-1), max);
 
         executable->execute(grid);
 
-        const openvdb::Index64 face = NodeT2::DIM * NodeT2::DIM; // face voxel count of NodeT2 x==0
-        const openvdb::Index64 leafs = // expected leaf nodes that need to be created
-            (face * openvdb::FloatTree::LeafNodeType::DIM) /
-            openvdb::FloatTree::LeafNodeType::NUM_VOXELS;
+        const laovdb::Index64 face = NodeT2::DIM * NodeT2::DIM; // face voxel count of NodeT2 x==0
+        const laovdb::Index64 leafs = // expected leaf nodes that need to be created
+            (face * laovdb::FloatTree::LeafNodeType::DIM) /
+            laovdb::FloatTree::LeafNodeType::NUM_VOXELS;
 
         // number of child nodes in NodeT2;
-        const openvdb::Index64 n2ChildAxisCount = NodeT2::DIM / NodeT2::getChildDim();
-        const openvdb::Index64 n2ChildCount = n2ChildAxisCount * n2ChildAxisCount * n2ChildAxisCount;
+        const laovdb::Index64 n2ChildAxisCount = NodeT2::DIM / NodeT2::getChildDim();
+        const laovdb::Index64 n2ChildCount = n2ChildAxisCount * n2ChildAxisCount * n2ChildAxisCount;
 
         // number of child nodes in NodeT1;
-        const openvdb::Index64 n1ChildAxisCount = NodeT1::DIM / NodeT1::getChildDim();
-        const openvdb::Index64 n1ChildCount = n1ChildAxisCount * n1ChildAxisCount * n1ChildAxisCount;
+        const laovdb::Index64 n1ChildAxisCount = NodeT1::DIM / NodeT1::getChildDim();
+        const laovdb::Index64 n1ChildCount = n1ChildAxisCount * n1ChildAxisCount * n1ChildAxisCount;
 
-         const openvdb::Index64 tiles = // expected active tiles
+         const laovdb::Index64 tiles = // expected active tiles
             (n2ChildCount -  (n2ChildAxisCount * n2ChildAxisCount)) + // NodeT2 child - a single face
             ((n1ChildCount * (n2ChildAxisCount * n2ChildAxisCount)) - leafs) // NodeT1 face tiles (NodeT0) - leafs
             + 1 /*NodeT1*/ + 1 /*NodeT0*/;
 
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index32(leafs), tree.leafCount());
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(tiles), tree.activeTileCount());
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT2::DIM)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-2), tree.getValueDepth(openvdb::Coord(NodeT2::DIM+NodeT1::DIM)));
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(NodeT2::NUM_VOXELS) +
-            openvdb::Index64(NodeT1::NUM_VOXELS) +
-            openvdb::Index64(NodeT0::NUM_VOXELS), tree.activeVoxelCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index32(leafs), tree.leafCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(tiles), tree.activeTileCount());
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT2::DIM)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-2), tree.getValueDepth(laovdb::Coord(NodeT2::DIM+NodeT1::DIM)));
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(NodeT2::NUM_VOXELS) +
+            laovdb::Index64(NodeT1::NUM_VOXELS) +
+            laovdb::Index64(NodeT0::NUM_VOXELS), tree.activeVoxelCount());
 
-        openvdb::tools::foreach(tree.cbeginValueOn(), [&](const auto& it) {
-            const openvdb::Coord& coord = it.getCoord();
+        laovdb::tools::foreach(tree.cbeginValueOn(), [&](const auto& it) {
+            const laovdb::Coord& coord = it.getCoord();
             if (coord.x() == 0) CPPUNIT_ASSERT_EQUAL(*it,  2.0f);
             else                CPPUNIT_ASSERT_EQUAL(*it, -1.0f);
         });
@@ -472,104 +472,104 @@ TestVolumeExecutable::testActiveTileStreaming()
 
     // test post pruning - force active streaming with a uniform kernel
     {
-        openvdb::FloatGrid grid;
+        laovdb::FloatGrid grid;
         grid.setName("test");
-        openvdb::FloatTree& tree = grid.tree();
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*0, 0, 0), -1.0f, /*active*/true); // NodeT1 tile
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*1, 0, 0), -1.0f, /*active*/true); // NodeT1 tile
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*2, 0, 0), -1.0f, /*active*/true); // NodeT1 tile
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*3, 0, 0), -1.0f, /*active*/true); // NodeT1 tile
-        tree.addTile(1, openvdb::Coord(NodeT2::DIM), -1.0f, /*active*/true); // NodeT0 tile
+        laovdb::FloatTree& tree = grid.tree();
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*0, 0, 0), -1.0f, /*active*/true); // NodeT1 tile
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*1, 0, 0), -1.0f, /*active*/true); // NodeT1 tile
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*2, 0, 0), -1.0f, /*active*/true); // NodeT1 tile
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*3, 0, 0), -1.0f, /*active*/true); // NodeT1 tile
+        tree.addTile(1, laovdb::Coord(NodeT2::DIM), -1.0f, /*active*/true); // NodeT0 tile
 
-        executable = compiler->compile<openvdb::ax::VolumeExecutable>("f@test = 2.0f;");
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::OFF ==
+        executable = compiler->compile<laovdb::ax::VolumeExecutable>("f@test = 2.0f;");
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::OFF ==
             executable->getActiveTileStreaming());
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::OFF ==
-            executable->getActiveTileStreaming("test", openvdb::ax::ast::tokens::CoreType::FLOAT));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::OFF ==
-            executable->getActiveTileStreaming("empty", openvdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::OFF ==
+            executable->getActiveTileStreaming("test", laovdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::OFF ==
+            executable->getActiveTileStreaming("empty", laovdb::ax::ast::tokens::CoreType::FLOAT));
 
         // force stream
-        executable->setActiveTileStreaming(openvdb::ax::VolumeExecutable::Streaming::ON);
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+        executable->setActiveTileStreaming(laovdb::ax::VolumeExecutable::Streaming::ON);
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
             executable->getActiveTileStreaming());
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("test", openvdb::ax::ast::tokens::CoreType::FLOAT));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("empty", openvdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("test", laovdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("empty", laovdb::ax::ast::tokens::CoreType::FLOAT));
 
         executable->getTreeExecutionLevel(min,max);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(openvdb::FloatTree::DEPTH-1), max);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(laovdb::FloatTree::DEPTH-1), max);
 
         executable->execute(grid);
 
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index32(0), tree.leafCount());
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(5), tree.activeTileCount());
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT1::DIM*0, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT1::DIM*1, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT1::DIM*2, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT1::DIM*3, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-2), tree.getValueDepth(openvdb::Coord(NodeT2::DIM)));
-        CPPUNIT_ASSERT_EQUAL((openvdb::Index64(NodeT1::NUM_VOXELS)*4) +
-            openvdb::Index64(NodeT0::NUM_VOXELS), tree.activeVoxelCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index32(0), tree.leafCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(5), tree.activeTileCount());
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT1::DIM*0, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT1::DIM*1, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT1::DIM*2, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT1::DIM*3, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-2), tree.getValueDepth(laovdb::Coord(NodeT2::DIM)));
+        CPPUNIT_ASSERT_EQUAL((laovdb::Index64(NodeT1::NUM_VOXELS)*4) +
+            laovdb::Index64(NodeT0::NUM_VOXELS), tree.activeVoxelCount());
 
-        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(openvdb::Coord(NodeT1::DIM*0, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(openvdb::Coord(NodeT1::DIM*1, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(openvdb::Coord(NodeT1::DIM*2, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(openvdb::Coord(NodeT1::DIM*3, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(openvdb::Coord(NodeT2::DIM)));
+        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(laovdb::Coord(NodeT1::DIM*0, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(laovdb::Coord(NodeT1::DIM*1, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(laovdb::Coord(NodeT1::DIM*2, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(laovdb::Coord(NodeT1::DIM*3, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(2.0f, tree.getValue(laovdb::Coord(NodeT2::DIM)));
     }
 
     // test spatially varying voxelization for bool grids which use specialized implementations
     {
-        openvdb::BoolGrid grid;
+        laovdb::BoolGrid grid;
         grid.setName("test");
-        openvdb::BoolTree& tree = grid.tree();
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*0, 0, 0), true, /*active*/true); // NodeT1 tile
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*1, 0, 0), true, /*active*/true); // NodeT1 tile
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*2, 0, 0), true, /*active*/true); // NodeT1 tile
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*3, 0, 0), true, /*active*/true); // NodeT1 tile
-        tree.addTile(1, openvdb::Coord(NodeT2::DIM), true, /*active*/true); // NodeT0 tileile
+        laovdb::BoolTree& tree = grid.tree();
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*0, 0, 0), true, /*active*/true); // NodeT1 tile
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*1, 0, 0), true, /*active*/true); // NodeT1 tile
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*2, 0, 0), true, /*active*/true); // NodeT1 tile
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*3, 0, 0), true, /*active*/true); // NodeT1 tile
+        tree.addTile(1, laovdb::Coord(NodeT2::DIM), true, /*active*/true); // NodeT0 tileile
 
         // sets all x == 0 coordinates to 2.0f. These all reside in the NodeT2 tile
-        executable = compiler->compile<openvdb::ax::VolumeExecutable>("int x = getcoordx(); if (x == 0) bool@test = false;");
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+        executable = compiler->compile<laovdb::ax::VolumeExecutable>("int x = getcoordx(); if (x == 0) bool@test = false;");
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
             executable->getActiveTileStreaming());
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("test", openvdb::ax::ast::tokens::CoreType::BOOL));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("empty", openvdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("test", laovdb::ax::ast::tokens::CoreType::BOOL));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("empty", laovdb::ax::ast::tokens::CoreType::FLOAT));
         executable->getTreeExecutionLevel(min,max);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(openvdb::BoolTree::DEPTH-1), max);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(laovdb::BoolTree::DEPTH-1), max);
 
         executable->execute(grid);
 
-        const openvdb::Index64 face = NodeT1::DIM * NodeT1::DIM; // face voxel count of NodeT2 x==0
-        const openvdb::Index64 leafs = // expected leaf nodes that need to be created
-            (face * openvdb::BoolTree::LeafNodeType::DIM) /
-            openvdb::BoolTree::LeafNodeType::NUM_VOXELS;
+        const laovdb::Index64 face = NodeT1::DIM * NodeT1::DIM; // face voxel count of NodeT2 x==0
+        const laovdb::Index64 leafs = // expected leaf nodes that need to be created
+            (face * laovdb::BoolTree::LeafNodeType::DIM) /
+            laovdb::BoolTree::LeafNodeType::NUM_VOXELS;
 
         // number of child nodes in NodeT1;
-        const openvdb::Index64 n1ChildAxisCount = NodeT1::DIM / NodeT1::getChildDim();
-        const openvdb::Index64 n1ChildCount = n1ChildAxisCount * n1ChildAxisCount * n1ChildAxisCount;
+        const laovdb::Index64 n1ChildAxisCount = NodeT1::DIM / NodeT1::getChildDim();
+        const laovdb::Index64 n1ChildCount = n1ChildAxisCount * n1ChildAxisCount * n1ChildAxisCount;
 
-         const openvdb::Index64 tiles = // expected active tiles
+         const laovdb::Index64 tiles = // expected active tiles
             (n1ChildCount - leafs) // NodeT1 face tiles (NodeT0) - leafs
             + 3 /*NodeT1*/ + 1 /*NodeT0*/;
 
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index32(leafs), tree.leafCount());
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(tiles), tree.activeTileCount());
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::BoolTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT1::DIM*1, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::BoolTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT1::DIM*2, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::BoolTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT1::DIM*3, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::BoolTree::DEPTH-2), tree.getValueDepth(openvdb::Coord(NodeT2::DIM)));
-        CPPUNIT_ASSERT_EQUAL((openvdb::Index64(NodeT1::NUM_VOXELS)*4) +
-            openvdb::Index64(NodeT0::NUM_VOXELS), tree.activeVoxelCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index32(leafs), tree.leafCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(tiles), tree.activeTileCount());
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::BoolTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT1::DIM*1, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::BoolTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT1::DIM*2, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::BoolTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT1::DIM*3, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::BoolTree::DEPTH-2), tree.getValueDepth(laovdb::Coord(NodeT2::DIM)));
+        CPPUNIT_ASSERT_EQUAL((laovdb::Index64(NodeT1::NUM_VOXELS)*4) +
+            laovdb::Index64(NodeT0::NUM_VOXELS), tree.activeVoxelCount());
 
-        openvdb::tools::foreach(tree.cbeginValueOn(), [&](const auto& it) {
-            const openvdb::Coord& coord = it.getCoord();
+        laovdb::tools::foreach(tree.cbeginValueOn(), [&](const auto& it) {
+            const laovdb::Coord& coord = it.getCoord();
             if (coord.x() == 0) CPPUNIT_ASSERT_EQUAL(*it, false);
             else                CPPUNIT_ASSERT_EQUAL(*it, true);
         });
@@ -578,53 +578,53 @@ TestVolumeExecutable::testActiveTileStreaming()
     // test spatially varying voxelization for string grids which use specialized implementations
     {
 OPENVDB_NO_DEPRECATION_WARNING_BEGIN
-        openvdb::StringGrid grid;
+        laovdb::StringGrid grid;
         grid.setName("test");
-        openvdb::StringTree& tree = grid.tree();
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*0, 0, 0), "foo", /*active*/true); // NodeT1 tile
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*1, 0, 0), "foo", /*active*/true); // NodeT1 tile
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*2, 0, 0), "foo", /*active*/true); // NodeT1 tile
-        tree.addTile(2, openvdb::Coord(NodeT1::DIM*3, 0, 0), "foo", /*active*/true); // NodeT1 tile
-        tree.addTile(1, openvdb::Coord(NodeT2::DIM), "foo", /*active*/true); // NodeT0 tileile
+        laovdb::StringTree& tree = grid.tree();
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*0, 0, 0), "foo", /*active*/true); // NodeT1 tile
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*1, 0, 0), "foo", /*active*/true); // NodeT1 tile
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*2, 0, 0), "foo", /*active*/true); // NodeT1 tile
+        tree.addTile(2, laovdb::Coord(NodeT1::DIM*3, 0, 0), "foo", /*active*/true); // NodeT1 tile
+        tree.addTile(1, laovdb::Coord(NodeT2::DIM), "foo", /*active*/true); // NodeT0 tileile
 
         // sets all x == 0 coordinates to 2.0f. These all reside in the NodeT2 tile
-        executable = compiler->compile<openvdb::ax::VolumeExecutable>("int x = getcoordx(); if (x == 0) s@test = \"bar\";");
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+        executable = compiler->compile<laovdb::ax::VolumeExecutable>("int x = getcoordx(); if (x == 0) s@test = \"bar\";");
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
             executable->getActiveTileStreaming());
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("test", openvdb::ax::ast::tokens::CoreType::STRING));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("empty", openvdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("test", laovdb::ax::ast::tokens::CoreType::STRING));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("empty", laovdb::ax::ast::tokens::CoreType::FLOAT));
         executable->getTreeExecutionLevel(min,max);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(openvdb::StringTree::DEPTH-1), max);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(laovdb::StringTree::DEPTH-1), max);
 
         executable->execute(grid);
 
-        const openvdb::Index64 face = NodeT1::DIM * NodeT1::DIM; // face voxel count of NodeT2 x==0
-        const openvdb::Index64 leafs = // expected leaf nodes that need to be created
-            (face * openvdb::StringTree::LeafNodeType::DIM) /
-            openvdb::StringTree::LeafNodeType::NUM_VOXELS;
+        const laovdb::Index64 face = NodeT1::DIM * NodeT1::DIM; // face voxel count of NodeT2 x==0
+        const laovdb::Index64 leafs = // expected leaf nodes that need to be created
+            (face * laovdb::StringTree::LeafNodeType::DIM) /
+            laovdb::StringTree::LeafNodeType::NUM_VOXELS;
 
         // number of child nodes in NodeT1;
-        const openvdb::Index64 n1ChildAxisCount = NodeT1::DIM / NodeT1::getChildDim();
-        const openvdb::Index64 n1ChildCount = n1ChildAxisCount * n1ChildAxisCount * n1ChildAxisCount;
+        const laovdb::Index64 n1ChildAxisCount = NodeT1::DIM / NodeT1::getChildDim();
+        const laovdb::Index64 n1ChildCount = n1ChildAxisCount * n1ChildAxisCount * n1ChildAxisCount;
 
-         const openvdb::Index64 tiles = // expected active tiles
+         const laovdb::Index64 tiles = // expected active tiles
             (n1ChildCount - leafs) // NodeT1 face tiles (NodeT0) - leafs
             + 3 /*NodeT1*/ + 1 /*NodeT0*/;
 
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index32(leafs), tree.leafCount());
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(tiles), tree.activeTileCount());
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::StringTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT1::DIM*1, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::StringTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT1::DIM*2, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::StringTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(NodeT1::DIM*3, 0, 0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::StringTree::DEPTH-2), tree.getValueDepth(openvdb::Coord(NodeT2::DIM)));
-        CPPUNIT_ASSERT_EQUAL((openvdb::Index64(NodeT1::NUM_VOXELS)*4) +
-            openvdb::Index64(NodeT0::NUM_VOXELS), tree.activeVoxelCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index32(leafs), tree.leafCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(tiles), tree.activeTileCount());
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::StringTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT1::DIM*1, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::StringTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT1::DIM*2, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::StringTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(NodeT1::DIM*3, 0, 0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::StringTree::DEPTH-2), tree.getValueDepth(laovdb::Coord(NodeT2::DIM)));
+        CPPUNIT_ASSERT_EQUAL((laovdb::Index64(NodeT1::NUM_VOXELS)*4) +
+            laovdb::Index64(NodeT0::NUM_VOXELS), tree.activeVoxelCount());
 
-        openvdb::tools::foreach(tree.cbeginValueOn(), [&](const auto& it) {
-            const openvdb::Coord& coord = it.getCoord();
+        laovdb::tools::foreach(tree.cbeginValueOn(), [&](const auto& it) {
+            const laovdb::Coord& coord = it.getCoord();
             if (coord.x() == 0) CPPUNIT_ASSERT_EQUAL(*it, std::string("bar"));
             else                CPPUNIT_ASSERT_EQUAL(*it, std::string("foo"));
         });
@@ -633,128 +633,128 @@ OPENVDB_NO_DEPRECATION_WARNING_END
 
     // test streaming with an OFF iterator (no streaming behaviour) and an ALL iterator (streaming behaviour for ON values only)
     {
-        openvdb::FloatGrid grid;
+        laovdb::FloatGrid grid;
         grid.setName("test");
-        openvdb::FloatTree& tree = grid.tree();
-        tree.addTile(2, openvdb::Coord(0), -1.0f, /*active*/true); // NodeT1 tile
-        tree.addTile(1, openvdb::Coord(NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
-        auto leaf = tree.touchLeaf(openvdb::Coord(NodeT1::DIM + NodeT0::DIM));
+        laovdb::FloatTree& tree = grid.tree();
+        tree.addTile(2, laovdb::Coord(0), -1.0f, /*active*/true); // NodeT1 tile
+        tree.addTile(1, laovdb::Coord(NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
+        auto leaf = tree.touchLeaf(laovdb::Coord(NodeT1::DIM + NodeT0::DIM));
         CPPUNIT_ASSERT(leaf);
         leaf->fill(-1.0f, true);
 
-        openvdb::FloatTree copy = tree;
+        laovdb::FloatTree copy = tree;
 
-        executable = compiler->compile<openvdb::ax::VolumeExecutable>("f@test = float(getcoordx());");
-        executable->setValueIterator(openvdb::ax::VolumeExecutable::IterType::OFF);
+        executable = compiler->compile<laovdb::ax::VolumeExecutable>("f@test = float(getcoordx());");
+        executable->setValueIterator(laovdb::ax::VolumeExecutable::IterType::OFF);
 
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
             executable->getActiveTileStreaming());
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("test", openvdb::ax::ast::tokens::CoreType::STRING));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("empty", openvdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("test", laovdb::ax::ast::tokens::CoreType::STRING));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("empty", laovdb::ax::ast::tokens::CoreType::FLOAT));
         executable->getTreeExecutionLevel(min,max);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(openvdb::FloatTree::DEPTH-1), max);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(laovdb::FloatTree::DEPTH-1), max);
 
         executable->execute(grid);
 
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index32(1), tree.leafCount());
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(2), tree.activeTileCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index32(1), tree.leafCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(2), tree.activeTileCount());
         CPPUNIT_ASSERT(tree.hasSameTopology(copy));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-3), tree.getValueDepth(openvdb::Coord(0)));
-        CPPUNIT_ASSERT_EQUAL(int(openvdb::FloatTree::DEPTH-2), tree.getValueDepth(openvdb::Coord(NodeT1::DIM)));
-        CPPUNIT_ASSERT_EQUAL(leaf, tree.probeLeaf(openvdb::Coord(NodeT1::DIM + NodeT0::DIM)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-3), tree.getValueDepth(laovdb::Coord(0)));
+        CPPUNIT_ASSERT_EQUAL(int(laovdb::FloatTree::DEPTH-2), tree.getValueDepth(laovdb::Coord(NodeT1::DIM)));
+        CPPUNIT_ASSERT_EQUAL(leaf, tree.probeLeaf(laovdb::Coord(NodeT1::DIM + NodeT0::DIM)));
         float constant; bool active;
         CPPUNIT_ASSERT(leaf->isConstant(constant, active));
         CPPUNIT_ASSERT_EQUAL(-1.0f, constant);
         CPPUNIT_ASSERT(active);
 
-        openvdb::tools::foreach(tree.cbeginValueOff(), [&](const auto& it) {
+        laovdb::tools::foreach(tree.cbeginValueOff(), [&](const auto& it) {
             CPPUNIT_ASSERT_EQUAL(*it, float(it.getCoord().x()));
         });
 
-        openvdb::tools::foreach(tree.cbeginValueOn(), [&](const auto& it) {
+        laovdb::tools::foreach(tree.cbeginValueOn(), [&](const auto& it) {
             CPPUNIT_ASSERT_EQUAL(*it, -1.0f);
         });
 
         // test IterType::ALL
 
         tree.clear();
-        tree.addTile(2, openvdb::Coord(0), -1.0f, /*active*/true); // NodeT1 tile
-        tree.addTile(1, openvdb::Coord(NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
-        leaf = tree.touchLeaf(openvdb::Coord(NodeT1::DIM + NodeT0::DIM));
+        tree.addTile(2, laovdb::Coord(0), -1.0f, /*active*/true); // NodeT1 tile
+        tree.addTile(1, laovdb::Coord(NodeT1::DIM), -1.0f, /*active*/true); // NodeT0 tile
+        leaf = tree.touchLeaf(laovdb::Coord(NodeT1::DIM + NodeT0::DIM));
         CPPUNIT_ASSERT(leaf);
         leaf->fill(-1.0f, /*inactive*/false);
 
-        executable = compiler->compile<openvdb::ax::VolumeExecutable>("f@test = float(getcoordy());");
-        executable->setValueIterator(openvdb::ax::VolumeExecutable::IterType::ALL);
+        executable = compiler->compile<laovdb::ax::VolumeExecutable>("f@test = float(getcoordy());");
+        executable->setValueIterator(laovdb::ax::VolumeExecutable::IterType::ALL);
 
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
             executable->getActiveTileStreaming());
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("test", openvdb::ax::ast::tokens::CoreType::STRING));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("empty", openvdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("test", laovdb::ax::ast::tokens::CoreType::STRING));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("empty", laovdb::ax::ast::tokens::CoreType::FLOAT));
         executable->getTreeExecutionLevel(min,max);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(0), min);
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index(openvdb::FloatTree::DEPTH-1), max);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(0), min);
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index(laovdb::FloatTree::DEPTH-1), max);
 
         executable->execute(grid);
 
-        const openvdb::Index64 voxels =
-            openvdb::Index64(NodeT1::NUM_VOXELS) +
-            openvdb::Index64(NodeT0::NUM_VOXELS);
+        const laovdb::Index64 voxels =
+            laovdb::Index64(NodeT1::NUM_VOXELS) +
+            laovdb::Index64(NodeT0::NUM_VOXELS);
 
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index32(voxels / openvdb::FloatTree::LeafNodeType::NUM_VOXELS) + 1, tree.leafCount());
-        CPPUNIT_ASSERT_EQUAL(openvdb::Index64(0), tree.activeTileCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index32(voxels / laovdb::FloatTree::LeafNodeType::NUM_VOXELS) + 1, tree.leafCount());
+        CPPUNIT_ASSERT_EQUAL(laovdb::Index64(0), tree.activeTileCount());
         CPPUNIT_ASSERT_EQUAL(voxels, tree.activeVoxelCount());
-        CPPUNIT_ASSERT_EQUAL(leaf, tree.probeLeaf(openvdb::Coord(NodeT1::DIM + NodeT0::DIM)));
+        CPPUNIT_ASSERT_EQUAL(leaf, tree.probeLeaf(laovdb::Coord(NodeT1::DIM + NodeT0::DIM)));
         CPPUNIT_ASSERT(leaf->getValueMask().isOff());
 
-        openvdb::tools::foreach(tree.cbeginValueAll(), [&](const auto& it) {
+        laovdb::tools::foreach(tree.cbeginValueAll(), [&](const auto& it) {
             CPPUNIT_ASSERT_EQUAL(*it, float(it.getCoord().y()));
         });
     }
 
     // test auto streaming
     {
-        executable = compiler->compile<openvdb::ax::VolumeExecutable>("f@test = f@other; v@test2 = 1; v@test3 = v@test2;");
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::AUTO ==
+        executable = compiler->compile<laovdb::ax::VolumeExecutable>("f@test = f@other; v@test2 = 1; v@test3 = v@test2;");
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::AUTO ==
             executable->getActiveTileStreaming());
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("test", openvdb::ax::ast::tokens::CoreType::FLOAT));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::OFF ==
-            executable->getActiveTileStreaming("other", openvdb::ax::ast::tokens::CoreType::FLOAT));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::OFF ==
-            executable->getActiveTileStreaming("test2", openvdb::ax::ast::tokens::CoreType::VEC3F));
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
-            executable->getActiveTileStreaming("test3", openvdb::ax::ast::tokens::CoreType::VEC3F));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("test", laovdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::OFF ==
+            executable->getActiveTileStreaming("other", laovdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::OFF ==
+            executable->getActiveTileStreaming("test2", laovdb::ax::ast::tokens::CoreType::VEC3F));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
+            executable->getActiveTileStreaming("test3", laovdb::ax::ast::tokens::CoreType::VEC3F));
         //
-        CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::AUTO ==
-            executable->getActiveTileStreaming("empty", openvdb::ax::ast::tokens::CoreType::FLOAT));
+        CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::AUTO ==
+            executable->getActiveTileStreaming("empty", laovdb::ax::ast::tokens::CoreType::FLOAT));
     }
 
     // test that some particular functions cause streaming to turn on
 
-    executable = compiler->compile<openvdb::ax::VolumeExecutable>("f@test = rand();");
-    CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+    executable = compiler->compile<laovdb::ax::VolumeExecutable>("f@test = rand();");
+    CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
         executable->getActiveTileStreaming());
 
-    executable = compiler->compile<openvdb::ax::VolumeExecutable>("v@test = getcoord();");
-    CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+    executable = compiler->compile<laovdb::ax::VolumeExecutable>("v@test = getcoord();");
+    CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
         executable->getActiveTileStreaming());
 
-    executable = compiler->compile<openvdb::ax::VolumeExecutable>("f@test = getcoordx();");
-    CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+    executable = compiler->compile<laovdb::ax::VolumeExecutable>("f@test = getcoordx();");
+    CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
         executable->getActiveTileStreaming());
 
-    executable = compiler->compile<openvdb::ax::VolumeExecutable>("f@test = getcoordy();");
-    CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+    executable = compiler->compile<laovdb::ax::VolumeExecutable>("f@test = getcoordy();");
+    CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
         executable->getActiveTileStreaming());
 
-    executable = compiler->compile<openvdb::ax::VolumeExecutable>("f@test = getcoordz();");
-    CPPUNIT_ASSERT(openvdb::ax::VolumeExecutable::Streaming::ON ==
+    executable = compiler->compile<laovdb::ax::VolumeExecutable>("f@test = getcoordz();");
+    CPPUNIT_ASSERT(laovdb::ax::VolumeExecutable::Streaming::ON ==
         executable->getActiveTileStreaming());
 }
 
@@ -762,42 +762,42 @@ OPENVDB_NO_DEPRECATION_WARNING_END
 void
 TestVolumeExecutable::testCompilerCases()
 {
-    openvdb::ax::Compiler::UniquePtr compiler = openvdb::ax::Compiler::create();
+    laovdb::ax::Compiler::UniquePtr compiler = laovdb::ax::Compiler::create();
     CPPUNIT_ASSERT(compiler);
     {
         // with string only
-        CPPUNIT_ASSERT(static_cast<bool>(compiler->compile<openvdb::ax::VolumeExecutable>("int i;")));
-        CPPUNIT_ASSERT_THROW(compiler->compile<openvdb::ax::VolumeExecutable>("i;"), openvdb::AXCompilerError);
-        CPPUNIT_ASSERT_THROW(compiler->compile<openvdb::ax::VolumeExecutable>("i"), openvdb::AXSyntaxError);
+        CPPUNIT_ASSERT(static_cast<bool>(compiler->compile<laovdb::ax::VolumeExecutable>("int i;")));
+        CPPUNIT_ASSERT_THROW(compiler->compile<laovdb::ax::VolumeExecutable>("i;"), laovdb::AXCompilerError);
+        CPPUNIT_ASSERT_THROW(compiler->compile<laovdb::ax::VolumeExecutable>("i"), laovdb::AXSyntaxError);
         // with AST only
-        auto ast = openvdb::ax::ast::parse("i;");
-        CPPUNIT_ASSERT_THROW(compiler->compile<openvdb::ax::VolumeExecutable>(*ast), openvdb::AXCompilerError);
+        auto ast = laovdb::ax::ast::parse("i;");
+        CPPUNIT_ASSERT_THROW(compiler->compile<laovdb::ax::VolumeExecutable>(*ast), laovdb::AXCompilerError);
     }
 
-    openvdb::ax::Logger logger([](const std::string&) {});
+    laovdb::ax::Logger logger([](const std::string&) {});
 
     // using string and logger
     {
-        openvdb::ax::VolumeExecutable::Ptr executable =
-        compiler->compile<openvdb::ax::VolumeExecutable>("", logger); // empty
+        laovdb::ax::VolumeExecutable::Ptr executable =
+        compiler->compile<laovdb::ax::VolumeExecutable>("", logger); // empty
         CPPUNIT_ASSERT(executable);
     }
     logger.clear();
     {
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>("i;", logger); // undeclared variable error
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>("i;", logger); // undeclared variable error
         CPPUNIT_ASSERT(!executable);
         CPPUNIT_ASSERT(logger.hasError());
         logger.clear();
-        openvdb::ax::VolumeExecutable::Ptr executable2 =
-            compiler->compile<openvdb::ax::VolumeExecutable>("i", logger); // expected ; error (parser)
+        laovdb::ax::VolumeExecutable::Ptr executable2 =
+            compiler->compile<laovdb::ax::VolumeExecutable>("i", logger); // expected ; error (parser)
         CPPUNIT_ASSERT(!executable2);
         CPPUNIT_ASSERT(logger.hasError());
     }
     logger.clear();
     {
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>("int i = 18446744073709551615;", logger); // warning
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>("int i = 18446744073709551615;", logger); // warning
         CPPUNIT_ASSERT(executable);
         CPPUNIT_ASSERT(logger.hasWarning());
     }
@@ -805,41 +805,41 @@ TestVolumeExecutable::testCompilerCases()
     // using syntax tree and logger
     logger.clear();
     {
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse("", logger);
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse("", logger);
         CPPUNIT_ASSERT(tree);
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>(*tree, logger); // empty
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>(*tree, logger); // empty
         CPPUNIT_ASSERT(executable);
         logger.clear(); // no tree for line col numbers
-        openvdb::ax::VolumeExecutable::Ptr executable2 =
-            compiler->compile<openvdb::ax::VolumeExecutable>(*tree, logger); // empty
+        laovdb::ax::VolumeExecutable::Ptr executable2 =
+            compiler->compile<laovdb::ax::VolumeExecutable>(*tree, logger); // empty
         CPPUNIT_ASSERT(executable2);
     }
     logger.clear();
     {
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse("i;", logger);
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse("i;", logger);
         CPPUNIT_ASSERT(tree);
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>(*tree, logger); // undeclared variable error
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>(*tree, logger); // undeclared variable error
         CPPUNIT_ASSERT(!executable);
         CPPUNIT_ASSERT(logger.hasError());
         logger.clear(); // no tree for line col numbers
-        openvdb::ax::VolumeExecutable::Ptr executable2 =
-            compiler->compile<openvdb::ax::VolumeExecutable>(*tree, logger); // undeclared variable error
+        laovdb::ax::VolumeExecutable::Ptr executable2 =
+            compiler->compile<laovdb::ax::VolumeExecutable>(*tree, logger); // undeclared variable error
         CPPUNIT_ASSERT(!executable2);
         CPPUNIT_ASSERT(logger.hasError());
     }
     logger.clear();
     {
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse("int i = 18446744073709551615;", logger);
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse("int i = 18446744073709551615;", logger);
         CPPUNIT_ASSERT(tree);
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>(*tree, logger); // warning
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>(*tree, logger); // warning
         CPPUNIT_ASSERT(executable);
         CPPUNIT_ASSERT(logger.hasWarning());
         logger.clear(); // no tree for line col numbers
-        openvdb::ax::VolumeExecutable::Ptr executable2 =
-            compiler->compile<openvdb::ax::VolumeExecutable>(*tree, logger); // warning
+        laovdb::ax::VolumeExecutable::Ptr executable2 =
+            compiler->compile<laovdb::ax::VolumeExecutable>(*tree, logger); // warning
         CPPUNIT_ASSERT(executable2);
         CPPUNIT_ASSERT(logger.hasWarning());
     }
@@ -847,27 +847,27 @@ TestVolumeExecutable::testCompilerCases()
 
     // with copied tree
     {
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse("", logger);
-        std::unique_ptr<openvdb::ax::ast::Tree> copy(tree->copy());
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>(*copy, logger); // empty
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse("", logger);
+        std::unique_ptr<laovdb::ax::ast::Tree> copy(tree->copy());
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>(*copy, logger); // empty
         CPPUNIT_ASSERT(executable);
     }
     logger.clear();
     {
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse("i;", logger);
-        std::unique_ptr<openvdb::ax::ast::Tree> copy(tree->copy());
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>(*copy, logger); // undeclared variable error
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse("i;", logger);
+        std::unique_ptr<laovdb::ax::ast::Tree> copy(tree->copy());
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>(*copy, logger); // undeclared variable error
         CPPUNIT_ASSERT(!executable);
         CPPUNIT_ASSERT(logger.hasError());
     }
     logger.clear();
     {
-        openvdb::ax::ast::Tree::ConstPtr tree = openvdb::ax::ast::parse("int i = 18446744073709551615;", logger);
-        std::unique_ptr<openvdb::ax::ast::Tree> copy(tree->copy());
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>(*copy, logger); // warning
+        laovdb::ax::ast::Tree::ConstPtr tree = laovdb::ax::ast::parse("int i = 18446744073709551615;", logger);
+        std::unique_ptr<laovdb::ax::ast::Tree> copy(tree->copy());
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>(*copy, logger); // warning
         CPPUNIT_ASSERT(executable);
         CPPUNIT_ASSERT(logger.hasWarning());
     }
@@ -877,19 +877,19 @@ TestVolumeExecutable::testCompilerCases()
 void
 TestVolumeExecutable::testExecuteBindings()
 {
-    openvdb::ax::Compiler::UniquePtr compiler = openvdb::ax::Compiler::create();
+    laovdb::ax::Compiler::UniquePtr compiler = laovdb::ax::Compiler::create();
 
-    openvdb::ax::AttributeBindings bindings;
+    laovdb::ax::AttributeBindings bindings;
     bindings.set("b", "a"); // bind b to a
 
     {
         // multi volumes
-        openvdb::FloatGrid::Ptr f1(new openvdb::FloatGrid);
+        laovdb::FloatGrid::Ptr f1(new laovdb::FloatGrid);
         f1->setName("a");
         f1->tree().setValueOn({0,0,0}, 0.0f);
-        std::vector<openvdb::GridBase::Ptr> v { f1 };
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>("@b = 1.0f;");
+        std::vector<laovdb::GridBase::Ptr> v { f1 };
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>("@b = 1.0f;");
 
         CPPUNIT_ASSERT(executable);
         executable->setAttributeBindings(bindings);
@@ -900,15 +900,15 @@ TestVolumeExecutable::testExecuteBindings()
 
     // binding to existing attribute AND not binding to attribute
     {
-        openvdb::FloatGrid::Ptr f1(new openvdb::FloatGrid);
-        openvdb::FloatGrid::Ptr f2(new openvdb::FloatGrid);
+        laovdb::FloatGrid::Ptr f1(new laovdb::FloatGrid);
+        laovdb::FloatGrid::Ptr f2(new laovdb::FloatGrid);
         f1->setName("a");
         f2->setName("c");
         f1->tree().setValueOn({0,0,0}, 0.0f);
         f2->tree().setValueOn({0,0,0}, 0.0f);
-        std::vector<openvdb::GridBase::Ptr> v { f1, f2 };
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>("@b = 1.0f; @c = 2.0f;");
+        std::vector<laovdb::GridBase::Ptr> v { f1, f2 };
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>("@b = 1.0f; @c = 2.0f;");
 
         CPPUNIT_ASSERT(executable);
         executable->setAttributeBindings(bindings);
@@ -920,12 +920,12 @@ TestVolumeExecutable::testExecuteBindings()
 
     // binding to new created attribute AND not binding to new created attribute
     {
-        openvdb::FloatGrid::Ptr f2(new openvdb::FloatGrid);
+        laovdb::FloatGrid::Ptr f2(new laovdb::FloatGrid);
         f2->setName("c");
         f2->tree().setValueOn({0,0,0}, 0.0f);
-        std::vector<openvdb::GridBase::Ptr> v { f2 };
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>("@b = 1.0f; @c = 2.0f;");
+        std::vector<laovdb::GridBase::Ptr> v { f2 };
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>("@b = 1.0f; @c = 2.0f;");
 
         CPPUNIT_ASSERT(executable);
         executable->setAttributeBindings(bindings);
@@ -936,43 +936,43 @@ TestVolumeExecutable::testExecuteBindings()
 
     // binding to non existent attribute, not creating, error
     {
-        openvdb::FloatGrid::Ptr f2(new openvdb::FloatGrid);
+        laovdb::FloatGrid::Ptr f2(new laovdb::FloatGrid);
         f2->setName("c");
         f2->tree().setValueOn({0,0,0}, 0.0f);
-        std::vector<openvdb::GridBase::Ptr> v { f2 };
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>("@b = 1.0f; @c = 2.0f;");
+        std::vector<laovdb::GridBase::Ptr> v { f2 };
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>("@b = 1.0f; @c = 2.0f;");
 
         CPPUNIT_ASSERT(executable);
         executable->setAttributeBindings(bindings);
         executable->setCreateMissing(false);
-        CPPUNIT_ASSERT_THROW(executable->execute(v), openvdb::AXExecutionError);
+        CPPUNIT_ASSERT_THROW(executable->execute(v), laovdb::AXExecutionError);
     }
 
     // trying to bind to an attribute and use the original attribute name at same time
     {
-        openvdb::FloatGrid::Ptr f2(new openvdb::FloatGrid);
+        laovdb::FloatGrid::Ptr f2(new laovdb::FloatGrid);
         f2->setName("c");
         f2->tree().setValueOn({0,0,0}, 0.0f);
-        std::vector<openvdb::GridBase::Ptr> v { f2 };
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>("@b = 1.0f; @c = 2.0f;");
+        std::vector<laovdb::GridBase::Ptr> v { f2 };
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>("@b = 1.0f; @c = 2.0f;");
         CPPUNIT_ASSERT(executable);
-        openvdb::ax::AttributeBindings bindings;
+        laovdb::ax::AttributeBindings bindings;
         bindings.set("b","c"); // bind b to c
-        CPPUNIT_ASSERT_THROW(executable->setAttributeBindings(bindings), openvdb::AXExecutionError);
+        CPPUNIT_ASSERT_THROW(executable->setAttributeBindings(bindings), laovdb::AXExecutionError);
    }
 
     // swap ax and data attributes with bindings
     {
-        openvdb::FloatGrid::Ptr f2(new openvdb::FloatGrid);
+        laovdb::FloatGrid::Ptr f2(new laovdb::FloatGrid);
         f2->setName("c");
         f2->tree().setValueOn({0,0,0}, 0.0f);
-        std::vector<openvdb::GridBase::Ptr> v { f2 };
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>("@b = 1.0f; @c = 2.0f;");
+        std::vector<laovdb::GridBase::Ptr> v { f2 };
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>("@b = 1.0f; @c = 2.0f;");
         CPPUNIT_ASSERT(executable);
-        openvdb::ax::AttributeBindings bindings;
+        laovdb::ax::AttributeBindings bindings;
         bindings.set("b","c"); // bind b to c
         bindings.set("c","b"); // bind c to b
 
@@ -983,10 +983,10 @@ TestVolumeExecutable::testExecuteBindings()
 
     // test setting bindings and then resetting some of those bindings on the same executable
     {
-        openvdb::ax::VolumeExecutable::Ptr executable =
-            compiler->compile<openvdb::ax::VolumeExecutable>("@b = 1.0f; @a = 2.0f; @c = 3.0f;");
+        laovdb::ax::VolumeExecutable::Ptr executable =
+            compiler->compile<laovdb::ax::VolumeExecutable>("@b = 1.0f; @a = 2.0f; @c = 3.0f;");
         CPPUNIT_ASSERT(executable);
-        openvdb::ax::AttributeBindings bindings;
+        laovdb::ax::AttributeBindings bindings;
         bindings.set("b","a"); // bind b to a
         bindings.set("c","b"); // bind c to b
         bindings.set("a","c"); // bind a to c
@@ -997,7 +997,7 @@ TestVolumeExecutable::testExecuteBindings()
         CPPUNIT_ASSERT(!bindings.dataNameBoundTo("c")); // c should be unbound
         // check that the set call resets c to c
         CPPUNIT_ASSERT_NO_THROW(executable->setAttributeBindings(bindings));
-        const openvdb::ax::AttributeBindings& bindingsOnExecutable = executable->getAttributeBindings();
+        const laovdb::ax::AttributeBindings& bindingsOnExecutable = executable->getAttributeBindings();
         CPPUNIT_ASSERT(bindingsOnExecutable.isBoundAXName("c"));
         CPPUNIT_ASSERT_EQUAL(*bindingsOnExecutable.dataNameBoundTo("c"), std::string("c"));
     }

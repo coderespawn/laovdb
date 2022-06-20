@@ -8,7 +8,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 template <typename T>
-using LLVMType = openvdb::ax::codegen::LLVMType<T>;
+using LLVMType = laovdb::ax::codegen::LLVMType<T>;
 
 class TestSymbolTable : public CppUnit::TestCase
 {
@@ -38,7 +38,7 @@ TestSymbolTable::testSingleTable()
     CPPUNIT_ASSERT(value1);
     CPPUNIT_ASSERT(value2);
 
-    openvdb::ax::codegen::SymbolTable table;
+    laovdb::ax::codegen::SymbolTable table;
     CPPUNIT_ASSERT(table.map().empty());
 
     CPPUNIT_ASSERT(table.insert("test", value1));
@@ -80,9 +80,9 @@ TestSymbolTable::testTableBlocks()
 
     // test table insertion and erase
 
-    openvdb::ax::codegen::SymbolTableBlocks tables;
-    openvdb::ax::codegen::SymbolTable* table1 = &(tables.globals());
-    openvdb::ax::codegen::SymbolTable* table2 = tables.getOrInsert(0);
+    laovdb::ax::codegen::SymbolTableBlocks tables;
+    laovdb::ax::codegen::SymbolTable* table1 = &(tables.globals());
+    laovdb::ax::codegen::SymbolTable* table2 = tables.getOrInsert(0);
     CPPUNIT_ASSERT_EQUAL(table1, table2);
 
     table2 = tables.get(0);

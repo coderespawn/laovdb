@@ -16,7 +16,7 @@
 #include <cmath>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -1380,6 +1380,6 @@ template<> inline math::Mat4s zeroVal<math::Mat4s>() { return math::Mat4s::zero(
 template<> inline math::Mat4d zeroVal<math::Mat4d>() { return math::Mat4d::zero(); }
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_UTIL_MAT4_H_HAS_BEEN_INCLUDED

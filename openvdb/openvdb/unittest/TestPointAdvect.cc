@@ -17,15 +17,15 @@
 #include <string>
 #include <vector>
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestPointAdvect: public ::testing::Test
 {
 public:
 
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointAdvect
 
 

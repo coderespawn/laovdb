@@ -214,11 +214,11 @@ public:
     {
         GA_Offset start, end;
         GA_Index pointIndex;
-        using RayT = openvdb::math::Ray<double>;
-        openvdb::Vec3d eye, dir, intersection;
+        using RayT = laovdb::math::Ray<double>;
+        laovdb::Vec3d eye, dir, intersection;
 
-        const bool doScaling = !openvdb::math::isApproxEqual(mScale, 1.0);
-        const bool offsetRay = !openvdb::math::isApproxEqual(mBias, 0.0);
+        const bool doScaling = !laovdb::math::isApproxEqual(mScale, 1.0);
+        const bool offsetRay = !laovdb::math::isApproxEqual(mBias, 0.0);
 
         GA_ROPageHandleV3 points(mGdp.getP());
 
@@ -280,7 +280,7 @@ public:
 private:
     const GU_Detail& mGdp;
     const UT_Vector3Array& mPointNormals;
-    openvdb::tools::LevelSetRayIntersector<GridType> mIntersector;
+    laovdb::tools::LevelSetRayIntersector<GridType> mIntersector;
     UT_Vector3Array& mPositions;
     UT_FloatArray& mDistances;
     std::vector<char>& mIntersections;
@@ -292,9 +292,9 @@ private:
 template<typename GridT>
 inline void
 closestPoints(const GridT& grid, float isovalue, const GU_Detail& gdp,
-    UT_FloatArray& distances, UT_Vector3Array* positions, openvdb::util::NullInterrupter& boss)
+    UT_FloatArray& distances, UT_Vector3Array* positions, laovdb::util::NullInterrupter& boss)
 {
-    std::vector<openvdb::Vec3R> tmpPoints(distances.entries());
+    std::vector<laovdb::Vec3R> tmpPoints(distances.entries());
 
     GA_ROHandleV3 points = GA_ROHandleV3(gdp.getP());
 
@@ -309,7 +309,7 @@ closestPoints(const GridT& grid, float isovalue, const GU_Detail& gdp,
 
     const bool transformPoints = (positions != nullptr);
 
-    auto closestPoint = openvdb::tools::ClosestSurfacePoint<GridT>::create(grid, isovalue, &boss);
+    auto closestPoint = laovdb::tools::ClosestSurfacePoint<GridT>::create(grid, isovalue, &boss);
     if (!closestPoint) return;
 
     if (transformPoints) closestPoint->searchAndReplace(tmpPoints, tmpDistances);
@@ -440,14 +440,14 @@ SOP_OpenVDB_Ray::Cache::cookVDBSop(OP_Context& context)
         for (; vdbIt; ++vdbIt) {
             if (boss.wasInterrupted()) break;
 
-            if (vdbIt->getGrid().getGridClass() == openvdb::GRID_LEVEL_SET &&
-                vdbIt->getGrid().type() == openvdb::FloatGrid::gridType()) {
+            if (vdbIt->getGrid().getGridClass() == laovdb::GRID_LEVEL_SET &&
+                vdbIt->getGrid().type() == laovdb::FloatGrid::gridType()) {
 
-                openvdb::FloatGrid::ConstPtr gridPtr =
-                    openvdb::gridConstPtrCast<openvdb::FloatGrid>(vdbIt->getGridPtr());
+                laovdb::FloatGrid::ConstPtr gridPtr =
+                    laovdb::gridConstPtrCast<laovdb::FloatGrid>(vdbIt->getGridPtr());
 
                 if (rayIntersection) {
-                    IntersectPoints<openvdb::FloatGrid> op(
+                    IntersectPoints<laovdb::FloatGrid> op(
                         *gdp, pointNormals, *gridPtr, positions, distances,
                         intersections, keepMaxDist, reverseRays, scale, bias);
                     UTparallelFor(GA_SplittableRange(gdp->getPointRange()), op);
@@ -463,7 +463,7 @@ SOP_OpenVDB_Ray::Cache::cookVDBSop(OP_Context& context)
 
         if (bool(evalInt("dotrans", 0, time))) { // update point positions
 
-            if (!rayIntersection && !openvdb::math::isApproxEqual(scale, 1.0)) {
+            if (!rayIntersection && !laovdb::math::isApproxEqual(scale, 1.0)) {
                 UTparallelFor(GA_SplittableRange(gdp->getPointRange()),
                     ScalePositions(*gdp, positions, distances, scale));
             }

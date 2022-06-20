@@ -60,7 +60,7 @@ struct CopyElements {
 
 struct SetOffsets
 {
-    using PointPartitioner = openvdb::tools::UInt32PointPartitioner;
+    using PointPartitioner = laovdb::tools::UInt32PointPartitioner;
 
     SetOffsets(const GU_Detail& srcGeo, const PointPartitioner& partitioner, GA_Offset* offsetArray)
         : mSrcGeo(&srcGeo), mPartitioner(&partitioner), mOffsetArray(offsetArray) { }
@@ -169,12 +169,12 @@ SOP_OpenVDB_Sort_Points::Cache::cookVDBSop(OP_Context& context)
                 evalStdString("pointgroup", time).c_str(), GroupCreator(srcGeo));
 
             const fpreal voxelSize = evalFloat("binsize", 0, time);
-            const openvdb::math::Transform::Ptr transform =
-                openvdb::math::Transform::createLinearTransform(voxelSize);
+            const laovdb::math::Transform::Ptr transform =
+                laovdb::math::Transform::createLinearTransform(voxelSize);
 
-            GU_VDBPointList<openvdb::Vec3s> points(*srcGeo, pointGroup);
+            GU_VDBPointList<laovdb::Vec3s> points(*srcGeo, pointGroup);
 
-            openvdb::tools::UInt32PointPartitioner partitioner;
+            laovdb::tools::UInt32PointPartitioner partitioner;
             partitioner.construct(points, *transform, /*voxel order=*/true);
 
             numPoints = points.size();

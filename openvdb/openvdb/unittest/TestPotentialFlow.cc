@@ -17,7 +17,7 @@ class TestPotentialFlow: public ::testing::Test
 
 TEST_F(TestPotentialFlow, testMask)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const float radius = 1.5f;
     const Vec3f center(0.0f, 0.0f, 0.0f);
@@ -51,7 +51,7 @@ TEST_F(TestPotentialFlow, testMask)
         nonUniformSphere->setTransform(nonUniformTransform);
 
         EXPECT_THROW(tools::createPotentialFlowMask(*nonUniformSphere, dilation),
-            openvdb::ValueError);
+            laovdb::ValueError);
     }
 
     // this is the minimum mask of one voxel either side of the isosurface
@@ -79,7 +79,7 @@ TEST_F(TestPotentialFlow, testMask)
 
 TEST_F(TestPotentialFlow, testNeumannVelocities)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const float radius = 1.5f;
     const Vec3f center(0.0f, 0.0f, 0.0f);
@@ -191,7 +191,7 @@ TEST_F(TestPotentialFlow, testNeumannVelocities)
         nonLevelSetSphere->setGridClass(GRID_FOG_VOLUME);
 
         EXPECT_THROW(tools::createPotentialFlowNeumannVelocities(
-            *nonLevelSetSphere, *domain, zeroVelocity, Vec3d(5)), openvdb::TypeError);
+            *nonLevelSetSphere, *domain, zeroVelocity, Vec3d(5)), laovdb::TypeError);
     }
 
     { // accept double level set grid
@@ -217,7 +217,7 @@ TEST_F(TestPotentialFlow, testUniformStream)
     // for a uniform stream which consists of a 100x100x100 cube of
     // neumann voxels with constant velocity (0, 0, 1)
 
-    using namespace openvdb;
+    using namespace laovdb;
 
     auto transform = math::Transform::createLinearTransform(1.0);
 
@@ -238,7 +238,7 @@ TEST_F(TestPotentialFlow, testUniformStream)
         }
     }
 
-    openvdb::math::pcg::State state = math::pcg::terminationDefaults<float>();
+    laovdb::math::pcg::State state = math::pcg::terminationDefaults<float>();
 
     state.iterations = 2000;
     state.absoluteError = 1e-8;
@@ -280,7 +280,7 @@ TEST_F(TestPotentialFlow, testUniformStream)
 
 TEST_F(TestPotentialFlow, testFlowAroundSphere)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const float radius = 1.5f;
     const Vec3f center(0.0f, 0.0f, 0.0f);
@@ -300,7 +300,7 @@ TEST_F(TestPotentialFlow, testFlowAroundSphere)
         Vec3fGrid::Ptr neumann = tools::createPotentialFlowNeumannVelocities(*sphere,
             *domain, Vec3fGrid::Ptr(), windVelocity);
 
-        openvdb::math::pcg::State state = math::pcg::terminationDefaults<float>();
+        laovdb::math::pcg::State state = math::pcg::terminationDefaults<float>();
 
         state.iterations = 2000;
         state.absoluteError = 1e-8;
@@ -378,7 +378,7 @@ TEST_F(TestPotentialFlow, testFlowAroundSphere)
         Vec3dGrid::Ptr neumann = tools::createPotentialFlowNeumannVelocities(*sphereDouble,
             *domain, Vec3dGrid::Ptr(), windVelocity);
 
-        openvdb::math::pcg::State state = math::pcg::terminationDefaults<float>();
+        laovdb::math::pcg::State state = math::pcg::terminationDefaults<float>();
 
         state.iterations = 2000;
         state.absoluteError = 1e-8;

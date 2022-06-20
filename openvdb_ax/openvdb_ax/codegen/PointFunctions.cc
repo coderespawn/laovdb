@@ -27,7 +27,7 @@
 
 #include <unordered_map>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -55,11 +55,11 @@ template <typename HandleT>
 inline HandleT*
 groupHandle(const std::string& name, void** groupHandles, const void* const data)
 {
-    const openvdb::points::AttributeSet* const attributeSet =
-        static_cast<const openvdb::points::AttributeSet*>(data);
+    const laovdb::points::AttributeSet* const attributeSet =
+        static_cast<const laovdb::points::AttributeSet*>(data);
 
     const size_t groupIdx = attributeSet->groupOffset(name);
-    if (groupIdx == openvdb::points::AttributeSet::INVALID_POS) return nullptr;
+    if (groupIdx == laovdb::points::AttributeSet::INVALID_POS) return nullptr;
 
     return static_cast<HandleT*>(groupHandles[groupIdx]);
 }
@@ -79,22 +79,22 @@ inline FunctionGroup::UniquePtr ax_ingroup(const FunctionOptions& op)
            const void* const data) -> bool
     {
         assert(name);
-        assert(index < static_cast<uint64_t>(std::numeric_limits<openvdb::Index>::max()));
+        assert(index < static_cast<uint64_t>(std::numeric_limits<laovdb::Index>::max()));
 
         if (name->size() == 0) return false;
         if (!groupHandles) return false;
 
         const std::string nameStr = name->str();
-        const openvdb::points::GroupHandle* handle =
-            groupHandle<openvdb::points::GroupHandle>(nameStr, groupHandles, data);
-        if (handle) return handle->get(static_cast<openvdb::Index>(index));
+        const laovdb::points::GroupHandle* handle =
+            groupHandle<laovdb::points::GroupHandle>(nameStr, groupHandles, data);
+        if (handle) return handle->get(static_cast<laovdb::Index>(index));
 
         // If the handle doesn't exist, check to see if any new groups have
         // been added
         const codegen_internal::PointLeafLocalData* const leafData =
             static_cast<const codegen_internal::PointLeafLocalData*>(leafDataPtr);
         handle = leafData->get(nameStr);
-        return handle ? handle->get(static_cast<openvdb::Index>(index)) : false;
+        return handle ? handle->get(static_cast<laovdb::Index>(index)) : false;
     };
 
     using InGroup = bool(const codegen::String* const,
@@ -176,9 +176,9 @@ inline FunctionGroup::UniquePtr axeditgroup(const FunctionOptions& op)
         // exist
 
         const std::string nameStr = name->str();
-        openvdb::points::GroupWriteHandle* handle = nullptr;
+        laovdb::points::GroupWriteHandle* handle = nullptr;
         if (groupHandles) {
-            handle = groupHandle<openvdb::points::GroupWriteHandle>(nameStr, groupHandles, data);
+            handle = groupHandle<laovdb::points::GroupWriteHandle>(nameStr, groupHandles, data);
         }
 
         if (!handle) {
@@ -193,7 +193,7 @@ inline FunctionGroup::UniquePtr axeditgroup(const FunctionOptions& op)
         }
 
         // set the group membership
-        handle->set(static_cast<openvdb::Index>(index), flag);
+        handle->set(static_cast<laovdb::Index>(index), flag);
     };
 
     static auto editgroupcstar =
@@ -348,14 +348,14 @@ inline FunctionGroup::UniquePtr axsetattribute(const FunctionOptions& op)
         using ValueType = typename std::remove_const
             <typename std::remove_pointer
                 <decltype(value)>::type>::type;
-        using AttributeHandleType = openvdb::points::AttributeWriteHandle<ValueType>;
+        using AttributeHandleType = laovdb::points::AttributeWriteHandle<ValueType>;
 
         assert(attributeHandle);
         assert(value);
-        assert(index < static_cast<uint64_t>(std::numeric_limits<openvdb::Index>::max()));
+        assert(index < static_cast<uint64_t>(std::numeric_limits<laovdb::Index>::max()));
 
         AttributeHandleType* handle = static_cast<AttributeHandleType*>(attributeHandle);
-        handle->set(static_cast<openvdb::Index>(index), *value);
+        handle->set(static_cast<laovdb::Index>(index), *value);
     };
 
     static auto setattribstr =
@@ -364,12 +364,12 @@ inline FunctionGroup::UniquePtr axsetattribute(const FunctionOptions& op)
            const codegen::String* value,
            void* const leafDataPtr)
     {
-        using AttributeHandleType = openvdb::points::StringAttributeWriteHandle;
+        using AttributeHandleType = laovdb::points::StringAttributeWriteHandle;
 
         assert(attributeHandle);
         assert(value);
         assert(leafDataPtr);
-        assert(index < static_cast<uint64_t>(std::numeric_limits<openvdb::Index>::max()));
+        assert(index < static_cast<uint64_t>(std::numeric_limits<laovdb::Index>::max()));
 
         const std::string s = value->str();
         AttributeHandleType* const handle =
@@ -381,7 +381,7 @@ inline FunctionGroup::UniquePtr axsetattribute(const FunctionOptions& op)
         // remove any new data associated with it, otherwise set the new data
 
         if (handle->contains(s)) {
-            handle->set(static_cast<openvdb::Index>(index), s);
+            handle->set(static_cast<laovdb::Index>(index), s);
             leafData->removeNewStringData(&(handle->array()), index);
         }
         else {
@@ -402,19 +402,19 @@ inline FunctionGroup::UniquePtr axsetattribute(const FunctionOptions& op)
     using SetAttribI32 = void(void*, uint64_t, const int32_t);
     using SetAttribI16 = void(void*, uint64_t, const int16_t);
     using SetAttribB = void(void*, uint64_t, const bool);
-    using SetAttribV2D = void(void*, uint64_t, const openvdb::math::Vec2<double>*);
-    using SetAttribV2F = void(void*, uint64_t, const openvdb::math::Vec2<float>*);
-    using SetAttribV2I = void(void*, uint64_t, const openvdb::math::Vec2<int32_t>*);
-    using SetAttribV3D = void(void*, uint64_t, const openvdb::math::Vec3<double>*);
-    using SetAttribV3F = void(void*, uint64_t, const openvdb::math::Vec3<float>*);
-    using SetAttribV3I = void(void*, uint64_t, const openvdb::math::Vec3<int32_t>*);
-    using SetAttribV4D = void(void*, uint64_t, const openvdb::math::Vec4<double>*);
-    using SetAttribV4F = void(void*, uint64_t, const openvdb::math::Vec4<float>*);
-    using SetAttribV4I = void(void*, uint64_t, const openvdb::math::Vec4<int32_t>*);
-    using SetAttribM3D = void(void*, uint64_t, const openvdb::math::Mat3<double>*);
-    using SetAttribM3F = void(void*, uint64_t, const openvdb::math::Mat3<float>*);
-    using SetAttribM4D = void(void*, uint64_t, const openvdb::math::Mat4<double>*);
-    using SetAttribM4F = void(void*, uint64_t, const openvdb::math::Mat4<float>*);
+    using SetAttribV2D = void(void*, uint64_t, const laovdb::math::Vec2<double>*);
+    using SetAttribV2F = void(void*, uint64_t, const laovdb::math::Vec2<float>*);
+    using SetAttribV2I = void(void*, uint64_t, const laovdb::math::Vec2<int32_t>*);
+    using SetAttribV3D = void(void*, uint64_t, const laovdb::math::Vec3<double>*);
+    using SetAttribV3F = void(void*, uint64_t, const laovdb::math::Vec3<float>*);
+    using SetAttribV3I = void(void*, uint64_t, const laovdb::math::Vec3<int32_t>*);
+    using SetAttribV4D = void(void*, uint64_t, const laovdb::math::Vec4<double>*);
+    using SetAttribV4F = void(void*, uint64_t, const laovdb::math::Vec4<float>*);
+    using SetAttribV4I = void(void*, uint64_t, const laovdb::math::Vec4<int32_t>*);
+    using SetAttribM3D = void(void*, uint64_t, const laovdb::math::Mat3<double>*);
+    using SetAttribM3F = void(void*, uint64_t, const laovdb::math::Mat3<float>*);
+    using SetAttribM4D = void(void*, uint64_t, const laovdb::math::Mat4<double>*);
+    using SetAttribM4F = void(void*, uint64_t, const laovdb::math::Mat4<float>*);
     using SetAttribStr = void(void*, uint64_t, const codegen::String*, void* const);
 
     return FunctionBuilder("setattribute")
@@ -466,14 +466,14 @@ inline FunctionGroup::UniquePtr axgetattribute(const FunctionOptions& op)
         // typedef is a read handle. As write handles are derived types this
         // is okay and lets us define the handle types outside IR for attributes that are
         // only being read!
-        using AttributeHandleType = openvdb::points::AttributeHandle<ValueType>;
+        using AttributeHandleType = laovdb::points::AttributeHandle<ValueType>;
 
         assert(value);
         assert(attributeHandle);
-        assert(index < static_cast<uint64_t>(std::numeric_limits<openvdb::Index>::max()));
+        assert(index < static_cast<uint64_t>(std::numeric_limits<laovdb::Index>::max()));
 
         AttributeHandleType* handle = static_cast<AttributeHandleType*>(attributeHandle);
-        (*value) = handle->get(static_cast<openvdb::Index>(index));
+        (*value) = handle->get(static_cast<laovdb::Index>(index));
     };
 
     static auto getattribstr =
@@ -482,12 +482,12 @@ inline FunctionGroup::UniquePtr axgetattribute(const FunctionOptions& op)
            codegen::String* value,
            const void* const leafDataPtr)
     {
-        using AttributeHandleType = openvdb::points::StringAttributeHandle;
+        using AttributeHandleType = laovdb::points::StringAttributeHandle;
 
         assert(value);
         assert(attributeHandle);
         assert(leafDataPtr);
-        assert(index < static_cast<uint64_t>(std::numeric_limits<openvdb::Index>::max()));
+        assert(index < static_cast<uint64_t>(std::numeric_limits<laovdb::Index>::max()));
 
         AttributeHandleType* const handle =
             static_cast<AttributeHandleType*>(attributeHandle);
@@ -496,7 +496,7 @@ inline FunctionGroup::UniquePtr axgetattribute(const FunctionOptions& op)
 
         std::string data;
         if (!leafData->getNewStringData(&(handle->array()), index, data)) {
-            handle->get(data, static_cast<openvdb::Index>(index));
+            handle->get(data, static_cast<laovdb::Index>(index));
         }
 
         *value = data;
@@ -508,19 +508,19 @@ inline FunctionGroup::UniquePtr axgetattribute(const FunctionOptions& op)
     using GetAttribI32 = void(void*, uint64_t, int32_t*);
     using GetAttribI16 = void(void*, uint64_t, int16_t*);
     using GetAttribB = void(void*, uint64_t, bool*);
-    using GetAttribV2D = void(void*, uint64_t, openvdb::math::Vec2<double>*);
-    using GetAttribV2F = void(void*, uint64_t, openvdb::math::Vec2<float>*);
-    using GetAttribV2I = void(void*, uint64_t, openvdb::math::Vec2<int32_t>*);
-    using GetAttribV3D = void(void*, uint64_t, openvdb::math::Vec3<double>*);
-    using GetAttribV3F = void(void*, uint64_t, openvdb::math::Vec3<float>*);
-    using GetAttribV3I = void(void*, uint64_t, openvdb::math::Vec3<int32_t>*);
-    using GetAttribV4D = void(void*, uint64_t, openvdb::math::Vec4<double>*);
-    using GetAttribV4F = void(void*, uint64_t, openvdb::math::Vec4<float>*);
-    using GetAttribV4I = void(void*, uint64_t, openvdb::math::Vec4<int32_t>*);
-    using GetAttribM3D = void(void*, uint64_t, openvdb::math::Mat3<double>*);
-    using GetAttribM3F = void(void*, uint64_t, openvdb::math::Mat3<float>*);
-    using GetAttribM4D = void(void*, uint64_t, openvdb::math::Mat4<double>*);
-    using GetAttribM4F = void(void*, uint64_t, openvdb::math::Mat4<float>*);
+    using GetAttribV2D = void(void*, uint64_t, laovdb::math::Vec2<double>*);
+    using GetAttribV2F = void(void*, uint64_t, laovdb::math::Vec2<float>*);
+    using GetAttribV2I = void(void*, uint64_t, laovdb::math::Vec2<int32_t>*);
+    using GetAttribV3D = void(void*, uint64_t, laovdb::math::Vec3<double>*);
+    using GetAttribV3F = void(void*, uint64_t, laovdb::math::Vec3<float>*);
+    using GetAttribV3I = void(void*, uint64_t, laovdb::math::Vec3<int32_t>*);
+    using GetAttribV4D = void(void*, uint64_t, laovdb::math::Vec4<double>*);
+    using GetAttribV4F = void(void*, uint64_t, laovdb::math::Vec4<float>*);
+    using GetAttribV4I = void(void*, uint64_t, laovdb::math::Vec4<int32_t>*);
+    using GetAttribM3D = void(void*, uint64_t, laovdb::math::Mat3<double>*);
+    using GetAttribM3F = void(void*, uint64_t, laovdb::math::Mat3<float>*);
+    using GetAttribM4D = void(void*, uint64_t, laovdb::math::Mat4<double>*);
+    using GetAttribM4F = void(void*, uint64_t, laovdb::math::Mat4<float>*);
     using GetAttribStr = void(void*, uint64_t, codegen::String*, const void* const);
 
     return FunctionBuilder("getattribute")
@@ -587,7 +587,7 @@ void insertVDBPointFunctions(FunctionRegistry& registry,
 
 } // namespace codegen
 } // namespace ax
-} // namespace openvdb_version
-} // namespace openvdb
+} // namespace laovdb_version
+} // namespace laovdb
 
 

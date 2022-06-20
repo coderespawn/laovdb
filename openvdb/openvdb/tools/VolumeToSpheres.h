@@ -30,7 +30,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -61,7 +61,7 @@ template<typename GridT, typename InterrupterT = util::NullInterrupter>
 void
 fillWithSpheres(
     const GridT& grid,
-    std::vector<openvdb::Vec4s>& spheres,
+    std::vector<laovdb::Vec4s>& spheres,
     const Vec2i& sphereCount = Vec2i(1, 50),
     bool overlapping = false,
     float minRadius = 1.0,
@@ -634,7 +634,7 @@ template<typename GridT, typename InterrupterT>
 void
 fillWithSpheres(
     const GridT& grid,
-    std::vector<openvdb::Vec4s>& spheres,
+    std::vector<laovdb::Vec4s>& spheres,
     const Vec2i& sphereCount,
     bool overlapping,
     float minRadius,
@@ -1008,7 +1008,7 @@ OPENVDB_INSTANTIATE_CLASS ClosestSurfacePoint<FloatGrid>;
 OPENVDB_INSTANTIATE_CLASS ClosestSurfacePoint<DoubleGrid>;
 
 #define _FUNCTION(TreeT) \
-    void fillWithSpheres(const Grid<TreeT>&, std::vector<openvdb::Vec4s>&, const Vec2i&, \
+    void fillWithSpheres(const Grid<TreeT>&, std::vector<laovdb::Vec4s>&, const Vec2i&, \
         bool, float, float, float, int, util::NullInterrupter*)
 OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 #undef _FUNCTION
@@ -1018,6 +1018,6 @@ OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_VOLUME_TO_MESH_HAS_BEEN_INCLUDED

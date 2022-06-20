@@ -40,13 +40,13 @@ public:
     class Cache: public SOP_VDBCacheOptions
     {
     public:
-        openvdb::math::Transform::Ptr frustum() const { return mFrustum; }
+        laovdb::math::Transform::Ptr frustum() const { return mFrustum; }
     protected:
         OP_ERROR cookVDBSop(OP_Context&) override;
     private:
         void getFrustum(OP_Context&);
 
-        openvdb::math::Transform::Ptr mFrustum;
+        laovdb::math::Transform::Ptr mFrustum;
     }; // class Cache
 
 protected:
@@ -278,7 +278,7 @@ struct DilatedMaskOp
     {
         if (dilation == 0) return;
 
-        maskGrid = openvdb::BoolGrid::create();
+        maskGrid = laovdb::BoolGrid::create();
         maskGrid->setTransform(grid.transform().copy());
         maskGrid->topologyUnion(grid);
 
@@ -292,9 +292,9 @@ struct DilatedMaskOp
 
         auto morphologyOp = [&](int iterations) {
             if (dilation > 0) {
-                openvdb::tools::dilateActiveValues(maskGrid->tree(), iterations);
+                laovdb::tools::dilateActiveValues(maskGrid->tree(), iterations);
             } else {
-                openvdb::tools::erodeActiveValues(maskGrid->tree(), iterations);
+                laovdb::tools::erodeActiveValues(maskGrid->tree(), iterations);
             }
         };
 
@@ -315,7 +315,7 @@ struct DilatedMaskOp
     }
 
     int dilation = 0; // positive = dilation, negative = erosion
-    openvdb::BoolGrid::Ptr maskGrid;
+    laovdb::BoolGrid::Ptr maskGrid;
 };
 
 
@@ -324,7 +324,7 @@ struct LevelSetMaskOp
     template<typename GridType>
     void operator()(const GridType& grid)
     {
-        outputGrid = openvdb::tools::sdfInteriorMask(grid);
+        outputGrid = laovdb::tools::sdfInteriorMask(grid);
     }
 
     hvdb::GridPtr outputGrid;
@@ -333,17 +333,17 @@ struct LevelSetMaskOp
 
 struct BBoxClipOp
 {
-    BBoxClipOp(const openvdb::BBoxd& bbox_, bool inside_ = true):
+    BBoxClipOp(const laovdb::BBoxd& bbox_, bool inside_ = true):
         bbox(bbox_), inside(inside_)
     {}
 
     template<typename GridType>
     void operator()(const GridType& grid)
     {
-        outputGrid = openvdb::tools::clip(grid, bbox, inside);
+        outputGrid = laovdb::tools::clip(grid, bbox, inside);
     }
 
-    openvdb::BBoxd bbox;
+    laovdb::BBoxd bbox;
     hvdb::GridPtr outputGrid;
     bool inside = true;
 };
@@ -351,21 +351,21 @@ struct BBoxClipOp
 
 struct FrustumClipOp
 {
-    FrustumClipOp(const openvdb::math::Transform::Ptr& frustum_, bool inside_ = true):
+    FrustumClipOp(const laovdb::math::Transform::Ptr& frustum_, bool inside_ = true):
         frustum(frustum_), inside(inside_)
     {}
 
     template<typename GridType>
     void operator()(const GridType& grid)
     {
-        openvdb::math::NonlinearFrustumMap::ConstPtr mapPtr;
-        if (frustum) mapPtr = frustum->constMap<openvdb::math::NonlinearFrustumMap>();
+        laovdb::math::NonlinearFrustumMap::ConstPtr mapPtr;
+        if (frustum) mapPtr = frustum->constMap<laovdb::math::NonlinearFrustumMap>();
         if (mapPtr) {
-            outputGrid = openvdb::tools::clip(grid, *mapPtr, inside);
+            outputGrid = laovdb::tools::clip(grid, *mapPtr, inside);
         }
     }
 
-    const openvdb::math::Transform::ConstPtr frustum;
+    const laovdb::math::Transform::ConstPtr frustum;
     const bool inside = true;
     hvdb::GridPtr outputGrid;
 };
@@ -382,7 +382,7 @@ struct MaskClipDispatchOp
     void operator()(const MaskGridType& mask)
     {
         outputGrid.reset();
-        if (grid) outputGrid = openvdb::tools::clip(*grid, mask, inside);
+        if (grid) outputGrid = laovdb::tools::clip(*grid, mask, inside);
     }
 
     const GridType* grid;
@@ -454,7 +454,7 @@ SOP_OpenVDB_Clip::Cache::getFrustum(OP_Context& context)
     }
 
     const bool pad = (0 != evalInt("setpadding", 0, time));
-    const auto padding = pad ? evalVec3f("padding", time) : openvdb::Vec3f{0};
+    const auto padding = pad ? evalVec3f("padding", time) : laovdb::Vec3f{0};
 
     const float nearPlane = (evalInt("setnear", 0, time)
         ? static_cast<float>(evalFloat("near", 0, time))
@@ -466,15 +466,15 @@ SOP_OpenVDB_Clip::Cache::getFrustum(OP_Context& context)
     mFrustum = hvdb::frustumTransformFromCamera(*self, context, *camera,
         /*offset=*/0.f, nearPlane, farPlane, /*voxelDepth=*/1.f, /*voxelCountX=*/100);
 
-    if (!mFrustum || !mFrustum->constMap<openvdb::math::NonlinearFrustumMap>()) {
+    if (!mFrustum || !mFrustum->constMap<laovdb::math::NonlinearFrustumMap>()) {
         throw std::runtime_error{
             "failed to compute frustum bounds for camera " + cameraPath.toStdString()};
     }
 
     if (pad) {
         const auto extents =
-            mFrustum->constMap<openvdb::math::NonlinearFrustumMap>()->getBBox().extents();
-        mFrustum->preScale(openvdb::Vec3d{
+            mFrustum->constMap<laovdb::math::NonlinearFrustumMap>()->getBBox().extents();
+        mFrustum->preScale(laovdb::Vec3d{
             (extents[0] + 2 * padding[0]) / extents[0],
             (extents[1] + 2 * padding[1]) / extents[1],
             1.0});
@@ -490,7 +490,7 @@ SOP_OpenVDB_Clip::cookMyGuide1(OP_Context&)
 {
     myGuide1->clearAndDestroy();
 
-    openvdb::math::Transform::ConstPtr frustum;
+    laovdb::math::Transform::ConstPtr frustum;
     // Attempt to extract the frustum from our cache.
     if (auto* cache = dynamic_cast<SOP_OpenVDB_Clip::Cache*>(myNodeVerbCache)) {
         frustum = cache->frustum();
@@ -524,11 +524,11 @@ SOP_OpenVDB_Clip::Cache::cookVDBSop(OP_Context& context)
             inside = evalInt("inside", 0, time),
             pad = evalInt("setpadding", 0, time);
 
-        const auto padding = pad ? evalVec3f("padding", time) : openvdb::Vec3f{0};
+        const auto padding = pad ? evalVec3f("padding", time) : laovdb::Vec3f{0};
 
         mFrustum.reset();
 
-        openvdb::BBoxd clipBox;
+        laovdb::BBoxd clipBox;
         hvdb::GridCPtr maskGrid;
 
         if (useCamera) {
@@ -539,7 +539,7 @@ SOP_OpenVDB_Clip::Cache::cookVDBSop(OP_Context& context)
                     evalStdString("mask", time).c_str(), GroupCreator{maskGeo});
                 hvdb::VdbPrimCIterator maskIt{maskGeo, maskGroup};
                 if (maskIt) {
-                    if (maskIt->getConstGrid().getGridClass() == openvdb::GRID_LEVEL_SET) {
+                    if (maskIt->getConstGrid().getGridClass() == laovdb::GRID_LEVEL_SET) {
                         // If the mask grid is a level set, extract an interior mask from it.
                         LevelSetMaskOp op;
                         hvdb::GEOvdbApply<hvdb::NumericGridTypes>(**maskIt, op);
@@ -555,8 +555,8 @@ SOP_OpenVDB_Clip::Cache::cookVDBSop(OP_Context& context)
                 if (pad) {
                     // If padding is enabled and nonzero, dilate or erode the mask grid.
                     const auto paddingInVoxels = padding / maskGrid->voxelSize();
-                    if (!openvdb::math::isApproxEqual(paddingInVoxels[0], paddingInVoxels[1])
-                        || !openvdb::math::isApproxEqual(paddingInVoxels[1], paddingInVoxels[2]))
+                    if (!laovdb::math::isApproxEqual(paddingInVoxels[0], paddingInVoxels[1])
+                        || !laovdb::math::isApproxEqual(paddingInVoxels[1], paddingInVoxels[2]))
                     {
                         addWarning(SOP_MESSAGE,
                             "nonuniform padding is not supported for mask clipping");
@@ -598,7 +598,7 @@ SOP_OpenVDB_Clip::Cache::cookVDBSop(OP_Context& context)
 
             hvdb::GridPtr outGrid;
 
-            if (inGrid.getGridClass() == openvdb::GRID_LEVEL_SET) {
+            if (inGrid.getGridClass() == laovdb::GRID_LEVEL_SET) {
                 ++numLevelSets;
             }
 
@@ -609,7 +609,7 @@ SOP_OpenVDB_Clip::Cache::cookVDBSop(OP_Context& context)
                 MaskClipOp op{maskGrid, inside};
                 if (hvdb::GEOvdbApply<hvdb::VolumeGridTypes>(**it, op)) { // all Houdini-supported volume grid types
                     outGrid = op.outputGrid;
-                } else if (inGrid.isType<openvdb::points::PointDataGrid>()) {
+                } else if (inGrid.isType<laovdb::points::PointDataGrid>()) {
                     addWarning(SOP_MESSAGE,
                         "only bounding box clipping is currently supported for point data grids");
                 }
@@ -617,7 +617,7 @@ SOP_OpenVDB_Clip::Cache::cookVDBSop(OP_Context& context)
                 FrustumClipOp op{mFrustum, inside};
                 if (hvdb::GEOvdbApply<hvdb::VolumeGridTypes>(**it, op)) { // all Houdini-supported volume grid types
                     outGrid = op.outputGrid;
-                } else if (inGrid.isType<openvdb::points::PointDataGrid>()) {
+                } else if (inGrid.isType<laovdb::points::PointDataGrid>()) {
                     addWarning(SOP_MESSAGE,
                         "only bounding box clipping is currently supported for point data grids");
                 }
@@ -625,7 +625,7 @@ SOP_OpenVDB_Clip::Cache::cookVDBSop(OP_Context& context)
                 BBoxClipOp op{clipBox, inside};
                 if (hvdb::GEOvdbApply<hvdb::VolumeGridTypes>(**it, op)) { // all Houdini-supported volume grid types
                     outGrid = op.outputGrid;
-                } else if (inGrid.isType<openvdb::points::PointDataGrid>()) {
+                } else if (inGrid.isType<laovdb::points::PointDataGrid>()) {
                     if (inside) {
                         outGrid = inGrid.deepCopyGrid();
                         outGrid->clipGrid(clipBox);

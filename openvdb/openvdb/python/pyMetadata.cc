@@ -5,7 +5,7 @@
 #include "openvdb/openvdb.h"
 
 namespace py = boost::python;
-using namespace openvdb::OPENVDB_VERSION_NAME;
+using namespace laovdb::OPENVDB_VERSION_NAME;
 
 namespace {
 

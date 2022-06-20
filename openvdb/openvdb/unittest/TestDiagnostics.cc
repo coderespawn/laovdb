@@ -26,10 +26,10 @@ TEST_F(TestDiagnostics, testCheck)
     const float val = 1.0f;
     const float nan = std::numeric_limits<float>::quiet_NaN();
     const float inf1= std::numeric_limits<float>::infinity();
-    const openvdb::math::Vec3<float> inf2(val, inf1, val);
+    const laovdb::math::Vec3<float> inf2(val, inf1, val);
 
     {//test CheckNan
-        openvdb::tools::CheckNan<openvdb::FloatGrid> c;
+        laovdb::tools::CheckNan<laovdb::FloatGrid> c;
         EXPECT_TRUE(!c(val));
         EXPECT_TRUE( c(nan));
         EXPECT_TRUE( c(nan));
@@ -37,7 +37,7 @@ TEST_F(TestDiagnostics, testCheck)
         EXPECT_TRUE(!c(inf2));
     }
     {//test CheckInf
-        openvdb::tools::CheckInf<openvdb::FloatGrid> c;
+        laovdb::tools::CheckInf<laovdb::FloatGrid> c;
         EXPECT_TRUE(!c(val));
         EXPECT_TRUE(!c(nan));
         EXPECT_TRUE(!c(nan));
@@ -45,7 +45,7 @@ TEST_F(TestDiagnostics, testCheck)
         EXPECT_TRUE( c(inf2));
     }
     {//test CheckFinite
-        openvdb::tools::CheckFinite<openvdb::FloatGrid> c;
+        laovdb::tools::CheckFinite<laovdb::FloatGrid> c;
         EXPECT_TRUE(!c(val));
         EXPECT_TRUE( c(nan));
         EXPECT_TRUE( c(nan));
@@ -53,7 +53,7 @@ TEST_F(TestDiagnostics, testCheck)
         EXPECT_TRUE( c(inf2));
     }
     {//test CheckMin
-        openvdb::tools::CheckMin<openvdb::FloatGrid> c(0.0f);
+        laovdb::tools::CheckMin<laovdb::FloatGrid> c(0.0f);
         EXPECT_TRUE(!c( 0.5f));
         EXPECT_TRUE(!c( 0.0f));
         EXPECT_TRUE(!c( 1.0f));
@@ -61,7 +61,7 @@ TEST_F(TestDiagnostics, testCheck)
         EXPECT_TRUE( c(-0.1f));
     }
     {//test CheckMax
-        openvdb::tools::CheckMax<openvdb::FloatGrid> c(0.0f);
+        laovdb::tools::CheckMax<laovdb::FloatGrid> c(0.0f);
         EXPECT_TRUE( c( 0.5f));
         EXPECT_TRUE(!c( 0.0f));
         EXPECT_TRUE( c( 1.0f));
@@ -70,9 +70,9 @@ TEST_F(TestDiagnostics, testCheck)
     }
     {//test CheckRange
         // first check throw on construction from an invalid range
-        EXPECT_THROW(openvdb::tools::CheckRange<openvdb::FloatGrid> c(1.0f, 0.0f),
-                             openvdb::ValueError);
-        openvdb::tools::CheckRange<openvdb::FloatGrid> c(0.0f, 1.0f);
+        EXPECT_THROW(laovdb::tools::CheckRange<laovdb::FloatGrid> c(1.0f, 0.0f),
+                             laovdb::ValueError);
+        laovdb::tools::CheckRange<laovdb::FloatGrid> c(0.0f, 1.0f);
         EXPECT_TRUE(!c(0.5f));
         EXPECT_TRUE(!c(0.0f));
         EXPECT_TRUE(!c(1.0f));
@@ -83,7 +83,7 @@ TEST_F(TestDiagnostics, testCheck)
 
 TEST_F(TestDiagnostics, testDiagnose)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     const float val = 1.0f;
     const float nan = std::numeric_limits<float>::quiet_NaN();
     const float inf = std::numeric_limits<float>::infinity();
@@ -143,7 +143,7 @@ TEST_F(TestDiagnostics, testDiagnose)
     }
 
     const float radius = 4.3f;
-    const openvdb::Vec3f center(15.8f, 13.2f, 16.7f);
+    const laovdb::Vec3f center(15.8f, 13.2f, 16.7f);
     const float voxelSize = 0.1f, width = 2.0f, gamma=voxelSize*width;
 
     FloatGrid::Ptr gridSphere =
@@ -264,7 +264,7 @@ TEST_F(TestDiagnostics, testDiagnose)
 
 TEST_F(TestDiagnostics, testCheckLevelSet)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     const float radius = 4.3f;
     const Vec3f center(15.8f, 13.2f, 16.7f);
     const float voxelSize = 0.1f, width = LEVEL_SET_HALF_WIDTH;
@@ -292,7 +292,7 @@ TEST_F(TestDiagnostics, testCheckLevelSet)
 
 TEST_F(TestDiagnostics, testCheckFogVolume)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     const float radius = 4.3f;
     const Vec3f center(15.8f, 13.2f, 16.7f);
     const float voxelSize = 0.1f, width = LEVEL_SET_HALF_WIDTH;
@@ -321,44 +321,44 @@ TEST_F(TestDiagnostics, testCheckFogVolume)
 
 TEST_F(TestDiagnostics, testUniqueInactiveValues)
 {
-    openvdb::FloatGrid grid;
+    laovdb::FloatGrid grid;
 
-    grid.tree().setValueOff(openvdb::Coord(0,0,0), -1);
-    grid.tree().setValueOff(openvdb::Coord(0,0,1), -2);
-    grid.tree().setValueOff(openvdb::Coord(0,1,0), -3);
-    grid.tree().setValue(openvdb::Coord(1,0,0),  1);
+    grid.tree().setValueOff(laovdb::Coord(0,0,0), -1);
+    grid.tree().setValueOff(laovdb::Coord(0,0,1), -2);
+    grid.tree().setValueOff(laovdb::Coord(0,1,0), -3);
+    grid.tree().setValue(laovdb::Coord(1,0,0),  1);
 
     std::vector<float> values;
 
-    EXPECT_TRUE(openvdb::tools::uniqueInactiveValues(grid, values, 4));
+    EXPECT_TRUE(laovdb::tools::uniqueInactiveValues(grid, values, 4));
 
     EXPECT_EQ(4, int(values.size()));
 
-    EXPECT_TRUE(openvdb::math::isApproxEqual(values[0], -3.0f));
-    EXPECT_TRUE(openvdb::math::isApproxEqual(values[1], -2.0f));
-    EXPECT_TRUE(openvdb::math::isApproxEqual(values[2], -1.0f));
-    EXPECT_TRUE(openvdb::math::isApproxEqual(values[3], 0.0f));
+    EXPECT_TRUE(laovdb::math::isApproxEqual(values[0], -3.0f));
+    EXPECT_TRUE(laovdb::math::isApproxEqual(values[1], -2.0f));
+    EXPECT_TRUE(laovdb::math::isApproxEqual(values[2], -1.0f));
+    EXPECT_TRUE(laovdb::math::isApproxEqual(values[3], 0.0f));
 
 
     // test with level set sphere
     const float radius = 4.3f;
-    const openvdb::Vec3f center(15.8f, 13.2f, 16.7f);
+    const laovdb::Vec3f center(15.8f, 13.2f, 16.7f);
     const float voxelSize = 0.5f, width = 2.0f;
 
-    openvdb::FloatGrid::Ptr gridSphere =
-        openvdb::tools::createLevelSetSphere<openvdb::FloatGrid>(radius, center, voxelSize, width);
+    laovdb::FloatGrid::Ptr gridSphere =
+        laovdb::tools::createLevelSetSphere<laovdb::FloatGrid>(radius, center, voxelSize, width);
 
-    EXPECT_TRUE(openvdb::tools::uniqueInactiveValues(*gridSphere.get(), values, 2));
+    EXPECT_TRUE(laovdb::tools::uniqueInactiveValues(*gridSphere.get(), values, 2));
 
     EXPECT_EQ(2, int(values.size()));
-    EXPECT_TRUE(openvdb::math::isApproxEqual(values[0], -voxelSize * width));
-    EXPECT_TRUE(openvdb::math::isApproxEqual(values[1],  voxelSize * width));
+    EXPECT_TRUE(laovdb::math::isApproxEqual(values[0], -voxelSize * width));
+    EXPECT_TRUE(laovdb::math::isApproxEqual(values[1],  voxelSize * width));
 
     // test with fog volume
-    openvdb::tools::sdfToFogVolume(*gridSphere);
+    laovdb::tools::sdfToFogVolume(*gridSphere);
 
-    EXPECT_TRUE(openvdb::tools::uniqueInactiveValues(*gridSphere.get(), values, 1));
+    EXPECT_TRUE(laovdb::tools::uniqueInactiveValues(*gridSphere.get(), values, 1));
 
     EXPECT_EQ(1, int(values.size()));
-    EXPECT_TRUE(openvdb::math::isApproxEqual(values[0], 0.0f));
+    EXPECT_TRUE(laovdb::math::isApproxEqual(values[0], 0.0f));
 }

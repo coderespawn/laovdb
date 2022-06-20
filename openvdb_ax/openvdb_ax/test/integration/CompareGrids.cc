@@ -11,26 +11,26 @@
 namespace unittest_util
 {
 
-using TypeList = openvdb::TypeList<
+using TypeList = laovdb::TypeList<
     double,
     float,
     int64_t,
     int32_t,
     int16_t,
     bool,
-    openvdb::math::Vec2<double>,
-    openvdb::math::Vec2<float>,
-    openvdb::math::Vec2<int32_t>,
-    openvdb::math::Vec3<double>,
-    openvdb::math::Vec3<float>,
-    openvdb::math::Vec3<int32_t>,
-    openvdb::math::Vec4<double>,
-    openvdb::math::Vec4<float>,
-    openvdb::math::Vec4<int32_t>,
-    openvdb::math::Mat3<double>,
-    openvdb::math::Mat3<float>,
-    openvdb::math::Mat4<double>,
-    openvdb::math::Mat4<float>,
+    laovdb::math::Vec2<double>,
+    laovdb::math::Vec2<float>,
+    laovdb::math::Vec2<int32_t>,
+    laovdb::math::Vec3<double>,
+    laovdb::math::Vec3<float>,
+    laovdb::math::Vec3<int32_t>,
+    laovdb::math::Vec4<double>,
+    laovdb::math::Vec4<float>,
+    laovdb::math::Vec4<int32_t>,
+    laovdb::math::Mat3<double>,
+    laovdb::math::Mat3<float>,
+    laovdb::math::Mat4<double>,
+    laovdb::math::Mat4<float>,
     std::string>;
 
 struct DiagnosticArrayData
@@ -59,19 +59,19 @@ struct DiagnosticData
     virtual ~DiagnosticData() = default;
 
     virtual void report(std::ostream&,
-        const openvdb::GridBase&,
-        const openvdb::GridBase&,
-        openvdb::MaskGrid::Accessor&,
-        openvdb::MaskGrid::Accessor&) = 0;
+        const laovdb::GridBase&,
+        const laovdb::GridBase&,
+        laovdb::MaskGrid::Accessor&,
+        laovdb::MaskGrid::Accessor&) = 0;
 };
 
 template <typename NodeT>
 struct NodeDD : public DiagnosticData
 {
     using Ptr = std::unique_ptr<NodeDD<NodeT>>;
-    using GridT = typename openvdb::BoolGrid::ValueConverter<typename NodeT::ValueType>::Type;
+    using GridT = typename laovdb::BoolGrid::ValueConverter<typename NodeT::ValueType>::Type;
 
-    NodeDD(const openvdb::Coord& origin)
+    NodeDD(const laovdb::Coord& origin)
         : mOrigin(origin)
         , mValid(true)
         , mBufferSizes(true)
@@ -104,10 +104,10 @@ struct NodeDD : public DiagnosticData
     }
 
     inline void report(std::ostream& os,
-        const openvdb::GridBase& grid1,
-        const openvdb::GridBase& grid2,
-        openvdb::MaskGrid::Accessor& accessorTopology,
-        openvdb::MaskGrid::Accessor& accessorValues) override
+        const laovdb::GridBase& grid1,
+        const laovdb::GridBase& grid2,
+        laovdb::MaskGrid::Accessor& accessorTopology,
+        laovdb::MaskGrid::Accessor& accessorValues) override
     {
         struct Local {
             // flag to string
@@ -141,7 +141,7 @@ struct NodeDD : public DiagnosticData
         if (!topologyMatch) {
             os << "        The following voxel topologies differ : " << std::endl;
             for (auto iter = this->mTopologyFlags.beginOff(); iter; ++iter) {
-                const openvdb::Coord coord = l1->offsetToGlobalCoord(iter.pos());
+                const laovdb::Coord coord = l1->offsetToGlobalCoord(iter.pos());
                 os << "            [" << iter.pos() << "] "<< coord
                    << " G1: " << l1->isValueOn(coord)
                    << " - G2: " << l2->isValueOn(coord)
@@ -156,7 +156,7 @@ struct NodeDD : public DiagnosticData
         if (!valueMatch) {
             os << "        The following voxel values differ : " << std::endl;
             for (auto iter = this->mVoxelFlags.beginOff(); iter; ++iter) {
-                const openvdb::Coord coord = l1->offsetToGlobalCoord(iter.pos());
+                const laovdb::Coord coord = l1->offsetToGlobalCoord(iter.pos());
                 os << "            [" << iter.pos() << "] "<< coord
                    << " G1: " << l1->getValue(coord)
                    << " - G2: " << l2->getValue(coord)
@@ -165,7 +165,7 @@ struct NodeDD : public DiagnosticData
             }
         }
 
-        if (g1.template isType<openvdb::points::PointDataGrid>()) {
+        if (g1.template isType<laovdb::points::PointDataGrid>()) {
             os << "    Descriptors  : " <<  Local::fts(this->mDescriptorsMatch) << std::endl;
             const bool attributesMatch = !static_cast<bool>(this->mAttributeArrayData);
             os << "    Array Data   : " <<  Local::fts(attributesMatch) << std::endl;
@@ -195,7 +195,7 @@ struct NodeDD : public DiagnosticData
         }
     }
 
-    openvdb::Coord mOrigin;
+    laovdb::Coord mOrigin;
     bool mValid;
     bool mBufferSizes;
     typename NodeT::NodeMaskType mTopologyFlags;
@@ -231,7 +231,7 @@ inline bool compareNodes(const NodeT& firstLeaf,
     typename NodeT::NodeMaskType::OnIterator iter = mask.beginOn();
 
     for (; iter; ++iter) {
-        const openvdb::Index n = iter.pos();
+        const laovdb::Index n = iter.pos();
         assert(n < firstBuffer.size() && n < secondBuffer.size());
 
         if (settings.mCheckActiveStates &&
@@ -240,7 +240,7 @@ inline bool compareNodes(const NodeT& firstLeaf,
         }
 
         if (settings.mCheckBufferValues &&
-            !openvdb::math::isApproxEqual(firstBuffer[n], secondBuffer[n], tolerance)) {
+            !laovdb::math::isApproxEqual(firstBuffer[n], secondBuffer[n], tolerance)) {
             data.flagVoxelValue(static_cast<int16_t>(n));
         }
     }
@@ -267,7 +267,7 @@ inline bool compareNodes(const NodeT& n1,
     auto* t2 = n2.getTable();
 
     for (auto iter = mask.beginOn(); iter; ++iter) {
-        const openvdb::Index n = iter.pos();
+        const laovdb::Index n = iter.pos();
 
         if ((vmask1.isOn(n) ^ vmask2.isOn(n)) ||
             (cmask1.isOn(n) ^ cmask2.isOn(n))) {
@@ -279,7 +279,7 @@ inline bool compareNodes(const NodeT& n1,
         assert(vmask1.isOn(n) && vmask2.isOn(n));
 
         if (settings.mCheckBufferValues &&
-            !openvdb::math::isApproxEqual(t1[n].getValue(), t2[n].getValue(), tolerance)) {
+            !laovdb::math::isApproxEqual(t1[n].getValue(), t2[n].getValue(), tolerance)) {
             data.flagVoxelValue(static_cast<int16_t>(n));
         }
     }
@@ -288,24 +288,24 @@ inline bool compareNodes(const NodeT& n1,
 }
 
 
-void compareStringArrays(const openvdb::points::AttributeArray& a1,
-                         const openvdb::points::AttributeArray& a2,
-                         const openvdb::points::PointDataTree::LeafNodeType& leaf1,
-                         const openvdb::points::PointDataTree::LeafNodeType& leaf2,
+void compareStringArrays(const laovdb::points::AttributeArray& a1,
+                         const laovdb::points::AttributeArray& a2,
+                         const laovdb::points::PointDataTree::LeafNodeType& leaf1,
+                         const laovdb::points::PointDataTree::LeafNodeType& leaf2,
                          const std::string& name,
-                         NodeDD<openvdb::points::PointDataTree::LeafNodeType>& data)
+                         NodeDD<laovdb::points::PointDataTree::LeafNodeType>& data)
 {
-    using LeafNodeT = openvdb::points::PointDataTree::LeafNodeType;
+    using LeafNodeT = laovdb::points::PointDataTree::LeafNodeType;
 
     if (a1.size() != a2.size()) {
         auto& arrayData = data.getDiagnosticArrayData(name);
         arrayData.mSizeMatch = false;
     }
 
-    const openvdb::points::AttributeSet::Descriptor& descriptor1 = leaf1.attributeSet().descriptor();
-    const openvdb::points::AttributeSet::Descriptor& descriptor2 = leaf2.attributeSet().descriptor();
+    const laovdb::points::AttributeSet::Descriptor& descriptor1 = leaf1.attributeSet().descriptor();
+    const laovdb::points::AttributeSet::Descriptor& descriptor2 = leaf2.attributeSet().descriptor();
 
-    openvdb::points::StringAttributeHandle h1(a1, descriptor1.getMetadata()), h2(a2, descriptor2.getMetadata());
+    laovdb::points::StringAttributeHandle h1(a1, descriptor1.getMetadata()), h2(a2, descriptor2.getMetadata());
     auto iter = leaf1.beginIndexAll();
 
     for (; iter; ++iter) {
@@ -315,7 +315,7 @@ void compareStringArrays(const openvdb::points::AttributeArray& a1,
     if (iter) {
         auto& arrayData = data.getDiagnosticArrayData(name);
         for (; iter; ++iter) {
-            const openvdb::Index i = *iter;
+            const laovdb::Index i = *iter;
             if (h1.get(i) != h2.get(i)) {
                 arrayData.flagArrayValue(i);
                 data.flagVoxelValue(static_cast<int16_t>(LeafNodeT::coordToOffset(iter.getCoord())));
@@ -325,20 +325,20 @@ void compareStringArrays(const openvdb::points::AttributeArray& a1,
 }
 
 template <typename ValueType>
-inline void compareArrays(const openvdb::points::AttributeArray& a1,
-                          const openvdb::points::AttributeArray& a2,
-                          const openvdb::points::PointDataTree::LeafNodeType& leaf,
+inline void compareArrays(const laovdb::points::AttributeArray& a1,
+                          const laovdb::points::AttributeArray& a2,
+                          const laovdb::points::PointDataTree::LeafNodeType& leaf,
                           const std::string& name,
-                          NodeDD<openvdb::points::PointDataTree::LeafNodeType>& data)
+                          NodeDD<laovdb::points::PointDataTree::LeafNodeType>& data)
 {
-    using LeafNodeT = openvdb::points::PointDataTree::LeafNodeType;
+    using LeafNodeT = laovdb::points::PointDataTree::LeafNodeType;
 
     if (a1.size() != a2.size()) {
         auto& arrayData = data.getDiagnosticArrayData(name);
         arrayData.mSizeMatch = false;
     }
 
-    openvdb::points::AttributeHandle<ValueType> h1(a1), h2(a2);
+    laovdb::points::AttributeHandle<ValueType> h1(a1), h2(a2);
     auto iter = leaf.beginIndexAll();
 
     for (; iter; ++iter) {
@@ -348,7 +348,7 @@ inline void compareArrays(const openvdb::points::AttributeArray& a1,
     if (iter) {
         auto& arrayData = data.getDiagnosticArrayData(name);
         for (; iter; ++iter) {
-            const openvdb::Index i = *iter;
+            const laovdb::Index i = *iter;
             if (h1.get(i) != h2.get(i)) {
                 arrayData.flagArrayValue(i);
                 data.flagVoxelValue(static_cast<int16_t>(LeafNodeT::coordToOffset(iter.getCoord())));
@@ -368,13 +368,13 @@ compareAttributes(const LeafNodeType&,
 
 template <>
 inline bool
-compareAttributes<openvdb::points::PointDataTree::LeafNodeType>
-    (const openvdb::points::PointDataTree::LeafNodeType& firstLeaf,
-     const openvdb::points::PointDataTree::LeafNodeType& secondLeaf,
-     NodeDD<openvdb::points::PointDataTree::LeafNodeType>& data,
+compareAttributes<laovdb::points::PointDataTree::LeafNodeType>
+    (const laovdb::points::PointDataTree::LeafNodeType& firstLeaf,
+     const laovdb::points::PointDataTree::LeafNodeType& secondLeaf,
+     NodeDD<laovdb::points::PointDataTree::LeafNodeType>& data,
      const ComparisonSettings& settings)
 {
-    using Descriptor = openvdb::points::AttributeSet::Descriptor;
+    using Descriptor = laovdb::points::AttributeSet::Descriptor;
 
     const Descriptor& firstDescriptor = firstLeaf.attributeSet().descriptor();
     const Descriptor& secondDescriptor = secondLeaf.attributeSet().descriptor();
@@ -429,7 +429,7 @@ compareAttributes<openvdb::points::PointDataTree::LeafNodeType>
                 bool success = false;
                 // Remove string types but add uint8_t types (used by group arrays)
                 TypeList::Remove<std::string>::Append<uint8_t>::foreach([&](auto x) {
-                    if (type == openvdb::typeNameAsString<decltype(x)>()) {
+                    if (type == laovdb::typeNameAsString<decltype(x)>()) {
                         compareArrays<decltype(x)>(array1, array2, firstLeaf, name, data);
                         success = true;
                     }
@@ -448,9 +448,9 @@ compareAttributes<openvdb::points::PointDataTree::LeafNodeType>
 template<typename TreeType>
 struct CompareNodes
 {
-    using LeafManagerT = openvdb::tree::LeafManager<const openvdb::MaskTree>;
+    using LeafManagerT = laovdb::tree::LeafManager<const laovdb::MaskTree>;
     using LeafNodeType = typename TreeType::LeafNodeType;
-    using ConstGridAccessor = openvdb::tree::ValueAccessor<const TreeType>;
+    using ConstGridAccessor = laovdb::tree::ValueAccessor<const TreeType>;
 
     CompareNodes(tbb::concurrent_vector<DiagnosticData::Ptr>& data,
                      const TreeType& firstTree,
@@ -465,14 +465,14 @@ struct CompareNodes
         , mSettings(settings)
         , mUseVoxelMask(useVoxelMask) {}
 
-    void operator()(const openvdb::MaskTree::RootNodeType&) const {}
+    void operator()(const laovdb::MaskTree::RootNodeType&) const {}
 
     template <typename MaskNodeT>
     void operator()(MaskNodeT& node) const
     {
         using NodeT = typename MaskNodeT::template ValueConverter<typename TreeType::ValueType>::Type;
 
-        const openvdb::Coord& origin = node.origin();
+        const laovdb::Coord& origin = node.origin();
         const NodeT* const n1 = mFirst.template probeConstNode<NodeT>(origin);
         const NodeT* const n2 = mSecond.template probeConstNode<NodeT>(origin);
         if (n1 == nullptr && n2 == nullptr) return;
@@ -509,12 +509,12 @@ bool compareGrids(ComparisonResult& resultData,
              const GridType& firstGrid,
              const GridType& secondGrid,
              const ComparisonSettings& settings,
-             const openvdb::MaskGrid::ConstPtr maskGrid,
+             const laovdb::MaskGrid::ConstPtr maskGrid,
              const typename GridType::ValueType tolerance)
 {
     using TreeType = typename GridType::TreeType;
-    using NodeManager = openvdb::tree::NodeManager<const openvdb::MaskTree,
-        openvdb::MaskTree::RootNodeType::LEVEL>;
+    using NodeManager = laovdb::tree::NodeManager<const laovdb::MaskTree,
+        laovdb::MaskTree::RootNodeType::LEVEL>;
 
     struct Local {
         // flag to string
@@ -545,8 +545,8 @@ bool compareGrids(ComparisonResult& resultData,
           << std::endl;
     }
 
-    const openvdb::Index64 leafCount1 = firstGrid.tree().leafCount();
-    const openvdb::Index64 leafCount2 = secondGrid.tree().leafCount();
+    const laovdb::Index64 leafCount1 = firstGrid.tree().leafCount();
+    const laovdb::Index64 leafCount2 = secondGrid.tree().leafCount();
     flag = (leafCount1 == 0 && leafCount2 == 0);
     if (flag) {
         os << "[Diagnostic]: Both grids contain 0 leaf nodes."
@@ -561,7 +561,7 @@ bool compareGrids(ComparisonResult& resultData,
            << std::endl;
     }
 
-    openvdb::MaskGrid::Ptr mask = openvdb::MaskGrid::create();
+    laovdb::MaskGrid::Ptr mask = laovdb::MaskGrid::create();
     if (maskGrid) {
         mask->topologyUnion(*maskGrid);
     }
@@ -570,7 +570,7 @@ bool compareGrids(ComparisonResult& resultData,
         mask->topologyUnion(secondGrid);
     }
 
-    openvdb::tools::pruneInactive(mask->tree());
+    laovdb::tools::pruneInactive(mask->tree());
 
     NodeManager manager(mask->constTree());
     tbb::concurrent_vector<DiagnosticData::Ptr> data;
@@ -591,8 +591,8 @@ bool compareGrids(ComparisonResult& resultData,
 
     if (flag) return result;
 
-    openvdb::MaskGrid& differingTopology = *(resultData.mDifferingTopology);
-    openvdb::MaskGrid& differingValues = *(resultData.mDifferingValues);
+    laovdb::MaskGrid& differingTopology = *(resultData.mDifferingTopology);
+    laovdb::MaskGrid& differingValues = *(resultData.mDifferingValues);
 
     differingTopology.setTransform(firstGrid.transform().copy());
     differingValues.setTransform(firstGrid.transform().copy());
@@ -601,8 +601,8 @@ bool compareGrids(ComparisonResult& resultData,
 
     // Print diagnostic info to the stream and intialise the result topologies
 
-    openvdb::MaskGrid::Accessor accessorTopology = differingTopology.getAccessor();
-    openvdb::MaskGrid::Accessor accessorValues = differingValues.getAccessor();
+    laovdb::MaskGrid::Accessor accessorTopology = differingTopology.getAccessor();
+    laovdb::MaskGrid::Accessor accessorValues = differingValues.getAccessor();
 
     os << "[Diagnostic]: Leaf Node Diagnostics:\n"  << std::endl;
 
@@ -615,13 +615,13 @@ bool compareGrids(ComparisonResult& resultData,
 }
 
 template <typename ValueT>
-using ConverterT = typename openvdb::BoolGrid::ValueConverter<ValueT>::Type;
+using ConverterT = typename laovdb::BoolGrid::ValueConverter<ValueT>::Type;
 
 bool compareUntypedGrids(ComparisonResult &resultData,
-                         const openvdb::GridBase &firstGrid,
-                         const openvdb::GridBase &secondGrid,
+                         const laovdb::GridBase &firstGrid,
+                         const laovdb::GridBase &secondGrid,
                          const ComparisonSettings &settings,
-                         const openvdb::MaskGrid::ConstPtr maskGrid)
+                         const laovdb::MaskGrid::ConstPtr maskGrid)
 {
     bool result = false, valid = false;;
     TypeList::foreach([&](auto x) {
@@ -635,18 +635,18 @@ bool compareUntypedGrids(ComparisonResult &resultData,
     });
 
     if (!valid) {
-        if (firstGrid.isType<openvdb::points::PointDataGrid>()) {
+        if (firstGrid.isType<laovdb::points::PointDataGrid>()) {
             valid = true;
-            const openvdb::points::PointDataGrid& firstGridTyped =
-                static_cast<const openvdb::points::PointDataGrid&>(firstGrid);
-            const openvdb::points::PointDataGrid& secondGridTyped =
-                static_cast<const openvdb::points::PointDataGrid&>(secondGrid);
+            const laovdb::points::PointDataGrid& firstGridTyped =
+                static_cast<const laovdb::points::PointDataGrid&>(firstGrid);
+            const laovdb::points::PointDataGrid& secondGridTyped =
+                static_cast<const laovdb::points::PointDataGrid&>(secondGrid);
             result = compareGrids(resultData, firstGridTyped, secondGridTyped, settings, maskGrid);
         }
     }
 
     if (!valid) {
-        OPENVDB_THROW(openvdb::TypeError, "Unsupported grid type: " + firstGrid.valueType());
+        OPENVDB_THROW(laovdb::TypeError, "Unsupported grid type: " + firstGrid.valueType());
     }
     return result;
 }

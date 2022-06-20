@@ -28,9 +28,9 @@ TEST_F(TestVolumeToSpheres, testFromLevelSet)
         radius = 20.0f,
         voxelSize = 1.0f,
         halfWidth = 3.0f;
-    const openvdb::Vec3f center(15.0f, 13.0f, 16.0f);
+    const laovdb::Vec3f center(15.0f, 13.0f, 16.0f);
 
-    openvdb::FloatGrid::ConstPtr grid = openvdb::tools::createLevelSetSphere<openvdb::FloatGrid>(
+    laovdb::FloatGrid::ConstPtr grid = laovdb::tools::createLevelSetSphere<laovdb::FloatGrid>(
         radius, center, voxelSize, halfWidth);
 
     const bool overlapping = false;
@@ -39,12 +39,12 @@ TEST_F(TestVolumeToSpheres, testFromLevelSet)
         isovalue = 0.0f,
         minRadius = 5.0f,
         maxRadius = std::numeric_limits<float>::max();
-    const openvdb::Vec2i sphereCount(1, 100);
+    const laovdb::Vec2i sphereCount(1, 100);
 
     {
-        std::vector<openvdb::Vec4s> spheres;
+        std::vector<laovdb::Vec4s> spheres;
 
-        openvdb::tools::fillWithSpheres(*grid, spheres, sphereCount, overlapping,
+        laovdb::tools::fillWithSpheres(*grid, spheres, sphereCount, overlapping,
             minRadius, maxRadius, isovalue, instanceCount);
 
         EXPECT_EQ(1, int(spheres.size()));
@@ -61,15 +61,15 @@ TEST_F(TestVolumeToSpheres, testFromLevelSet)
     }
     {
         // Verify that an isovalue outside the narrow band still produces a valid sphere.
-        std::vector<openvdb::Vec4s> spheres;
-        openvdb::tools::fillWithSpheres(*grid, spheres, sphereCount,
+        std::vector<laovdb::Vec4s> spheres;
+        laovdb::tools::fillWithSpheres(*grid, spheres, sphereCount,
             overlapping, minRadius, maxRadius, 1.5f * halfWidth, instanceCount);
         EXPECT_EQ(1, int(spheres.size()));
     }
     {
         // Verify that an isovalue inside the narrow band produces no spheres.
-        std::vector<openvdb::Vec4s> spheres;
-        openvdb::tools::fillWithSpheres(*grid, spheres, sphereCount,
+        std::vector<laovdb::Vec4s> spheres;
+        laovdb::tools::fillWithSpheres(*grid, spheres, sphereCount,
             overlapping, minRadius, maxRadius, -1.5f * halfWidth, instanceCount);
         EXPECT_EQ(0, int(spheres.size()));
     }
@@ -82,11 +82,11 @@ TEST_F(TestVolumeToSpheres, testFromFog)
         radius = 20.0f,
         voxelSize = 1.0f,
         halfWidth = 3.0f;
-    const openvdb::Vec3f center(15.0f, 13.0f, 16.0f);
+    const laovdb::Vec3f center(15.0f, 13.0f, 16.0f);
 
-    auto grid = openvdb::tools::createLevelSetSphere<openvdb::FloatGrid>(
+    auto grid = laovdb::tools::createLevelSetSphere<laovdb::FloatGrid>(
         radius, center, voxelSize, halfWidth);
-    openvdb::tools::sdfToFogVolume(*grid);
+    laovdb::tools::sdfToFogVolume(*grid);
 
     const bool overlapping = false;
     const int instanceCount = 10000;
@@ -94,11 +94,11 @@ TEST_F(TestVolumeToSpheres, testFromFog)
         isovalue = 0.01f,
         minRadius = 5.0f,
         maxRadius = std::numeric_limits<float>::max();
-    const openvdb::Vec2i sphereCount(1, 100);
+    const laovdb::Vec2i sphereCount(1, 100);
 
     {
-        std::vector<openvdb::Vec4s> spheres;
-        openvdb::tools::fillWithSpheres(*grid, spheres, sphereCount, overlapping,
+        std::vector<laovdb::Vec4s> spheres;
+        laovdb::tools::fillWithSpheres(*grid, spheres, sphereCount, overlapping,
             minRadius, maxRadius, isovalue, instanceCount);
 
         //for (size_t i=0; i< spheres.size(); ++i) {
@@ -115,8 +115,8 @@ TEST_F(TestVolumeToSpheres, testFromFog)
     }
     {
         // Verify that an isovalue outside the narrow band still produces valid spheres.
-        std::vector<openvdb::Vec4s> spheres;
-        openvdb::tools::fillWithSpheres(*grid, spheres, sphereCount, overlapping,
+        std::vector<laovdb::Vec4s> spheres;
+        laovdb::tools::fillWithSpheres(*grid, spheres, sphereCount, overlapping,
             minRadius, maxRadius, 10.0f, instanceCount);
         EXPECT_TRUE(!spheres.empty());
     }
@@ -125,7 +125,7 @@ TEST_F(TestVolumeToSpheres, testFromFog)
 
 TEST_F(TestVolumeToSpheres, testMinimumSphereCount)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     {
         auto grid = tools::createLevelSetSphere<FloatGrid>(/*radius=*/5.0f,
             /*center=*/Vec3f(15.0f, 13.0f, 16.0f), /*voxelSize=*/1.0f, /*halfWidth=*/3.0f);
@@ -167,7 +167,7 @@ TEST_F(TestVolumeToSpheres, testMinimumSphereCount)
 
 TEST_F(TestVolumeToSpheres, testClosestSurfacePoint)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const float voxelSize = 1.0f;
     const Vec3f center{0.0f}; // ensure multiple internal nodes

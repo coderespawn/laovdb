@@ -18,7 +18,7 @@
 
 #include <map>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -149,7 +149,7 @@ private:
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_COMPILER_ATTRIBUTE_BINDINGS_HAS_BEEN_INCLUDED
 

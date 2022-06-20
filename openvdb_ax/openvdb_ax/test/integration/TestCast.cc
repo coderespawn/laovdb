@@ -7,7 +7,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-using namespace openvdb::points;
+using namespace laovdb::points;
 
 class TestCast : public unittest_util::AXTestCase
 {

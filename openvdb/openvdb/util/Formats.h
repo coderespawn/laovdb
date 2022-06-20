@@ -18,7 +18,7 @@
 #include <openvdb/Platform.h>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace util {
@@ -119,6 +119,6 @@ FormattedInt<IntT> formattedInt(IntT n) { return FormattedInt<IntT>(n); }
 
 } // namespace util
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_UTIL_FORMATS_HAS_BEEN_INCLUDED

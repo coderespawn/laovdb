@@ -38,11 +38,11 @@ public:
     class Cache: public SOP_VDBCacheOptions
     {
     public:
-        openvdb::math::Transform::Ptr frustum() const { return mFrustum; }
+        laovdb::math::Transform::Ptr frustum() const { return mFrustum; }
     protected:
         OP_ERROR cookVDBSop(OP_Context&) override;
     private:
-        openvdb::math::Transform::Ptr mFrustum;
+        laovdb::math::Transform::Ptr mFrustum;
     }; // class Cache
 
 protected:
@@ -167,7 +167,7 @@ SOP_OpenVDB_Occlusion_Mask::cookMyGuide1(OP_Context&)
 {
     myGuide1->clearAndDestroy();
 
-    openvdb::math::Transform::ConstPtr frustum;
+    laovdb::math::Transform::ConstPtr frustum;
     // Attempt to extract the frustum from our cache.
     if (auto* cache = dynamic_cast<SOP_OpenVDB_Occlusion_Mask::Cache*>(myNodeVerbCache)) {
         frustum = cache->frustum();
@@ -191,7 +191,7 @@ template<typename BoolTreeT>
 class VoxelShadow
 {
 public:
-    using BoolLeafManagerT = openvdb::tree::LeafManager<const BoolTreeT>;
+    using BoolLeafManagerT = laovdb::tree::LeafManager<const BoolTreeT>;
 
     //////////
 
@@ -247,7 +247,7 @@ void
 VoxelShadow<BoolTreeT>::operator()(const tbb::blocked_range<size_t>& range)
 {
     typename BoolTreeT::LeafNodeType::ValueOnCIter it;
-    openvdb::CoordBBox bbox;
+    laovdb::CoordBBox bbox;
 
     bbox.max()[2] = mZMax;
 
@@ -277,9 +277,9 @@ struct BoolSampler
 
     template<class TreeT>
     static bool sample(const TreeT& inTree,
-        const openvdb::Vec3R& inCoord, typename TreeT::ValueType& result)
+        const laovdb::Vec3R& inCoord, typename TreeT::ValueType& result)
     {
-        openvdb::Coord ijk;
+        laovdb::Coord ijk;
         ijk[0] = int(std::floor(inCoord[0]));
         ijk[1] = int(std::floor(inCoord[1]));
         ijk[2] = int(std::floor(inCoord[2]));
@@ -290,8 +290,8 @@ struct BoolSampler
 
 struct ConstructShadow
 {
-    ConstructShadow(const openvdb::math::Transform& frustum, int erode, int zoffset)
-        : mGrid(openvdb::BoolGrid::create(false))
+    ConstructShadow(const laovdb::math::Transform& frustum, int erode, int zoffset)
+        : mGrid(laovdb::BoolGrid::create(false))
         , mFrustum(frustum)
         , mErode(erode)
         , mZOffset(zoffset)
@@ -308,39 +308,39 @@ struct ConstructShadow
 
         // Resample active tree topology into camera frustum space.
 
-        openvdb::BoolGrid frustumMask(false);
+        laovdb::BoolGrid frustumMask(false);
         frustumMask.setTransform(mFrustum.copy());
 
         {
-            openvdb::BoolGrid topologyMask(false);
+            laovdb::BoolGrid topologyMask(false);
             topologyMask.setTransform(grid.transform().copy());
 
-            if (openvdb::GRID_LEVEL_SET == grid.getGridClass()) {
+            if (laovdb::GRID_LEVEL_SET == grid.getGridClass()) {
 
-                openvdb::BoolGrid::Ptr tmpGrid = openvdb::tools::sdfInteriorMask(grid);
+                laovdb::BoolGrid::Ptr tmpGrid = laovdb::tools::sdfInteriorMask(grid);
 
                 topologyMask.tree().merge(tmpGrid->tree());
 
                 if (mErode > 3) {
-                    openvdb::tools::erodeActiveValues(topologyMask.tree(), (mErode - 3),
-                        openvdb::tools::NN_FACE, openvdb::tools::IGNORE_TILES);
+                    laovdb::tools::erodeActiveValues(topologyMask.tree(), (mErode - 3),
+                        laovdb::tools::NN_FACE, laovdb::tools::IGNORE_TILES);
                 }
 
             } else {
                 topologyMask.tree().topologyUnion(tree);
 
                 if (mErode > 0) {
-                    openvdb::tools::erodeActiveValues(topologyMask.tree(), mErode,
-                        openvdb::tools::NN_FACE, openvdb::tools::IGNORE_TILES);
+                    laovdb::tools::erodeActiveValues(topologyMask.tree(), mErode,
+                        laovdb::tools::NN_FACE, laovdb::tools::IGNORE_TILES);
                 }
             }
 
 
             if (grid.transform().voxelSize()[0] < mFrustum.voxelSize()[0]) {
-                openvdb::tools::resampleToMatch<openvdb::tools::PointSampler>(
+                laovdb::tools::resampleToMatch<laovdb::tools::PointSampler>(
                     topologyMask, frustumMask);
             } else {
-                openvdb::tools::resampleToMatch<BoolSampler>(topologyMask, frustumMask);
+                laovdb::tools::resampleToMatch<BoolSampler>(topologyMask, frustumMask);
             }
 
         }
@@ -348,25 +348,25 @@ struct ConstructShadow
 
         // Create shadow volume
 
-        mGrid = openvdb::BoolGrid::create(false);
+        mGrid = laovdb::BoolGrid::create(false);
         mGrid->setTransform(mFrustum.copy());
-        openvdb::BoolTree& shadowTree = mGrid->tree();
+        laovdb::BoolTree& shadowTree = mGrid->tree();
 
-        const openvdb::math::NonlinearFrustumMap& map =
-            *mFrustum.map<openvdb::math::NonlinearFrustumMap>();
+        const laovdb::math::NonlinearFrustumMap& map =
+            *mFrustum.map<laovdb::math::NonlinearFrustumMap>();
         int zCoord = int(std::floor(map.getBBox().max()[2]));
 
         // Voxel shadows
-        openvdb::tree::LeafManager<const openvdb::BoolTree> leafs(frustumMask.tree());
-        VoxelShadow<openvdb::BoolTree> shadowOp(leafs, zCoord, mZOffset);
+        laovdb::tree::LeafManager<const laovdb::BoolTree> leafs(frustumMask.tree());
+        VoxelShadow<laovdb::BoolTree> shadowOp(leafs, zCoord, mZOffset);
         shadowOp.run();
 
         shadowTree.merge(shadowOp.tree());
 
         // Tile shadows
-        openvdb::CoordBBox bbox;
-        openvdb::BoolTree::ValueOnIter it(frustumMask.tree());
-        it.setMaxDepth(openvdb::BoolTree::ValueAllIter::LEAF_DEPTH - 1);
+        laovdb::CoordBBox bbox;
+        laovdb::BoolTree::ValueOnIter it(frustumMask.tree());
+        it.setMaxDepth(laovdb::BoolTree::ValueAllIter::LEAF_DEPTH - 1);
         for ( ; it; ++it) {
 
             it.getBoundingBox(bbox);
@@ -379,11 +379,11 @@ struct ConstructShadow
         shadowTree.prune();
     }
 
-    openvdb::BoolGrid::Ptr& grid() { return mGrid; }
+    laovdb::BoolGrid::Ptr& grid() { return mGrid; }
 
 private:
-    openvdb::BoolGrid::Ptr mGrid;
-    const openvdb::math::Transform mFrustum;
+    laovdb::BoolGrid::Ptr mGrid;
+    const laovdb::math::Transform mFrustum;
     const int mErode, mZOffset;
 };
 

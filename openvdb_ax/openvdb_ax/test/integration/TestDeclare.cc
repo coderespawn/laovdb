@@ -9,7 +9,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-using namespace openvdb::points;
+using namespace laovdb::points;
 
 class TestDeclare : public unittest_util::AXTestCase
 {
@@ -124,18 +124,18 @@ TestDeclare::testNewAttributes()
 void
 TestDeclare::testNewVectorAttributes()
 {
-    mHarness.addExpectedAttributes<openvdb::Vec3f>({"vec_float_test", "vec_float_test2"},
-        {openvdb::Vec3f::zero(), openvdb::Vec3f(0.2f, 0.3f, 0.4f)});
-    mHarness.addExpectedAttributes<openvdb::Vec3i>({"vec_int_test", "vec_int_test2"},
-        {openvdb::Vec3i::zero(), openvdb::Vec3i(5, 6, 7)});
-    mHarness.addExpectedAttribute<openvdb::Vec3d>("vec_double_test", openvdb::Vec3d(0.3, 0.4, 0.5));
+    mHarness.addExpectedAttributes<laovdb::Vec3f>({"vec_float_test", "vec_float_test2"},
+        {laovdb::Vec3f::zero(), laovdb::Vec3f(0.2f, 0.3f, 0.4f)});
+    mHarness.addExpectedAttributes<laovdb::Vec3i>({"vec_int_test", "vec_int_test2"},
+        {laovdb::Vec3i::zero(), laovdb::Vec3i(5, 6, 7)});
+    mHarness.addExpectedAttribute<laovdb::Vec3d>("vec_double_test", laovdb::Vec3d(0.3, 0.4, 0.5));
 
     // Volume data needs to exist to be tested
-    mHarness.addInputVolumes<openvdb::Vec3f>({"vec_float_test", "vec_float_test2"},
-        {openvdb::Vec3f::zero(), openvdb::Vec3f(0.2f, 0.3f, 0.4f)});
-    mHarness.addInputVolumes<openvdb::Vec3i>({"vec_int_test", "vec_int_test2"},
-        {openvdb::Vec3i::zero(), openvdb::Vec3i(5, 6, 7)});
-    mHarness.addInputVolumes<openvdb::Vec3d>({"vec_double_test"}, {openvdb::Vec3d(0.3, 0.4, 0.5)});
+    mHarness.addInputVolumes<laovdb::Vec3f>({"vec_float_test", "vec_float_test2"},
+        {laovdb::Vec3f::zero(), laovdb::Vec3f(0.2f, 0.3f, 0.4f)});
+    mHarness.addInputVolumes<laovdb::Vec3i>({"vec_int_test", "vec_int_test2"},
+        {laovdb::Vec3i::zero(), laovdb::Vec3i(5, 6, 7)});
+    mHarness.addInputVolumes<laovdb::Vec3d>({"vec_double_test"}, {laovdb::Vec3d(0.3, 0.4, 0.5)});
 
     mHarness.executeCode("test/snippets/declare/declareNewVectorAttributes", nullptr, true);
 
@@ -145,11 +145,11 @@ TestDeclare::testNewVectorAttributes()
 void
 TestDeclare::testVectorAttributes()
 {
-    mHarness.addAttribute<openvdb::Vec3d>("vec_double_test", openvdb::Vec3d(0.3, 0.4, 0.5));
-    mHarness.addAttributes<openvdb::Vec3f>({"vec_float_test", "vec_float_test2"},
-        {openvdb::Vec3f::zero(), openvdb::Vec3f(0.2f, 0.3f, 0.4f)});
-    mHarness.addAttributes<openvdb::Vec3i>({"vec_int_test", "vec_int_test2"},
-        {openvdb::Vec3i::zero(), openvdb::Vec3i(5, 6, 7)});
+    mHarness.addAttribute<laovdb::Vec3d>("vec_double_test", laovdb::Vec3d(0.3, 0.4, 0.5));
+    mHarness.addAttributes<laovdb::Vec3f>({"vec_float_test", "vec_float_test2"},
+        {laovdb::Vec3f::zero(), laovdb::Vec3f(0.2f, 0.3f, 0.4f)});
+    mHarness.addAttributes<laovdb::Vec3i>({"vec_int_test", "vec_int_test2"},
+        {laovdb::Vec3i::zero(), laovdb::Vec3i(5, 6, 7)});
 
     mHarness.executeCode("test/snippets/declare/declareVectorAttributes");
 
@@ -159,7 +159,7 @@ TestDeclare::testVectorAttributes()
 void
 TestDeclare::testVectorAttributeImplicit()
 {
-    mHarness.addAttribute<openvdb::Vec3d>("vec_double_test", openvdb::Vec3d(1.0, 0.3, 0.4));
+    mHarness.addAttribute<laovdb::Vec3d>("vec_double_test", laovdb::Vec3d(1.0, 0.3, 0.4));
     mHarness.executeCode("test/snippets/declare/declareVectorAttributeImplicit");
 
     AXTESTS_STANDARD_ASSERT();

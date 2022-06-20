@@ -23,7 +23,7 @@
 #include <openvdb/version.h>
 #include <cstdint>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 

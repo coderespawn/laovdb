@@ -26,7 +26,7 @@
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_sort.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace util {
@@ -724,6 +724,6 @@ protected:
 
 } // namespace util
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_UTIL_PAGED_ARRAY_HAS_BEEN_INCLUDED

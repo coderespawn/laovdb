@@ -40,7 +40,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -288,7 +288,7 @@ private:
 ///
 ///   // the following method is invoked by the PointIndexFilter
 ///   void operator()(const T distSqr, const size_t pointIndex) {
-///     const T weight = T(1.0) - openvdb::math::Sqrt(distSqr) * mInvRadius;
+///     const T weight = T(1.0) - laovdb::math::Sqrt(distSqr) * mInvRadius;
 ///     mWeightSum += weight;
 ///     mValueSum += weight * mValues[pointIndex];
 ///   }
@@ -1248,7 +1248,7 @@ PointIndexFilter<PointArray, TreeType>::searchAndApply(
     const PosType& center, ScalarType radius, FilterType& op)
 {
     if (radius * mInvVoxelSize < ScalarType(8.0)) {
-        mIter.searchAndUpdate(openvdb::CoordBBox(
+        mIter.searchAndUpdate(laovdb::CoordBBox(
             mXform.worldToIndexCellCentered(center - radius),
             mXform.worldToIndexCellCentered(center + radius)), mAcc);
     } else {
@@ -1806,13 +1806,13 @@ namespace tree {
 /// Helper metafunction used to implement LeafNode::SameConfiguration
 /// (which, as an inner class, can't be independently specialized)
 template<Index Dim1, typename T2>
-struct SameLeafConfig<Dim1, openvdb::tools::PointIndexLeafNode<T2, Dim1> >
+struct SameLeafConfig<Dim1, laovdb::tools::PointIndexLeafNode<T2, Dim1> >
 {
     static const bool value = true;
 };
 
 } // namespace tree
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_POINT_INDEX_GRID_HAS_BEEN_INCLUDED

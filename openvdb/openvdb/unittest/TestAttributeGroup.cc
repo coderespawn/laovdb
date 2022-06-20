@@ -13,14 +13,14 @@
 #include <iostream>
 #include <sstream>
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestAttributeGroup: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestAttributeGroup
 
 
@@ -30,8 +30,8 @@ public:
 namespace {
 
 bool
-matchingNamePairs(const openvdb::NamePair& lhs,
-                  const openvdb::NamePair& rhs)
+matchingNamePairs(const laovdb::NamePair& lhs,
+                  const laovdb::NamePair& rhs)
 {
     if (lhs.first != rhs.first)     return false;
     if (lhs.second != rhs.second)     return false;

@@ -12,7 +12,7 @@
 
 #include <string>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -273,7 +273,7 @@ void StringAttributeHandle::get(Name& name, Index n, Index m) const
 
     // key is assumed to exist in metadata
 
-    openvdb::StringMetadata::ConstPtr meta = mMetadata.getMetadata<StringMetadata>(key);
+    laovdb::StringMetadata::ConstPtr meta = mMetadata.getMetadata<StringMetadata>(key);
 
     if (!meta) {
         OPENVDB_THROW(LookupError, "String attribute cannot be found with index - \"" << index << "\".");
@@ -399,4 +399,4 @@ Index StringAttributeWriteHandle::getIndex(const Name& name) const
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

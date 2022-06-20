@@ -15,7 +15,7 @@
 #include <memory>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace io {
@@ -35,7 +35,7 @@ class Archive;
 /// #include <tbb/concurrent_hash_map.h>
 /// #include <functional>
 ///
-/// using openvdb::io::Queue;
+/// using laovdb::io::Queue;
 ///
 /// struct MyNotifier
 /// {
@@ -72,13 +72,13 @@ class Archive;
 ///
 ///     // Queue grids for output (e.g., for each step of a simulation).
 ///     for (int step = 1; step <= 10; ++step) {
-///         openvdb::FloatGrid::Ptr grid = ...;
+///         laovdb::FloatGrid::Ptr grid = ...;
 ///
 ///         std::ostringstream os;
 ///         os << "mygrid." << step << ".vdb";
 ///         const std::string filename = os.str();
 ///
-///         Queue::Id id = queue.writeGrid(grid, openvdb::io::File(filename));
+///         Queue::Id id = queue.writeGrid(grid, laovdb::io::File(filename));
 ///
 ///         // Associate the filename with the ID of the queued task.
 ///         MyNotifier::FilenameMap::accessor acc;
@@ -166,16 +166,16 @@ public:
     /// (see setTimeout()) because the queue is full
     /// @par Example:
     /// @code
-    /// openvdb::FloatGrid::Ptr grid = ...;
+    /// laovdb::FloatGrid::Ptr grid = ...;
     ///
-    /// openvdb::io::Queue queue;
+    /// laovdb::io::Queue queue;
     ///
     /// // Write the grid to the file mygrid.vdb.
-    /// queue.writeGrid(grid, openvdb::io::File("mygrid.vdb"));
+    /// queue.writeGrid(grid, laovdb::io::File("mygrid.vdb"));
     ///
     /// // Stream the grid to a binary string.
     /// std::ostringstream ostr(std::ios_base::binary);
-    /// queue.writeGrid(grid, openvdb::io::Stream(ostr));
+    /// queue.writeGrid(grid, laovdb::io::Stream(ostr));
     /// @endcode
     Id writeGrid(GridBase::ConstPtr grid, const Archive& archive,
         const MetaMap& fileMetadata = MetaMap());
@@ -190,20 +190,20 @@ public:
     /// (see setTimeout()) because the queue is full
     /// @par Example:
     /// @code
-    /// openvdb::FloatGrid::Ptr floatGrid = ...;
-    /// openvdb::BoolGrid::Ptr boolGrid = ...;
-    /// openvdb::GridPtrVec grids;
+    /// laovdb::FloatGrid::Ptr floatGrid = ...;
+    /// laovdb::BoolGrid::Ptr boolGrid = ...;
+    /// laovdb::GridPtrVec grids;
     /// grids.push_back(floatGrid);
     /// grids.push_back(boolGrid);
     ///
-    /// openvdb::io::Queue queue;
+    /// laovdb::io::Queue queue;
     ///
     /// // Write the grids to the file mygrid.vdb.
-    /// queue.write(grids, openvdb::io::File("mygrid.vdb"));
+    /// queue.write(grids, laovdb::io::File("mygrid.vdb"));
     ///
     /// // Stream the grids to a (binary) string.
     /// std::ostringstream ostr(std::ios_base::binary);
-    /// queue.write(grids, openvdb::io::Stream(ostr));
+    /// queue.write(grids, laovdb::io::Stream(ostr));
     /// @endcode
     template<typename GridPtrContainer>
     Id write(const GridPtrContainer& grids, const Archive& archive,
@@ -242,6 +242,6 @@ Queue::write<GridCPtrVec>(const GridCPtrVec& grids,
 
 } // namespace io
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_IO_QUEUE_HAS_BEEN_INCLUDED

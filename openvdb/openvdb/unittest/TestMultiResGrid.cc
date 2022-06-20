@@ -15,13 +15,13 @@
 class TestMultiResGrid : public ::testing::Test
 {
 public:
-    // Use to test logic in openvdb::tools::MultiResGrid
+    // Use to test logic in laovdb::tools::MultiResGrid
     struct CoordMask {
         static int Mask(int i, int j, int k) { return (i & 1) | ((j & 1) << 1) | ((k & 1) << 2); }
         CoordMask() : mask(0) {}
-        CoordMask(const openvdb::Coord &c ) : mask( Mask(c[0],c[1],c[2]) ) {}
+        CoordMask(const laovdb::Coord &c ) : mask( Mask(c[0],c[1],c[2]) ) {}
         inline void setCoord(int i, int j, int k) { mask = Mask(i,j,k); }
-        inline void setCoord(const openvdb::Coord &c) { mask = Mask(c[0],c[1],c[2]); }
+        inline void setCoord(const laovdb::Coord &c) { mask = Mask(c[0],c[1],c[2]); }
         inline bool allEven() const { return mask == 0; }
         inline bool xOdd()    const { return mask == 1; }
         inline bool yOdd()    const { return mask == 2; }
@@ -61,7 +61,7 @@ TEST_F(TestMultiResGrid, testTwosComplement)
 
 TEST_F(TestMultiResGrid, testCoordMask)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     CoordMask  mask;
 
     mask.setCoord(-4, 2, 18);
@@ -92,7 +92,7 @@ TEST_F(TestMultiResGrid, testCoordMask)
 TEST_F(TestMultiResGrid, testManualTopology)
 {
     // Perform tests when the sparsity (or topology) of the multiple grids is defined manually
-    using namespace openvdb;
+    using namespace laovdb;
 
     typedef tools::MultiResGrid<DoubleTree> MultiResGridT;
     const double background = -1.0;
@@ -206,14 +206,14 @@ TEST_F(TestMultiResGrid, testManualTopology)
 
 TEST_F(TestMultiResGrid, testIO)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const float radius = 1.0f;
     const Vec3f center(0.0f, 0.0f, 0.0f);
     const float voxelSize = 0.01f;
 
-    openvdb::FloatGrid::Ptr ls =
-        openvdb::tools::createLevelSetSphere<openvdb::FloatGrid>(radius, center, voxelSize);
+    laovdb::FloatGrid::Ptr ls =
+        laovdb::tools::createLevelSetSphere<laovdb::FloatGrid>(radius, center, voxelSize);
     ls->setName("LevelSetSphere");
 
     typedef tools::MultiResGrid<FloatTree> MultiResGridT;
@@ -243,8 +243,8 @@ TEST_F(TestMultiResGrid, testIO)
     outputFile.close();
 
     // Read grids
-    openvdb::initialize();
-    openvdb::io::File file( filename );
+    laovdb::initialize();
+    laovdb::io::File file( filename );
     file.open();
     GridPtrVecPtr grids = file.getGrids();
     EXPECT_EQ( levels, grids->size() );
@@ -261,7 +261,7 @@ TEST_F(TestMultiResGrid, testIO)
 
 TEST_F(TestMultiResGrid, testModels)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
 #ifdef TestMultiResGrid_DATA_PATH
     initialize();//required whenever I/O of OpenVDB files is performed!

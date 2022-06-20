@@ -82,13 +82,13 @@ class VDBToMayaMesh
 public:
     MObject mesh;
 
-    VDBToMayaMesh(openvdb::tools::VolumeToMesh& mesher): mesh(), mMesher(&mesher) { }
+    VDBToMayaMesh(laovdb::tools::VolumeToMesh& mesher): mesh(), mMesher(&mesher) { }
 
     template<typename GridType>
     inline void operator()(typename GridType::ConstPtr);
 
 private:
-    openvdb::tools::VolumeToMesh * const mMesher;
+    laovdb::tools::VolumeToMesh * const mMesher;
     struct PointCopyOp;
     struct FaceCopyOp;
 }; // VDBToMayaMesh
@@ -96,12 +96,12 @@ private:
 
 struct VDBToMayaMesh::PointCopyOp
 {
-    PointCopyOp(MFloatPointArray& mayaPoints, const openvdb::tools::PointList& vdbPoints)
+    PointCopyOp(MFloatPointArray& mayaPoints, const laovdb::tools::PointList& vdbPoints)
         : mMayaPoints(&mayaPoints) , mVdbPoints(&vdbPoints) { }
 
     void operator()(const tbb::blocked_range<size_t>& range) const {
         for (size_t n = range.begin(),  N = range.end(); n < N; ++n) {
-            const openvdb::Vec3s& p_vdb = (*mVdbPoints)[n];
+            const laovdb::Vec3s& p_vdb = (*mVdbPoints)[n];
             MFloatPoint& p_maya = (*mMayaPoints)[static_cast<unsigned int>(n)];
             p_maya[0] = p_vdb[0];
             p_maya[1] = p_vdb[1];
@@ -111,7 +111,7 @@ struct VDBToMayaMesh::PointCopyOp
 
 private:
     MFloatPointArray * const mMayaPoints;
-    openvdb::tools::PointList const * const mVdbPoints;
+    laovdb::tools::PointList const * const mVdbPoints;
 };
 
 
@@ -121,7 +121,7 @@ struct VDBToMayaMesh::FaceCopyOp
 
     FaceCopyOp(MIntArray& indices, MIntArray& polyCount,
         const UInt32Array& numQuadsPrefix, const UInt32Array& numTrianglesPrefix,
-        const openvdb::tools::PolygonPoolList& polygonPoolList)
+        const laovdb::tools::PolygonPoolList& polygonPoolList)
         : mIndices(&indices)
         , mPolyCount(&polyCount)
         , mNumQuadsPrefix(numQuadsPrefix.get())
@@ -142,11 +142,11 @@ struct VDBToMayaMesh::FaceCopyOp
 
         // Setup the polygon count and polygon indices
         for (size_t n = range.begin(), N = range.end(); n < N; ++n) {
-            const openvdb::tools::PolygonPool& polygons = (*mPolygonPoolList)[n];
+            const laovdb::tools::PolygonPool& polygons = (*mPolygonPoolList)[n];
             // Add all quads in the polygon pool
             for (size_t i = 0, I = polygons.numQuads(); i < I; ++i) {
                 polyCount[face++] = 4;
-                const openvdb::Vec4I& quad = polygons.quad(i);
+                const laovdb::Vec4I& quad = polygons.quad(i);
                 indices[vertex++] = quad[0];
                 indices[vertex++] = quad[1];
                 indices[vertex++] = quad[2];
@@ -155,7 +155,7 @@ struct VDBToMayaMesh::FaceCopyOp
             // Add all triangles in the polygon pool
             for (size_t i = 0, I = polygons.numTriangles(); i < I; ++i) {
                 polyCount[face++] = 3;
-                const openvdb::Vec3I& triangle = polygons.triangle(i);
+                const laovdb::Vec3I& triangle = polygons.triangle(i);
                 indices[vertex++] = triangle[0];
                 indices[vertex++] = triangle[1];
                 indices[vertex++] = triangle[2];
@@ -168,7 +168,7 @@ private:
     MIntArray * const mPolyCount;
     uint32_t const * const mNumQuadsPrefix;
     uint32_t const * const mNumTrianglesPrefix;
-    openvdb::tools::PolygonPoolList const * const mPolygonPoolList;
+    laovdb::tools::PolygonPoolList const * const mPolygonPoolList;
 };
 
 
@@ -187,7 +187,7 @@ VDBToMayaMesh::operator()(typename GridType::ConstPtr grid)
         std::unique_ptr<uint32_t[]> numTrianglesPrefix(new uint32_t[polygonPoolListSize]);
         uint32_t numQuads = 0, numTriangles = 0;
 
-        openvdb::tools::PolygonPoolList& polygonPoolList = mMesher->polygonPoolList();
+        laovdb::tools::PolygonPoolList& polygonPoolList = mMesher->polygonPoolList();
         for (size_t n = 0; n < polygonPoolListSize; ++n) {
             numQuadsPrefix[n]     = numQuads;
             numTrianglesPrefix[n] = numTriangles;
@@ -338,7 +338,7 @@ MStatus OpenVDBToPolygonsNode::compute(const MPlug& plug, MDataBlock& data)
     if (status != MS::kSuccess) return status;
     std::string names = selectionHandle.asString().asChar();
 
-    std::vector<openvdb::GridBase::ConstPtr> grids;
+    std::vector<laovdb::GridBase::ConstPtr> grids;
     mvdb::getGrids(grids, *inputVdb, names);
 
     if (grids.empty()) {
@@ -353,7 +353,7 @@ MStatus OpenVDBToPolygonsNode::compute(const MPlug& plug, MDataBlock& data)
         MDataHandle adaptHandle = data.inputValue(aAdaptivity, &status);
         if (status != MS::kSuccess) return status;
 
-        openvdb::tools::VolumeToMesh mesher(isoHandle.asFloat(), adaptHandle.asFloat());
+        laovdb::tools::VolumeToMesh mesher(isoHandle.asFloat(), adaptHandle.asFloat());
 
         MArrayDataHandle outArrayHandle = data.outputArrayValue(aMeshOutput, &status);
         if (status != MS::kSuccess) return status;

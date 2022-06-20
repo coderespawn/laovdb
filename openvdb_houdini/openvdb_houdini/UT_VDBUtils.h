@@ -50,16 +50,16 @@ enum UT_VDBType
 #include <SYS/SYS_Math.h>
 
 
-/// Calls openvdb::initialize()
-inline void UTvdbInitialize() { openvdb::initialize(); }
+/// Calls laovdb::initialize()
+inline void UTvdbInitialize() { laovdb::initialize(); }
 
 /// Find the UT_VDBType from a grid
 inline UT_VDBType
-UTvdbGetGridType(const openvdb::GridBase &grid)
+UTvdbGetGridType(const laovdb::GridBase &grid)
 {
-    using namespace openvdb;
-    using namespace openvdb::tools;
-    using namespace openvdb::points;
+    using namespace laovdb;
+    using namespace laovdb::tools;
+    using namespace laovdb::points;
 
     if (grid.isType<FloatGrid>())
         return UT_VDB_FLOAT;
@@ -89,7 +89,7 @@ UTvdbGetGridType(const openvdb::GridBase &grid)
 
 /// Return the string representation of a grid's underlying value type
 inline const char *
-UTvdbGetGridTypeString(const openvdb::GridBase &grid)
+UTvdbGetGridTypeString(const laovdb::GridBase &grid)
 {
     switch(UTvdbGetGridType(grid))
     {
@@ -148,7 +148,7 @@ UTvdbGetGridTupleSize(UT_VDBType type)
 
 /// Returns the tuple size of a grid
 inline int
-UTvdbGetGridTupleSize(const openvdb::GridBase &grid)
+UTvdbGetGridTupleSize(const laovdb::GridBase &grid)
 {
     return UTvdbGetGridTupleSize(UTvdbGetGridType(grid));
 }
@@ -173,33 +173,33 @@ struct UT_VDBMath<bool>
 /// @{
 template <typename GridType>
 inline const GridType *
-UTvdbGridCast(const openvdb::GridBase *grid)
+UTvdbGridCast(const laovdb::GridBase *grid)
     { return UTverify_cast<const GridType *>(grid); }
 
 template <typename GridType>
 inline GridType *
-UTvdbGridCast(openvdb::GridBase *grid)
+UTvdbGridCast(laovdb::GridBase *grid)
     { return UTverify_cast<GridType *>(grid); }
 
 template <typename GridType>
 inline const GridType &
-UTvdbGridCast(const openvdb::GridBase &grid)
+UTvdbGridCast(const laovdb::GridBase &grid)
     { return *UTverify_cast<const GridType *>(&grid); }
 
 template <typename GridType>
 inline GridType &
-UTvdbGridCast(openvdb::GridBase &grid)
+UTvdbGridCast(laovdb::GridBase &grid)
     { return *UTverify_cast<GridType *>(&grid); }
 
 template <typename GridType>
 inline typename GridType::ConstPtr
-UTvdbGridCast(openvdb::GridBase::ConstPtr grid)
-    { return openvdb::gridConstPtrCast<GridType>(grid); }
+UTvdbGridCast(laovdb::GridBase::ConstPtr grid)
+    { return laovdb::gridConstPtrCast<GridType>(grid); }
 
 template <typename GridType>
 inline typename GridType::Ptr
-UTvdbGridCast(openvdb::GridBase::Ptr grid)
-    { return openvdb::gridPtrCast<GridType>(grid); }
+UTvdbGridCast(laovdb::GridBase::Ptr grid)
+    { return laovdb::gridPtrCast<GridType>(grid); }
 /// @}
 
 ////////////////////////////////////////
@@ -226,8 +226,8 @@ callTypedGrid(GridBaseType &grid, OpType& op)
 ///
 /// @par Example:
 /// @code
-/// using openvdb::Coord;
-/// using openvdb::CoordBBox;
+/// using laovdb::Coord;
+/// using laovdb::CoordBBox;
 ///
 /// struct FillOp {
 ///     const CoordBBox bbox;
@@ -254,7 +254,7 @@ template<typename OpType> \
 inline bool \
 UTvdbProcessTypedGrid(UT_VDBType grid_type, GRID_BASE_T grid, OpType& op) \
 { \
-    using namespace openvdb; \
+    using namespace laovdb; \
     using namespace UT_VDBUtils; \
     switch (grid_type) \
     { \
@@ -273,7 +273,7 @@ template<typename OpType> \
 inline bool \
 UTvdbProcessTypedGridTopology(UT_VDBType grid_type, GRID_BASE_T grid, OpType& op) \
 { \
-    using namespace openvdb; \
+    using namespace laovdb; \
     using namespace UT_VDBUtils; \
     switch (grid_type) \
     { \
@@ -293,7 +293,7 @@ template<typename OpType> \
 inline bool \
 UTvdbProcessTypedGridVec3(UT_VDBType grid_type, GRID_BASE_T grid, OpType& op) \
 { \
-    using namespace openvdb; \
+    using namespace laovdb; \
     using namespace UT_VDBUtils; \
     switch (grid_type) \
     { \
@@ -308,7 +308,7 @@ template<typename OpType> \
 inline bool \
 UTvdbProcessTypedGridScalar(UT_VDBType grid_type, GRID_BASE_T grid, OpType& op) \
 { \
-    using namespace openvdb; \
+    using namespace laovdb; \
     using namespace UT_VDBUtils; \
     switch (grid_type) \
     { \
@@ -324,7 +324,7 @@ template<typename OpType> \
 inline bool \
 UTvdbProcessTypedGridReal(UT_VDBType grid_type, GRID_BASE_T grid, OpType& op) \
 { \
-    using namespace openvdb; \
+    using namespace laovdb; \
     using namespace UT_VDBUtils; \
     switch (grid_type) \
     { \
@@ -338,9 +338,9 @@ template<typename OpType> \
 inline bool \
 UTvdbProcessTypedGridPoint(UT_VDBType grid_type, GRID_BASE_T grid, OpType& op) \
 { \
-    using namespace openvdb; \
-    using namespace openvdb::tools; \
-    using namespace openvdb::points; \
+    using namespace laovdb; \
+    using namespace laovdb::tools; \
+    using namespace laovdb::points; \
     using namespace UT_VDBUtils; \
     switch (grid_type) \
     { \
@@ -351,12 +351,12 @@ UTvdbProcessTypedGridPoint(UT_VDBType grid_type, GRID_BASE_T grid, OpType& op) \
     return true; \
 } \
 /**/
-UT_VDB_DECL_PROCESS_TYPED_GRID(const openvdb::GridBase &)
-UT_VDB_DECL_PROCESS_TYPED_GRID(const openvdb::GridBase *)
-UT_VDB_DECL_PROCESS_TYPED_GRID(openvdb::GridBase::ConstPtr)
-UT_VDB_DECL_PROCESS_TYPED_GRID(openvdb::GridBase &)
-UT_VDB_DECL_PROCESS_TYPED_GRID(openvdb::GridBase *)
-UT_VDB_DECL_PROCESS_TYPED_GRID(openvdb::GridBase::Ptr)
+UT_VDB_DECL_PROCESS_TYPED_GRID(const laovdb::GridBase &)
+UT_VDB_DECL_PROCESS_TYPED_GRID(const laovdb::GridBase *)
+UT_VDB_DECL_PROCESS_TYPED_GRID(laovdb::GridBase::ConstPtr)
+UT_VDB_DECL_PROCESS_TYPED_GRID(laovdb::GridBase &)
+UT_VDB_DECL_PROCESS_TYPED_GRID(laovdb::GridBase *)
+UT_VDB_DECL_PROCESS_TYPED_GRID(laovdb::GridBase::Ptr)
 
 /// @}
 
@@ -384,34 +384,34 @@ UT_VDB_DECL_PROCESS_TYPED_GRID(openvdb::GridBase::Ptr)
 
 #define UTvdbCallRealType(TYPE, FNAME, GRIDBASE, ...)   \
     if (TYPE == UT_VDB_FLOAT)   \
-        UT_VDB_CALL(openvdb::FloatGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::FloatGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
     else if (TYPE == UT_VDB_DOUBLE)     \
-        UT_VDB_CALL(openvdb::DoubleGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::DoubleGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
     /**/
 #define UTvdbCallScalarType(TYPE, FNAME, GRIDBASE, ...) \
     UTvdbCallRealType(TYPE, FNAME, GRIDBASE, __VA_ARGS__)               \
     else if (TYPE == UT_VDB_INT32)      \
-        UT_VDB_CALL(openvdb::Int32Grid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::Int32Grid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
     else if (TYPE == UT_VDB_INT64)      \
-        UT_VDB_CALL(openvdb::Int64Grid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::Int64Grid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
     /**/
 #define UTvdbCallVec3Type(TYPE, FNAME, GRIDBASE, ...)   \
     if (TYPE == UT_VDB_VEC3F)   \
-        UT_VDB_CALL(openvdb::Vec3fGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::Vec3fGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
     else if (TYPE == UT_VDB_VEC3D)      \
-        UT_VDB_CALL(openvdb::Vec3dGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::Vec3dGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
     else if (TYPE == UT_VDB_VEC3I)      \
-        UT_VDB_CALL(openvdb::Vec3IGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::Vec3IGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
     /**/
 #define UTvdbCallPointType(TYPE, FNAME, GRIDBASE, ...)  \
     if (TYPE == UT_VDB_POINTINDEX)      \
-        UT_VDB_CALL(openvdb::tools::PointIndexGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::tools::PointIndexGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
     else if (TYPE == UT_VDB_POINTDATA)  \
-        UT_VDB_CALL(openvdb::points::PointDataGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::points::PointDataGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
     /**/
 #define UTvdbCallBoolType(TYPE, FNAME, GRIDBASE, ...)   \
     if (TYPE == UT_VDB_BOOL) \
-        UT_VDB_CALL(openvdb::BoolGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::BoolGrid,(void),FNAME,GRIDBASE,__VA_ARGS__) \
     /**/
 #define UTvdbCallAllType(TYPE, FNAME, GRIDBASE, ...)    \
     UTvdbCallScalarType(TYPE, FNAME, GRIDBASE, __VA_ARGS__)             \
@@ -444,34 +444,34 @@ UT_VDB_DECL_PROCESS_TYPED_GRID(openvdb::GridBase::Ptr)
 
 #define UTvdbReturnRealType(TYPE, FNAME, GRIDBASE, ...) \
     if (TYPE == UT_VDB_FLOAT)   \
-        UT_VDB_CALL(openvdb::FloatGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::FloatGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
     else if (TYPE == UT_VDB_DOUBLE)     \
-        UT_VDB_CALL(openvdb::DoubleGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::DoubleGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
     /**/
 #define UTvdbReturnScalarType(TYPE, FNAME, GRIDBASE, ...)       \
     UTvdbReturnRealType(TYPE, FNAME, GRIDBASE, __VA_ARGS__)             \
     else if (TYPE == UT_VDB_INT32)      \
-        UT_VDB_CALL(openvdb::Int32Grid,return,FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::Int32Grid,return,FNAME,GRIDBASE,__VA_ARGS__) \
     else if (TYPE == UT_VDB_INT64)      \
-        UT_VDB_CALL(openvdb::Int64Grid,return,FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::Int64Grid,return,FNAME,GRIDBASE,__VA_ARGS__) \
     /**/
 #define UTvdbReturnVec3Type(TYPE, FNAME, GRIDBASE, ...) \
     if (TYPE == UT_VDB_VEC3F)   \
-        UT_VDB_CALL(openvdb::Vec3fGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::Vec3fGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
     else if (TYPE == UT_VDB_VEC3D)      \
-        UT_VDB_CALL(openvdb::Vec3dGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::Vec3dGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
     else if (TYPE == UT_VDB_VEC3I)      \
-        UT_VDB_CALL(openvdb::Vec3IGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::Vec3IGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
     /**/
 #define UTvdbReturnPointType(TYPE, FNAME, GRIDBASE, ...)        \
     if (TYPE == UT_VDB_POINTINDEX)      \
-        UT_VDB_CALL(openvdb::tools::PointIndexGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::tools::PointIndexGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
     else if (TYPE == UT_VDB_POINTDATA)  \
-        UT_VDB_CALL(openvdb::points::PointDataGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::points::PointDataGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
     /**/
 #define UTvdbReturnBoolType(TYPE, FNAME, GRIDBASE, ...)         \
     if (TYPE == UT_VDB_BOOL) \
-        UT_VDB_CALL(openvdb::BoolGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
+        UT_VDB_CALL(laovdb::BoolGrid,return,FNAME,GRIDBASE,__VA_ARGS__) \
     /**/
 #define UTvdbReturnAllType(TYPE, FNAME, GRIDBASE, ...)  \
     UTvdbReturnScalarType(TYPE, FNAME, GRIDBASE, __VA_ARGS__) \
@@ -492,7 +492,7 @@ UT_VDB_DECL_PROCESS_TYPED_GRID(openvdb::GridBase::Ptr)
 // @{
 template <typename S>
 UT_Matrix4T<S>
-UTvdbConvert(const openvdb::math::Mat4<S> &src)
+UTvdbConvert(const laovdb::math::Mat4<S> &src)
 {
     return UT_Matrix4T<S>(src(0,0), src(0,1), src(0,2), src(0,3),
                           src(1,0), src(1,1), src(1,2), src(1,3),
@@ -502,7 +502,7 @@ UTvdbConvert(const openvdb::math::Mat4<S> &src)
 
 template <typename S>
 UT_Matrix3T<S>
-UTvdbConvert(const openvdb::math::Mat3<S> &src)
+UTvdbConvert(const laovdb::math::Mat3<S> &src)
 {
     return UT_Matrix3T<S>(src(0,0), src(0,1), src(0,2),
                           src(1,0), src(1,1), src(1,2),
@@ -511,7 +511,7 @@ UTvdbConvert(const openvdb::math::Mat3<S> &src)
 
 template <typename S>
 UT_Matrix2T<S>
-UTvdbConvert(const openvdb::math::Mat2<S> &src)
+UTvdbConvert(const laovdb::math::Mat2<S> &src)
 {
     return UT_Matrix2T<S>(src(0,0), src(0,1),
                           src(1,0), src(1,1));
@@ -521,27 +521,27 @@ UTvdbConvert(const openvdb::math::Mat2<S> &src)
 /// Matrix conversion from UT to openvdb
 // @{
 template <typename S>
-openvdb::math::Mat4<S>
+laovdb::math::Mat4<S>
 UTvdbConvert(const UT_Matrix4T<S> &src)
 {
-    return openvdb::math::Mat4<S>(src(0,0), src(0,1), src(0,2), src(0,3),
+    return laovdb::math::Mat4<S>(src(0,0), src(0,1), src(0,2), src(0,3),
                                   src(1,0), src(1,1), src(1,2), src(1,3),
                                   src(2,0), src(2,1), src(2,2), src(2,3),
                                   src(3,0), src(3,1), src(3,2), src(3,3));
 }
 template <typename S>
-openvdb::math::Mat3<S>
+laovdb::math::Mat3<S>
 UTvdbConvert(const UT_Matrix3T<S> &src)
 {
-    return openvdb::math::Mat3<S>(src(0,0), src(0,1), src(0,2),
+    return laovdb::math::Mat3<S>(src(0,0), src(0,1), src(0,2),
                                   src(1,0), src(1,1), src(1,2),
                                   src(2,0), src(2,1), src(2,2));
 }
 template <typename S>
-openvdb::math::Mat2<S>
+laovdb::math::Mat2<S>
 UTvdbConvert(const UT_Matrix2T<S> &src)
 {
-    return openvdb::math::Mat2<S>(src(0,0), src(0,1),
+    return laovdb::math::Mat2<S>(src(0,0), src(0,1),
                                   src(1,0), src(1,1));
 }
 // @}
@@ -550,19 +550,19 @@ UTvdbConvert(const UT_Matrix2T<S> &src)
 // @{
 template <typename S>
 UT_Vector4T<S>
-UTvdbConvert(const openvdb::math::Vec4<S> &src)
+UTvdbConvert(const laovdb::math::Vec4<S> &src)
 {
     return UT_Vector4T<S>(src.asPointer());
 }
 template <typename S>
 UT_Vector3T<S>
-UTvdbConvert(const openvdb::math::Vec3<S> &src)
+UTvdbConvert(const laovdb::math::Vec3<S> &src)
 {
     return UT_Vector3T<S>(src.asPointer());
 }
 template <typename S>
 UT_Vector2T<S>
-UTvdbConvert(const openvdb::math::Vec2<S> &src)
+UTvdbConvert(const laovdb::math::Vec2<S> &src)
 {
     return UT_Vector2T<S>(src.asPointer());
 }
@@ -571,161 +571,161 @@ UTvdbConvert(const openvdb::math::Vec2<S> &src)
 /// Vector conversion from UT to openvdb
 // @{
 template <typename S>
-openvdb::math::Vec4<S>
+laovdb::math::Vec4<S>
 UTvdbConvert(const UT_Vector4T<S> &src)
 {
-    return openvdb::math::Vec4<S>(src.data());
+    return laovdb::math::Vec4<S>(src.data());
 }
 template <typename S>
-openvdb::math::Vec3<S>
+laovdb::math::Vec3<S>
 UTvdbConvert(const UT_Vector3T<S> &src)
 {
-    return openvdb::math::Vec3<S>(src.data());
+    return laovdb::math::Vec3<S>(src.data());
 }
 template <typename S>
-openvdb::math::Vec2<S>
+laovdb::math::Vec2<S>
 UTvdbConvert(const UT_Vector2T<S> &src)
 {
-    return openvdb::math::Vec2<S>(src.data());
+    return laovdb::math::Vec2<S>(src.data());
 }
 // @}
 
 
 /// Bounding box conversion from openvdb to UT
 inline UT_BoundingBoxD
-UTvdbConvert(const openvdb::CoordBBox &bbox)
+UTvdbConvert(const laovdb::CoordBBox &bbox)
 {
     return UT_BoundingBoxD(UTvdbConvert(bbox.getStart().asVec3d()),
         UTvdbConvert(bbox.getEnd().asVec3d()));
 }
 
 /// Bounding box conversion from openvdb to UT
-inline openvdb::math::CoordBBox
+inline laovdb::math::CoordBBox
 UTvdbConvert(const UT_BoundingBoxI &bbox)
 {
-    return openvdb::math::CoordBBox(
-        openvdb::math::Coord(bbox.xmin(), bbox.ymin(), bbox.zmin()),
-        openvdb::math::Coord(bbox.xmax(), bbox.ymax(), bbox.zmax()));
+    return laovdb::math::CoordBBox(
+        laovdb::math::Coord(bbox.xmin(), bbox.ymin(), bbox.zmin()),
+        laovdb::math::Coord(bbox.xmax(), bbox.ymax(), bbox.zmax()));
 }
 
 /// Utility method to construct a Transform that lines up with a
 /// cell-centered Houdini volume with specified origin and voxel size.
-inline openvdb::math::Transform::Ptr
+inline laovdb::math::Transform::Ptr
 UTvdbCreateTransform(const UT_Vector3 &orig, const UT_Vector3 &voxsize)
 {
     // Transforms only valid for square voxels.
     UT_ASSERT(SYSalmostEqual(voxsize.minComponent(), voxsize.maxComponent()));
     fpreal vs = voxsize.maxComponent();
-    openvdb::math::Transform::Ptr xform =
-                            openvdb::math::Transform::createLinearTransform(vs);
+    laovdb::math::Transform::Ptr xform =
+                            laovdb::math::Transform::createLinearTransform(vs);
     // Ensure voxel centers line up.
     xform->postTranslate(UTvdbConvert(orig) + vs / 2);
     return xform;
 }
 
 template <typename T>
-inline openvdb::math::Vec4<T>   SYSabs(const openvdb::math::Vec4<T> &v1)
-{  return openvdb::math::Vec4<T>( SYSabs(v1[0]),
+inline laovdb::math::Vec4<T>   SYSabs(const laovdb::math::Vec4<T> &v1)
+{  return laovdb::math::Vec4<T>( SYSabs(v1[0]),
                                   SYSabs(v1[1]),
                                   SYSabs(v1[2]),
                                   SYSabs(v1[3])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec3<T>   SYSabs(const openvdb::math::Vec3<T> &v1)
-{  return openvdb::math::Vec3<T>( SYSabs(v1[0]),
+inline laovdb::math::Vec3<T>   SYSabs(const laovdb::math::Vec3<T> &v1)
+{  return laovdb::math::Vec3<T>( SYSabs(v1[0]),
                                   SYSabs(v1[1]),
                                   SYSabs(v1[2])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec2<T>   SYSabs(const openvdb::math::Vec2<T> &v1)
-{  return openvdb::math::Vec2<T>( SYSabs(v1[0]),
+inline laovdb::math::Vec2<T>   SYSabs(const laovdb::math::Vec2<T> &v1)
+{  return laovdb::math::Vec2<T>( SYSabs(v1[0]),
                                   SYSabs(v1[1])
                                 );
 }
 
 template <typename T>
-inline openvdb::math::Vec4<T>   SYSmin(const openvdb::math::Vec4<T> &v1, const openvdb::math::Vec4<T> &v2)
-{  return openvdb::math::Vec4<T>( SYSmin(v1[0], v2[0]),
+inline laovdb::math::Vec4<T>   SYSmin(const laovdb::math::Vec4<T> &v1, const laovdb::math::Vec4<T> &v2)
+{  return laovdb::math::Vec4<T>( SYSmin(v1[0], v2[0]),
                                   SYSmin(v1[1], v2[1]),
                                   SYSmin(v1[2], v2[2]),
                                   SYSmin(v1[3], v2[3])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec4<T>   SYSmax(const openvdb::math::Vec4<T> &v1, const openvdb::math::Vec4<T> &v2)
-{  return openvdb::math::Vec4<T>( SYSmax(v1[0], v2[0]),
+inline laovdb::math::Vec4<T>   SYSmax(const laovdb::math::Vec4<T> &v1, const laovdb::math::Vec4<T> &v2)
+{  return laovdb::math::Vec4<T>( SYSmax(v1[0], v2[0]),
                                   SYSmax(v1[1], v2[1]),
                                   SYSmax(v1[2], v2[2]),
                                   SYSmax(v1[3], v2[3])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec4<T>   SYSmin(const openvdb::math::Vec4<T> &v1, const openvdb::math::Vec4<T> &v2, const openvdb::math::Vec4<T> &v3)
-{  return openvdb::math::Vec4<T>( SYSmin(v1[0], v2[0], v3[0]),
+inline laovdb::math::Vec4<T>   SYSmin(const laovdb::math::Vec4<T> &v1, const laovdb::math::Vec4<T> &v2, const laovdb::math::Vec4<T> &v3)
+{  return laovdb::math::Vec4<T>( SYSmin(v1[0], v2[0], v3[0]),
                                   SYSmin(v1[1], v2[1], v3[1]),
                                   SYSmin(v1[2], v2[2], v3[2]),
                                   SYSmin(v1[3], v2[3], v3[3])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec4<T>   SYSmax(const openvdb::math::Vec4<T> &v1, const openvdb::math::Vec4<T> &v2, const openvdb::math::Vec4<T> &v3)
-{  return openvdb::math::Vec4<T>( SYSmax(v1[0], v2[0], v3[0]),
+inline laovdb::math::Vec4<T>   SYSmax(const laovdb::math::Vec4<T> &v1, const laovdb::math::Vec4<T> &v2, const laovdb::math::Vec4<T> &v3)
+{  return laovdb::math::Vec4<T>( SYSmax(v1[0], v2[0], v3[0]),
                                   SYSmax(v1[1], v2[1], v3[1]),
                                   SYSmax(v1[2], v2[2], v3[2]),
                                   SYSmax(v1[3], v2[3], v3[3])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec3<T>   SYSmin(const openvdb::math::Vec3<T> &v1, const openvdb::math::Vec3<T> &v2)
-{  return openvdb::math::Vec3<T>( SYSmin(v1[0], v2[0]),
+inline laovdb::math::Vec3<T>   SYSmin(const laovdb::math::Vec3<T> &v1, const laovdb::math::Vec3<T> &v2)
+{  return laovdb::math::Vec3<T>( SYSmin(v1[0], v2[0]),
                                   SYSmin(v1[1], v2[1]),
                                   SYSmin(v1[2], v2[2])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec3<T>   SYSmax(const openvdb::math::Vec3<T> &v1, const openvdb::math::Vec3<T> &v2)
-{  return openvdb::math::Vec3<T>( SYSmax(v1[0], v2[0]),
+inline laovdb::math::Vec3<T>   SYSmax(const laovdb::math::Vec3<T> &v1, const laovdb::math::Vec3<T> &v2)
+{  return laovdb::math::Vec3<T>( SYSmax(v1[0], v2[0]),
                                   SYSmax(v1[1], v2[1]),
                                   SYSmax(v1[2], v2[2])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec3<T>   SYSmin(const openvdb::math::Vec3<T> &v1, const openvdb::math::Vec3<T> &v2, const openvdb::math::Vec3<T> &v3)
-{  return openvdb::math::Vec3<T>( SYSmin(v1[0], v2[0], v3[0]),
+inline laovdb::math::Vec3<T>   SYSmin(const laovdb::math::Vec3<T> &v1, const laovdb::math::Vec3<T> &v2, const laovdb::math::Vec3<T> &v3)
+{  return laovdb::math::Vec3<T>( SYSmin(v1[0], v2[0], v3[0]),
                                   SYSmin(v1[1], v2[1], v3[1]),
                                   SYSmin(v1[2], v2[2], v3[2])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec3<T>   SYSmax(const openvdb::math::Vec3<T> &v1, const openvdb::math::Vec3<T> &v2, const openvdb::math::Vec3<T> &v3)
-{  return openvdb::math::Vec3<T>( SYSmax(v1[0], v2[0], v3[0]),
+inline laovdb::math::Vec3<T>   SYSmax(const laovdb::math::Vec3<T> &v1, const laovdb::math::Vec3<T> &v2, const laovdb::math::Vec3<T> &v3)
+{  return laovdb::math::Vec3<T>( SYSmax(v1[0], v2[0], v3[0]),
                                   SYSmax(v1[1], v2[1], v3[1]),
                                   SYSmax(v1[2], v2[2], v3[2])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec2<T>   SYSmin(const openvdb::math::Vec2<T> &v1, const openvdb::math::Vec2<T> &v2)
-{  return openvdb::math::Vec2<T>( SYSmin(v1[0], v2[0]),
+inline laovdb::math::Vec2<T>   SYSmin(const laovdb::math::Vec2<T> &v1, const laovdb::math::Vec2<T> &v2)
+{  return laovdb::math::Vec2<T>( SYSmin(v1[0], v2[0]),
                                   SYSmin(v1[1], v2[1])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec2<T>   SYSmax(const openvdb::math::Vec2<T> &v1, const openvdb::math::Vec2<T> &v2)
-{  return openvdb::math::Vec2<T>( SYSmax(v1[0], v2[0]),
+inline laovdb::math::Vec2<T>   SYSmax(const laovdb::math::Vec2<T> &v1, const laovdb::math::Vec2<T> &v2)
+{  return laovdb::math::Vec2<T>( SYSmax(v1[0], v2[0]),
                                   SYSmax(v1[1], v2[1])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec2<T>   SYSmin(const openvdb::math::Vec2<T> &v1, const openvdb::math::Vec2<T> &v2, const openvdb::math::Vec2<T> &v3)
-{  return openvdb::math::Vec2<T>( SYSmin(v1[0], v2[0], v3[0]),
+inline laovdb::math::Vec2<T>   SYSmin(const laovdb::math::Vec2<T> &v1, const laovdb::math::Vec2<T> &v2, const laovdb::math::Vec2<T> &v3)
+{  return laovdb::math::Vec2<T>( SYSmin(v1[0], v2[0], v3[0]),
                                   SYSmin(v1[1], v2[1], v3[1])
                                 );
 }
 template <typename T>
-inline openvdb::math::Vec2<T>   SYSmax(const openvdb::math::Vec2<T> &v1, const openvdb::math::Vec2<T> &v2, const openvdb::math::Vec2<T> &v3)
-{  return openvdb::math::Vec2<T>( SYSmax(v1[0], v2[0], v3[0]),
+inline laovdb::math::Vec2<T>   SYSmax(const laovdb::math::Vec2<T> &v1, const laovdb::math::Vec2<T> &v2, const laovdb::math::Vec2<T> &v3)
+{  return laovdb::math::Vec2<T>( SYSmax(v1[0], v2[0], v3[0]),
                                   SYSmax(v1[1], v2[1], v3[1])
                                 );
 }

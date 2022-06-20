@@ -17,7 +17,7 @@
 //#include <strings.h> // for ffs
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace util {
@@ -1429,6 +1429,6 @@ public:
 
 } // namespace util
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_UTIL_NODEMASKS_HAS_BEEN_INCLUDED

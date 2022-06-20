@@ -56,7 +56,7 @@
 #include <tbb/task_group.h>
 #include <tbb/parallel_reduce.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -358,7 +358,7 @@ rasterizeSmoothSpheres(const PointDataGridT& points,
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #include "impl/PointRasterizeSDFImpl.h"
 

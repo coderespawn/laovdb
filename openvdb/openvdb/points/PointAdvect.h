@@ -22,7 +22,7 @@
 #include <memory>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -64,7 +64,7 @@ template <typename VelGridT, Index IntegrationOrder, bool Staggered, typename Fi
 class AdvectionDeformer
 {
 public:
-    using IntegratorT = openvdb::tools::VelocityIntegrator<VelGridT, Staggered>;
+    using IntegratorT = laovdb::tools::VelocityIntegrator<VelGridT, Staggered>;
 
     AdvectionDeformer(const VelGridT& velocityGrid, const double timeStep, const int steps,
                       const FilterT& filter)
@@ -84,7 +84,7 @@ public:
     {
         if (mFilter.valid(iter)) {
             for (int n = 0; n < mSteps; ++n) {
-                mIntegrator.template rungeKutta<IntegrationOrder, openvdb::Vec3d>(
+                mIntegrator.template rungeKutta<IntegrationOrder, laovdb::Vec3d>(
                     static_cast<typename IntegratorT::ElementType>(mTimeStep), position);
             }
         }
@@ -189,7 +189,7 @@ private:
         // early-exit if no leafs
         if (mPoints.constTree().leafCount() == 0)            return;
 
-        if (mVelocity.getGridClass() == openvdb::GRID_STAGGERED) {
+        if (mVelocity.getGridClass() == laovdb::GRID_STAGGERED) {
             resolveStaggered<true>(buildCache);
         } else {
             resolveStaggered<false>(buildCache);
@@ -244,6 +244,6 @@ inline void advectPoints(PointDataGridT& points, const VelGridT& velocity,
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_POINT_ADVECT_HAS_BEEN_INCLUDED

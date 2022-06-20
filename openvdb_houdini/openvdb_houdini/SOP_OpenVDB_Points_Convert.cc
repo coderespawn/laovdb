@@ -33,9 +33,9 @@
 
 
 
-using namespace openvdb;
-using namespace openvdb::points;
-using namespace openvdb::math;
+using namespace laovdb;
+using namespace laovdb::points;
+using namespace laovdb::math;
 
 
 namespace hvdb = openvdb_houdini;
@@ -171,11 +171,11 @@ const PRM_ChoiceList PrimAttrMenu(
 void
 newSopOperator(OP_OperatorTable* table)
 {
-    openvdb::initialize();
+    laovdb::initialize();
 
     // Force the building of the unit vector codec as it isn't threadsafe.
     const uint16_t data = 0;
-    auto SYS_UNUSED_VAR_ATTRIB ignoredResult = openvdb::math::QuantizedUnitVec::unpack(data);
+    auto SYS_UNUSED_VAR_ATTRIB ignoredResult = laovdb::math::QuantizedUnitVec::unpack(data);
 
     if (table == nullptr) return;
 
@@ -600,7 +600,7 @@ SOP_OpenVDB_Points_Convert::Cache::cookVDBSop(OP_Context& context)
         std::vector<std::string> includeGroups;
         std::vector<std::string> excludeGroups;
         if (conversion != MODE_CONVERT_TO_VDB) {
-            openvdb::points::AttributeSet::Descriptor::parseNames(
+            laovdb::points::AttributeSet::Descriptor::parseNames(
                 includeGroups, excludeGroups, pointsGroup);
         }
 
@@ -645,9 +645,9 @@ SOP_OpenVDB_Points_Convert::Cache::cookVDBSop(OP_Context& context)
                 // Extract VDB primitives to delete
 
                 for (hvdb::VdbPrimIterator vdbIt(gdp, group); vdbIt; ++vdbIt) {
-                    openvdb::GridBase::ConstPtr gridBase = vdbIt->getConstGridPtr();
+                    laovdb::GridBase::ConstPtr gridBase = vdbIt->getConstGridPtr();
                     PointDataGrid::ConstPtr points =
-                        openvdb::GridBase::constGrid<PointDataGrid>(gridBase);
+                        laovdb::GridBase::constGrid<PointDataGrid>(gridBase);
                     if (!points)    continue;
 
                     primsToDelete.append(*vdbIt);
@@ -664,9 +664,9 @@ SOP_OpenVDB_Points_Convert::Cache::cookVDBSop(OP_Context& context)
             const GU_Detail* sourceGdp = keepOriginalGeo ? gdp : inputGeo(0, context);
 
             for (hvdb::VdbPrimCIterator vdbIt(sourceGdp, group); vdbIt; ++vdbIt) {
-                openvdb::GridBase::ConstPtr gridBase = vdbIt->getConstGridPtr();
+                laovdb::GridBase::ConstPtr gridBase = vdbIt->getConstGridPtr();
                 PointDataGrid::ConstPtr points =
-                    openvdb::GridBase::constGrid<PointDataGrid>(gridBase);
+                    laovdb::GridBase::constGrid<PointDataGrid>(gridBase);
                 if (!points)    continue;
 
                 pointGrids.push_back(points);
@@ -733,20 +733,20 @@ SOP_OpenVDB_Points_Convert::Cache::cookVDBSop(OP_Context& context)
                     GU_Detail geo;
 
                     if (conversion == MODE_GENERATE_MASK) {
-                        openvdb::BoolGrid::Ptr maskGrid;
+                        laovdb::BoolGrid::Ptr maskGrid;
                         auto leaf = grid->tree().cbeginLeaf();
                         if (leaf) {
                             MultiGroupFilter filter(includeGroups, excludeGroups, leaf->attributeSet());
                             if (transform) {
-                                maskGrid = openvdb::points::convertPointsToMask(
+                                maskGrid = laovdb::points::convertPointsToMask(
                                     *grid, *transform, filter);
                             }
                             else {
-                                maskGrid = openvdb::points::convertPointsToMask(
+                                maskGrid = laovdb::points::convertPointsToMask(
                                     *grid, filter);
                             }
                         } else {
-                            maskGrid = openvdb::BoolGrid::create();
+                            maskGrid = laovdb::BoolGrid::create();
                         }
 
                         const std::string customName = evalStdString("maskname", time);
@@ -760,21 +760,21 @@ SOP_OpenVDB_Points_Convert::Cache::cookVDBSop(OP_Context& context)
                         hvdb::createVdbPrimitive(*gdp, maskGrid, vdbName.c_str());
                     }
                     else {
-                        openvdb::Int32Grid::Ptr countGrid;
+                        laovdb::Int32Grid::Ptr countGrid;
                         auto leaf = grid->tree().cbeginLeaf();
                         if (leaf) {
                             MultiGroupFilter filter(includeGroups, excludeGroups, leaf->attributeSet());
                             if (transform) {
-                                countGrid = openvdb::points::pointCountGrid(
+                                countGrid = laovdb::points::pointCountGrid(
                                     *grid, *transform, filter);
                             }
                             else {
-                                countGrid = openvdb::points::pointCountGrid(
+                                countGrid = laovdb::points::pointCountGrid(
                                     *grid, filter);
                             }
                         }
                         else {
-                            countGrid = openvdb::Int32Grid::create();
+                            countGrid = laovdb::Int32Grid::create();
                         }
 
                         const std::string customName = evalStdString("maskname", time);

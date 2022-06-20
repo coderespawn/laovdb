@@ -503,7 +503,7 @@ SOP_OpenVDB_Noise::Cache::cookVDBSop(OP_Context& context)
             evalFloat("noff", 2, time));
 
         // Mask
-        const openvdb::GridBase* maskGrid = nullptr;
+        const laovdb::GridBase* maskGrid = nullptr;
         if (const GU_Detail* refGdp = inputGeo(1)) {
             const GA_PrimitiveGroup* maskGroup =
                 matchGroup(*refGdp, evalStdString("maskGroup", time));

@@ -142,9 +142,9 @@ private:
         int gridClass = 0,
         int vecType = -1);
 
-    OP_ERROR buildTransform(OP_Context&, openvdb::math::Transform::Ptr&, const GU_PrimVDB*);
+    OP_ERROR buildTransform(OP_Context&, laovdb::math::Transform::Ptr&, const GU_PrimVDB*);
     const GU_PrimVDB* getReferenceVdb(OP_Context &context);
-    cvdb::MaskGrid::Ptr createMaskGrid(const GU_PrimVDB*, const openvdb::math::Transform::Ptr&);
+    cvdb::MaskGrid::Ptr createMaskGrid(const GU_PrimVDB*, const laovdb::math::Transform::Ptr&);
 
     bool mNeedsResampling;
 };
@@ -393,10 +393,10 @@ newSopOperator(OP_OperatorTable *table)
     {
         {   // Grid class menu
             std::vector<std::string> items;
-            for (int i = 0; i < openvdb::NUM_GRID_CLASSES; ++i) {
-                openvdb::GridClass cls = openvdb::GridClass(i);
-                items.push_back(openvdb::GridBase::gridClassToString(cls)); // token
-                items.push_back(openvdb::GridBase::gridClassToMenuName(cls)); // label
+            for (int i = 0; i < laovdb::NUM_GRID_CLASSES; ++i) {
+                laovdb::GridClass cls = laovdb::GridClass(i);
+                items.push_back(laovdb::GridBase::gridClassToString(cls)); // token
+                items.push_back(laovdb::GridBase::gridClassToMenuName(cls)); // label
             }
 
             gridParms.add(hutil::ParmFactory(PRM_STRING, "gridClass#", "Class")
@@ -479,12 +479,12 @@ Other:\n\
                 "For vector-valued VDBs, specify an interpretation of the vectors"
                 " that determines how they are affected by transforms.\n";
             std::vector<std::string> items;
-            for (int i = 0; i < openvdb::NUM_VEC_TYPES ; ++i) {
-                const auto vectype = static_cast<openvdb::VecType>(i);
-                items.push_back(openvdb::GridBase::vecTypeToString(vectype));
-                items.push_back(openvdb::GridBase::vecTypeExamples(vectype));
-                help += "\n" + openvdb::GridBase::vecTypeExamples(vectype) + "\n    "
-                    + openvdb::GridBase::vecTypeDescription(vectype) + ".";
+            for (int i = 0; i < laovdb::NUM_VEC_TYPES ; ++i) {
+                const auto vectype = static_cast<laovdb::VecType>(i);
+                items.push_back(laovdb::GridBase::vecTypeToString(vectype));
+                items.push_back(laovdb::GridBase::vecTypeExamples(vectype));
+                help += "\n" + laovdb::GridBase::vecTypeExamples(vectype) + "\n    "
+                    + laovdb::GridBase::vecTypeDescription(vectype) + ".";
             }
 
             gridParms.add(hutil::ParmFactory(PRM_ORD, "vecType#", "Vector Type")
@@ -569,19 +569,19 @@ SOP_OpenVDB_Create::updateParmsFlags()
     for (int i = 1, N = static_cast<int>(evalInt("gridList", 0, 0)); i <= N; ++i) {
 
         evalStringInst("gridClass#", &i, tmpStr, 0, 0);
-        openvdb::GridClass gridClass = openvdb::GridBase::stringToGridClass(tmpStr.toStdString());
+        laovdb::GridClass gridClass = laovdb::GridBase::stringToGridClass(tmpStr.toStdString());
 
         evalStringInst("elementType#", &i, tmpStr, 0, 0);
         DataType eType = stringToDataType(tmpStr.toStdString());
         bool isLevelSet = false;
 
         // Force a specific data type for some of the grid classes
-        if (gridClass == openvdb::GRID_LEVEL_SET) {
+        if (gridClass == laovdb::GRID_LEVEL_SET) {
             eType = TYPE_FLOAT;
             isLevelSet = true;
-        } else if (gridClass == openvdb::GRID_FOG_VOLUME) {
+        } else if (gridClass == laovdb::GRID_FOG_VOLUME) {
             eType = TYPE_FLOAT;
-        } else if (gridClass == openvdb::GRID_STAGGERED) {
+        } else if (gridClass == laovdb::GRID_STAGGERED) {
             eType = TYPE_VEC3S;
         }
 
@@ -605,8 +605,8 @@ SOP_OpenVDB_Create::updateParmsFlags()
         changed |= setVisibleStateInst("vecType#", &i, eType >= TYPE_VEC3S);
 
         // Enable different data types
-        changed |= enableParmInst("elementType#", &i, gridClass == openvdb::GRID_UNKNOWN);
-        changed |= setVisibleStateInst("elementType#", &i, gridClass == openvdb::GRID_UNKNOWN);
+        changed |= enableParmInst("elementType#", &i, gridClass == laovdb::GRID_UNKNOWN);
+        changed |= setVisibleStateInst("elementType#", &i, gridClass == laovdb::GRID_UNKNOWN);
     }
 
     // linear transform and voxel size
@@ -696,8 +696,8 @@ SOP_OpenVDB_Create::createNewGrid(
     }
     newGrid->setTransform(transform);
 
-    newGrid->setGridClass(openvdb::GridClass(gridClass));
-    if (vecType != -1) newGrid->setVectorType(openvdb::VecType(vecType));
+    newGrid->setGridClass(laovdb::GridClass(gridClass));
+    if (vecType != -1) newGrid->setVectorType(laovdb::VecType(vecType));
 
     // Store the grid in a new VDB primitive and add the primitive
     // to the output geometry detail.
@@ -749,17 +749,17 @@ SOP_OpenVDB_Create::cookVDBSop(OP_Context &context)
             evalStringInst("gridName#", &i, gridNameStr, 0, time);
 
             evalStringInst("gridClass#", &i, tmpStr, 0, time);
-            openvdb::GridClass gridClass =
-                openvdb::GridBase::stringToGridClass(tmpStr.toStdString());
+            laovdb::GridClass gridClass =
+                laovdb::GridBase::stringToGridClass(tmpStr.toStdString());
 
             evalStringInst("elementType#", &i, tmpStr, 0, time);
             DataType eType = stringToDataType(tmpStr.toStdString());
 
             // Force a specific data type for some of the grid classes
-            if (gridClass == openvdb::GRID_LEVEL_SET ||
-                gridClass == openvdb::GRID_FOG_VOLUME) {
+            if (gridClass == laovdb::GRID_LEVEL_SET ||
+                gridClass == laovdb::GRID_FOG_VOLUME) {
                 eType = TYPE_FLOAT;
-            } else if (gridClass == openvdb::GRID_STAGGERED) {
+            } else if (gridClass == laovdb::GRID_STAGGERED) {
                 eType = TYPE_VEC3S;
             }
 
@@ -769,7 +769,7 @@ SOP_OpenVDB_Create::cookVDBSop(OP_Context &context)
                     float voxelSize = float(transform->voxelSize()[0]);
                     float background = 0.0;
 
-                    if (gridClass == openvdb::GRID_LEVEL_SET) {
+                    if (gridClass == laovdb::GRID_LEVEL_SET) {
                         background = float(evalFloatInst("width#", &i, 0, time) * voxelSize);
                     } else {
                         background = float(evalFloatInst("bgFloat#", &i, 0, time));
@@ -852,7 +852,7 @@ SOP_OpenVDB_Create::cookVDBSop(OP_Context &context)
 
 
 OP_ERROR
-SOP_OpenVDB_Create::buildTransform(OP_Context& context, openvdb::math::Transform::Ptr& transform,
+SOP_OpenVDB_Create::buildTransform(OP_Context& context, laovdb::math::Transform::Ptr& transform,
         const GU_PrimVDB* refVdb)
 {
     fpreal time = context.getTime();
@@ -904,24 +904,24 @@ SOP_OpenVDB_Create::buildTransform(OP_Context& context, openvdb::math::Transform
 
         const double voxelSize = double(evalFloat("voxelSize", 0, time));
 
-        openvdb::Vec3d rotation(
+        laovdb::Vec3d rotation(
             evalFloat("rotation", 0, time),
             evalFloat("rotation", 1, time),
             evalFloat("rotation", 2, time));
 
         if (std::abs(rotation.x()) < 0.00001 && std::abs(rotation.y()) < 0.00001
             && std::abs(rotation.z()) < 0.00001) {
-            transform = openvdb::math::Transform::createLinearTransform(voxelSize);
+            transform = laovdb::math::Transform::createLinearTransform(voxelSize);
         } else {
 
-            openvdb::math::Mat4d xform(openvdb::math::Mat4d::identity());
+            laovdb::math::Mat4d xform(laovdb::math::Mat4d::identity());
 
-            xform.preRotate(openvdb::math::X_AXIS, rotation.x());
-            xform.preRotate(openvdb::math::Y_AXIS, rotation.y());
-            xform.preRotate(openvdb::math::Z_AXIS, rotation.z());
-            xform.preScale(openvdb::Vec3d(voxelSize));
+            xform.preRotate(laovdb::math::X_AXIS, rotation.x());
+            xform.preRotate(laovdb::math::Y_AXIS, rotation.y());
+            xform.preRotate(laovdb::math::Z_AXIS, rotation.z());
+            xform.preScale(laovdb::Vec3d(voxelSize));
 
-            transform = openvdb::math::Transform::createLinearTransform(xform);
+            transform = laovdb::math::Transform::createLinearTransform(xform);
         }
     } else { // match reference
         if (refVdb == nullptr) {
@@ -936,10 +936,10 @@ SOP_OpenVDB_Create::buildTransform(OP_Context& context, openvdb::math::Transform
                 return error();
             }
             const double voxelSize = double(evalFloat("voxelSizeRef", 0, time));
-            openvdb::Vec3d relativeVoxelScale = voxelSize / refVdb->getGrid().voxelSize();
+            laovdb::Vec3d relativeVoxelScale = voxelSize / refVdb->getGrid().voxelSize();
             // If the user is changing the voxel size to the original,
             // then there is no need to do anything
-            if (!isApproxEqual(openvdb::Vec3d::ones(), relativeVoxelScale)) {
+            if (!isApproxEqual(laovdb::Vec3d::ones(), relativeVoxelScale)) {
                 mNeedsResampling = true;
                 transform->preScale(relativeVoxelScale);
             }
@@ -992,7 +992,7 @@ private:
 
 cvdb::MaskGrid::Ptr
 SOP_OpenVDB_Create::createMaskGrid(const GU_PrimVDB* refVdb,
-        const openvdb::math::Transform::Ptr& transform)
+        const laovdb::math::Transform::Ptr& transform)
 {
     if (refVdb == nullptr)
         throw std::runtime_error("Missing reference grid");

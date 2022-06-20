@@ -26,7 +26,7 @@
 #include <vector>
 
 
-using namespace openvdb;
+using namespace laovdb;
 
 namespace hvdb = openvdb_houdini;
 namespace hutil = houdini_utils;
@@ -257,7 +257,7 @@ struct MergeKey
     std::string name = "";
     int number = 0;
     UT_VDBType valueType = UT_VDB_INVALID;
-    openvdb::GridClass gridClass = GRID_UNKNOWN;
+    laovdb::GridClass gridClass = GRID_UNKNOWN;
 }; // struct MergeKey
 
 
@@ -294,24 +294,24 @@ struct MergeOp
     using StringRemapType = std::unordered_map<std::string, std::string>;
 
     SOP_OpenVDB_Merge::Cache* self;
-    openvdb::util::NullInterrupter& interrupt;
+    laovdb::util::NullInterrupter& interrupt;
     StringRemapType opRemap;
     std::deque<GU_PrimVDB*> vdbPrims;
     std::deque<const GU_PrimVDB*> constVdbPrims;
     UT_ConcurrentVector<GU_PrimVDB*> vdbPrimsToRemove;
     PrimitiveNumberMap primNumbers;
 
-    explicit MergeOp(openvdb::util::NullInterrupter& _interrupt): self(nullptr), interrupt(_interrupt) { }
+    explicit MergeOp(laovdb::util::NullInterrupter& _interrupt): self(nullptr), interrupt(_interrupt) { }
 
     inline std::string getOp(const MergeKey& key) const
     {
         std::string op;
 
-        if (key.gridClass == openvdb::GRID_LEVEL_SET) {
+        if (key.gridClass == laovdb::GRID_LEVEL_SET) {
             if (key.valueType == UT_VDB_FLOAT || key.valueType == UT_VDB_DOUBLE) {
                 op = opRemap.at("op_sdf");
             }
-        } else if (key.gridClass == openvdb::GRID_FOG_VOLUME) {
+        } else if (key.gridClass == laovdb::GRID_FOG_VOLUME) {
             if (key.valueType == UT_VDB_FLOAT || key.valueType == UT_VDB_DOUBLE) {
                 op = opRemap.at("op_fog");
             }
@@ -326,22 +326,22 @@ struct MergeOp
     typename GridT::Ptr resampleToMatch(const GridT& src, const GridT& ref, int order)
     {
         using ValueT = typename GridT::ValueType;
-        const ValueT ZERO = openvdb::zeroVal<ValueT>();
+        const ValueT ZERO = laovdb::zeroVal<ValueT>();
 
-        const openvdb::math::Transform& refXform = ref.constTransform();
+        const laovdb::math::Transform& refXform = ref.constTransform();
 
         typename GridT::Ptr dest;
-        if (src.getGridClass() == openvdb::GRID_LEVEL_SET) {
+        if (src.getGridClass() == laovdb::GRID_LEVEL_SET) {
             // For level set grids, use the level set rebuild tool to both resample the
             // source grid to match the reference grid and to rebuild the resulting level set.
-            const bool refIsLevelSet = ref.getGridClass() == openvdb::GRID_LEVEL_SET;
+            const bool refIsLevelSet = ref.getGridClass() == laovdb::GRID_LEVEL_SET;
             OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
             const ValueT halfWidth = refIsLevelSet
                 ? ValueT(ZERO + ref.background() * (1.0 / ref.voxelSize()[0]))
                 : ValueT(src.background() * (1.0 / src.voxelSize()[0]));
             OPENVDB_NO_TYPE_CONVERSION_WARNING_END
 
-            if (!openvdb::math::isFinite(halfWidth)) {
+            if (!laovdb::math::isFinite(halfWidth)) {
                 std::stringstream msg;
                 msg << "Resample to match: Illegal narrow band width = " << halfWidth
                     << ", caused by grid '" << src.getName() << "' with background "
@@ -350,9 +350,9 @@ struct MergeOp
             }
 
             try {
-                dest = openvdb::tools::doLevelSetRebuild(src, /*iso=*/ZERO,
+                dest = laovdb::tools::doLevelSetRebuild(src, /*iso=*/ZERO,
                     /*exWidth=*/halfWidth, /*inWidth=*/halfWidth, &refXform, &interrupt);
-            } catch (openvdb::TypeError&) {
+            } catch (laovdb::TypeError&) {
                 self->addWarning(SOP_MESSAGE, ("skipped rebuild of level set grid "
                     + src.getName() + " of type " + src.type()).c_str());
                 dest.reset();
@@ -512,16 +512,16 @@ struct MergeOp
         {
             auto grid = GridBase::grid<GridT>(gridBase);
             if (grid->constTransform() == reference->constTransform()) {
-                trees.emplace_back(grid->tree(), openvdb::DeepCopy());
+                trees.emplace_back(grid->tree(), laovdb::DeepCopy());
             } else {
                 // insert an empty tree and asynchronously replace with a resampled tree
-                trees.emplace_back(typename TreeT::Ptr(new TreeT), openvdb::Steal());
+                trees.emplace_back(typename TreeT::Ptr(new TreeT), laovdb::Steal());
                 tools::TreeToMerge<TreeT>& treeToMerge = trees.back();
                 tasks.run(
                     [&, grid] {
                         auto refGrid = GridBase::grid<GridT>(reference);
                         auto newGrid = this->resampleToMatch(*grid, *refGrid, samplingOrder);
-                        treeToMerge.reset(newGrid->treePtr(), openvdb::Steal());
+                        treeToMerge.reset(newGrid->treePtr(), laovdb::Steal());
                     }
                 );
             }

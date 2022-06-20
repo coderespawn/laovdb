@@ -326,7 +326,7 @@ public:
     /// Setting the value only takes effect if the voxels are activated,
     /// deactivated voxels are set to the background.
     void                activateIndexBBox(
-                            const openvdb::CoordBBox& bbox,
+                            const laovdb::CoordBBox& bbox,
                             ActivateOperation operation,
                             bool setvalue, fpreal value)
                         {
@@ -474,18 +474,18 @@ public:
     /// @brief Return a reference to this primitive's grid.
     /// @note Calling setGrid() invalidates all references previously returned.
     SYS_FORCE_INLINE
-    const openvdb::GridBase &   getConstGrid() const
+    const laovdb::GridBase &   getConstGrid() const
                                     { return myGridAccessor.getConstGrid(*this); }
     /// @brief Return a reference to this primitive's grid.
     /// @note Calling setGrid() invalidates all references previously returned.
     SYS_FORCE_INLINE
-    const openvdb::GridBase &   getGrid() const
+    const laovdb::GridBase &   getGrid() const
                                     { return getConstGrid(); }
     /// @brief Return a reference to this primitive's grid.
     /// @note Calling setGrid() invalidates all references previously returned.
     /// @warning Call makeGridUnique() before modifying the grid's voxel data.
     SYS_FORCE_INLINE
-    openvdb::GridBase &         getGrid()
+    laovdb::GridBase &         getGrid()
                                 {
                                     incrGridUniqueIds();
                                     return myGridAccessor.getGrid(*this);
@@ -495,20 +495,20 @@ public:
     /// @note Calling setGrid() causes the grid to which the shared pointer
     /// refers to be disassociated with this primitive.
     SYS_FORCE_INLINE
-    openvdb::GridBase::ConstPtr getConstGridPtr() const
+    laovdb::GridBase::ConstPtr getConstGridPtr() const
                                     { return myGridAccessor.getConstGridPtr(*this); }
     /// @brief Return a shared pointer to this primitive's grid.
     /// @note Calling setGrid() causes the grid to which the shared pointer
     /// refers to be disassociated with this primitive.
     SYS_FORCE_INLINE
-    openvdb::GridBase::ConstPtr getGridPtr() const
+    laovdb::GridBase::ConstPtr getGridPtr() const
                                     { return getConstGridPtr(); }
     /// @brief Return a shared pointer to this primitive's grid.
     /// @note Calling setGrid() causes the grid to which the shared pointer
     /// refers to be disassociated with this primitive.
     /// @warning Call makeGridUnique() before modifying the grid's voxel data.
     SYS_FORCE_INLINE
-    openvdb::GridBase::Ptr      getGridPtr()
+    laovdb::GridBase::Ptr      getGridPtr()
                                 {
                                     incrGridUniqueIds();
                                     return myGridAccessor.getGridPtr(*this);
@@ -517,7 +517,7 @@ public:
     /// @brief Set this primitive's grid to a shallow copy of the given grid.
     /// @note Invalidates all previous getGrid() and getConstGrid() references
     SYS_FORCE_INLINE
-    void                        setGrid(const openvdb::GridBase &grid, bool copyPosition=true)
+    void                        setGrid(const laovdb::GridBase &grid, bool copyPosition=true)
                                 {
                                     incrGridUniqueIds();
                                     myGridAccessor.setGrid(grid, *this, copyPosition);
@@ -525,16 +525,16 @@ public:
 
     /// @brief Return a reference to this primitive's grid metadata.
     /// @note Calling setGrid() invalidates all references previously returned.
-    const openvdb::MetaMap&     getConstMetadata() const
+    const laovdb::MetaMap&     getConstMetadata() const
                                     { return getConstGrid(); }
     /// @brief Return a reference to this primitive's grid metadata.
     /// @note Calling setGrid() invalidates all references previously returned.
-    const openvdb::MetaMap&     getMetadata() const
+    const laovdb::MetaMap&     getMetadata() const
                                     { return getConstGrid(); }
     /// @brief Return a reference to this primitive's grid metadata.
     /// @note Calling setGrid() invalidates all references previously returned.
     SYS_FORCE_INLINE
-    openvdb::MetaMap&           getMetadata()
+    laovdb::MetaMap&           getMetadata()
                                 {
                                     incrMetadataUniqueId();
                                     return myGridAccessor.getGrid(*this);
@@ -575,9 +575,9 @@ public:
     ///
     /// @par Example:
     /// @code
-    /// auto printOp = [](const openvdb::GridBase& grid) { grid.print(); };
+    /// auto printOp = [](const laovdb::GridBase& grid) { grid.print(); };
     /// const GEO_PrimVDB* prim = ...;
-    /// using RealGridTypes = openvdb::TypeList<openvdb::FloatGrid, openvdb::DoubleGrid>;
+    /// using RealGridTypes = laovdb::TypeList<laovdb::FloatGrid, laovdb::DoubleGrid>;
     /// // Print info about the primitive's grid if it is a floating-point grid.
     /// prim->apply<RealGridTypes>(printOp);
     /// @endcode
@@ -595,12 +595,12 @@ public:
     /// @code
     /// auto fillOp = [](const auto& grid) { // C++14
     ///     // Convert voxels in the given bounding box into background voxels.
-    ///     grid.fill(openvdb::CoordBBox(openvdb::Coord(0), openvdb::Coord(99)),
+    ///     grid.fill(laovdb::CoordBBox(laovdb::Coord(0), laovdb::Coord(99)),
     ///         grid.background(), /*active=*/false);
     /// };
     /// GEO_PrimVDB* prim = ...;
     /// // Set background voxels in the primitive's grid if it is a floating-point grid.
-    /// using RealGridTypes = openvdb::TypeList<openvdb::FloatGrid, openvdb::DoubleGrid>;
+    /// using RealGridTypes = laovdb::TypeList<laovdb::FloatGrid, laovdb::DoubleGrid>;
     /// prim->apply<RealGridTypes>(fillOp);
     /// @endcode
     template<typename GridTypeListT, typename OpT>
@@ -613,7 +613,7 @@ public:
                         if (treePtr.use_count() > 2) { // grid + treePtr = 2
                             // If the grid resolves to one of the listed types and its tree
                             // is shared with other grids, replace the tree with a deep copy.
-                            grid.apply<GridTypeListT>([this](openvdb::GridBase& baseGrid) {
+                            grid.apply<GridTypeListT>([this](laovdb::GridBase& baseGrid) {
                                 baseGrid.setTree(baseGrid.constBaseTree().copy());
                                 this->incrTreeUniqueId();
                             });
@@ -697,33 +697,33 @@ protected:
         }
 
         SYS_FORCE_INLINE
-        openvdb::GridBase &
+        laovdb::GridBase &
         getGrid(const GEO_PrimVDB &prim)
             { updateGridTranslates(prim); return *myGrid; }
 
         SYS_FORCE_INLINE
-        const openvdb::GridBase &
+        const laovdb::GridBase &
         getConstGrid(const GEO_PrimVDB &prim) const
             { updateGridTranslates(prim); return *myGrid; }
 
         SYS_FORCE_INLINE
-        openvdb::GridBase::Ptr
+        laovdb::GridBase::Ptr
         getGridPtr(const GEO_PrimVDB &prim)
             { updateGridTranslates(prim); return myGrid; }
 
         SYS_FORCE_INLINE
-        openvdb::GridBase::ConstPtr
+        laovdb::GridBase::ConstPtr
         getConstGridPtr(const GEO_PrimVDB &prim) const
             { updateGridTranslates(prim); return myGrid; }
 
         // These accessors will ensure the transform's translate is set into
         // the vertex position.
         SYS_FORCE_INLINE
-        void        setGrid(const openvdb::GridBase& grid, GEO_PrimVDB& prim, bool copyPosition=true)
+        void        setGrid(const laovdb::GridBase& grid, GEO_PrimVDB& prim, bool copyPosition=true)
                         { setGridAdapter(&grid, prim, copyPosition); }
         SYS_FORCE_INLINE
         void        setTransform(
-                        const openvdb::math::Transform &xform,
+                        const laovdb::math::Transform &xform,
                         GEO_PrimVDB &prim)
                         { setTransformAdapter(&xform, prim); }
 
@@ -741,7 +741,7 @@ protected:
 
         SYS_FORCE_INLINE
         void        setVertexPosition(
-                        const openvdb::math::Transform &xform,
+                        const laovdb::math::Transform &xform,
                         GEO_PrimVDB &prim)
                         { setVertexPositionAdapter(&xform, prim); }
 
@@ -750,7 +750,7 @@ protected:
         void        setVertexPositionAdapter(const void* xform, GEO_PrimVDB&);
 
     private:
-        openvdb::GridBase::Ptr  myGrid;
+        laovdb::GridBase::Ptr  myGrid;
         UT_VDBType              myStorageType;
     };
 

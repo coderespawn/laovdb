@@ -17,14 +17,14 @@ const int GRID_DIM = 10;
 class TestDivergence: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 };
 
 
 TEST_F(TestDivergence, testDivergenceTool)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     VectorGrid::Ptr inGrid = VectorGrid::create();
     VectorTree& inTree = inGrid->tree();
@@ -68,7 +68,7 @@ TEST_F(TestDivergence, testDivergenceTool)
 
 TEST_F(TestDivergence, testDivergenceMaskedTool)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     VectorGrid::Ptr inGrid = VectorGrid::create();
     VectorTree& inTree = inGrid->tree();
@@ -88,7 +88,7 @@ TEST_F(TestDivergence, testDivergenceMaskedTool)
     EXPECT_EQ(math::Pow3(2*dim), int(inTree.activeVoxelCount()));
 
     /// maked region
-    openvdb::CoordBBox maskBBox(openvdb::Coord(0), openvdb::Coord(dim));
+    laovdb::CoordBBox maskBBox(laovdb::Coord(0), laovdb::Coord(dim));
     BoolGrid::Ptr maskGrid = BoolGrid::create(false);
     maskGrid->fill(maskBBox, true /*value*/, true /*activate*/);
 
@@ -124,7 +124,7 @@ TEST_F(TestDivergence, testStaggeredDivergence)
     // This test is slightly different than the one above for sanity
     // checking purposes.
 
-    using namespace openvdb;
+    using namespace laovdb;
 
     VectorGrid::Ptr inGrid = VectorGrid::create();
     inGrid->setGridClass( GRID_STAGGERED );
@@ -168,7 +168,7 @@ TEST_F(TestDivergence, testStaggeredDivergence)
 
 TEST_F(TestDivergence, testISDivergence)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     typedef VectorGrid::ConstAccessor Accessor;
 
@@ -267,7 +267,7 @@ TEST_F(TestDivergence, testISDivergence)
 
 TEST_F(TestDivergence, testISDivergenceStencil)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     VectorGrid::Ptr inGrid = VectorGrid::create();
     VectorTree& inTree = inGrid->tree();
@@ -368,7 +368,7 @@ TEST_F(TestDivergence, testISDivergenceStencil)
 
 TEST_F(TestDivergence, testWSDivergence)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     typedef VectorGrid::ConstAccessor Accessor;
 
@@ -406,8 +406,8 @@ TEST_F(TestDivergence, testWSDivergence)
         for (int x = -dim; x<dim; ++x) {
             for (int y = -dim; y<dim; ++y) {
                 for (int z = -dim; z<dim; ++z) {
-                    openvdb::Coord xyz(x,y,z);
-                    //openvdb::VectorTree::ValueType v = inTree.getValue(xyz);
+                    laovdb::Coord xyz(x,y,z);
+                    //laovdb::VectorTree::ValueType v = inTree.getValue(xyz);
                     //std::cout << "vec(" << xyz << ")=" << v << std::endl;
 
                     float d;
@@ -485,8 +485,8 @@ TEST_F(TestDivergence, testWSDivergence)
         for (int x = -dim; x<dim; ++x) {
             for (int y = -dim; y<dim; ++y) {
                 for (int z = -dim; z<dim; ++z) {
-                    openvdb::Coord xyz(x,y,z);
-                    //openvdb::VectorTree::ValueType v = inTree.getValue(xyz);
+                    laovdb::Coord xyz(x,y,z);
+                    //laovdb::VectorTree::ValueType v = inTree.getValue(xyz);
                     //std::cout << "vec(" << xyz << ")=" << v << std::endl;
 
                     float d;
@@ -510,7 +510,7 @@ TEST_F(TestDivergence, testWSDivergence)
 
 TEST_F(TestDivergence, testWSDivergenceStencil)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     { // non-unit voxel size
         double voxel_size = 0.5;
@@ -547,8 +547,8 @@ TEST_F(TestDivergence, testWSDivergenceStencil)
         for (int x = -dim; x<dim; ++x) {
             for (int y = -dim; y<dim; ++y) {
                 for (int z = -dim; z<dim; ++z) {
-                    openvdb::Coord xyz(x,y,z);
-                    //openvdb::VectorTree::ValueType v = inTree.getValue(xyz);
+                    laovdb::Coord xyz(x,y,z);
+                    //laovdb::VectorTree::ValueType v = inTree.getValue(xyz);
                     //std::cout << "vec(" << xyz << ")=" << v << std::endl;
                     float d;
 
@@ -630,7 +630,7 @@ TEST_F(TestDivergence, testWSDivergenceStencil)
         for (int x = -dim; x<dim; ++x) {
             for (int y = -dim; y<dim; ++y) {
                 for (int z = -dim; z<dim; ++z) {
-                    openvdb::Coord xyz(x,y,z);
+                    laovdb::Coord xyz(x,y,z);
                     dense_2ndOrder.moveTo(xyz);
 
                     float d;

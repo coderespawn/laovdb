@@ -55,7 +55,7 @@ TEST_F(TestRay, testInfinity)
 
 TEST_F(TestRay, testRay)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     typedef double             RealT;
     typedef math::Ray<RealT>   RayT;
     typedef RayT::Vec3T        Vec3T;
@@ -293,7 +293,7 @@ TEST_F(TestRay, testRay)
 
 TEST_F(TestRay, testTimeSpan)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     typedef double             RealT;
     typedef math::Ray<RealT>::TimeSpan   TimeSpanT;
     TimeSpanT t(2.0, 5.0);
@@ -311,7 +311,7 @@ TEST_F(TestRay, testTimeSpan)
 
 TEST_F(TestRay, testDDA)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     typedef math::Ray<double>  RayType;
 
     {

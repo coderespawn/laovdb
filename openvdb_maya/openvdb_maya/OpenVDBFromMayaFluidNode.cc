@@ -307,14 +307,14 @@ MStatus OpenVDBFromMayaFluidNode::initialize()
 
 namespace internal {
 
-inline openvdb::math::Transform::Ptr
+inline laovdb::math::Transform::Ptr
 getTransform(const MFnFluid& fluid)
 {
     // Construct local transform
-    openvdb::Vec3I res;
+    laovdb::Vec3I res;
     fluid.getResolution(res[0], res[1], res[2]);
 
-    openvdb::Vec3d dim;
+    laovdb::Vec3d dim;
     fluid.getDimensions(dim[0], dim[1], dim[2]);
 
     if (res[0] > 0) dim[0] /= double(res[0]);
@@ -324,7 +324,7 @@ getTransform(const MFnFluid& fluid)
     MBoundingBox bbox = fluid.boundingBox();
     MPoint pos = bbox.min();
 
-    openvdb::Mat4R mat1(dim[0], 0.0,    0.0,    0.0,
+    laovdb::Mat4R mat1(dim[0], 0.0,    0.0,    0.0,
                         0.0,    dim[1], 0.0,    0.0,
                         0.0,    0.0,    dim[2], 0.0,
                         pos.x,  pos.y,  pos.z,  1.0);
@@ -340,22 +340,22 @@ getTransform(const MFnFluid& fluid)
         mm = parentNode.transformationMatrix();
     }
 
-    openvdb::Mat4R mat2(mm(0,0), mm(0,1), mm(0,2), mm(0,3),
+    laovdb::Mat4R mat2(mm(0,0), mm(0,1), mm(0,2), mm(0,3),
                         mm(1,0), mm(1,1), mm(1,2), mm(1,3),
                         mm(2,0), mm(2,1), mm(2,2), mm(2,3),
                         mm(3,0), mm(3,1), mm(3,2), mm(3,3));
 
-    return openvdb::math::Transform::createLinearTransform(mat1 * mat2);
+    return laovdb::math::Transform::createLinearTransform(mat1 * mat2);
 }
 
 template<typename value_t>
-void copyGrid(OpenVDBData& vdb, const std::string& name, const openvdb::math::Transform& xform,
-     const value_t* data, const openvdb::CoordBBox& bbox, value_t bg, value_t tol)
+void copyGrid(OpenVDBData& vdb, const std::string& name, const laovdb::math::Transform& xform,
+     const value_t* data, const laovdb::CoordBBox& bbox, value_t bg, value_t tol)
 {
     if (data != NULL) {
-        openvdb::FloatGrid::Ptr grid = openvdb::FloatGrid::create(bg);
-        openvdb::tools::Dense<const value_t, openvdb::tools::LayoutXYZ> dense(bbox, data);
-        openvdb::tools::copyFromDense(dense, grid->tree(), tol);
+        laovdb::FloatGrid::Ptr grid = laovdb::FloatGrid::create(bg);
+        laovdb::tools::Dense<const value_t, laovdb::tools::LayoutXYZ> dense(bbox, data);
+        laovdb::tools::copyFromDense(dense, grid->tree(), tol);
 
         grid->setName(name);
         grid->setTransform(xform.copy());
@@ -401,13 +401,13 @@ MStatus OpenVDBFromMayaFluidNode::compute(const MPlug& plug, MDataBlock& data)
         if (fluid.object() == MObject::kNullObj) return MS::kFailure;
 
 
-        openvdb::math::Transform::Ptr xform = internal::getTransform(fluid);
+        laovdb::math::Transform::Ptr xform = internal::getTransform(fluid);
 
         unsigned int xRes, yRes, zRes;
         fluid.getResolution(xRes, yRes, zRes);
 
         // inclusive bbox
-        openvdb::CoordBBox bbox(openvdb::Coord(0), openvdb::Coord(xRes-1, yRes-1, zRes-1));
+        laovdb::CoordBBox bbox(laovdb::Coord(0), laovdb::Coord(xRes-1, yRes-1, zRes-1));
 
         // get output vdb
         MFnPluginData outputDataCreators;

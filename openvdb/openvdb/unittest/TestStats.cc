@@ -19,22 +19,22 @@ class TestStats: public ::testing::Test
 TEST_F(TestStats, testMinMax)
 {
     {// test Coord which uses lexicographic less than
-        openvdb::math::MinMax<openvdb::Coord> s(openvdb::Coord::max(), openvdb::Coord::min());
-        //openvdb::math::MinMax<openvdb::Coord> s;// will not compile since Coord is not a POD type
-        EXPECT_EQ(openvdb::Coord::max(), s.min());
-        EXPECT_EQ(openvdb::Coord::min(), s.max());
-        s.add( openvdb::Coord(1,2,3) );
-        EXPECT_EQ(openvdb::Coord(1,2,3), s.min());
-        EXPECT_EQ(openvdb::Coord(1,2,3), s.max());
-        s.add( openvdb::Coord(0,2,3) );
-        EXPECT_EQ(openvdb::Coord(0,2,3), s.min());
-        EXPECT_EQ(openvdb::Coord(1,2,3), s.max());
-        s.add( openvdb::Coord(1,2,4) );
-        EXPECT_EQ(openvdb::Coord(0,2,3), s.min());
-        EXPECT_EQ(openvdb::Coord(1,2,4), s.max());
+        laovdb::math::MinMax<laovdb::Coord> s(laovdb::Coord::max(), laovdb::Coord::min());
+        //laovdb::math::MinMax<laovdb::Coord> s;// will not compile since Coord is not a POD type
+        EXPECT_EQ(laovdb::Coord::max(), s.min());
+        EXPECT_EQ(laovdb::Coord::min(), s.max());
+        s.add( laovdb::Coord(1,2,3) );
+        EXPECT_EQ(laovdb::Coord(1,2,3), s.min());
+        EXPECT_EQ(laovdb::Coord(1,2,3), s.max());
+        s.add( laovdb::Coord(0,2,3) );
+        EXPECT_EQ(laovdb::Coord(0,2,3), s.min());
+        EXPECT_EQ(laovdb::Coord(1,2,3), s.max());
+        s.add( laovdb::Coord(1,2,4) );
+        EXPECT_EQ(laovdb::Coord(0,2,3), s.min());
+        EXPECT_EQ(laovdb::Coord(1,2,4), s.max());
     }
     {// test double
-        openvdb::math::MinMax<double> s;
+        laovdb::math::MinMax<double> s;
         EXPECT_EQ( std::numeric_limits<double>::max(), s.min());
         EXPECT_EQ(-std::numeric_limits<double>::max(), s.max());
         s.add( 1.0 );
@@ -48,7 +48,7 @@ TEST_F(TestStats, testMinMax)
         EXPECT_EQ( 2.5, s.max());
     }
     {// test int
-        openvdb::math::MinMax<int> s;
+        laovdb::math::MinMax<int> s;
         EXPECT_EQ(std::numeric_limits<int>::max(), s.min());
         EXPECT_EQ(std::numeric_limits<int>::min(), s.max());
         s.add( 1 );
@@ -62,7 +62,7 @@ TEST_F(TestStats, testMinMax)
         EXPECT_EQ( 2, s.max());
     }
     {// test unsigned
-        openvdb::math::MinMax<uint32_t> s;
+        laovdb::math::MinMax<uint32_t> s;
         EXPECT_EQ(std::numeric_limits<uint32_t>::max(), s.min());
         EXPECT_EQ(uint32_t(0), s.max());
         s.add( 1 );
@@ -81,7 +81,7 @@ TEST_F(TestStats, testMinMax)
 TEST_F(TestStats, testExtrema)
 {
     {// trivial test
-        openvdb::math::Extrema s;
+        laovdb::math::Extrema s;
         s.add(0);
         s.add(1);
         EXPECT_EQ(2, int(s.size()));
@@ -91,7 +91,7 @@ TEST_F(TestStats, testExtrema)
         //s.print("test");
     }
     {// non-trivial test
-        openvdb::math::Extrema s;
+        laovdb::math::Extrema s;
         const int data[5]={600, 470, 170, 430, 300};
         for (int i=0; i<5; ++i) s.add(data[i]);
         EXPECT_EQ(5, int(s.size()));
@@ -101,7 +101,7 @@ TEST_F(TestStats, testExtrema)
         //s.print("test");
     }
     {// non-trivial test of Extrema::add(Extrema)
-        openvdb::math::Extrema s, t;
+        laovdb::math::Extrema s, t;
         const int data[5]={600, 470, 170, 430, 300};
         for (int i=0; i<3; ++i) s.add(data[i]);
         for (int i=3; i<5; ++i) t.add(data[i]);
@@ -113,7 +113,7 @@ TEST_F(TestStats, testExtrema)
         //s.print("test");
     }
     {// Trivial test of Extrema::add(value, n)
-        openvdb::math::Extrema s;
+        laovdb::math::Extrema s;
         const double val = 3.45;
         const uint64_t n = 57;
         s.add(val, 57);
@@ -123,7 +123,7 @@ TEST_F(TestStats, testExtrema)
         EXPECT_NEAR(0.0, s.range(), 0.000001);
     }
     {// Test 1 of Extrema::add(value), Extrema::add(value, n) and Extrema::add(Extrema)
-        openvdb::math::Extrema s, t;
+        laovdb::math::Extrema s, t;
         const double val1 = 1.0, val2 = 3.0;
         const uint64_t n1 = 1, n2 =1;
         s.add(val1,  n1);
@@ -141,12 +141,12 @@ TEST_F(TestStats, testExtrema)
         EXPECT_NEAR(val2,    s.max(),  0.000001);
     }
     {// Non-trivial test of Extrema::add(value, n)
-        openvdb::math::Extrema s;
+        laovdb::math::Extrema s;
         s.add(3.45,  6);
         s.add(1.39,  2);
         s.add(2.56, 13);
         s.add(0.03);
-        openvdb::math::Extrema t;
+        laovdb::math::Extrema t;
         for (int i=0; i< 6; ++i) t.add(3.45);
         for (int i=0; i< 2; ++i) t.add(1.39);
         for (int i=0; i<13; ++i) t.add(2.56);
@@ -160,7 +160,7 @@ TEST_F(TestStats, testExtrema)
 TEST_F(TestStats, testStats)
 {
     {// trivial test
-        openvdb::math::Stats s;
+        laovdb::math::Stats s;
         s.add(0);
         s.add(1);
         EXPECT_EQ(2, int(s.size()));
@@ -172,7 +172,7 @@ TEST_F(TestStats, testStats)
         //s.print("test");
     }
     {// non-trivial test
-        openvdb::math::Stats s;
+        laovdb::math::Stats s;
         const int data[5]={600, 470, 170, 430, 300};
         for (int i=0; i<5; ++i) s.add(data[i]);
         double sum = 0.0;
@@ -190,7 +190,7 @@ TEST_F(TestStats, testStats)
         //s.print("test");
     }
     {// non-trivial test of Stats::add(Stats)
-        openvdb::math::Stats s, t;
+        laovdb::math::Stats s, t;
         const int data[5]={600, 470, 170, 430, 300};
         for (int i=0; i<3; ++i) s.add(data[i]);
         for (int i=3; i<5; ++i) t.add(data[i]);
@@ -210,7 +210,7 @@ TEST_F(TestStats, testStats)
         //s.print("test");
     }
     {// Trivial test of Stats::add(value, n)
-        openvdb::math::Stats s;
+        laovdb::math::Stats s;
         const double val = 3.45;
         const uint64_t n = 57;
         s.add(val, 57);
@@ -222,7 +222,7 @@ TEST_F(TestStats, testStats)
         EXPECT_NEAR(0.0, s.stdDev(),  0.000001);
     }
     {// Test 1 of Stats::add(value), Stats::add(value, n) and Stats::add(Stats)
-        openvdb::math::Stats s, t;
+        laovdb::math::Stats s, t;
         const double val1 = 1.0, val2 = 3.0, sum = val1 + val2;
         const uint64_t n1 = 1, n2 =1;
         s.add(val1,  n1);
@@ -246,13 +246,13 @@ TEST_F(TestStats, testStats)
         const double mean = sum/double(n1+n2);
         EXPECT_NEAR(mean,    s.mean(), 0.000001);
         double var = 0.0;
-        for (uint64_t i=0; i<n1; ++i) var += openvdb::math::Pow2(val1-mean);
-        for (uint64_t i=0; i<n2; ++i) var += openvdb::math::Pow2(val2-mean);
+        for (uint64_t i=0; i<n1; ++i) var += laovdb::math::Pow2(val1-mean);
+        for (uint64_t i=0; i<n2; ++i) var += laovdb::math::Pow2(val2-mean);
         var /= double(n1+n2);
         EXPECT_NEAR(var, s.variance(), 0.000001);
     }
     {// Test 2 of Stats::add(value), Stats::add(value, n) and Stats::add(Stats)
-        openvdb::math::Stats s, t;
+        laovdb::math::Stats s, t;
         const double val1 = 1.0, val2 = 3.0, sum = val1 + val2;
         const uint64_t n1 = 1, n2 =1;
         for (uint64_t i=0; i<n1; ++i) s.add(val1);
@@ -276,18 +276,18 @@ TEST_F(TestStats, testStats)
         const double mean = sum/double(n1+n2);
         EXPECT_NEAR(mean,    s.mean(), 0.000001);
         double var = 0.0;
-        for (uint64_t i=0; i<n1; ++i) var += openvdb::math::Pow2(val1-mean);
-        for (uint64_t i=0; i<n2; ++i) var += openvdb::math::Pow2(val2-mean);
+        for (uint64_t i=0; i<n1; ++i) var += laovdb::math::Pow2(val1-mean);
+        for (uint64_t i=0; i<n2; ++i) var += laovdb::math::Pow2(val2-mean);
         var /= double(n1+n2);
         EXPECT_NEAR(var, s.variance(), 0.000001);
     }
     {// Non-trivial test of Stats::add(value, n) and Stats::add(Stats)
-        openvdb::math::Stats s;
+        laovdb::math::Stats s;
         s.add(3.45,  6);
         s.add(1.39,  2);
         s.add(2.56, 13);
         s.add(0.03);
-        openvdb::math::Stats t;
+        laovdb::math::Stats t;
         for (int i=0; i< 6; ++i) t.add(3.45);
         for (int i=0; i< 2; ++i) t.add(1.39);
         for (int i=0; i<13; ++i) t.add(2.56);
@@ -299,12 +299,12 @@ TEST_F(TestStats, testStats)
         EXPECT_NEAR(s.variance(), t.variance(), 0.000001);
     }
     {// Non-trivial test of Stats::add(value, n)
-        openvdb::math::Stats s;
+        laovdb::math::Stats s;
         s.add(3.45,  6);
         s.add(1.39,  2);
         s.add(2.56, 13);
         s.add(0.03);
-        openvdb::math::Stats t;
+        laovdb::math::Stats t;
         for (int i=0; i< 6; ++i) t.add(3.45);
         for (int i=0; i< 2; ++i) t.add(1.39);
         for (int i=0; i<13; ++i) t.add(2.56);
@@ -322,10 +322,10 @@ TEST_F(TestStats, testStats)
 TEST_F(TestStats, testHistogram)
 {
      {// Histogram test
-        openvdb::math::Stats s;
+        laovdb::math::Stats s;
         const int data[5]={600, 470, 170, 430, 300};
         for (int i=0; i<5; ++i) s.add(data[i]);
-        openvdb::math::Histogram h(s, 10);
+        laovdb::math::Histogram h(s, 10);
         for (int i=0; i<5; ++i) EXPECT_TRUE(h.add(data[i]));
         int bin[10]={0};
         for (int i=0; i<5; ++i) {
@@ -335,11 +335,11 @@ TEST_F(TestStats, testHistogram)
         //h.print("test");
     }
     {//Test print of Histogram
-        openvdb::math::Stats s;
+        laovdb::math::Stats s;
         const int N=500000;
         for (int i=0; i<N; ++i) s.add(N/2-i);
         //s.print("print-test");
-        openvdb::math::Histogram h(s, 25);
+        laovdb::math::Histogram h(s, 25);
         for (int i=0; i<N; ++i) EXPECT_TRUE(h.add(N/2-i));
         //h.print("print-test");
     }
@@ -349,7 +349,7 @@ namespace {
 
 struct GradOp
 {
-    typedef openvdb::FloatGrid GridT;
+    typedef laovdb::FloatGrid GridT;
 
     GridT::ConstAccessor acc;
 
@@ -358,12 +358,12 @@ struct GradOp
     template <typename StatsT>
     void operator()(const GridT::ValueOnCIter& it, StatsT& stats) const
     {
-        typedef openvdb::math::ISGradient<openvdb::math::FD_1ST> GradT;
+        typedef laovdb::math::ISGradient<laovdb::math::FD_1ST> GradT;
         if (it.isVoxelValue()) {
             stats.add(GradT::result(acc, it.getCoord()).length());
         } else {
-            openvdb::CoordBBox bbox = it.getBoundingBox();
-            openvdb::Coord xyz;
+            laovdb::CoordBBox bbox = it.getBoundingBox();
+            laovdb::Coord xyz;
             int &x = xyz[0], &y = xyz[1], &z = xyz[2];
             for (x = bbox.min()[0]; x <= bbox.max()[0]; ++x) {
                 for (y = bbox.min()[1]; y <= bbox.max()[1]; ++y) {
@@ -380,7 +380,7 @@ struct GradOp
 
 TEST_F(TestStats, testGridExtrema)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const int DIM = 109;
     {
@@ -475,7 +475,7 @@ TEST_F(TestStats, testGridExtrema)
 
 TEST_F(TestStats, testGridStats)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const int DIM = 109;
     {
@@ -585,11 +585,11 @@ template<typename OpT, typename GridT>
 inline void
 doTestGridOperatorStats(const GridT& grid, const OpT& op)
 {
-    openvdb::math::Stats serialStats =
-        openvdb::tools::opStatistics(grid.cbeginValueOn(), op, /*threaded=*/false);
+    laovdb::math::Stats serialStats =
+        laovdb::tools::opStatistics(grid.cbeginValueOn(), op, /*threaded=*/false);
 
-    openvdb::math::Stats parallelStats =
-        openvdb::tools::opStatistics(grid.cbeginValueOn(), op, /*threaded=*/true);
+    laovdb::math::Stats parallelStats =
+        laovdb::tools::opStatistics(grid.cbeginValueOn(), op, /*threaded=*/true);
 
     // Verify that the results from threaded and serial runs are equivalent.
     EXPECT_EQ(serialStats.size(), parallelStats.size());
@@ -603,7 +603,7 @@ doTestGridOperatorStats(const GridT& grid, const OpT& op)
 
 TEST_F(TestStats, testGridOperatorStats)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     typedef math::UniformScaleMap MapType;
     MapType map;
@@ -657,7 +657,7 @@ TEST_F(TestStats, testGridOperatorStats)
 
 TEST_F(TestStats, testGridHistogram)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const int DIM = 109;
     {

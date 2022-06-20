@@ -13,9 +13,9 @@ public:
     void testGetValue();
 };
 
-typedef openvdb::tree::LeafNode<int, 3> LeafType;
+typedef laovdb::tree::LeafNode<int, 3> LeafType;
 typedef LeafType::Buffer                BufferType;
-using openvdb::Index;
+using laovdb::Index;
 
 void
 TestLeaf::testBuffer()
@@ -69,26 +69,26 @@ TEST_F(TestLeaf, testBuffer) { testBuffer(); }
 void
 TestLeaf::testGetValue()
 {
-    LeafType leaf(openvdb::Coord(0, 0, 0));
+    LeafType leaf(laovdb::Coord(0, 0, 0));
 
     leaf.mBuffer[0] = 2;
     leaf.mBuffer[1] = 3;
     leaf.mBuffer[2] = 4;
     leaf.mBuffer[65] = 10;
 
-    EXPECT_EQ(2, leaf.getValue(openvdb::Coord(0, 0, 0)));
-    EXPECT_EQ(3, leaf.getValue(openvdb::Coord(0, 0, 1)));
-    EXPECT_EQ(4, leaf.getValue(openvdb::Coord(0, 0, 2)));
+    EXPECT_EQ(2, leaf.getValue(laovdb::Coord(0, 0, 0)));
+    EXPECT_EQ(3, leaf.getValue(laovdb::Coord(0, 0, 1)));
+    EXPECT_EQ(4, leaf.getValue(laovdb::Coord(0, 0, 2)));
 
-    EXPECT_EQ(10, leaf.getValue(openvdb::Coord(1, 0, 1)));
+    EXPECT_EQ(10, leaf.getValue(laovdb::Coord(1, 0, 1)));
 }
 TEST_F(TestLeaf, testGetValue) { testGetValue(); }
 
 TEST_F(TestLeaf, testSetValue)
 {
-    LeafType leaf(openvdb::Coord(0, 0, 0), 3);
+    LeafType leaf(laovdb::Coord(0, 0, 0), 3);
 
-    openvdb::Coord xyz(0, 0, 0);
+    laovdb::Coord xyz(0, 0, 0);
     leaf.setValueOn(xyz, 10);
     EXPECT_EQ(10, leaf.getValue(xyz));
 
@@ -109,31 +109,31 @@ TEST_F(TestLeaf, testSetValue)
 
 TEST_F(TestLeaf, testIsValueSet)
 {
-    LeafType leaf(openvdb::Coord(0, 0, 0));
-    leaf.setValueOn(openvdb::Coord(1, 5, 7), 10);
+    LeafType leaf(laovdb::Coord(0, 0, 0));
+    leaf.setValueOn(laovdb::Coord(1, 5, 7), 10);
 
-    EXPECT_TRUE(leaf.isValueOn(openvdb::Coord(1, 5, 7)));
+    EXPECT_TRUE(leaf.isValueOn(laovdb::Coord(1, 5, 7)));
 
-    EXPECT_TRUE(!leaf.isValueOn(openvdb::Coord(0, 5, 7)));
-    EXPECT_TRUE(!leaf.isValueOn(openvdb::Coord(1, 6, 7)));
-    EXPECT_TRUE(!leaf.isValueOn(openvdb::Coord(0, 5, 6)));
+    EXPECT_TRUE(!leaf.isValueOn(laovdb::Coord(0, 5, 7)));
+    EXPECT_TRUE(!leaf.isValueOn(laovdb::Coord(1, 6, 7)));
+    EXPECT_TRUE(!leaf.isValueOn(laovdb::Coord(0, 5, 6)));
 }
 
 TEST_F(TestLeaf, testProbeValue)
 {
-    LeafType leaf(openvdb::Coord(0, 0, 0));
-    leaf.setValueOn(openvdb::Coord(1, 6, 5), 10);
+    LeafType leaf(laovdb::Coord(0, 0, 0));
+    leaf.setValueOn(laovdb::Coord(1, 6, 5), 10);
 
     LeafType::ValueType val;
-    EXPECT_TRUE(leaf.probeValue(openvdb::Coord(1, 6, 5), val));
-    EXPECT_TRUE(!leaf.probeValue(openvdb::Coord(1, 6, 4), val));
+    EXPECT_TRUE(leaf.probeValue(laovdb::Coord(1, 6, 5), val));
+    EXPECT_TRUE(!leaf.probeValue(laovdb::Coord(1, 6, 4), val));
 }
 
 TEST_F(TestLeaf, testIterators)
 {
-    LeafType leaf(openvdb::Coord(0, 0, 0), 2);
-    leaf.setValueOn(openvdb::Coord(1, 2, 3), -3);
-    leaf.setValueOn(openvdb::Coord(5, 2, 3),  4);
+    LeafType leaf(laovdb::Coord(0, 0, 0), 2);
+    leaf.setValueOn(laovdb::Coord(1, 2, 3), -3);
+    leaf.setValueOn(laovdb::Coord(5, 2, 3),  4);
     LeafType::ValueType sum = 0;
     for (LeafType::ValueOnIter iter = leaf.beginValueOn(); iter; ++iter) sum += *iter;
     EXPECT_EQ((-3 + 4), sum);
@@ -141,35 +141,35 @@ TEST_F(TestLeaf, testIterators)
 
 TEST_F(TestLeaf, testEquivalence)
 {
-    LeafType leaf( openvdb::Coord(0, 0, 0), 2);
-    LeafType leaf2(openvdb::Coord(0, 0, 0), 3);
+    LeafType leaf( laovdb::Coord(0, 0, 0), 2);
+    LeafType leaf2(laovdb::Coord(0, 0, 0), 3);
 
     EXPECT_TRUE(leaf != leaf2);
 
-    for(openvdb::Index32 i = 0; i < LeafType::size(); ++i) {
+    for(laovdb::Index32 i = 0; i < LeafType::size(); ++i) {
         leaf.setValueOnly(i, i);
         leaf2.setValueOnly(i, i);
     }
     EXPECT_TRUE(leaf == leaf2);
 
     // set some values.
-    leaf.setValueOn(openvdb::Coord(0, 0, 0), 1);
-    leaf.setValueOn(openvdb::Coord(0, 1, 0), 1);
-    leaf.setValueOn(openvdb::Coord(1, 1, 0), 1);
-    leaf.setValueOn(openvdb::Coord(1, 1, 2), 1);
+    leaf.setValueOn(laovdb::Coord(0, 0, 0), 1);
+    leaf.setValueOn(laovdb::Coord(0, 1, 0), 1);
+    leaf.setValueOn(laovdb::Coord(1, 1, 0), 1);
+    leaf.setValueOn(laovdb::Coord(1, 1, 2), 1);
 
-    leaf2.setValueOn(openvdb::Coord(0, 0, 0), 1);
-    leaf2.setValueOn(openvdb::Coord(0, 1, 0), 1);
-    leaf2.setValueOn(openvdb::Coord(1, 1, 0), 1);
-    leaf2.setValueOn(openvdb::Coord(1, 1, 2), 1);
+    leaf2.setValueOn(laovdb::Coord(0, 0, 0), 1);
+    leaf2.setValueOn(laovdb::Coord(0, 1, 0), 1);
+    leaf2.setValueOn(laovdb::Coord(1, 1, 0), 1);
+    leaf2.setValueOn(laovdb::Coord(1, 1, 2), 1);
 
     EXPECT_TRUE(leaf == leaf2);
 
-    leaf2.setValueOn(openvdb::Coord(0, 0, 1), 1);
+    leaf2.setValueOn(laovdb::Coord(0, 0, 1), 1);
 
     EXPECT_TRUE(leaf != leaf2);
 
-    leaf2.setValueOff(openvdb::Coord(0, 0, 1), 1);
+    leaf2.setValueOff(laovdb::Coord(0, 0, 1), 1);
 
     EXPECT_TRUE(leaf == leaf2);
 }
@@ -177,44 +177,44 @@ TEST_F(TestLeaf, testEquivalence)
 TEST_F(TestLeaf, testGetOrigin)
 {
     {
-        LeafType leaf(openvdb::Coord(1, 0, 0), 1);
-        EXPECT_EQ(openvdb::Coord(0, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(1, 0, 0), 1);
+        EXPECT_EQ(laovdb::Coord(0, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(0, 0, 0), 1);
-        EXPECT_EQ(openvdb::Coord(0, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(0, 0, 0), 1);
+        EXPECT_EQ(laovdb::Coord(0, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(8, 0, 0), 1);
-        EXPECT_EQ(openvdb::Coord(8, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(8, 0, 0), 1);
+        EXPECT_EQ(laovdb::Coord(8, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(8, 1, 0), 1);
-        EXPECT_EQ(openvdb::Coord(8, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(8, 1, 0), 1);
+        EXPECT_EQ(laovdb::Coord(8, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(1024, 1, 3), 1);
-        EXPECT_EQ(openvdb::Coord(128*8, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(1024, 1, 3), 1);
+        EXPECT_EQ(laovdb::Coord(128*8, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(1023, 1, 3), 1);
-        EXPECT_EQ(openvdb::Coord(127*8, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(1023, 1, 3), 1);
+        EXPECT_EQ(laovdb::Coord(127*8, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(512, 512, 512), 1);
-        EXPECT_EQ(openvdb::Coord(512, 512, 512), leaf.origin());
+        LeafType leaf(laovdb::Coord(512, 512, 512), 1);
+        EXPECT_EQ(laovdb::Coord(512, 512, 512), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(2, 52, 515), 1);
-        EXPECT_EQ(openvdb::Coord(0, 48, 512), leaf.origin());
+        LeafType leaf(laovdb::Coord(2, 52, 515), 1);
+        EXPECT_EQ(laovdb::Coord(0, 48, 512), leaf.origin());
     }
 }
 
 TEST_F(TestLeaf, testIteratorGetCoord)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    LeafType leaf(openvdb::Coord(8, 8, 0), 2);
+    LeafType leaf(laovdb::Coord(8, 8, 0), 2);
 
     EXPECT_EQ(Coord(8, 8, 0), leaf.origin());
 
@@ -232,9 +232,9 @@ TEST_F(TestLeaf, testIteratorGetCoord)
 
 TEST_F(TestLeaf, testNegativeIndexing)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    LeafType leaf(openvdb::Coord(-9, -2, -8), 1);
+    LeafType leaf(laovdb::Coord(-9, -2, -8), 1);
 
     EXPECT_EQ(Coord(-16, -8, -8), leaf.origin());
 
@@ -255,7 +255,7 @@ TEST_F(TestLeaf, testNegativeIndexing)
 
 TEST_F(TestLeaf, testIsConstant)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     const Coord origin(-9, -2, -8);
 
     {// check old version (v3.0 and older) with float
@@ -380,7 +380,7 @@ TEST_F(TestLeaf, testIsConstant)
 
 TEST_F(TestLeaf, testMedian)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     const Coord origin(-9, -2, -8);
     std::vector<float> v{5, 6, 4, 3, 2, 6, 7, 9, 3};
     tree::LeafNode<float, 3> leaf(origin, 1.0f, false);
@@ -466,7 +466,7 @@ TEST_F(TestLeaf, testMedian)
 
 TEST_F(TestLeaf, testFill)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     const Coord origin(-9, -2, -8);
 
     const float bg = 0.0f, fg = 1.0f;
@@ -498,7 +498,7 @@ TEST_F(TestLeaf, testFill)
 
 TEST_F(TestLeaf, testCount)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     const Coord origin(-9, -2, -8);
     tree::LeafNode<float, 3> leaf(origin, 1.0f, false);
 
@@ -521,7 +521,7 @@ TEST_F(TestLeaf, testCount)
 #if OPENVDB_ABI_VERSION_NUMBER >= 9
 TEST_F(TestLeaf, testTransientData)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     using LeafT = tree::LeafNode<float, 3>;
     const Coord origin(-9, -2, -8);
     LeafT leaf(origin, 1.0f, false);

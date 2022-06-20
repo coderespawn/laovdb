@@ -23,20 +23,20 @@ public:
 void
 TestTransform::SetUp()
 {
-    openvdb::math::MapRegistry::clear();
-    openvdb::math::AffineMap::registerMap();
-    openvdb::math::ScaleMap::registerMap();
-    openvdb::math::UniformScaleMap::registerMap();
-    openvdb::math::TranslationMap::registerMap();
-    openvdb::math::ScaleTranslateMap::registerMap();
-    openvdb::math::UniformScaleTranslateMap::registerMap();
+    laovdb::math::MapRegistry::clear();
+    laovdb::math::AffineMap::registerMap();
+    laovdb::math::ScaleMap::registerMap();
+    laovdb::math::UniformScaleMap::registerMap();
+    laovdb::math::TranslationMap::registerMap();
+    laovdb::math::ScaleTranslateMap::registerMap();
+    laovdb::math::UniformScaleTranslateMap::registerMap();
 }
 
 
 void
 TestTransform::TearDown()
 {
-    openvdb::math::MapRegistry::clear();
+    laovdb::math::MapRegistry::clear();
 }
 
 
@@ -45,7 +45,7 @@ TestTransform::TearDown()
 
 TEST_F(TestTransform, testLinearTransform)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     double TOL = 1e-7;
 
     // Test: Scaling
@@ -235,7 +235,7 @@ TEST_F(TestTransform, testLinearTransform)
 
 TEST_F(TestTransform, testTransformEquality)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // maps created in different ways may be equivalent
     math::Transform::Ptr t1 = math::Transform::createLinearTransform(0.5);
@@ -274,7 +274,7 @@ TEST_F(TestTransform, testTransformEquality)
     EXPECT_TRUE( *t6 != *t4);
 
     // test comparison of linear to nonlinear map
-    openvdb::BBoxd bbox(math::Vec3d(0), math::Vec3d(100));
+    laovdb::BBoxd bbox(math::Vec3d(0), math::Vec3d(100));
     math::Transform::Ptr frustum = math::Transform::createFrustumTransform(bbox, 0.25, 10);
 
     EXPECT_TRUE( *frustum != *t1 );
@@ -285,7 +285,7 @@ TEST_F(TestTransform, testTransformEquality)
 
 TEST_F(TestTransform, testBackwardCompatibility)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     double TOL = 1e-7;
 
     // Register maps
@@ -434,7 +434,7 @@ TEST_F(TestTransform, testBackwardCompatibility)
 
 TEST_F(TestTransform, testIsIdentity)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     math::Transform::Ptr t = math::Transform::createLinearTransform(1.0);
 
     EXPECT_TRUE(t->isIdentity());
@@ -466,7 +466,7 @@ TEST_F(TestTransform, testIsIdentity)
 
 TEST_F(TestTransform, testBoundingBoxes)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     {
         math::Transform::ConstPtr t = math::Transform::createLinearTransform(0.5);
@@ -509,7 +509,7 @@ TEST_F(TestTransform, testBoundingBoxes)
 /*
 TEST_F(TestTransform, testNonlinearTransform)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     double TOL = 1e-7;
 }
 */

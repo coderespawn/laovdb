@@ -74,15 +74,15 @@ public:
     /// @{
 
     /// @brief Evaluate a vector-valued parameter.
-    openvdb::Vec3f evalVec3f(const char* name, fpreal time) const;
+    laovdb::Vec3f evalVec3f(const char* name, fpreal time) const;
     /// @brief Evaluate a vector-valued parameter.
-    openvdb::Vec3R evalVec3R(const char* name, fpreal time) const;
+    laovdb::Vec3R evalVec3R(const char* name, fpreal time) const;
     /// @brief Evaluate a vector-valued parameter.
-    openvdb::Vec3i evalVec3i(const char* name, fpreal time) const;
+    laovdb::Vec3i evalVec3i(const char* name, fpreal time) const;
     /// @brief Evaluate a vector-valued parameter.
-    openvdb::Vec2R evalVec2R(const char* name, fpreal time) const;
+    laovdb::Vec2R evalVec2R(const char* name, fpreal time) const;
     /// @brief Evaluate a vector-valued parameter.
-    openvdb::Vec2i evalVec2i(const char* name, fpreal time) const;
+    laovdb::Vec2i evalVec2i(const char* name, fpreal time) const;
 
     /// @brief Evaluate a string-valued parameter as an STL string.
     /// @details This method facilitates string parameter evaluation in expressions.
@@ -195,16 +195,16 @@ private:
 /// @details Use node_info_text::registerGridSpecificInfoText<> to register a grid type to
 /// a function pointer which matches the ApplyGridSpecificInfoText signature.
 ///
-///    void floatGridText(std::ostream&, const openvdb::GridBase&);
+///    void floatGridText(std::ostream&, const laovdb::GridBase&);
 ///
-///    node_info_text::registerGridSpecificInfoText<openvdb::FloatGrid>(&floatGridText);
+///    node_info_text::registerGridSpecificInfoText<laovdb::FloatGrid>(&floatGridText);
 ///
 namespace node_info_text
 {
     // The function pointer signature expected when registering an grid type text
     // callback. The grid is passed untyped but is guaranteed to match the registered
     // type.
-    using ApplyGridSpecificInfoText = void (*)(std::ostream&, const openvdb::GridBase&);
+    using ApplyGridSpecificInfoText = void (*)(std::ostream&, const laovdb::GridBase&);
 
     /// @brief Register an info text callback to a specific grid type.
     /// @note Does not add the callback if the grid type already has a registered callback.

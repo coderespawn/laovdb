@@ -17,7 +17,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -477,7 +477,7 @@ struct TSApplyImpl<OpT, BaseT, TypeList<T, Ts...>>
 /// @brief A list of types (not necessarily unique)
 /// @details Example:
 /// @code
-/// using MyTypes = openvdb::TypeList<int, float, int, double, float>;
+/// using MyTypes = laovdb::TypeList<int, float, int, double, float>;
 /// @endcode
 template<typename... Ts>
 struct TypeList
@@ -499,12 +499,12 @@ struct TypeList
     /// @details Example:
     /// @code
     /// {
-    ///     using IntTypes = openvdb::TypeList<Int16, Int32, Int64>;
-    ///     using RealTypes = openvdb::TypeList<float, double>;
+    ///     using IntTypes = laovdb::TypeList<Int16, Int32, Int64>;
+    ///     using RealTypes = laovdb::TypeList<float, double>;
     /// }
     /// {
-    ///     openvdb::TypeList<IntTypes>::Contains<Int32>; // true
-    ///     openvdb::TypeList<RealTypes>::Contains<Int32>; // false
+    ///     laovdb::TypeList<IntTypes>::Contains<Int32>; // true
+    ///     laovdb::TypeList<RealTypes>::Contains<Int32>; // false
     /// }
     /// @endcode
     template<typename T>
@@ -515,12 +515,12 @@ struct TypeList
     /// @details Example:
     /// @code
     /// {
-    ///     using IntTypes = openvdb::TypeList<Int16, Int32, Int64>;
-    ///     using RealTypes = openvdb::TypeList<float, double>;
+    ///     using IntTypes = laovdb::TypeList<Int16, Int32, Int64>;
+    ///     using RealTypes = laovdb::TypeList<float, double>;
     /// }
     /// {
-    ///     const int64_t L1 = openvdb::TypeList<IntTypes>::Index<Int32>;  // 1
-    ///     const int64_t L2 = openvdb::TypeList<RealTypes>::Index<Int32>; // -1
+    ///     const int64_t L1 = laovdb::TypeList<IntTypes>::Index<Int32>;  // 1
+    ///     const int64_t L2 = laovdb::TypeList<RealTypes>::Index<Int32>; // -1
     /// }
     /// @endcode
     template<typename T>
@@ -532,7 +532,7 @@ struct TypeList
     /// @details Example:
     /// @code
     /// {
-    ///     using Types = openvdb::TypeList<Int16, Int32, Int16, float, float, Int64>;
+    ///     using Types = laovdb::TypeList<Int16, Int32, Int16, float, float, Int64>;
     /// }
     /// {
     ///     using UniqueTypes = Types::Unique<>; // <Int16, Int32, float, Int64>
@@ -547,12 +547,12 @@ struct TypeList
     /// @details Example:
     /// @code
     /// {
-    ///     using IntTypes = openvdb::TypeList<Int16, Int32, Int64>;
-    ///     using RealTypes = openvdb::TypeList<float, double>;
+    ///     using IntTypes = laovdb::TypeList<Int16, Int32, Int64>;
+    ///     using RealTypes = laovdb::TypeList<float, double>;
     ///     using NumericTypes = IntTypes::Append<RealTypes>;
     /// }
     /// {
-    ///     using IntTypes = openvdb::TypeList<Int16>::Append<Int32, Int64>;
+    ///     using IntTypes = laovdb::TypeList<Int16>::Append<Int32, Int64>;
     ///     using NumericTypes = IntTypes::Append<float>::Append<double>;
     /// }
     /// @endcode
@@ -564,8 +564,8 @@ struct TypeList
     /// @details Example:
     /// @code
     /// {
-    ///     using NumericTypes = openvdb::TypeList<float, double, Int16, Int32, Int64>;
-    ///     using LongTypes = openvdb::TypeList<Int64, double>;
+    ///     using NumericTypes = laovdb::TypeList<float, double, Int16, Int32, Int64>;
+    ///     using LongTypes = laovdb::TypeList<Int64, double>;
     ///     using ShortTypes = NumericTypes::Remove<LongTypes>; // float, Int16, Int32
     /// }
     /// @endcode
@@ -577,12 +577,12 @@ struct TypeList
     /// @details Example:
     /// @code
     /// {
-    ///     using IntTypes = openvdb::TypeList<Int16, Int32, Int64>;
-    ///     using EmptyTypes = openvdb::TypeList<>;
+    ///     using IntTypes = laovdb::TypeList<Int16, Int32, Int64>;
+    ///     using EmptyTypes = laovdb::TypeList<>;
     /// }
     /// {
-    ///     IntTypes::PopFront; // openvdb::TypeList<Int32, Int64>;
-    ///     EmptyTypes::PopFront; // openvdb::TypeList<>;
+    ///     IntTypes::PopFront; // laovdb::TypeList<Int32, Int64>;
+    ///     EmptyTypes::PopFront; // laovdb::TypeList<>;
     /// }
     /// @endcode
     using PopFront = typename typelist_internal::TSRemoveFirstImpl<Self>::type;
@@ -592,12 +592,12 @@ struct TypeList
     /// @details Example:
     /// @code
     /// {
-    ///     using IntTypes = openvdb::TypeList<Int16, Int32, Int64>;
-    ///     using EmptyTypes = openvdb::TypeList<>;
+    ///     using IntTypes = laovdb::TypeList<Int16, Int32, Int64>;
+    ///     using EmptyTypes = laovdb::TypeList<>;
     /// }
     /// {
-    ///     IntTypes::PopBack; // openvdb::TypeList<Int16, Int32>;
-    ///     EmptyTypes::PopBack; // openvdb::TypeList<>;
+    ///     IntTypes::PopBack; // laovdb::TypeList<Int16, Int32>;
+    ///     EmptyTypes::PopBack; // laovdb::TypeList<>;
     /// }
     /// @endcode
     using PopBack = typename typelist_internal::TSRemoveLastImpl<Self>::type;
@@ -608,12 +608,12 @@ struct TypeList
     /// @details Example:
     /// @code
     /// {
-    ///     using NumericTypes = openvdb::TypeList<float, double, Int16, Int32, Int64>;
+    ///     using NumericTypes = laovdb::TypeList<float, double, Int16, Int32, Int64>;
     /// }
     /// {
-    ///     using IntTypes = NumericTypes::RemoveByIndex<0,1>; // openvdb::TypeList<Int16, Int32, Int64>;
-    ///     using RealTypes = NumericTypes::RemoveByIndex<2,4>; // openvdb::TypeList<float, double>;
-    ///     using RemoveFloat = NumericTypes::RemoveByIndex<0,0>; // openvdb::TypeList<double, Int16, Int32, Int64>;
+    ///     using IntTypes = NumericTypes::RemoveByIndex<0,1>; // laovdb::TypeList<Int16, Int32, Int64>;
+    ///     using RealTypes = NumericTypes::RemoveByIndex<2,4>; // laovdb::TypeList<float, double>;
+    ///     using RemoveFloat = NumericTypes::RemoveByIndex<0,0>; // laovdb::TypeList<double, Int16, Int32, Int64>;
     /// }
     /// @endcode
     template <size_t First, size_t Last>
@@ -630,10 +630,10 @@ struct TypeList
     ///     // Templated type decl, where the type T will be subsituted for each type
     ///     // in the TypeList being transformed.
     ///     template <typename T>
-    ///     using ConvertedType = typename openvdb::PromoteType<T>::Next;
+    ///     using ConvertedType = typename laovdb::PromoteType<T>::Next;
     ///
-    ///     // Results in: openvdb::TypeList<Int64, double>;
-    ///     using PromotedType = openvdb::TypeList<Int32, float>::Transform<ConvertedType>;
+    ///     // Results in: laovdb::TypeList<Int64, double>;
+    ///     using PromotedType = laovdb::TypeList<Int32, float>::Transform<ConvertedType>;
     /// }
     /// @endcode
     template<template <typename> class OpT>
@@ -650,7 +650,7 @@ struct TypeList
     ///     inline void operator()() { std::cout << typeid(T).name() << std::endl; }
     /// };
     ///
-    /// using MyTypes = openvdb::TypeList<int, float, double>;
+    /// using MyTypes = laovdb::TypeList<int, float, double>;
     /// MyTypes::foreach<PintTypes>(); // "i, f, d" (exact output is compiler-dependent)
     /// @endcode
     ///
@@ -673,7 +673,7 @@ struct TypeList
     ///     ListT::foreach(op);
     /// }
     ///
-    /// using MyTypes = openvdb::TypeList<int, float, double>;
+    /// using MyTypes = laovdb::TypeList<int, float, double>;
     /// printTypeList<MyTypes>(); // "i, f, d" (exact output is compiler-dependent)
     /// @endcode
     ///
@@ -725,7 +725,7 @@ struct TypeList
 
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 
 #endif // OPENVDB_TYPELIST_HAS_BEEN_INCLUDED

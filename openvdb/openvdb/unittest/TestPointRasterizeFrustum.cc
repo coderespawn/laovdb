@@ -21,14 +21,14 @@
 
 #include "gtest/gtest.h"
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestPointRasterizeFrustum: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointRasterizeFrustum
 
 TEST_F(TestPointRasterizeFrustum, testScaleByVoxelVolume)
@@ -83,7 +83,7 @@ TEST_F(TestPointRasterizeFrustum, testScaleByVoxelVolume)
     auto density = rasterizer.rasterizeUniformDensity(RasterMode::ACCUMULATE);
 
     EXPECT_TRUE(density);
-    EXPECT_EQ(openvdb::Name("density"), density->getName());
+    EXPECT_EQ(laovdb::Name("density"), density->getName());
     EXPECT_EQ(density->transform(), *transform);
 
     EXPECT_EQ(Index64(2), density->activeVoxelCount());
@@ -139,7 +139,7 @@ TEST_F(TestPointRasterizeFrustum, testScaleByVoxelVolume)
     density = rasterizer.rasterizeDensity("densityAttr", RasterMode::ACCUMULATE);
 
     EXPECT_TRUE(density);
-    EXPECT_EQ(openvdb::Name("density"), density->getName());
+    EXPECT_EQ(laovdb::Name("density"), density->getName());
     EXPECT_EQ(density->transform(), *transform);
 
     EXPECT_EQ(Index64(2), density->activeVoxelCount());
@@ -174,7 +174,7 @@ TEST_F(TestPointRasterizeFrustum, testScaleByVoxelVolume)
     EXPECT_TRUE(temperatureBase);
     auto temperature = GridBase::grid<FloatGrid>(temperatureBase);
     EXPECT_TRUE(temperature);
-    EXPECT_EQ(openvdb::Name("temperatureAttr"), temperature->getName());
+    EXPECT_EQ(laovdb::Name("temperatureAttr"), temperature->getName());
     EXPECT_EQ(temperature->transform(), *transform);
 
     EXPECT_EQ(Index64(2), temperature->tree().activeVoxelCount());
@@ -204,7 +204,7 @@ TEST_F(TestPointRasterizeFrustum, testScaleByVoxelVolume)
     auto velocityBase = rasterizer.rasterizeAttribute("velocityAttr", RasterMode::ACCUMULATE);
     EXPECT_TRUE(velocityBase);
     auto velocity = GridBase::grid<Vec3fGrid>(velocityBase);
-    EXPECT_EQ(openvdb::Name("velocityAttr"), velocity->getName());
+    EXPECT_EQ(laovdb::Name("velocityAttr"), velocity->getName());
     EXPECT_EQ(velocity->transform(), *transform);
 
     EXPECT_EQ(Index64(2), velocity->tree().activeVoxelCount());
@@ -251,10 +251,10 @@ TEST_F(TestPointRasterizeFrustum, testScaleByVoxelVolume)
     // point 3 is rasterized into (26, 17, 282)
 
     density = frustumRasterizer.rasterizeDensity("densityAttr", RasterMode::ACCUMULATE);
-    EXPECT_EQ(openvdb::Name("density"), density->getName());
+    EXPECT_EQ(laovdb::Name("density"), density->getName());
 
     EXPECT_TRUE(density);
-    EXPECT_EQ(openvdb::Name("density"), density->getName());
+    EXPECT_EQ(laovdb::Name("density"), density->getName());
     EXPECT_EQ(density->transform(), *frustum);
 
     EXPECT_EQ(Index64(3), density->activeVoxelCount());
@@ -358,7 +358,7 @@ TEST_F(TestPointRasterizeFrustum, testPointRasterization)
     auto density = rasterizer.rasterizeUniformDensity(RasterMode::ACCUMULATE);
 
     EXPECT_TRUE(density);
-    EXPECT_EQ(openvdb::Name("density"), density->getName());
+    EXPECT_EQ(laovdb::Name("density"), density->getName());
     EXPECT_EQ(density->transform(), *transform);
 
     EXPECT_EQ(Index64(2), density->activeVoxelCount());
@@ -414,7 +414,7 @@ TEST_F(TestPointRasterizeFrustum, testPointRasterization)
     density = rasterizer.rasterizeDensity("densityAttr", RasterMode::ACCUMULATE);
 
     EXPECT_TRUE(density);
-    EXPECT_EQ(openvdb::Name("density"), density->getName());
+    EXPECT_EQ(laovdb::Name("density"), density->getName());
     EXPECT_EQ(density->transform(), *transform);
 
     EXPECT_EQ(Index64(2), density->activeVoxelCount());
@@ -438,7 +438,7 @@ TEST_F(TestPointRasterizeFrustum, testPointRasterization)
     density = rasterizer.rasterizeDensity("densityAttr", RasterMode::AVERAGE);
 
     EXPECT_TRUE(density);
-    EXPECT_EQ(openvdb::Name("density"), density->getName());
+    EXPECT_EQ(laovdb::Name("density"), density->getName());
     EXPECT_EQ(density->transform(), *transform);
 
     EXPECT_EQ(Index64(2), density->activeVoxelCount());
@@ -451,7 +451,7 @@ TEST_F(TestPointRasterizeFrustum, testPointRasterization)
     density = rasterizer.rasterizeDensity("densityAttr", RasterMode::MAXIMUM);
 
     EXPECT_TRUE(density);
-    EXPECT_EQ(openvdb::Name("density"), density->getName());
+    EXPECT_EQ(laovdb::Name("density"), density->getName());
     EXPECT_EQ(density->transform(), *transform);
 
     EXPECT_EQ(Index64(2), density->activeVoxelCount());
@@ -475,7 +475,7 @@ TEST_F(TestPointRasterizeFrustum, testPointRasterization)
     EXPECT_TRUE(temperatureBase);
     auto temperature = GridBase::grid<FloatGrid>(temperatureBase);
     EXPECT_TRUE(temperature);
-    EXPECT_EQ(openvdb::Name("temperatureAttr"), temperature->getName());
+    EXPECT_EQ(laovdb::Name("temperatureAttr"), temperature->getName());
     EXPECT_EQ(temperature->transform(), *transform);
 
     EXPECT_EQ(Index64(2), temperature->tree().activeVoxelCount());
@@ -518,7 +518,7 @@ TEST_F(TestPointRasterizeFrustum, testPointRasterization)
     EXPECT_TRUE(temperatureBase);
     temperature = GridBase::grid<FloatGrid>(temperatureBase);
     EXPECT_TRUE(temperature);
-    EXPECT_EQ(openvdb::Name("temperatureAttr"), temperature->getName());
+    EXPECT_EQ(laovdb::Name("temperatureAttr"), temperature->getName());
     EXPECT_EQ(temperature->transform(), *transform);
 
     EXPECT_EQ(Index64(2), temperature->tree().activeVoxelCount());
@@ -532,7 +532,7 @@ TEST_F(TestPointRasterizeFrustum, testPointRasterization)
     EXPECT_TRUE(temperatureBase);
     temperature = GridBase::grid<FloatGrid>(temperatureBase);
     EXPECT_TRUE(temperature);
-    EXPECT_EQ(openvdb::Name("temperatureAttr"), temperature->getName());
+    EXPECT_EQ(laovdb::Name("temperatureAttr"), temperature->getName());
     EXPECT_EQ(temperature->transform(), *transform);
 
     EXPECT_EQ(Index64(2), temperature->tree().activeVoxelCount());
@@ -584,7 +584,7 @@ TEST_F(TestPointRasterizeFrustum, testPointRasterization)
     auto velocityBase = rasterizer.rasterizeAttribute("velocityAttr", RasterMode::ACCUMULATE);
     EXPECT_TRUE(velocityBase);
     auto velocity = GridBase::grid<Vec3fGrid>(velocityBase);
-    EXPECT_EQ(openvdb::Name("velocityAttr"), velocity->getName());
+    EXPECT_EQ(laovdb::Name("velocityAttr"), velocity->getName());
     EXPECT_EQ(velocity->transform(), *transform);
 
     EXPECT_EQ(Index64(2), velocity->tree().activeVoxelCount());
@@ -652,7 +652,7 @@ TEST_F(TestPointRasterizeFrustum, testPointRasterization)
     EXPECT_TRUE(velocityBase);
     velocity = GridBase::grid<Vec3fGrid>(velocityBase);
     EXPECT_TRUE(velocity);
-    EXPECT_EQ(openvdb::Name("velocityAttr"), velocity->getName());
+    EXPECT_EQ(laovdb::Name("velocityAttr"), velocity->getName());
     EXPECT_EQ(velocity->transform(), *transform);
 
     EXPECT_EQ(Index64(2), velocity->tree().activeVoxelCount());
@@ -728,10 +728,10 @@ TEST_F(TestPointRasterizeFrustum, testPointRasterization)
     // point 3 is rasterized into (26, 17, 282)
 
     density = frustumRasterizer.rasterizeDensity("densityAttr", RasterMode::ACCUMULATE);
-    EXPECT_EQ(openvdb::Name("density"), density->getName());
+    EXPECT_EQ(laovdb::Name("density"), density->getName());
 
     EXPECT_TRUE(density);
-    EXPECT_EQ(openvdb::Name("density"), density->getName());
+    EXPECT_EQ(laovdb::Name("density"), density->getName());
     EXPECT_EQ(density->transform(), *frustum);
 
     EXPECT_EQ(Index64(3), density->activeVoxelCount());
@@ -1111,7 +1111,7 @@ TEST_F(TestPointRasterizeFrustum, testVelocityMotionBlur)
         auto density = rasterizer.rasterizeUniformDensity(RasterMode::ACCUMULATE);
 
         EXPECT_TRUE(density);
-        EXPECT_EQ(openvdb::Name("density"), density->getName());
+        EXPECT_EQ(laovdb::Name("density"), density->getName());
         EXPECT_EQ(density->transform(), *transform);
 
         const auto& tree = density->constTree();
@@ -1158,7 +1158,7 @@ TEST_F(TestPointRasterizeFrustum, testVelocityMotionBlur)
         auto density = rasterizer.rasterizeDensity("densityAttr", RasterMode::ACCUMULATE);
 
         EXPECT_TRUE(density);
-        EXPECT_EQ(openvdb::Name("density"), density->getName());
+        EXPECT_EQ(laovdb::Name("density"), density->getName());
         EXPECT_EQ(density->transform(), *transform);
 
         const auto& tree = density->constTree();
@@ -1171,7 +1171,7 @@ TEST_F(TestPointRasterizeFrustum, testVelocityMotionBlur)
         auto density = rasterizer.rasterizeDensity("densityAttr", RasterMode::AVERAGE);
 
         EXPECT_TRUE(density);
-        EXPECT_EQ(openvdb::Name("density"), density->getName());
+        EXPECT_EQ(laovdb::Name("density"), density->getName());
         EXPECT_EQ(density->transform(), *transform);
 
         const auto& tree = density->constTree();
@@ -1184,7 +1184,7 @@ TEST_F(TestPointRasterizeFrustum, testVelocityMotionBlur)
         auto density = rasterizer.rasterizeDensity("densityAttr", RasterMode::MAXIMUM);
 
         EXPECT_TRUE(density);
-        EXPECT_EQ(openvdb::Name("density"), density->getName());
+        EXPECT_EQ(laovdb::Name("density"), density->getName());
         EXPECT_EQ(density->transform(), *transform);
 
         const auto& tree = density->constTree();
@@ -1231,7 +1231,7 @@ TEST_F(TestPointRasterizeFrustum, testVelocityMotionBlur)
         auto density = scaleRasterizer.rasterizeUniformDensity();
 
         EXPECT_TRUE(density);
-        EXPECT_EQ(openvdb::Name("density"), density->getName());
+        EXPECT_EQ(laovdb::Name("density"), density->getName());
         EXPECT_EQ(density->transform(), *transform);
 
         const auto& tree = density->constTree();
@@ -1347,7 +1347,7 @@ TEST_F(TestPointRasterizeFrustum, testCameraMotionBlur)
             auto density = rasterizer.rasterizeUniformDensity();
 
             EXPECT_TRUE(density);
-            EXPECT_EQ(openvdb::Name("density"), density->getName());
+            EXPECT_EQ(laovdb::Name("density"), density->getName());
             EXPECT_EQ(density->transform(), *transform);
 
             const auto& tree = density->constTree();
@@ -1364,9 +1364,9 @@ TEST_F(TestPointRasterizeFrustum, testCameraMotionBlur)
         { // accumulate uniform density, linear camera transform with X translation
 
             math::Transform startTransform(*transform);
-            startTransform.preTranslate(openvdb::Vec3d(-1, 0, 0));
+            startTransform.preTranslate(laovdb::Vec3d(-1, 0, 0));
             math::Transform endTransform(*transform);
-            endTransform.preTranslate(openvdb::Vec3d(1, 0, 0));
+            endTransform.preTranslate(laovdb::Vec3d(1, 0, 0));
 
             auto& camera = settings.camera;
             EXPECT_EQ(size_t(1), camera.size());
@@ -1380,7 +1380,7 @@ TEST_F(TestPointRasterizeFrustum, testCameraMotionBlur)
             auto density = rasterizer.rasterizeUniformDensity();
 
             EXPECT_TRUE(density);
-            EXPECT_EQ(openvdb::Name("density"), density->getName());
+            EXPECT_EQ(laovdb::Name("density"), density->getName());
             EXPECT_EQ(density->transform(), *transform);
 
             const auto& tree = density->constTree();
@@ -1452,11 +1452,11 @@ TEST_F(TestPointRasterizeFrustum, testCameraMotionBlur)
         Settings settings(*transform);
 
         math::Transform startTransform(*transform);
-        startTransform.preTranslate(openvdb::Vec3d(0, 0, 0));
+        startTransform.preTranslate(laovdb::Vec3d(0, 0, 0));
         math::Transform middleTransform(*transform);
-        middleTransform.preTranslate(openvdb::Vec3d(2, 0, 0));
+        middleTransform.preTranslate(laovdb::Vec3d(2, 0, 0));
         math::Transform endTransform(*transform);
-        endTransform.preTranslate(openvdb::Vec3d(2, 2, 0));
+        endTransform.preTranslate(laovdb::Vec3d(2, 2, 0));
 
         auto& camera = settings.camera;
         camera.clear();
@@ -1473,7 +1473,7 @@ TEST_F(TestPointRasterizeFrustum, testCameraMotionBlur)
             auto density = rasterizer.rasterizeUniformDensity();
 
             EXPECT_TRUE(density);
-            EXPECT_EQ(openvdb::Name("density"), density->getName());
+            EXPECT_EQ(laovdb::Name("density"), density->getName());
             EXPECT_EQ(density->transform(), *transform);
 
             const auto& tree = density->constTree();
@@ -1502,7 +1502,7 @@ TEST_F(TestPointRasterizeFrustum, testCameraMotionBlur)
             auto density = rasterizer.rasterizeUniformDensity();
 
             EXPECT_TRUE(density);
-            EXPECT_EQ(openvdb::Name("density"), density->getName());
+            EXPECT_EQ(laovdb::Name("density"), density->getName());
             EXPECT_EQ(density->transform(), *transform);
 
             const auto& tree = density->constTree();
@@ -1995,7 +1995,7 @@ TEST_F(TestPointRasterizeFrustum, testClipping)
     }
 
     { // clip mask that keeps all but the fifth point
-        auto sphere = tools::createLevelSetSphere<FloatGrid>(5.5f, openvdb::Vec3f(0), 1.0f);
+        auto sphere = tools::createLevelSetSphere<FloatGrid>(5.5f, laovdb::Vec3f(0), 1.0f);
         auto sphereBool = tools::interiorMask(*sphere);
         auto sphereMask = MaskGrid::Ptr(new MaskGrid(*sphereBool));
 
@@ -2011,7 +2011,7 @@ TEST_F(TestPointRasterizeFrustum, testClipping)
     }
 
     { // clip mask that keeps all but the first two points
-        auto sphere = tools::createLevelSetSphere<FloatGrid>(5.0f, openvdb::Vec3f(0), 1.0f);
+        auto sphere = tools::createLevelSetSphere<FloatGrid>(5.0f, laovdb::Vec3f(0), 1.0f);
         auto sphereBool = tools::interiorMask(*sphere);
         auto sphereMask = MaskGrid::Ptr(new MaskGrid(*sphereBool));
 
@@ -2027,7 +2027,7 @@ TEST_F(TestPointRasterizeFrustum, testClipping)
     }
 
     { // clip mask that only keeps first two points
-        auto sphere = tools::createLevelSetSphere<FloatGrid>(5.0f, openvdb::Vec3f(0), 1.0f);
+        auto sphere = tools::createLevelSetSphere<FloatGrid>(5.0f, laovdb::Vec3f(0), 1.0f);
         auto sphereBool = tools::interiorMask(*sphere);
         auto sphereMask = MaskGrid::Ptr(new MaskGrid(*sphereBool));
 
@@ -2145,10 +2145,10 @@ TEST_F(TestPointRasterizeFrustum, testStreaming)
     {
         io::File file(filename);
         file.open();
-        openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+        laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
         file.close();
 
-        points = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+        points = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
     }
 
     auto leaf = points->tree().cbeginLeaf();
@@ -2212,10 +2212,10 @@ TEST_F(TestPointRasterizeFrustum, testStreaming)
     {
         io::File file(filename);
         file.open();
-        openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+        laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
         file.close();
 
-        points = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+        points = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
     }
     leaf = points->tree().cbeginLeaf();
 
@@ -2239,10 +2239,10 @@ TEST_F(TestPointRasterizeFrustum, testStreaming)
     {
         io::File file(filename);
         file.open();
-        openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+        laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
         file.close();
 
-        points = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+        points = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
     }
     leaf = points->tree().cbeginLeaf();
 
@@ -2267,10 +2267,10 @@ TEST_F(TestPointRasterizeFrustum, testStreaming)
     {
         io::File file(filename);
         file.open();
-        openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+        laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
         file.close();
 
-        points = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+        points = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
     }
     leaf = points->tree().cbeginLeaf();
 
@@ -2307,10 +2307,10 @@ TEST_F(TestPointRasterizeFrustum, testStreaming)
     {
         io::File file(filename);
         file.open();
-        openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+        laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
         file.close();
 
-        points = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+        points = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
     }
     leaf = points->tree().cbeginLeaf();
 
@@ -2374,10 +2374,10 @@ TEST_F(TestPointRasterizeFrustum, testStreaming)
             { // reopen file and deep copy while setting transform
                 io::File file(filename);
                 file.open();
-                openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+                laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
                 file.close();
 
-                points = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+                points = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
                 points2 = points->deepCopy();
                 points2->setTransform(transform);
             }
@@ -2411,10 +2411,10 @@ TEST_F(TestPointRasterizeFrustum, testStreaming)
             { // reopen file and deep copy while setting transform
                 io::File file(filename);
                 file.open();
-                openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+                laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
                 file.close();
 
-                points = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+                points = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
                 points2 = points->deepCopy();
                 points2->setTransform(transform);
             }
@@ -2513,7 +2513,7 @@ TEST_F(TestPointRasterizeFrustum, testProfile)
         rasterizer.addPoints(points, /*stream=*/false);
 
 #ifdef PROFILE
-        openvdb::util::CpuTimer timer("Point Rasterize, Linear Transform");
+        laovdb::util::CpuTimer timer("Point Rasterize, Linear Transform");
 #endif
 
         auto density = rasterizer.rasterizeUniformDensity();
@@ -2534,7 +2534,7 @@ TEST_F(TestPointRasterizeFrustum, testProfile)
         rasterizer.addPoints(points, /*stream=*/false);
 
 #ifdef PROFILE
-        openvdb::util::CpuTimer timer("Point Rasterize, Frustum Transform");
+        laovdb::util::CpuTimer timer("Point Rasterize, Frustum Transform");
 #endif
 
         auto density = rasterizer.rasterizeUniformDensity();
@@ -2558,7 +2558,7 @@ TEST_F(TestPointRasterizeFrustum, testProfile)
         rasterizer.addPoints(points, /*stream=*/false);
 
 #ifdef PROFILE
-        openvdb::util::CpuTimer timer("Point Rasterize, Linear Transform, Low Velocity");
+        laovdb::util::CpuTimer timer("Point Rasterize, Linear Transform, Low Velocity");
 #endif
 
         auto density = rasterizer.rasterizeUniformDensity();
@@ -2584,7 +2584,7 @@ TEST_F(TestPointRasterizeFrustum, testProfile)
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 #ifdef PROFILE
-        openvdb::util::CpuTimer timer("Point Rasterize, Linear Transform, High Velocity");
+        laovdb::util::CpuTimer timer("Point Rasterize, Linear Transform, High Velocity");
 #endif
 
         auto density = rasterizer.rasterizeUniformDensity();
@@ -2610,7 +2610,7 @@ TEST_F(TestPointRasterizeFrustum, testProfile)
         rasterizer.addPoints(points, /*stream=*/false);
 
 #ifdef PROFILE
-        openvdb::util::CpuTimer timer("Point Rasterize, Frustum Transform, High Velocity");
+        laovdb::util::CpuTimer timer("Point Rasterize, Frustum Transform, High Velocity");
 #endif
 
         auto density = rasterizer.rasterizeUniformDensity();
@@ -2634,7 +2634,7 @@ TEST_F(TestPointRasterizeFrustum, testProfile)
         rasterizer.addPoints(points, /*stream=*/false);
 
 #ifdef PROFILE
-        openvdb::util::CpuTimer timer("Sphere Rasterize, Linear Transform");
+        laovdb::util::CpuTimer timer("Sphere Rasterize, Linear Transform");
 #endif
 
         auto density = rasterizer.rasterizeUniformDensity();
@@ -2658,7 +2658,7 @@ TEST_F(TestPointRasterizeFrustum, testProfile)
         rasterizer.addPoints(points, /*stream=*/false);
 
 #ifdef PROFILE
-        openvdb::util::CpuTimer timer("Sphere Rasterize, Frustum Transform, Approximate");
+        laovdb::util::CpuTimer timer("Sphere Rasterize, Frustum Transform, Approximate");
 #endif
 
         auto density = rasterizer.rasterizeUniformDensity();
@@ -2686,7 +2686,7 @@ TEST_F(TestPointRasterizeFrustum, testProfile)
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 #ifdef PROFILE
-        openvdb::util::CpuTimer timer("Sphere Rasterize, Frustum Transform, High Velocity, Approximate");
+        laovdb::util::CpuTimer timer("Sphere Rasterize, Frustum Transform, High Velocity, Approximate");
 #endif
 
         auto density = rasterizer.rasterizeUniformDensity();
@@ -2716,7 +2716,7 @@ std::this_thread::sleep_for(std::chrono::milliseconds(500));
         rasterizer.addPoints(points, /*stream=*/false);
 
 #ifdef PROFILE
-        openvdb::util::CpuTimer timer("Sphere Rasterize, Frustum Transform, High Velocity, Accurate");
+        laovdb::util::CpuTimer timer("Sphere Rasterize, Frustum Transform, High Velocity, Accurate");
 #endif
 
         auto density = rasterizer.rasterizeUniformDensity();

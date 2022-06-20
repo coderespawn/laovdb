@@ -49,7 +49,7 @@
 #include <cmath>
 #include <type_traits>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -1012,6 +1012,6 @@ struct Sampler<2, true> : public StaggeredQuadraticSampler {};
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_INTERPOLATION_HAS_BEEN_INCLUDED

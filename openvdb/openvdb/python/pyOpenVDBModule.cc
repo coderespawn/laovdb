@@ -32,15 +32,15 @@ void exportPointGrid();
 
 namespace _openvdbmodule {
 
-using namespace openvdb;
+using namespace laovdb;
 
 
 /// Helper class to convert between a Python numeric sequence
-/// (tuple, list, etc.) and an openvdb::Coord
+/// (tuple, list, etc.) and an laovdb::Coord
 struct CoordConverter
 {
     /// @return a Python tuple object equivalent to the given Coord.
-    static PyObject* convert(const openvdb::Coord& xyz)
+    static PyObject* convert(const laovdb::Coord& xyz)
     {
         py::object obj = py::make_tuple(xyz[0], xyz[1], xyz[2]);
         Py_INCREF(obj.ptr());
@@ -65,23 +65,23 @@ struct CoordConverter
         py::converter::rvalue_from_python_stage1_data* data)
     {
         // Construct a Coord in the provided memory location.
-        using StorageT = py::converter::rvalue_from_python_storage<openvdb::Coord>;
+        using StorageT = py::converter::rvalue_from_python_storage<laovdb::Coord>;
         void* storage = reinterpret_cast<StorageT*>(data)->storage.bytes;
-        new (storage) openvdb::Coord; // placement new
+        new (storage) laovdb::Coord; // placement new
         data->convertible = storage;
 
-        openvdb::Coord* xyz = static_cast<openvdb::Coord*>(storage);
+        laovdb::Coord* xyz = static_cast<laovdb::Coord*>(storage);
 
         // Populate the Coord.
         switch (PySequence_Length(obj)) {
         case 1:
-            xyz->reset(pyutil::getSequenceItem<openvdb::Int32>(obj, 0));
+            xyz->reset(pyutil::getSequenceItem<laovdb::Int32>(obj, 0));
             break;
         case 3:
             xyz->reset(
-                pyutil::getSequenceItem<openvdb::Int32>(obj, 0),
-                pyutil::getSequenceItem<openvdb::Int32>(obj, 1),
-                pyutil::getSequenceItem<openvdb::Int32>(obj, 2));
+                pyutil::getSequenceItem<laovdb::Int32>(obj, 0),
+                pyutil::getSequenceItem<laovdb::Int32>(obj, 1),
+                pyutil::getSequenceItem<laovdb::Int32>(obj, 2));
             break;
         default:
             PyErr_Format(PyExc_ValueError,
@@ -94,11 +94,11 @@ struct CoordConverter
     /// Register both the Coord-to-tuple and the sequence-to-Coord converters.
     static void registerConverter()
     {
-        py::to_python_converter<openvdb::Coord, CoordConverter>();
+        py::to_python_converter<laovdb::Coord, CoordConverter>();
         py::converter::registry::push_back(
             &CoordConverter::convertible,
             &CoordConverter::construct,
-            py::type_id<openvdb::Coord>());
+            py::type_id<laovdb::Coord>());
     }
 }; // struct CoordConverter
 
@@ -109,7 +109,7 @@ struct CoordConverter
 
 
 /// Helper class to convert between a Python numeric sequence
-/// (tuple, list, etc.) and an openvdb::Vec
+/// (tuple, list, etc.) and an laovdb::Vec
 template<typename VecT>
 struct VecConverter
 {
@@ -182,7 +182,7 @@ struct VecConverter
 
 
 /// Helper class to convert between a 2D Python numeric sequence
-/// (tuple, list, etc.) and an openvdb::Mat
+/// (tuple, list, etc.) and an laovdb::Mat
 template<typename MatT>
 struct MatConverter
 {
@@ -268,7 +268,7 @@ struct MatConverter
 ////////////////////////////////////////
 
 
-/// Helper class to convert between a Python integer and a openvdb::PointIndex
+/// Helper class to convert between a Python integer and a laovdb::PointIndex
 template <typename PointIndexT>
 struct PointIndexConverter
 {
@@ -327,7 +327,7 @@ struct PointIndexConverter
 ////////////////////////////////////////
 
 
-/// Helper class to convert between a Python dict and an openvdb::MetaMap
+/// Helper class to convert between a Python dict and an laovdb::MetaMap
 /// @todo Consider implementing a separate, templated converter for
 /// the various Metadata types.
 struct MetaMapConverter
@@ -503,7 +503,7 @@ template<typename T> void translateException(const T&) {}
 
 /// @brief Define a function that translates an OpenVDB exception into
 /// the equivalent Python exception.
-/// @details openvdb::Exception::what() typically returns a string of the form
+/// @details laovdb::Exception::what() typically returns a string of the form
 /// "<exception>: <description>".  To avoid duplication of the exception name in Python
 /// stack traces, the function strips off the "<exception>: " prefix.  To do that,
 /// it needs the class name in the form of a string, hence the preprocessor macro.
@@ -524,16 +524,16 @@ template<typename T> void translateException(const T&) {}
 /// Define an overloaded function that translate all OpenVDB exceptions into
 /// their Python equivalents.
 /// @todo LookupError is redundant and should someday be removed.
-PYOPENVDB_CATCH(openvdb::ArithmeticError,       PyExc_ArithmeticError)
-PYOPENVDB_CATCH(openvdb::IndexError,            PyExc_IndexError)
-PYOPENVDB_CATCH(openvdb::IoError,               PyExc_IOError)
-PYOPENVDB_CATCH(openvdb::KeyError,              PyExc_KeyError)
-PYOPENVDB_CATCH(openvdb::LookupError,           PyExc_LookupError)
-PYOPENVDB_CATCH(openvdb::NotImplementedError,   PyExc_NotImplementedError)
-PYOPENVDB_CATCH(openvdb::ReferenceError,        PyExc_ReferenceError)
-PYOPENVDB_CATCH(openvdb::RuntimeError,          PyExc_RuntimeError)
-PYOPENVDB_CATCH(openvdb::TypeError,             PyExc_TypeError)
-PYOPENVDB_CATCH(openvdb::ValueError,            PyExc_ValueError)
+PYOPENVDB_CATCH(laovdb::ArithmeticError,       PyExc_ArithmeticError)
+PYOPENVDB_CATCH(laovdb::IndexError,            PyExc_IndexError)
+PYOPENVDB_CATCH(laovdb::IoError,               PyExc_IOError)
+PYOPENVDB_CATCH(laovdb::KeyError,              PyExc_KeyError)
+PYOPENVDB_CATCH(laovdb::LookupError,           PyExc_LookupError)
+PYOPENVDB_CATCH(laovdb::NotImplementedError,   PyExc_NotImplementedError)
+PYOPENVDB_CATCH(laovdb::ReferenceError,        PyExc_ReferenceError)
+PYOPENVDB_CATCH(laovdb::RuntimeError,          PyExc_RuntimeError)
+PYOPENVDB_CATCH(laovdb::TypeError,             PyExc_TypeError)
+PYOPENVDB_CATCH(laovdb::ValueError,            PyExc_ValueError)
 
 #undef PYOPENVDB_CATCH
 
@@ -642,7 +642,7 @@ writeToFile(const std::string& filename, py::object gridOrSeqObj, py::object dic
     try {
         GridBase::Ptr base = pyopenvdb::getGridFromPyObject(gridOrSeqObj);
         gridVec.push_back(base);
-    } catch (openvdb::TypeError&) {
+    } catch (laovdb::TypeError&) {
         for (py::stl_input_iterator<py::object> it(gridOrSeqObj), end; it != end; ++it) {
             if (GridBase::Ptr base = pyGrid::getGridBaseFromGrid(*it)) {
                 gridVec.push_back(base);
@@ -667,7 +667,7 @@ void axrun(const std::string& code, py::object gridOrSeqObj)
     try {
         GridBase::Ptr base = pyopenvdb::getGridFromPyObject(gridOrSeqObj);
         gridVec.push_back(base);
-    } catch (openvdb::TypeError&) {
+    } catch (laovdb::TypeError&) {
         for (py::stl_input_iterator<py::object> it(gridOrSeqObj), end; it != end; ++it) {
             if (GridBase::Ptr base = pyGrid::getGridBaseFromGrid(*it)) {
                 gridVec.push_back(base);
@@ -675,7 +675,7 @@ void axrun(const std::string& code, py::object gridOrSeqObj)
         }
     }
 
-    try { openvdb::ax::run(code.c_str(), gridVec); }
+    try { laovdb::ax::run(code.c_str(), gridVec); }
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
@@ -747,7 +747,7 @@ setProgramName(py::object nameObj, bool color)
 ////////////////////////////////////////
 
 
-// Descriptor for the openvdb::GridClass enum (for use with pyutil::StringEnum)
+// Descriptor for the laovdb::GridClass enum (for use with pyutil::StringEnum)
 struct GridClassDescr
 {
     static const char* name() { return "GridClass"; }
@@ -770,7 +770,7 @@ struct GridClassDescr
 };
 
 
-// Descriptor for the openvdb::VecType enum (for use with pyutil::StringEnum)
+// Descriptor for the laovdb::VecType enum (for use with pyutil::StringEnum)
 struct VecTypeDescr
 {
     static const char* name() { return "VectorType"; }
@@ -798,14 +798,14 @@ struct VecTypeDescr
     {
         static const int sCount = 5;
         static const char* const sStrings[sCount][2] = {
-            { "INVARIANT", strdup(GridBase::vecTypeToString(openvdb::VEC_INVARIANT).c_str()) },
-            { "COVARIANT", strdup(GridBase::vecTypeToString(openvdb::VEC_COVARIANT).c_str()) },
+            { "INVARIANT", strdup(GridBase::vecTypeToString(laovdb::VEC_INVARIANT).c_str()) },
+            { "COVARIANT", strdup(GridBase::vecTypeToString(laovdb::VEC_COVARIANT).c_str()) },
             { "COVARIANT_NORMALIZE",
-                strdup(GridBase::vecTypeToString(openvdb::VEC_COVARIANT_NORMALIZE).c_str()) },
+                strdup(GridBase::vecTypeToString(laovdb::VEC_COVARIANT_NORMALIZE).c_str()) },
             { "CONTRAVARIANT_RELATIVE",
-                strdup(GridBase::vecTypeToString(openvdb::VEC_CONTRAVARIANT_RELATIVE).c_str()) },
+                strdup(GridBase::vecTypeToString(laovdb::VEC_CONTRAVARIANT_RELATIVE).c_str()) },
             { "CONTRAVARIANT_ABSOLUTE",
-                strdup(GridBase::vecTypeToString(openvdb::VEC_CONTRAVARIANT_ABSOLUTE).c_str()) }
+                strdup(GridBase::vecTypeToString(laovdb::VEC_CONTRAVARIANT_ABSOLUTE).c_str()) }
         };
         if (i >= 0 && i < sCount) return std::make_pair(&sStrings[i][0], &sStrings[i][1]);
         return pyutil::CStringPair(static_cast<char**>(nullptr), static_cast<char**>(nullptr));
@@ -846,12 +846,12 @@ BOOST_PYTHON_MODULE(PY_OPENVDB_MODULE_NAME)
 #endif
 #endif
 
-    using namespace openvdb::OPENVDB_VERSION_NAME;
+    using namespace laovdb::OPENVDB_VERSION_NAME;
 
     // Initialize OpenVDB.
     initialize();
 #ifdef PY_OPENVDB_USE_AX
-    openvdb::ax::initialize();
+    laovdb::ax::initialize();
 #endif
     _openvdbmodule::CoordConverter::registerConverter();
 
@@ -969,13 +969,13 @@ BOOST_PYTHON_MODULE(PY_OPENVDB_MODULE_NAME)
 
     // Add some useful module-level constants.
     py::scope().attr("LIBRARY_VERSION") = py::make_tuple(
-        openvdb::OPENVDB_LIBRARY_MAJOR_VERSION,
-        openvdb::OPENVDB_LIBRARY_MINOR_VERSION,
-        openvdb::OPENVDB_LIBRARY_PATCH_VERSION);
-    py::scope().attr("FILE_FORMAT_VERSION") = openvdb::OPENVDB_FILE_VERSION;
-    py::scope().attr("COORD_MIN") = openvdb::Coord::min();
-    py::scope().attr("COORD_MAX") = openvdb::Coord::max();
-    py::scope().attr("LEVEL_SET_HALF_WIDTH") = openvdb::LEVEL_SET_HALF_WIDTH;
+        laovdb::OPENVDB_LIBRARY_MAJOR_VERSION,
+        laovdb::OPENVDB_LIBRARY_MINOR_VERSION,
+        laovdb::OPENVDB_LIBRARY_PATCH_VERSION);
+    py::scope().attr("FILE_FORMAT_VERSION") = laovdb::OPENVDB_FILE_VERSION;
+    py::scope().attr("COORD_MIN") = laovdb::Coord::min();
+    py::scope().attr("COORD_MAX") = laovdb::Coord::max();
+    py::scope().attr("LEVEL_SET_HALF_WIDTH") = laovdb::LEVEL_SET_HALF_WIDTH;
 
     pyutil::StringEnum<_openvdbmodule::GridClassDescr>::wrap();
     pyutil::StringEnum<_openvdbmodule::VecTypeDescr>::wrap();

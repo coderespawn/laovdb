@@ -18,7 +18,7 @@ class TestConjGradient: public ::testing::Test
 
 TEST_F(TestConjGradient, testJacobi)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     typedef math::pcg::SparseStencilMatrix<double, 7> MatrixType;
 
@@ -66,7 +66,7 @@ TEST_F(TestConjGradient, testJacobi)
 
 TEST_F(TestConjGradient, testIncompleteCholesky)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     typedef math::pcg::SparseStencilMatrix<double, 7> MatrixType;
     typedef math::pcg::IncompleteCholeskyPreconditioner<MatrixType> CholeskyPrecond;
@@ -170,7 +170,7 @@ TEST_F(TestConjGradient, testIncompleteCholesky)
 
 TEST_F(TestConjGradient, testVectorDotProduct)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     typedef math::pcg::Vector<double>  VectorType;
 

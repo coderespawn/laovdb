@@ -17,14 +17,14 @@
 #include <windows.h>
 #endif
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestPointGroup: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointGroup
 
 
@@ -151,8 +151,8 @@ TEST_F(TestPointGroup, testAppendDrop)
     const AttributeSet& attributeSet4 = leafIter->attributeSet();
 
     { // throw on append or drop an empty group
-        EXPECT_THROW(appendGroup(tree, ""), openvdb::KeyError);
-        EXPECT_THROW(dropGroup(tree, ""), openvdb::KeyError);
+        EXPECT_THROW(appendGroup(tree, ""), laovdb::KeyError);
+        EXPECT_THROW(dropGroup(tree, ""), laovdb::KeyError);
     }
 
     { // append a group
@@ -416,8 +416,8 @@ TEST_F(TestPointGroup, testSet)
 
     const PointAttributeVector<Vec3s> pointList(positions);
 
-    openvdb::tools::PointIndexGrid::Ptr pointIndexGrid =
-        openvdb::tools::createPointIndexGrid<openvdb::tools::PointIndexGrid>(pointList, *transform);
+    laovdb::tools::PointIndexGrid::Ptr pointIndexGrid =
+        laovdb::tools::createPointIndexGrid<laovdb::tools::PointIndexGrid>(pointList, *transform);
 
     PointDataGrid::Ptr grid = createPointDataGrid<NullCodec, PointDataGrid>(*pointIndexGrid, pointList, *transform);
     PointDataTree& tree = grid->tree();
@@ -556,8 +556,8 @@ TEST_F(TestPointGroup, testFilter)
 
         const PointAttributeVector<Vec3s> pointList(positions);
 
-        openvdb::tools::PointIndexGrid::Ptr pointIndexGrid =
-            openvdb::tools::createPointIndexGrid<openvdb::tools::PointIndexGrid>(pointList, *transform);
+        laovdb::tools::PointIndexGrid::Ptr pointIndexGrid =
+            laovdb::tools::createPointIndexGrid<laovdb::tools::PointIndexGrid>(pointList, *transform);
 
         grid = createPointDataGrid<NullCodec, PointDataGrid>(*pointIndexGrid, pointList, *transform);
     }
@@ -585,7 +585,7 @@ TEST_F(TestPointGroup, testFilter)
         EXPECT_EQ(pointCount(tree, filter3), Index64(2));
     }
 
-    const openvdb::BBoxd bbox(openvdb::Vec3d(0, 1.5, 0), openvdb::Vec3d(101, 100.5, 101));
+    const laovdb::BBoxd bbox(laovdb::Vec3d(0, 1.5, 0), laovdb::Vec3d(101, 100.5, 101));
 
     { // bbox filter
         appendGroup(tree, "bbox");
@@ -629,7 +629,7 @@ TEST_F(TestPointGroup, testFilter)
             auto handle = AttributeHandle<Vec3f>::create(iter->attributeArray("P"));
 
             for ( ; filterIndexIter; ++filterIndexIter) {
-                const openvdb::Coord ijk = filterIndexIter.getCoord();
+                const laovdb::Coord ijk = filterIndexIter.getCoord();
                 positions.push_back(handle->get(*filterIndexIter) + ijk.asVec3d());
             }
         }
@@ -646,8 +646,8 @@ TEST_F(TestPointGroup, testFilter)
 
         const PointAttributeVector<Vec3s> pointList(positions);
 
-        openvdb::tools::PointIndexGrid::Ptr pointIndexGrid =
-            openvdb::tools::createPointIndexGrid<openvdb::tools::PointIndexGrid>(pointList, *transform);
+        laovdb::tools::PointIndexGrid::Ptr pointIndexGrid =
+            laovdb::tools::createPointIndexGrid<laovdb::tools::PointIndexGrid>(pointList, *transform);
 
         grid = createPointDataGrid<NullCodec, PointDataGrid>(*pointIndexGrid, pointList, *transform);
 

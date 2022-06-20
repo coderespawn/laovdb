@@ -15,8 +15,8 @@ class TestGridDescriptor: public ::testing::Test
 
 TEST_F(TestGridDescriptor, testIO)
 {
-    using namespace openvdb::io;
-    using namespace openvdb;
+    using namespace laovdb::io;
+    using namespace laovdb;
 
     typedef FloatGrid GridType;
 
@@ -42,7 +42,7 @@ TEST_F(TestGridDescriptor, testIO)
 
     GridDescriptor gd2;
 
-    EXPECT_THROW(gd2.read(istr), openvdb::LookupError);
+    EXPECT_THROW(gd2.read(istr), laovdb::LookupError);
 
     // Register the grid.
     GridBase::clearRegistry();
@@ -70,8 +70,8 @@ TEST_F(TestGridDescriptor, testIO)
 
 TEST_F(TestGridDescriptor, testCopy)
 {
-    using namespace openvdb::io;
-    using namespace openvdb;
+    using namespace laovdb::io;
+    using namespace laovdb;
 
     typedef FloatGrid GridType;
 
@@ -99,10 +99,10 @@ TEST_F(TestGridDescriptor, testCopy)
 
 TEST_F(TestGridDescriptor, testName)
 {
-    using openvdb::Name;
-    using openvdb::io::GridDescriptor;
+    using laovdb::Name;
+    using laovdb::io::GridDescriptor;
 
-    const std::string typ = openvdb::FloatGrid::gridType();
+    const std::string typ = laovdb::FloatGrid::gridType();
 
     Name name("test");
     GridDescriptor gd(name, typ);

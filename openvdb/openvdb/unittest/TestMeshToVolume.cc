@@ -20,21 +20,21 @@ class TestMeshToVolume: public ::testing::Test
 TEST_F(TestMeshToVolume, testUtils)
 {
     /// Test nearestCoord
-    openvdb::Vec3d xyz(0.7, 2.2, -2.7);
-    openvdb::Coord ijk = openvdb::util::nearestCoord(xyz);
+    laovdb::Vec3d xyz(0.7, 2.2, -2.7);
+    laovdb::Coord ijk = laovdb::util::nearestCoord(xyz);
     EXPECT_TRUE(ijk[0] == 0 && ijk[1] == 2 && ijk[2] == -3);
 
-    xyz = openvdb::Vec3d(-22.1, 4.6, 202.34);
-    ijk = openvdb::util::nearestCoord(xyz);
+    xyz = laovdb::Vec3d(-22.1, 4.6, 202.34);
+    ijk = laovdb::util::nearestCoord(xyz);
     EXPECT_TRUE(ijk[0] == -23 && ijk[1] == 4 && ijk[2] == 202);
 
     /// Test the coordinate offset table for neghbouring voxels
-    openvdb::Coord sum(0, 0, 0);
+    laovdb::Coord sum(0, 0, 0);
 
     unsigned int pX = 0, pY = 0, pZ = 0, mX = 0, mY = 0, mZ = 0;
 
     for (unsigned int i = 0; i < 26; ++i) {
-        ijk = openvdb::util::COORD_OFFSETS[i];
+        ijk = laovdb::util::COORD_OFFSETS[i];
         sum += ijk;
 
         if (ijk[0] == 1)       ++pX;
@@ -47,7 +47,7 @@ TEST_F(TestMeshToVolume, testUtils)
         else if (ijk[2] == -1) ++mZ;
     }
 
-    EXPECT_TRUE(sum == openvdb::Coord(0, 0, 0));
+    EXPECT_TRUE(sum == laovdb::Coord(0, 0, 0));
 
     EXPECT_TRUE( pX == 9);
     EXPECT_TRUE( pY == 9);
@@ -59,7 +59,7 @@ TEST_F(TestMeshToVolume, testUtils)
 
 TEST_F(TestMeshToVolume, testConversion)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     std::vector<Vec3s> points;
     std::vector<Vec4I> quads;
@@ -102,30 +102,30 @@ TEST_F(TestMeshToVolume, testConversion)
 
 TEST_F(TestMeshToVolume, testCreateLevelSetBox)
 {
-    typedef openvdb::FloatGrid          FloatGrid;
-    typedef openvdb::Vec3s              Vec3s;
-    typedef openvdb::math::BBox<Vec3s>  BBoxs;
-    typedef openvdb::math::Transform    Transform;
+    typedef laovdb::FloatGrid          FloatGrid;
+    typedef laovdb::Vec3s              Vec3s;
+    typedef laovdb::math::BBox<Vec3s>  BBoxs;
+    typedef laovdb::math::Transform    Transform;
 
     BBoxs bbox(Vec3s(0.0, 0.0, 0.0), Vec3s(1.0, 1.0, 1.0));
 
     Transform::Ptr transform = Transform::createLinearTransform(0.1);
 
-    FloatGrid::Ptr grid = openvdb::tools::createLevelSetBox<FloatGrid>(bbox, *transform);
+    FloatGrid::Ptr grid = laovdb::tools::createLevelSetBox<FloatGrid>(bbox, *transform);
 
     double gridBackground = grid->background();
-    double expectedBackground = transform->voxelSize().x() * double(openvdb::LEVEL_SET_HALF_WIDTH);
+    double expectedBackground = transform->voxelSize().x() * double(laovdb::LEVEL_SET_HALF_WIDTH);
 
     EXPECT_NEAR(expectedBackground, gridBackground, 1e-6);
 
     EXPECT_TRUE(grid->tree().leafCount() > 0);
 
     // test inside coord value
-    openvdb::Coord ijk = transform->worldToIndexNodeCentered(openvdb::Vec3d(0.5, 0.5, 0.5));
+    laovdb::Coord ijk = transform->worldToIndexNodeCentered(laovdb::Vec3d(0.5, 0.5, 0.5));
     EXPECT_TRUE(grid->tree().getValue(ijk) < 0.0f);
 
     // test outside coord value
-    ijk = transform->worldToIndexNodeCentered(openvdb::Vec3d(1.5, 1.5, 1.5));
+    ijk = transform->worldToIndexNodeCentered(laovdb::Vec3d(1.5, 1.5, 1.5));
     EXPECT_TRUE(grid->tree().getValue(ijk) > 0.0f);
 }
 

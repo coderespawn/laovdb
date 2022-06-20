@@ -88,7 +88,7 @@ OpenVDBData::writeASCII(ostream&)
 MStatus
 OpenVDBData::readBinary(istream& in, unsigned)
 {
-    auto grids = openvdb::io::Stream(in).getGrids();
+    auto grids = laovdb::io::Stream(in).getGrids();
     mGrids.clear();
     insert(*grids);
     return in.fail() ? MS::kFailure : MS::kSuccess;
@@ -98,7 +98,7 @@ OpenVDBData::readBinary(istream& in, unsigned)
 MStatus
 OpenVDBData::writeBinary(ostream& out)
 {
-    openvdb::io::Stream(out).write(mGrids);
+    laovdb::io::Stream(out).write(mGrids);
     return out.fail() ? MS::kFailure : MS::kSuccess;
 }
 
@@ -113,14 +113,14 @@ OpenVDBData::numberOfGrids() const
 }
 
 
-const openvdb::GridBase&
+const laovdb::GridBase&
 OpenVDBData::grid(size_t index) const
 {
     return *(mGrids[index]);
 }
 
 
-openvdb::GridBase::ConstPtr
+laovdb::GridBase::ConstPtr
 OpenVDBData::gridPtr(size_t index) const
 {
     return mGrids[index];
@@ -137,21 +137,21 @@ OpenVDBData::duplicate(const OpenVDBData& rhs)
 }
 
 void
-OpenVDBData::insert(const openvdb::GridBase::ConstPtr& grid)
+OpenVDBData::insert(const laovdb::GridBase::ConstPtr& grid)
 {
     mGrids.push_back(grid);
 }
 
 
 void
-OpenVDBData::insert(const openvdb::GridBase& grid)
+OpenVDBData::insert(const laovdb::GridBase& grid)
 {
      mGrids.push_back(grid.copyGrid());
 }
 
 
 void
-OpenVDBData::insert(const openvdb::GridPtrVec& rhs)
+OpenVDBData::insert(const laovdb::GridPtrVec& rhs)
 {
     mGrids.reserve(mGrids.size() + rhs.size());
     for (const auto& gridPtr: rhs) {
@@ -160,7 +160,7 @@ OpenVDBData::insert(const openvdb::GridPtrVec& rhs)
 }
 
 void
-OpenVDBData::insert(const openvdb::GridCPtrVec& rhs)
+OpenVDBData::insert(const laovdb::GridCPtrVec& rhs)
 {
     mGrids.reserve(mGrids.size() + rhs.size());
     for (const auto& gridPtr: rhs) {
@@ -170,8 +170,8 @@ OpenVDBData::insert(const openvdb::GridCPtrVec& rhs)
 
 
 void
-OpenVDBData::write(const openvdb::io::File& file,
-    const openvdb::MetaMap& metadata) const
+OpenVDBData::write(const laovdb::io::File& file,
+    const laovdb::MetaMap& metadata) const
 {
     file.write(mGrids, metadata);
 }

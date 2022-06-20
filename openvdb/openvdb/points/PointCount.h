@@ -21,7 +21,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -77,7 +77,7 @@ template <typename PointDataGridT,
     typename FilterT = NullFilter>
 inline typename GridT::Ptr
 pointCountGrid( const PointDataGridT& grid,
-                const openvdb::math::Transform& transform,
+                const laovdb::math::Transform& transform,
                 const FilterT& filter = NullFilter());
 
 
@@ -167,7 +167,7 @@ pointCountGrid( const PointDataGridT& points,
 {
     static_assert(std::is_integral<typename GridT::ValueType>::value ||
                   std::is_floating_point<typename GridT::ValueType>::value,
-        "openvdb::points::pointCountGrid must return an integer or floating-point scalar grid");
+        "laovdb::points::pointCountGrid must return an integer or floating-point scalar grid");
 
     using PointDataTreeT = typename PointDataGridT::TreeType;
     using TreeT = typename GridT::TreeType;
@@ -185,12 +185,12 @@ pointCountGrid( const PointDataGridT& points,
 template <typename PointDataGridT, typename GridT, typename FilterT>
 typename GridT::Ptr
 pointCountGrid( const PointDataGridT& points,
-                const openvdb::math::Transform& transform,
+                const laovdb::math::Transform& transform,
                 const FilterT& filter)
 {
     static_assert(  std::is_integral<typename GridT::ValueType>::value ||
                     std::is_floating_point<typename GridT::ValueType>::value,
-        "openvdb::points::pointCountGrid must return an integer or floating-point scalar grid");
+        "laovdb::points::pointCountGrid must return an integer or floating-point scalar grid");
 
     // This is safe because the PointDataGrid can only be modified by the deformer
     using AdapterT = TreeAdapter<typename PointDataGridT::TreeType>;
@@ -207,6 +207,6 @@ pointCountGrid( const PointDataGridT& points,
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_POINT_COUNT_HAS_BEEN_INCLUDED

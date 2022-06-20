@@ -27,7 +27,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -209,7 +209,7 @@ topologyToLevelSet(const GridT& grid, int halfWidth, int closingSteps, int dilat
     }
 
     // Copy the topology into a MaskGrid.
-    MaskTreeT maskTree( grid.tree(), false/*background*/, openvdb::TopologyCopy() );
+    MaskTreeT maskTree( grid.tree(), false/*background*/, laovdb::TopologyCopy() );
 
     // Morphological closing operation.
     tools::dilateActiveValues(maskTree, closingSteps + dilation, tools::NN_FACE, tools::IGNORE_TILES);
@@ -220,7 +220,7 @@ topologyToLevelSet(const GridT& grid, int halfWidth, int closingSteps, int dilat
     // between active and inactive values in the input grid.
     const float background = float(grid.voxelSize()[0]) * float(halfWidth);
     typename FloatTreeT::Ptr lsTree(
-        new FloatTreeT( maskTree, /*out=*/background, /*in=*/-background, openvdb::TopologyCopy() ) );
+        new FloatTreeT( maskTree, /*out=*/background, /*in=*/-background, laovdb::TopologyCopy() ) );
 
     tbb::task_group pool;
     pool.run( ttls_internal::ErodeOp< MaskTreeT >( maskTree, halfWidth ) );
@@ -233,7 +233,7 @@ topologyToLevelSet(const GridT& grid, int halfWidth, int closingSteps, int dilat
     // Create a level set grid from the tree
     typename FloatGridT::Ptr lsGrid = FloatGridT::create( lsTree );
     lsGrid->setTransform( grid.transform().copy() );
-    lsGrid->setGridClass( openvdb::GRID_LEVEL_SET );
+    lsGrid->setGridClass( laovdb::GRID_LEVEL_SET );
 
     // Use a PDE based scheme to propagate distance values from the
     // implicit zero crossing.
@@ -279,7 +279,7 @@ OPENVDB_ALL_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_TOPOLOGY_TO_LEVELSET_HAS_BEEN_INCLUDED
 

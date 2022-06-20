@@ -11,39 +11,39 @@
 class TestClip: public ::testing::Test
 {
 public:
-    static const openvdb::CoordBBox kCubeBBox, kInnerBBox;
+    static const laovdb::CoordBBox kCubeBBox, kInnerBBox;
 
     TestClip(): mCube{
         []() {
-            auto cube = openvdb::FloatGrid{0.0f};
+            auto cube = laovdb::FloatGrid{0.0f};
             cube.fill(kCubeBBox, /*value=*/5.0f, /*active=*/true);
             return cube;
         }()}
     {}
 
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::initialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::initialize(); }
 
 protected:
-    void validate(const openvdb::FloatGrid&);
+    void validate(const laovdb::FloatGrid&);
 
-    const openvdb::FloatGrid mCube;
+    const laovdb::FloatGrid mCube;
 };
 
-const openvdb::CoordBBox
+const laovdb::CoordBBox
     // The volume to be clipped is a 21 x 21 x 21 solid cube.
-    TestClip::kCubeBBox{openvdb::Coord{-10}, openvdb::Coord{10}},
+    TestClip::kCubeBBox{laovdb::Coord{-10}, laovdb::Coord{10}},
     // The clipping mask is a 1 x 1 x 13 segment extending along the Z axis inside the cube.
-    TestClip::kInnerBBox{openvdb::Coord{4, 4, -6}, openvdb::Coord{4, 4, 6}};
+    TestClip::kInnerBBox{laovdb::Coord{4, 4, -6}, laovdb::Coord{4, 4, 6}};
 
 
 ////////////////////////////////////////
 
 
 void
-TestClip::validate(const openvdb::FloatGrid& clipped)
+TestClip::validate(const laovdb::FloatGrid& clipped)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const CoordBBox bbox = clipped.evalActiveVoxelBoundingBox();
     EXPECT_EQ(kInnerBBox.min().x(), bbox.min().x());
@@ -79,7 +79,7 @@ TestClip::validate(const openvdb::FloatGrid& clipped)
 // Test clipping against a bounding box.
 TEST_F(TestClip, testBBox)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     BBoxd clipBox(Vec3d(4.0, 4.0, -6.0), Vec3d(4.9, 4.9, 6.0));
     FloatGrid::Ptr clipped = tools::clip(mCube, clipBox);
     validate(*clipped);
@@ -89,7 +89,7 @@ TEST_F(TestClip, testBBox)
 // Test clipping against a camera frustum.
 TEST_F(TestClip, testFrustum)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const auto d = double(kCubeBBox.max().z());
     const math::NonlinearFrustumMap frustum{
@@ -119,7 +119,7 @@ TEST_F(TestClip, testFrustum)
         }
     }
     {
-        auto tile = openvdb::FloatGrid{0.0f};
+        auto tile = laovdb::FloatGrid{0.0f};
         tile.tree().addTile(/*level=*/2, Coord{0}, /*value=*/5.0f, /*active=*/true);
 
         auto clipped = tools::clip(tile, frustum);
@@ -142,7 +142,7 @@ TEST_F(TestClip, testFrustum)
 // Test clipping against a MaskGrid.
 TEST_F(TestClip, testMaskGrid)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     MaskGrid mask(false);
     mask.fill(kInnerBBox, true, true);
     FloatGrid::Ptr clipped = tools::clip(mCube, mask);
@@ -153,7 +153,7 @@ TEST_F(TestClip, testMaskGrid)
 // Test clipping against a boolean mask grid.
 TEST_F(TestClip, testBoolMask)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     BoolGrid mask(false);
     mask.fill(kInnerBBox, true, true);
     FloatGrid::Ptr clipped = tools::clip(mCube, mask);
@@ -164,7 +164,7 @@ TEST_F(TestClip, testBoolMask)
 // Test clipping against a boolean mask grid with mask inversion.
 TEST_F(TestClip, testInvertedBoolMask)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     // Construct a mask grid that is the "inverse" of the mask used in the other tests.
     // (This is not a true inverse, since the mask's active voxel bounds are finite.)
     BoolGrid mask(false);
@@ -181,7 +181,7 @@ TEST_F(TestClip, testInvertedBoolMask)
 // Test clipping against a non-boolean mask grid.
 TEST_F(TestClip, testNonBoolMask)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     Int32Grid mask(0);
     mask.fill(kInnerBBox, -5, true);
     FloatGrid::Ptr clipped = tools::clip(mCube, mask);
@@ -192,7 +192,7 @@ TEST_F(TestClip, testNonBoolMask)
 // Test clipping against a non-boolean mask grid with mask inversion.
 TEST_F(TestClip, testInvertedNonBoolMask)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     // Construct a mask grid that is the "inverse" of the mask used in the other tests.
     // (This is not a true inverse, since the mask's active voxel bounds are finite.)
     Grid<UInt32Tree> mask(0);

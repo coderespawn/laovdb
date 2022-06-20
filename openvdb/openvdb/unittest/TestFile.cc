@@ -45,7 +45,7 @@ class TestFile: public ::testing::Test
 {
 public:
     void SetUp() override {}
-    void TearDown() override { openvdb::uninitialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 
     void testHeader();
     void testWriteGrid();
@@ -63,7 +63,7 @@ public:
 void
 TestFile::testHeader()
 {
-    using namespace openvdb::io;
+    using namespace laovdb::io;
 
     File file("something.vdb2");
 
@@ -86,11 +86,11 @@ TestFile::testHeader()
 
     EXPECT_TRUE(!unique);//reading same file again
 
-    uint32_t version = openvdb::OPENVDB_FILE_VERSION;
+    uint32_t version = laovdb::OPENVDB_FILE_VERSION;
 
     EXPECT_EQ(version, file.fileVersion());
-    EXPECT_EQ(openvdb::OPENVDB_LIBRARY_MAJOR_VERSION, file.libraryVersion().first);
-    EXPECT_EQ(openvdb::OPENVDB_LIBRARY_MINOR_VERSION, file.libraryVersion().second);
+    EXPECT_EQ(laovdb::OPENVDB_LIBRARY_MAJOR_VERSION, file.libraryVersion().first);
+    EXPECT_EQ(laovdb::OPENVDB_LIBRARY_MINOR_VERSION, file.libraryVersion().second);
     EXPECT_EQ(uuidStr, file.getUniqueTag());
 
     //std::cerr << "\nuuid=" << uuidStr << std::endl;
@@ -105,8 +105,8 @@ TEST_F(TestFile, testHeader) { testHeader(); }
 void
 TestFile::testWriteGrid()
 {
-    using namespace openvdb;
-    using namespace openvdb::io;
+    using namespace laovdb;
+    using namespace laovdb::io;
 
     using TreeType = Int32Tree;
     using GridType = Grid<TreeType>;
@@ -158,7 +158,7 @@ TestFile::testWriteGrid()
     io::setCurrentVersion(istr);
 
     GridBase::Ptr gd2_grid;
-    EXPECT_THROW(gd2.read(istr), openvdb::LookupError);
+    EXPECT_THROW(gd2.read(istr), laovdb::LookupError);
 
     // Register the grid and the transform and the blocks.
     GridBase::clearRegistry();
@@ -236,8 +236,8 @@ TEST_F(TestFile, testWriteGrid) { testWriteGrid(); }
 void
 TestFile::testWriteMultipleGrids()
 {
-    using namespace openvdb;
-    using namespace openvdb::io;
+    using namespace laovdb;
+    using namespace laovdb::io;
 
     using TreeType = Int32Tree;
     using GridType = Grid<TreeType>;
@@ -391,8 +391,8 @@ TEST_F(TestFile, testWriteMultipleGrids) { testWriteMultipleGrids(); }
 
 TEST_F(TestFile, testWriteFloatAsHalf)
 {
-    using namespace openvdb;
-    using namespace openvdb::io;
+    using namespace laovdb;
+    using namespace laovdb::io;
 
     using TreeType = Vec3STree;
     using GridType = Grid<TreeType>;
@@ -400,7 +400,7 @@ TEST_F(TestFile, testWriteFloatAsHalf)
     // Register all grid types.
     initialize();
     // Ensure that the registry is cleared on exit.
-    struct Local { static void uninitialize(char*) { openvdb::uninitialize(); } };
+    struct Local { static void uninitialize(char*) { laovdb::uninitialize(); } };
     SharedPtr<char> onExit(nullptr, Local::uninitialize);
 
     // Create two test grids.
@@ -461,10 +461,10 @@ TEST_F(TestFile, testWriteFloatAsHalf)
 
 TEST_F(TestFile, testWriteInstancedGrids)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // Register data types.
-    openvdb::initialize();
+    laovdb::initialize();
 
     // Remove something.vdb2 when done. We must declare this here before the
     // other grid smart_ptr's because we re-use them in the test several times.
@@ -648,8 +648,8 @@ TEST_F(TestFile, testWriteInstancedGrids)
 void
 TestFile::testReadGridDescriptors()
 {
-    using namespace openvdb;
-    using namespace openvdb::io;
+    using namespace laovdb;
+    using namespace laovdb::io;
 
     using GridType = Int32Grid;
     using TreeType = GridType::TreeType;
@@ -732,13 +732,13 @@ TEST_F(TestFile, testReadGridDescriptors) { testReadGridDescriptors(); }
 
 TEST_F(TestFile, testGridNaming)
 {
-    using namespace openvdb;
-    using namespace openvdb::io;
+    using namespace laovdb;
+    using namespace laovdb::io;
 
     using TreeType = Int32Tree;
 
     // Register data types.
-    openvdb::initialize();
+    laovdb::initialize();
 
     logging::LevelScope suppressLogging{logging::Level::Fatal};
 
@@ -747,9 +747,9 @@ TEST_F(TestFile, testGridNaming)
     tree->setValue(Coord(10, 1, 2), 10);
     tree->setValue(Coord(0, 0, 0), 5);
     GridBase::Ptr
-        grid1 = openvdb::createGrid(tree),
-        grid2 = openvdb::createGrid(tree),
-        grid3 = openvdb::createGrid(tree);
+        grid1 = laovdb::createGrid(tree),
+        grid2 = laovdb::createGrid(tree),
+        grid3 = laovdb::createGrid(tree);
 
     std::vector<GridBase::Ptr> gridVec;
     gridVec.push_back(grid1);
@@ -788,7 +788,7 @@ TEST_F(TestFile, testGridNaming)
 
         // Read each grid.
         for (n = -1; n <= 2; ++n) {
-            openvdb::Name name("grid");
+            laovdb::Name name("grid");
 
             // On the first iteration, read the grid named "grid", then read "grid[0]"
             // (which is synonymous with "grid"), then "grid[1]", then "grid[2]".
@@ -803,8 +803,8 @@ TEST_F(TestFile, testGridNaming)
             EXPECT_TRUE(grid.get() != nullptr);
 
             // Verify that the grid is named "grid".
-            EXPECT_EQ(openvdb::Name("grid"), grid->getName());
-            EXPECT_EQ((n < 0 ? 0 : n), grid->metaValue<openvdb::Int32>("index"));
+            EXPECT_EQ(laovdb::Name("grid"), grid->getName());
+            EXPECT_EQ((n < 0 ? 0 : n), grid->metaValue<laovdb::Int32>("index"));
         }
 
         // Read all three grids at once.
@@ -818,7 +818,7 @@ TEST_F(TestFile, testGridNaming)
             GridBase::ConstPtr grid = *i;
             EXPECT_TRUE(grid.get() != nullptr);
 
-            indices.push_back(grid->metaValue<openvdb::Int32>("index"));
+            indices.push_back(grid->metaValue<laovdb::Int32>("index"));
 
             // If instancing is enabled, verify that all grids share the same tree.
             if (instancing) {
@@ -838,7 +838,7 @@ TEST_F(TestFile, testGridNaming)
     {
         // Try writing and then reading a grid with a weird name
         // that might conflict with the grid name indexing scheme.
-        const openvdb::Name weirdName("grid[4]");
+        const laovdb::Name weirdName("grid[4]");
         gridVec[0]->setName(weirdName);
         {
             File file(filename);
@@ -851,33 +851,33 @@ TEST_F(TestFile, testGridNaming)
         GridBase::ConstPtr grid = file.readGrid(weirdName);
         EXPECT_TRUE(grid.get() != nullptr);
         EXPECT_EQ(weirdName, grid->getName());
-        EXPECT_EQ(0, grid->metaValue<openvdb::Int32>("index"));
+        EXPECT_EQ(0, grid->metaValue<laovdb::Int32>("index"));
 
         // Verify that the other grids can still be read successfully.
         grid = file.readGrid("grid[0]");
         EXPECT_TRUE(grid.get() != nullptr);
-        EXPECT_EQ(openvdb::Name("grid"), grid->getName());
+        EXPECT_EQ(laovdb::Name("grid"), grid->getName());
         // Because there are now only two grids named "grid", the one with
         // index 1 is now "grid[0]".
-        EXPECT_EQ(1, grid->metaValue<openvdb::Int32>("index"));
+        EXPECT_EQ(1, grid->metaValue<laovdb::Int32>("index"));
 
         grid = file.readGrid("grid[1]");
         EXPECT_TRUE(grid.get() != nullptr);
-        EXPECT_EQ(openvdb::Name("grid"), grid->getName());
+        EXPECT_EQ(laovdb::Name("grid"), grid->getName());
         // Because there are now only two grids named "grid", the one with
         // index 2 is now "grid[1]".
-        EXPECT_EQ(2, grid->metaValue<openvdb::Int32>("index"));
+        EXPECT_EQ(2, grid->metaValue<laovdb::Int32>("index"));
 
         // Verify that there is no longer a third grid named "grid".
-        EXPECT_THROW(file.readGrid("grid[2]"), openvdb::KeyError);
+        EXPECT_THROW(file.readGrid("grid[2]"), laovdb::KeyError);
     }
 }
 
 
 TEST_F(TestFile, testEmptyFile)
 {
-    using namespace openvdb;
-    using namespace openvdb::io;
+    using namespace laovdb;
+    using namespace laovdb::io;
 
     const char* filename = "testEmptyFile.vdb2";
     SharedPtr<const char> scopedFile(filename, ::remove);
@@ -903,8 +903,8 @@ TEST_F(TestFile, testEmptyFile)
 void
 TestFile::testEmptyGridIO()
 {
-    using namespace openvdb;
-    using namespace openvdb::io;
+    using namespace laovdb;
+    using namespace laovdb::io;
 
     using GridType = Int32Grid;
 
@@ -1009,10 +1009,10 @@ TEST_F(TestFile, testEmptyGridIO) { testEmptyGridIO(); }
 
 void TestFile::testOpen()
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    using FloatGrid = openvdb::FloatGrid;
-    using IntGrid = openvdb::Int32Grid;
+    using FloatGrid = laovdb::FloatGrid;
+    using IntGrid = laovdb::Int32Grid;
     using FloatTree = FloatGrid::TreeType;
     using IntTree = Int32Grid::TreeType;
 
@@ -1076,7 +1076,7 @@ void TestFile::testOpen()
     // Now we can read in the file.
     EXPECT_TRUE(!vdbfile.open());//opening the same file
     // Can't open same file multiple times without closing.
-    EXPECT_THROW(vdbfile.open(), openvdb::IoError);
+    EXPECT_THROW(vdbfile.open(), laovdb::IoError);
     vdbfile.close();
     EXPECT_TRUE(!vdbfile.open());//opening the same file
 
@@ -1114,8 +1114,8 @@ void TestFile::testOpen()
 
     // Ensure we throw an error if there is no file.
     io::File vdbfile2("somethingelses.vdb2");
-    EXPECT_THROW(vdbfile2.open(), openvdb::IoError);
-    EXPECT_THROW(vdbfile2.inputStream(), openvdb::IoError);
+    EXPECT_THROW(vdbfile2.open(), laovdb::IoError);
+    EXPECT_THROW(vdbfile2.inputStream(), laovdb::IoError);
 
     // Clear registries.
     GridBase::clearRegistry();
@@ -1127,7 +1127,7 @@ void TestFile::testOpen()
     EXPECT_TRUE(vdbfile.isOpen() == false);
     EXPECT_TRUE(vdbfile.fileMetadata().get() == nullptr);
     EXPECT_EQ(0, int(vdbfile.gridDescriptors().size()));
-    EXPECT_THROW(vdbfile.inputStream(), openvdb::IoError);
+    EXPECT_THROW(vdbfile.inputStream(), laovdb::IoError);
 
     remove("something.vdb2");
 }
@@ -1144,9 +1144,9 @@ TestFile::testNonVdbOpen()
 
     file.close();
 
-    openvdb::io::File vdbfile("dummy.vdb2");
-    EXPECT_THROW(vdbfile.open(), openvdb::IoError);
-    EXPECT_THROW(vdbfile.inputStream(), openvdb::IoError);
+    laovdb::io::File vdbfile("dummy.vdb2");
+    EXPECT_THROW(vdbfile.open(), laovdb::IoError);
+    EXPECT_THROW(vdbfile.inputStream(), laovdb::IoError);
 
     remove("dummy.vdb2");
 }
@@ -1155,7 +1155,7 @@ TEST_F(TestFile, testNonVdbOpen) { testNonVdbOpen(); }
 
 TEST_F(TestFile, testGetMetadata)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     GridPtrVec grids;
     MetaMap meta;
@@ -1173,7 +1173,7 @@ TEST_F(TestFile, testGetMetadata)
     vdbfile.write(grids, meta);
 
     // Check if reading without opening the file
-    EXPECT_THROW(vdbfile.getMetadata(), openvdb::IoError);
+    EXPECT_THROW(vdbfile.getMetadata(), laovdb::IoError);
 
     vdbfile.open();
 
@@ -1193,10 +1193,10 @@ TEST_F(TestFile, testGetMetadata)
 
 TEST_F(TestFile, testReadAll)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    using FloatGrid = openvdb::FloatGrid;
-    using IntGrid = openvdb::Int32Grid;
+    using FloatGrid = laovdb::FloatGrid;
+    using IntGrid = laovdb::Int32Grid;
     using FloatTree = FloatGrid::TreeType;
     using IntTree = Int32Grid::TreeType;
 
@@ -1232,14 +1232,14 @@ TEST_F(TestFile, testReadAll)
     grids.push_back(grid2);
 
     // Register grid and transform.
-    openvdb::initialize();
+    laovdb::initialize();
 
     // Write the vdb out to a file.
     io::File vdbfile("something.vdb2");
     vdbfile.write(grids, meta);
 
     io::File vdbfile2("something.vdb2");
-    EXPECT_THROW(vdbfile2.getGrids(), openvdb::IoError);
+    EXPECT_THROW(vdbfile2.getGrids(), laovdb::IoError);
 
     vdbfile2.open();
     EXPECT_TRUE(vdbfile2.isOpen());
@@ -1286,7 +1286,7 @@ TEST_F(TestFile, testReadAll)
 
 TEST_F(TestFile, testWriteOpenFile)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     MetaMap::Ptr meta(new MetaMap);
     meta->insertMeta("author", StringMetadata("Einstein"));
@@ -1302,7 +1302,7 @@ TEST_F(TestFile, testWriteOpenFile)
     vdbfile.write(GridPtrVec(), *meta);
 
     io::File vdbfile2("something.vdb2");
-    EXPECT_THROW(vdbfile2.getGrids(), openvdb::IoError);
+    EXPECT_THROW(vdbfile2.getGrids(), laovdb::IoError);
 
     vdbfile2.open();
     EXPECT_TRUE(vdbfile2.isOpen());
@@ -1321,7 +1321,7 @@ TEST_F(TestFile, testWriteOpenFile)
     EXPECT_EQ(0, int(grids->size()));
 
     // Cannot write an open file.
-    EXPECT_THROW(vdbfile2.write(*grids), openvdb::IoError);
+    EXPECT_THROW(vdbfile2.write(*grids), laovdb::IoError);
 
     vdbfile2.close();
 
@@ -1336,9 +1336,9 @@ TEST_F(TestFile, testWriteOpenFile)
 
 TEST_F(TestFile, testReadGridMetadata)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    openvdb::initialize();
+    laovdb::initialize();
 
     const char* filename = "testReadGridMetadata.vdb2";
     SharedPtr<const char> scopedFile(filename, ::remove);
@@ -1391,16 +1391,16 @@ TEST_F(TestFile, testReadGridMetadata)
         io::File vdbfile(filename);
 
         // Verify that reading from an unopened file generates an exception.
-        EXPECT_THROW(vdbfile.readGridMetadata("igrid"), openvdb::IoError);
-        EXPECT_THROW(vdbfile.readGridMetadata("noname"), openvdb::IoError);
-        EXPECT_THROW(vdbfile.readAllGridMetadata(), openvdb::IoError);
+        EXPECT_THROW(vdbfile.readGridMetadata("igrid"), laovdb::IoError);
+        EXPECT_THROW(vdbfile.readGridMetadata("noname"), laovdb::IoError);
+        EXPECT_THROW(vdbfile.readAllGridMetadata(), laovdb::IoError);
 
         vdbfile.open();
 
         EXPECT_TRUE(vdbfile.isOpen());
 
         // Verify that reading a nonexistent grid generates an exception.
-        EXPECT_THROW(vdbfile.readGridMetadata("noname"), openvdb::KeyError);
+        EXPECT_THROW(vdbfile.readGridMetadata("noname"), laovdb::KeyError);
 
         // Read all grids and store them in a list.
         GridPtrVecPtr gridMetadata = vdbfile.readAllGridMetadata();
@@ -1473,10 +1473,10 @@ TEST_F(TestFile, testReadGridMetadata)
 
 TEST_F(TestFile, testReadGrid)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    using FloatGrid = openvdb::FloatGrid;
-    using IntGrid = openvdb::Int32Grid;
+    using FloatGrid = laovdb::FloatGrid;
+    using IntGrid = laovdb::Int32Grid;
     using FloatTree = FloatGrid::TreeType;
     using IntTree = Int32Grid::TreeType;
 
@@ -1512,7 +1512,7 @@ TEST_F(TestFile, testReadGrid)
     grids.push_back(grid2);
 
     // Register grid and transform.
-    openvdb::initialize();
+    laovdb::initialize();
 
     // Write the vdb out to a file.
     io::File vdbfile("something.vdb2");
@@ -1566,7 +1566,7 @@ template<typename GridT>
 void
 validateClippedGrid(const GridT& clipped, const typename GridT::ValueType& fg)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     using ValueT = typename GridT::ValueType;
 
@@ -1601,10 +1601,10 @@ validateClippedGrid(const GridT& clipped, const typename GridT::ValueType& fg)
 // See also TestGrid::testClipping()
 TEST_F(TestFile, testReadClippedGrid)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // Register types.
-    openvdb::initialize();
+    laovdb::initialize();
 
     // World-space clipping region
     const BBoxd clipBox(Vec3d(4.0, 4.0, -6.0), Vec3d(4.9, 4.9, 6.0));
@@ -1678,31 +1678,31 @@ TEST_F(TestFile, testReadClippedGrid)
 
 namespace {
 
-template<typename T, openvdb::Index Log2Dim> struct MultiPassLeafNode; // forward declaration
+template<typename T, laovdb::Index Log2Dim> struct MultiPassLeafNode; // forward declaration
 
 // Dummy value type
-using MultiPassValue = openvdb::PointIndex<openvdb::Index32, 1000>;
+using MultiPassValue = laovdb::PointIndex<laovdb::Index32, 1000>;
 
 // Tree configured to match the default OpenVDB configuration
-using MultiPassTree = openvdb::tree::Tree<
-    openvdb::tree::RootNode<
-    openvdb::tree::InternalNode<
-    openvdb::tree::InternalNode<
+using MultiPassTree = laovdb::tree::Tree<
+    laovdb::tree::RootNode<
+    laovdb::tree::InternalNode<
+    laovdb::tree::InternalNode<
     MultiPassLeafNode<MultiPassValue, 3>, 4>, 5>>>;
 
-using MultiPassGrid = openvdb::Grid<MultiPassTree>;
+using MultiPassGrid = laovdb::Grid<MultiPassTree>;
 
 
-template<typename T, openvdb::Index Log2Dim>
-struct MultiPassLeafNode: public openvdb::tree::LeafNode<T, Log2Dim>, openvdb::io::MultiPass
+template<typename T, laovdb::Index Log2Dim>
+struct MultiPassLeafNode: public laovdb::tree::LeafNode<T, Log2Dim>, laovdb::io::MultiPass
 {
     // The following had to be copied from the LeafNode class
     // to make the derived class compatible with the tree structure.
 
     using LeafNodeType  = MultiPassLeafNode;
-    using Ptr           = openvdb::SharedPtr<MultiPassLeafNode>;
-    using BaseLeaf      = openvdb::tree::LeafNode<T, Log2Dim>;
-    using NodeMaskType  = openvdb::util::NodeMask<Log2Dim>;
+    using Ptr           = laovdb::SharedPtr<MultiPassLeafNode>;
+    using BaseLeaf      = laovdb::tree::LeafNode<T, Log2Dim>;
+    using NodeMaskType  = laovdb::util::NodeMask<Log2Dim>;
     using ValueType     = T;
     using ValueOnCIter  = typename BaseLeaf::template ValueIter<typename NodeMaskType::OnIterator,
         const MultiPassLeafNode, const ValueType, typename BaseLeaf::ValueOn>;
@@ -1711,10 +1711,10 @@ struct MultiPassLeafNode: public openvdb::tree::LeafNode<T, Log2Dim>, openvdb::i
     using ChildOnCIter = typename BaseLeaf::template ChildIter<
         typename NodeMaskType::OnIterator, const MultiPassLeafNode, typename BaseLeaf::ChildOn>;
 
-    MultiPassLeafNode(const openvdb::Coord& coords, const T& value, bool active = false)
+    MultiPassLeafNode(const laovdb::Coord& coords, const T& value, bool active = false)
         : BaseLeaf(coords, value, active) {}
-    MultiPassLeafNode(openvdb::PartialCreate, const openvdb::Coord& coords, const T& value,
-        bool active = false): BaseLeaf(openvdb::PartialCreate(), coords, value, active) {}
+    MultiPassLeafNode(laovdb::PartialCreate, const laovdb::Coord& coords, const T& value,
+        bool active = false): BaseLeaf(laovdb::PartialCreate(), coords, value, active) {}
     MultiPassLeafNode(const MultiPassLeafNode& rhs): BaseLeaf(rhs) {}
 
     ValueOnCIter cbeginValueOn() const { return ValueOnCIter(this->getValueMask().beginOn(),this); }
@@ -1723,16 +1723,16 @@ struct MultiPassLeafNode: public openvdb::tree::LeafNode<T, Log2Dim>, openvdb::i
 
     // Methods in use for reading and writing multiple buffers
 
-    void readBuffers(std::istream& is, const openvdb::CoordBBox&, bool fromHalf = false)
+    void readBuffers(std::istream& is, const laovdb::CoordBBox&, bool fromHalf = false)
     {
         this->readBuffers(is, fromHalf);
     }
 
     void readBuffers(std::istream& is, bool /*fromHalf*/ = false)
     {
-        const openvdb::io::StreamMetadata::Ptr meta = openvdb::io::getStreamMetadataPtr(is);
+        const laovdb::io::StreamMetadata::Ptr meta = laovdb::io::getStreamMetadataPtr(is);
         if (!meta) {
-            OPENVDB_THROW(openvdb::IoError,
+            OPENVDB_THROW(laovdb::IoError,
                 "Cannot write out a MultiBufferLeaf without StreamMetadata.");
         }
 
@@ -1748,17 +1748,17 @@ struct MultiPassLeafNode: public openvdb::tree::LeafNode<T, Log2Dim>, openvdb::i
 
         if (pass == 0) {
             // Read in the node's origin.
-            openvdb::Coord origin;
-            is.read(reinterpret_cast<char*>(&origin), sizeof(openvdb::Coord));
+            laovdb::Coord origin;
+            is.read(reinterpret_cast<char*>(&origin), sizeof(laovdb::Coord));
             EXPECT_EQ(origin, this->origin());
         }
     }
 
     void writeBuffers(std::ostream& os, bool /*toHalf*/ = false) const
     {
-        const openvdb::io::StreamMetadata::Ptr meta = openvdb::io::getStreamMetadataPtr(os);
+        const laovdb::io::StreamMetadata::Ptr meta = laovdb::io::getStreamMetadataPtr(os);
         if (!meta) {
-            OPENVDB_THROW(openvdb::IoError,
+            OPENVDB_THROW(laovdb::IoError,
                 "Cannot read in a MultiBufferLeaf without StreamMetadata.");
         }
 
@@ -1781,7 +1781,7 @@ struct MultiPassLeafNode: public openvdb::tree::LeafNode<T, Log2Dim>, openvdb::i
         if (pass == 0) {
             // Write out the node's origin and the pass number.
             const auto origin = this->origin();
-            os.write(reinterpret_cast<const char*>(&origin), sizeof(openvdb::Coord));
+            os.write(reinterpret_cast<const char*>(&origin), sizeof(laovdb::Coord));
         }
     }
 
@@ -1799,13 +1799,13 @@ struct MultiPassLeafNode: public openvdb::tree::LeafNode<T, Log2Dim>, openvdb::i
 
 TEST_F(TestFile, testMultiPassIO)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    openvdb::initialize();
+    laovdb::initialize();
     MultiPassGrid::registerGrid();
 
     // Create a multi-buffer grid.
-    const MultiPassGrid::Ptr grid = openvdb::createGrid<MultiPassGrid>();
+    const MultiPassGrid::Ptr grid = laovdb::createGrid<MultiPassGrid>();
     grid->setName("test");
     grid->setTransform(math::Transform::createLinearTransform(1.0));
     MultiPassGrid::TreeType& tree = grid->tree();
@@ -1918,11 +1918,11 @@ TEST_F(TestFile, testMultiPassIO)
 
 TEST_F(TestFile, testHasGrid)
 {
-    using namespace openvdb;
-    using namespace openvdb::io;
+    using namespace laovdb;
+    using namespace laovdb::io;
 
-    using FloatGrid = openvdb::FloatGrid;
-    using IntGrid = openvdb::Int32Grid;
+    using FloatGrid = laovdb::FloatGrid;
+    using IntGrid = laovdb::Int32Grid;
     using FloatTree = FloatGrid::TreeType;
     using IntTree = Int32Grid::TreeType;
 
@@ -1980,7 +1980,7 @@ TEST_F(TestFile, testHasGrid)
 
     io::File vdbfile2("something.vdb2");
 
-    EXPECT_THROW(vdbfile2.hasGrid("density"), openvdb::IoError);
+    EXPECT_THROW(vdbfile2.hasGrid("density"), laovdb::IoError);
 
     vdbfile2.open();
 
@@ -2002,10 +2002,10 @@ TEST_F(TestFile, testHasGrid)
 
 TEST_F(TestFile, testNameIterator)
 {
-    using namespace openvdb;
-    using namespace openvdb::io;
+    using namespace laovdb;
+    using namespace laovdb::io;
 
-    using FloatGrid = openvdb::FloatGrid;
+    using FloatGrid = laovdb::FloatGrid;
     using FloatTree = FloatGrid::TreeType;
     using IntTree = Int32Grid::TreeType;
 
@@ -2040,7 +2040,7 @@ TEST_F(TestFile, testNameIterator)
     grids.push_back(grid);
 
     // Register types.
-    openvdb::initialize();
+    laovdb::initialize();
 
     const char* filename = "testNameIterator.vdb2";
     SharedPtr<const char> scopedFile(filename, ::remove);
@@ -2054,7 +2054,7 @@ TEST_F(TestFile, testNameIterator)
     io::File vdbfile(filename);
 
     // Verify that name iteration fails if the file is not open.
-    EXPECT_THROW(vdbfile.beginName(), openvdb::IoError);
+    EXPECT_THROW(vdbfile.beginName(), laovdb::IoError);
 
     vdbfile.open();
 
@@ -2084,13 +2084,13 @@ TEST_F(TestFile, testReadOldFileFormat)
 
 TEST_F(TestFile, testCompression)
 {
-    using namespace openvdb;
-    using namespace openvdb::io;
+    using namespace laovdb;
+    using namespace laovdb::io;
 
-    using IntGrid = openvdb::Int32Grid;
+    using IntGrid = laovdb::Int32Grid;
 
     // Register types.
-    openvdb::initialize();
+    laovdb::initialize();
 
     // Create reference grids.
     IntGrid::Ptr intGrid = IntGrid::create(/*background=*/0);
@@ -2229,7 +2229,7 @@ TEST_F(TestFile, testCompression)
 
 namespace {
 
-using namespace openvdb;
+using namespace laovdb;
 
 struct TestAsyncHelper
 {
@@ -2299,10 +2299,10 @@ struct TestAsyncHelper
 
 TEST_F(TestFile, testAsync)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // Register types.
-    openvdb::initialize();
+    laovdb::initialize();
 
     // Create a grid.
     FloatGrid::Ptr lsGrid = createLevelSet<FloatGrid>();
@@ -2407,7 +2407,7 @@ TEST_F(TestFile, testAsync)
         // the next write() call should time out immediately with an exception.
         // (It is possible, though highly unlikely, for the previous task to complete
         // in time for this write() to actually succeed.)
-        EXPECT_THROW(queue.write(grids, io::Stream(file2)), openvdb::RuntimeError);
+        EXPECT_THROW(queue.write(grids, io::Stream(file2)), laovdb::RuntimeError);
 
         while (!queue.empty()) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -2421,7 +2421,7 @@ TEST_F(TestFile, testAsync)
 // (see https://github.com/Blosc/c-blosc/pull/63).
 TEST_F(TestFile, testBlosc)
 {
-    openvdb::initialize();
+    laovdb::initialize();
 
     const unsigned char rawdata[] = {
         0x93, 0xb0, 0x49, 0xaf, 0x62, 0xad, 0xe3, 0xaa, 0xe4, 0xa5, 0x43, 0x20, 0x24,
@@ -2537,9 +2537,9 @@ TEST_F(TestFile, testBlosc)
 void
 TestFile::testDelayedLoadMetadata()
 {
-    openvdb::initialize();
+    laovdb::initialize();
 
-    using namespace openvdb;
+    using namespace laovdb;
 
     io::File file("something.vdb2");
 

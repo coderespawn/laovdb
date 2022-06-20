@@ -21,7 +21,7 @@ class TestCount: public ::testing::Test
 
 TEST_F(TestCount, testCount)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     auto grid = tools::createLevelSetSphere<FloatGrid>(25.0f, Vec3f(0), 0.1f);
     tools::sdfToFogVolume(*grid); // convert to fog volume to generate active tiles
@@ -104,7 +104,7 @@ TEST_F(TestCount, testCount)
 
 TEST_F(TestCount, testCountBBox)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     auto grid = tools::createLevelSetSphere<FloatGrid>(10.0f, Vec3f(0), 0.1f);
     tools::sdfToFogVolume(*grid); // convert to fog volume to generate active tiles
@@ -189,7 +189,7 @@ TEST_F(TestCount, testCountBBox)
 
 TEST_F(TestCount, testMemUsage)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     auto grid = tools::createLevelSetSphere<FloatGrid>(10.0f, Vec3f(0), 0.1f);
     tools::sdfToFogVolume(*grid); // convert to fog volume to generate active tiles
@@ -242,7 +242,7 @@ TEST_F(TestCount, testMemUsage)
     // Write out the grid and read it in with delay-loading. Check the
     // expected memory usage values.]
 
-    openvdb::initialize();
+    laovdb::initialize();
 
     std::string filename;
 
@@ -278,7 +278,7 @@ TEST_F(TestCount, testMemUsage)
 
     std::remove(filename.c_str());
 
-    openvdb::uninitialize();
+    laovdb::uninitialize();
 }
 
 
@@ -292,7 +292,7 @@ minMaxTest()
     using ValueT = typename TreeT::ValueType;
 
     const ValueT
-        zero = openvdb::zeroVal<ValueT>(),
+        zero = laovdb::zeroVal<ValueT>(),
         minusTwo = zero + (-2),
         plusTwo = zero + 2,
         five = zero + 5,
@@ -304,33 +304,33 @@ minMaxTest()
     TreeT tree(/*background=*/five);
 
     // No set voxels (defaults to min = max = zero)
-    openvdb::math::MinMax<ValueT> extrema = openvdb::tools::minMax(tree);
+    laovdb::math::MinMax<ValueT> extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(zero, extrema.min());
     EXPECT_EQ(zero, extrema.max());
 
     // Only one set voxel
-    tree.setValue(openvdb::Coord(0), minusTwo);
-    extrema = openvdb::tools::minMax(tree);
+    tree.setValue(laovdb::Coord(0), minusTwo);
+    extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(minusTwo, extrema.min());
     EXPECT_EQ(minusTwo, extrema.max());
 
     // Multiple set voxels, single value
-    tree.setValue(openvdb::Coord(DIM), minusTwo);
-    extrema = openvdb::tools::minMax(tree);
+    tree.setValue(laovdb::Coord(DIM), minusTwo);
+    extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(minusTwo, extrema.min());
     EXPECT_EQ(minusTwo, extrema.max());
 
     // Multiple set voxels, multiple values
-    tree.setValue(openvdb::Coord(DIM), plusTwo);
-    tree.setValue(openvdb::Coord(DIM*2), zero);
-    extrema = openvdb::tools::minMax(tree);
+    tree.setValue(laovdb::Coord(DIM), plusTwo);
+    tree.setValue(laovdb::Coord(DIM*2), zero);
+    extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(minusTwo, extrema.min());
     EXPECT_EQ(plusTwo, extrema.max());
 
     // add some empty leaf nodes to test the join op
-    tree.setValueOnly(openvdb::Coord(DIM*3), ten);
-    tree.setValueOnly(openvdb::Coord(DIM*4),-ten);
-    extrema = openvdb::tools::minMax(tree);
+    tree.setValueOnly(laovdb::Coord(DIM*3), ten);
+    tree.setValueOnly(laovdb::Coord(DIM*4),-ten);
+    extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(minusTwo, extrema.min());
     EXPECT_EQ(plusTwo, extrema.max());
 
@@ -340,13 +340,13 @@ minMaxTest()
     using NodeChainT = typename TreeT::RootNodeType::NodeChainType;
     using ChildT1 = typename NodeChainT::template Get<1>; // Leaf parent
     using ChildT2 = typename NodeChainT::template Get<2>; // ChildT1 parent
-    tree.addTile(ChildT2::LEVEL, openvdb::Coord(0), -ten, true);
-    tree.addTile(ChildT2::LEVEL, openvdb::Coord(ChildT2::DIM), ten, true);
-    tree.addTile(ChildT1::LEVEL, openvdb::Coord(ChildT2::DIM + ChildT2::DIM), -twenty, false);
-    tree.setValueOnly(openvdb::Coord(-1), twenty);
-    tree.setValue(openvdb::Coord(-2), five);
+    tree.addTile(ChildT2::LEVEL, laovdb::Coord(0), -ten, true);
+    tree.addTile(ChildT2::LEVEL, laovdb::Coord(ChildT2::DIM), ten, true);
+    tree.addTile(ChildT1::LEVEL, laovdb::Coord(ChildT2::DIM + ChildT2::DIM), -twenty, false);
+    tree.setValueOnly(laovdb::Coord(-1), twenty);
+    tree.setValue(laovdb::Coord(-2), five);
 
-    extrema = openvdb::tools::minMax(tree);
+    extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(-ten, extrema.min());
     EXPECT_EQ( ten, extrema.max());
 }
@@ -354,30 +354,30 @@ minMaxTest()
 /// Specialization for boolean trees
 template<>
 void
-minMaxTest<openvdb::BoolTree>()
+minMaxTest<laovdb::BoolTree>()
 {
-    openvdb::BoolTree tree(/*background=*/false);
+    laovdb::BoolTree tree(/*background=*/false);
 
     // No set voxels (defaults to min = max = zero)
-    openvdb::math::MinMax<bool> extrema = openvdb::tools::minMax(tree);
+    laovdb::math::MinMax<bool> extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(false, extrema.min());
     EXPECT_EQ(false, extrema.max());
 
     // Only one set voxel
-    tree.setValue(openvdb::Coord(0, 0, 0), true);
-    extrema = openvdb::tools::minMax(tree);
+    tree.setValue(laovdb::Coord(0, 0, 0), true);
+    extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(true, extrema.min());
     EXPECT_EQ(true, extrema.max());
 
     // Multiple set voxels, single value
-    tree.setValue(openvdb::Coord(-10, -10, -10), true);
-    extrema = openvdb::tools::minMax(tree);
+    tree.setValue(laovdb::Coord(-10, -10, -10), true);
+    extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(true, extrema.min());
     EXPECT_EQ(true, extrema.max());
 
     // Multiple set voxels, multiple values
-    tree.setValue(openvdb::Coord(10, 10, 10), false);
-    extrema = openvdb::tools::minMax(tree);
+    tree.setValue(laovdb::Coord(10, 10, 10), false);
+    extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(false, extrema.min());
     EXPECT_EQ(true, extrema.max());
 }
@@ -385,27 +385,27 @@ minMaxTest<openvdb::BoolTree>()
 /// Specialization for Coord trees
 template<>
 void
-minMaxTest<openvdb::Coord>()
+minMaxTest<laovdb::Coord>()
 {
-    using CoordTree = openvdb::tree::Tree4<openvdb::Coord,5,4,3>::Type;
-    const openvdb::Coord backg(5,4,-6), a(5,4,-7), b(5,5,-6);
+    using CoordTree = laovdb::tree::Tree4<laovdb::Coord,5,4,3>::Type;
+    const laovdb::Coord backg(5,4,-6), a(5,4,-7), b(5,5,-6);
 
     CoordTree tree(backg);
 
     // No set voxels (defaults to min = max = zero)
-    openvdb::math::MinMax<openvdb::Coord> extrema = openvdb::tools::minMax(tree);
-    EXPECT_EQ(openvdb::Coord(0), extrema.min());
-    EXPECT_EQ(openvdb::Coord(0), extrema.max());
+    laovdb::math::MinMax<laovdb::Coord> extrema = laovdb::tools::minMax(tree);
+    EXPECT_EQ(laovdb::Coord(0), extrema.min());
+    EXPECT_EQ(laovdb::Coord(0), extrema.max());
 
     // Only one set voxel
-    tree.setValue(openvdb::Coord(0, 0, 0), a);
-    extrema = openvdb::tools::minMax(tree);
+    tree.setValue(laovdb::Coord(0, 0, 0), a);
+    extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(a, extrema.min());
     EXPECT_EQ(a, extrema.max());
 
     // Multiple set voxels
-    tree.setValue(openvdb::Coord(-10, -10, -10), b);
-    extrema = openvdb::tools::minMax(tree);
+    tree.setValue(laovdb::Coord(-10, -10, -10), b);
+    extrema = laovdb::tools::minMax(tree);
     EXPECT_EQ(a, extrema.min());
     EXPECT_EQ(b, extrema.max());
 }
@@ -414,10 +414,10 @@ minMaxTest<openvdb::Coord>()
 
 TEST_F(TestCount, testMinMax)
 {
-    minMaxTest<openvdb::BoolTree>();
-    minMaxTest<openvdb::FloatTree>();
-    minMaxTest<openvdb::Int32Tree>();
-    minMaxTest<openvdb::Vec3STree>();
-    minMaxTest<openvdb::Vec2ITree>();
-    minMaxTest<openvdb::Coord>();
+    minMaxTest<laovdb::BoolTree>();
+    minMaxTest<laovdb::FloatTree>();
+    minMaxTest<laovdb::Int32Tree>();
+    minMaxTest<laovdb::Vec3STree>();
+    minMaxTest<laovdb::Vec2ITree>();
+    minMaxTest<laovdb::Coord>();
 }

@@ -37,7 +37,7 @@ namespace
 
 struct SegmentActiveVoxels
 {
-    SegmentActiveVoxels(GU_Detail& geo, bool visualize, bool appendNumber, openvdb::util::NullInterrupter&)
+    SegmentActiveVoxels(GU_Detail& geo, bool visualize, bool appendNumber, laovdb::util::NullInterrupter&)
         : mGeoPt(&geo)
         , mVisualize(visualize)
         , mAppendNumber(appendNumber)
@@ -51,7 +51,7 @@ struct SegmentActiveVoxels
 
         std::vector<GridPtrType> segments;
 
-        openvdb::tools::segmentActiveVoxels(grid, segments);
+        laovdb::tools::segmentActiveVoxels(grid, segments);
 
         GA_RWHandleV3 color;
         if (mVisualize) {
@@ -90,7 +90,7 @@ private:
 
 struct SegmentSDF
 {
-    SegmentSDF(GU_Detail& geo, bool visualize, bool appendNumber, openvdb::util::NullInterrupter&)
+    SegmentSDF(GU_Detail& geo, bool visualize, bool appendNumber, laovdb::util::NullInterrupter&)
         : mGeoPt(&geo)
         , mVisualize(visualize)
         , mAppendNumber(appendNumber)
@@ -104,7 +104,7 @@ struct SegmentSDF
 
         std::vector<GridPtrType> segments;
 
-        openvdb::tools::segmentSDF(grid, segments);
+        laovdb::tools::segmentSDF(grid, segments);
 
         GA_RWHandleV3 color;
         if (mVisualize) {
@@ -290,8 +290,8 @@ SOP_OpenVDB_Segment::Cache::cookVDBSop(OP_Context& context)
 
             const GU_PrimVDB* vdb = vdbIt.getPrimitive();
 
-            const openvdb::GridClass gridClass = vdb->getGrid().getGridClass();
-            if (gridClass == openvdb::GRID_LEVEL_SET) {
+            const laovdb::GridClass gridClass = vdb->getGrid().getGridClass();
+            if (gridClass == laovdb::GRID_LEVEL_SET) {
                 hvdb::GEOvdbApply<hvdb::NumericGridTypes>(*vdb, segmentSDF);
             } else {
                 hvdb::GEOvdbApply<hvdb::AllGridTypes>(*vdb, segmentActiveVoxels);

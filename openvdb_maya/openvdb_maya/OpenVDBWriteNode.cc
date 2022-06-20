@@ -200,24 +200,24 @@ MStatus OpenVDBWriteNode::compute(const MPlug& plug, MDataBlock& data)
             if (vdb) {
 
                 // Add file-level metadata.
-                openvdb::MetaMap outMeta;
+                laovdb::MetaMap outMeta;
                 outMeta.insertMeta("creator",
-                    openvdb::StringMetadata("Maya/OpenVDB_Write_Node"));
+                    laovdb::StringMetadata("Maya/OpenVDB_Write_Node"));
 
                 const MTime dummy(1.0, MTime::kSeconds);
                 const double fps = dummy.as(MTime::uiUnit());
                 const double tpf = 6000.0 / fps;
                 const double frame = time.as(MTime::uiUnit());
 
-                outMeta.insertMeta("frame", openvdb::DoubleMetadata(frame));
-                outMeta.insertMeta("tick", openvdb::Int32Metadata(int(openvdb::math::Round(frame * tpf))));
+                outMeta.insertMeta("frame", laovdb::DoubleMetadata(frame));
+                outMeta.insertMeta("tick", laovdb::Int32Metadata(int(laovdb::math::Round(frame * tpf))));
 
-                outMeta.insertMeta("frames_per_second", openvdb::Int32Metadata(int(fps)));
-                outMeta.insertMeta("ticks_per_frame", openvdb::Int32Metadata(int(tpf)));
-                outMeta.insertMeta("ticks_per_second", openvdb::Int32Metadata(6000));
+                outMeta.insertMeta("frames_per_second", laovdb::Int32Metadata(int(fps)));
+                outMeta.insertMeta("ticks_per_frame", laovdb::Int32Metadata(int(tpf)));
+                outMeta.insertMeta("ticks_per_second", laovdb::Int32Metadata(6000));
 
                 // Create a VDB file object.
-                openvdb::io::File file(filename);
+                laovdb::io::File file(filename);
 
                 vdb->write(file, outMeta);
 

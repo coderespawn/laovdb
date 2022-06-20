@@ -34,7 +34,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -1042,10 +1042,10 @@ template <typename T> struct Adapter {
     static void sync(T&) {} // no-op
 };
 template <typename T>
-struct Adapter<openvdb::tree::LeafManager<T>> {
+struct Adapter<laovdb::tree::LeafManager<T>> {
     using TreeType = T;
-    static TreeType& get(openvdb::tree::LeafManager<T>& M) { return M.tree(); }
-    static void sync(openvdb::tree::LeafManager<T>& M) { M.rebuild(); }
+    static TreeType& get(laovdb::tree::LeafManager<T>& M) { return M.tree(); }
+    static void sync(laovdb::tree::LeafManager<T>& M) { M.rebuild(); }
 };
 }
 
@@ -1312,6 +1312,6 @@ OPENVDB_ALL_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_MORPHOLOGY_HAS_BEEN_INCLUDED

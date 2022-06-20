@@ -19,7 +19,7 @@
 #include <openvdb/points/PointCount.h>
 #include <openvdb/points/PointDataGrid.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -201,7 +201,7 @@ public:
 
     template <typename FilterT = points::NullFilter>
     FloatGrid::Ptr
-    rasterizeDensity(const openvdb::Name& attribute, RasterMode mode=RasterMode::MAXIMUM,
+    rasterizeDensity(const laovdb::Name& attribute, RasterMode mode=RasterMode::MAXIMUM,
         bool reduceMemory = false, float scale = 1.0f, const FilterT& filter = FilterT());
 
     template <typename FilterT = points::NullFilter>
@@ -222,7 +222,7 @@ private:
     template <typename AttributeT, typename GridT, typename FilterT>
     void
     performRasterization(
-        GridT& grid, RasterMode mode, const openvdb::Name& attribute,
+        GridT& grid, RasterMode mode, const laovdb::Name& attribute,
         bool reduceMemory, float scale, const FilterT& filter);
 
 private:
@@ -245,7 +245,7 @@ struct RasterGroups
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #include "impl/PointRasterizeFrustumImpl.h"
 

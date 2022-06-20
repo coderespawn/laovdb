@@ -24,7 +24,7 @@
 #include <tbb/parallel_reduce.h>
 #include <tbb/parallel_for.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -155,8 +155,8 @@ bool evalMinMax(const PointDataTreeT& points,
 ///   no points were processed or if the tree was empty.
 /// @par Example:
 /// @code
-///    using namespace openvdb;
-///    using namespace openvdb::points
+///    using namespace laovdb;
+///    using namespace laovdb::points
 ///
 ///    // average and store per leaf values in a new tree
 ///    ConvertElementType<uint8_t, double>::Type avg;  // evaluates to double
@@ -195,8 +195,8 @@ bool evalAverage(const PointDataTreeT& points,
 ///   no points were processed or if the tree was empty.
 /// @par Example:
 /// @code
-///    using namespace openvdb;
-///    using namespace openvdb::points;
+///    using namespace laovdb;
+///    using namespace laovdb::points;
 ///
 ///    // accumulate and store per leaf values in a new tree
 ///    PromoteType<uint8_t>::Highest total;  // evaluates to uint64_t
@@ -738,6 +738,6 @@ accumulate(const PointDataTreeT& points,
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_STATISTICS_HAS_BEEN_INCLUDED

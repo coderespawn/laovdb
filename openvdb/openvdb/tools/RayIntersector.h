@@ -43,7 +43,7 @@
 #include <type_traits>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -106,7 +106,7 @@ public:
         if (grid.getGridClass() != GRID_LEVEL_SET) {
             OPENVDB_THROW(RuntimeError,
                           "LevelSetRayIntersector only supports level sets!"
-                          "\nUse Grid::setGridClass(openvdb::GRID_LEVEL_SET)");
+                          "\nUse Grid::setGridClass(laovdb::GRID_LEVEL_SET)");
         }
     }
 
@@ -666,6 +666,6 @@ private:
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_RAYINTERSECTOR_HAS_BEEN_INCLUDED

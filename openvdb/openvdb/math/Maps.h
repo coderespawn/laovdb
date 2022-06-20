@@ -19,7 +19,7 @@
 #include <map>
 #include <string>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -2721,6 +2721,6 @@ private:
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_MATH_MAPS_HAS_BEEN_INCLUDED

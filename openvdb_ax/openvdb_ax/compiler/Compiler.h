@@ -32,7 +32,7 @@ namespace llvm {
 class LLVMContext;
 }
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -116,7 +116,7 @@ public:
             const CustomData::Ptr data = CustomData::Ptr())
     {
         std::vector<std::string> errors;
-        openvdb::ax::Logger logger(
+        laovdb::ax::Logger logger(
             [&errors] (const std::string& error) {
                 errors.emplace_back(error + "\n");
             },
@@ -151,7 +151,7 @@ public:
             const CustomData::Ptr data = CustomData::Ptr())
     {
         std::vector<std::string> errors;
-        openvdb::ax::Logger logger(
+        laovdb::ax::Logger logger(
             [&errors] (const std::string& error) {
                 errors.emplace_back(error + "\n");
             },
@@ -195,7 +195,7 @@ private:
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_COMPILER_HAS_BEEN_INCLUDED
 

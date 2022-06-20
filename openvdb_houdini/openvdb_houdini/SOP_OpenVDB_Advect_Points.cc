@@ -255,14 +255,14 @@ appendLineNodes(GU_Detail& geo, GA_Size firstline, const GU_Detail& ptnGeo)
 template<typename GridType>
 class ProjectionOp
 {
-    using ProjectorType = openvdb::tools::ClosestPointProjector<GridType>;
+    using ProjectorType = laovdb::tools::ClosestPointProjector<GridType>;
     using VectorType = typename GridType::ValueType;
     using ElementType = typename VectorType::ValueType;
 
 public:
 
     ProjectionOp(const GridType& cptGrid, int cptIterations, GU_Detail& geo,
-        const std::vector<GA_Offset>& offsetsToSkip, openvdb::util::NullInterrupter& boss)
+        const std::vector<GA_Offset>& offsetsToSkip, laovdb::util::NullInterrupter& boss)
         : mProjector(cptGrid, cptIterations)
         , mGeo(geo)
         , mOffsetsToSkip(offsetsToSkip)
@@ -311,14 +311,14 @@ private:
     ProjectorType mProjector;
     GU_Detail& mGeo;
     const std::vector<GA_Offset>& mOffsetsToSkip;
-    openvdb::util::NullInterrupter& mBoss;
+    laovdb::util::NullInterrupter& mBoss;
 };
 
 
 class Projection
 {
 public:
-    Projection(AdvectionParms& parms, openvdb::util::NullInterrupter& boss)
+    Projection(AdvectionParms& parms, laovdb::util::NullInterrupter& boss)
         : mParms(parms)
         , mBoss(boss)
     {
@@ -336,7 +336,7 @@ public:
 
 private:
     AdvectionParms& mParms;
-    openvdb::util::NullInterrupter& mBoss;
+    laovdb::util::NullInterrupter& mBoss;
 };
 
 
@@ -344,9 +344,9 @@ private:
 template<typename GridType, int IntegrationOrder, bool StaggeredVelocity, bool Constrained = false>
 class AdvectionOp
 {
-    using IntegrationType = openvdb::tools::VelocityIntegrator<GridType, StaggeredVelocity>;
+    using IntegrationType = laovdb::tools::VelocityIntegrator<GridType, StaggeredVelocity>;
     using ProjectorType =
-        openvdb::tools::ClosestPointProjector<GridType>; // Used for constrained advection
+        laovdb::tools::ClosestPointProjector<GridType>; // Used for constrained advection
 
     using VectorType = typename GridType::ValueType;
     using ElementType = typename VectorType::ValueType;
@@ -354,7 +354,7 @@ class AdvectionOp
 public:
 
     AdvectionOp(const GridType& velocityGrid, GU_Detail& geo,
-        const std::vector<GA_Offset>& offsetsToSkip, openvdb::util::NullInterrupter& boss,
+        const std::vector<GA_Offset>& offsetsToSkip, laovdb::util::NullInterrupter& boss,
         double timeStep, GA_ROHandleF traillen, int steps)
         : mVelocityGrid(velocityGrid)
         , mCptGrid(nullptr)
@@ -369,7 +369,7 @@ public:
     }
 
     AdvectionOp(const GridType& velocityGrid, const GridType& cptGrid, GU_Detail& geo,
-        const std::vector<GA_Offset>& offsetsToSkip, openvdb::util::NullInterrupter& boss,
+        const std::vector<GA_Offset>& offsetsToSkip, laovdb::util::NullInterrupter& boss,
         double timeStep, int steps, int cptIterations)
         : mVelocityGrid(velocityGrid)
         , mCptGrid(&cptGrid)
@@ -441,7 +441,7 @@ private:
     const GridType* mCptGrid;
     GU_Detail& mGeo;
     const std::vector<GA_Offset>& mOffsetsToSkip;
-    openvdb::util::NullInterrupter& mBoss;
+    laovdb::util::NullInterrupter& mBoss;
     double mTimeStep;
     GA_ROHandleF mTrailLen;
     const int mSteps, mCptIterations;
@@ -451,7 +451,7 @@ private:
 class Advection
 {
 public:
-    Advection(AdvectionParms& parms, openvdb::util::NullInterrupter& boss)
+    Advection(AdvectionParms& parms, laovdb::util::NullInterrupter& boss)
         : mParms(parms)
         , mBoss(boss)
     {
@@ -573,7 +573,7 @@ public:
 
 private:
     AdvectionParms&    mParms;
-    openvdb::util::NullInterrupter& mBoss;
+    laovdb::util::NullInterrupter& mBoss;
 };
 
 
@@ -581,7 +581,7 @@ template <typename PointDataGridT>
 class VDBPointsAdvection
 {
 public:
-    VDBPointsAdvection(PointDataGridT& outputGrid, AdvectionParms& parms, openvdb::util::NullInterrupter& boss)
+    VDBPointsAdvection(PointDataGridT& outputGrid, AdvectionParms& parms, laovdb::util::NullInterrupter& boss)
         : mOutputGrid(outputGrid)
         , mParms(parms)
         , mBoss(boss)
@@ -599,16 +599,16 @@ public:
         auto leaf = mOutputGrid.constTree().cbeginLeaf();
         if (!leaf)  return;
 
-        openvdb::points::MultiGroupFilter filter(
+        laovdb::points::MultiGroupFilter filter(
             mParms.mIncludeGroups, mParms.mExcludeGroups, leaf->attributeSet());
-        openvdb::points::advectPoints(mOutputGrid, velocityGrid,
+        laovdb::points::advectPoints(mOutputGrid, velocityGrid,
             mParms.mIntegrationType+1, mParms.mTimeStep, mParms.mSteps, filter);
     }
 
 private:
     PointDataGridT&    mOutputGrid;
     AdvectionParms&    mParms;
-    openvdb::util::NullInterrupter& mBoss;
+    laovdb::util::NullInterrupter& mBoss;
 };
 
 } // namespace
@@ -978,10 +978,10 @@ SOP_OpenVDB_Advect_Points::Cache::cookVDBSop(OP_Context& context)
                 GU_PrimVDB* vdbPrim = *vdbIt;
 
                 // only process if grid is a PointDataGrid with leaves
-                if (!openvdb::gridConstPtrCast<openvdb::points::PointDataGrid>(
+                if (!laovdb::gridConstPtrCast<laovdb::points::PointDataGrid>(
                     vdbPrim->getConstGridPtr())) continue;
                 auto&& pointDataGrid =
-                    UTvdbGridCast<openvdb::points::PointDataGrid>(vdbPrim->getConstGrid());
+                    UTvdbGridCast<laovdb::points::PointDataGrid>(vdbPrim->getConstGrid());
                 auto leafIter = pointDataGrid.tree().cbeginLeaf();
                 if (!leafIter) continue;
 
@@ -989,14 +989,14 @@ SOP_OpenVDB_Advect_Points::Cache::cookVDBSop(OP_Context& context)
                 vdbPrim->makeGridUnique();
 
                 auto&& outputGrid =
-                    UTvdbGridCast<openvdb::points::PointDataGrid>(vdbPrim->getGrid());
+                    UTvdbGridCast<laovdb::points::PointDataGrid>(vdbPrim->getGrid());
 
                 switch (parms.mPropagationType) {
 
                     case PROPAGATION_TYPE_ADVECTION:
                     case PROPAGATION_TYPE_CONSTRAINED_ADVECTION:
                     {
-                        VDBPointsAdvection<openvdb::points::PointDataGrid> advection(
+                        VDBPointsAdvection<laovdb::points::PointDataGrid> advection(
                             outputGrid, parms, boss.interrupter());
                         hvdb::GEOvdbApply<hvdb::Vec3GridTypes>(*parms.mVelPrim, advection);
                         break;
@@ -1062,7 +1062,7 @@ SOP_OpenVDB_Advect_Points::Cache::evalAdvectionParms(
         const std::string groups = evalStdString("vdbpointsgroups", now);
 
         // Get and parse the vdb points groups
-        openvdb::points::AttributeSet::Descriptor::parseNames(
+        laovdb::points::AttributeSet::Descriptor::parseNames(
             parms.mIncludeGroups, parms.mExcludeGroups, groups);
     }
 
@@ -1103,7 +1103,7 @@ SOP_OpenVDB_Advect_Points::Cache::evalAdvectionParms(
 
         // Check if the velocity grid uses a staggered representation.
         parms.mStaggered =
-            parms.mVelPrim->getGrid().getGridClass() == openvdb::GRID_STAGGERED;
+            parms.mVelPrim->getGrid().getGridClass() == laovdb::GRID_STAGGERED;
 
         parms.mTimeStep = static_cast<float>(evalFloat("timestep", 0, now));
         parms.mSteps = static_cast<int>(evalInt("steps", 0, now));

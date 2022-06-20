@@ -25,34 +25,34 @@ public:
             SOP_VDBCacheOptions() {}
             ~SOP_VDBCacheOptions() override {}
 
-    openvdb::Vec3f evalVec3f(const char* name, fpreal time) const
+    laovdb::Vec3f evalVec3f(const char* name, fpreal time) const
     {
-        return openvdb::Vec3f(static_cast<float>(evalFloat(name, 0, time)),
+        return laovdb::Vec3f(static_cast<float>(evalFloat(name, 0, time)),
                               static_cast<float>(evalFloat(name, 1, time)),
                               static_cast<float>(evalFloat(name, 2, time)));
     }
-    openvdb::Vec3R evalVec3R(const char* name, fpreal time) const
+    laovdb::Vec3R evalVec3R(const char* name, fpreal time) const
     {
-        return openvdb::Vec3R(evalFloat(name, 0, time),
+        return laovdb::Vec3R(evalFloat(name, 0, time),
                               evalFloat(name, 1, time),
                               evalFloat(name, 2, time));
     }
-    openvdb::Vec3i evalVec3i(const char* name, fpreal time) const
+    laovdb::Vec3i evalVec3i(const char* name, fpreal time) const
     {
-        using IntT = openvdb::Vec3i::ValueType;
-        return openvdb::Vec3i(static_cast<IntT>(evalInt(name, 0, time)),
+        using IntT = laovdb::Vec3i::ValueType;
+        return laovdb::Vec3i(static_cast<IntT>(evalInt(name, 0, time)),
                               static_cast<IntT>(evalInt(name, 1, time)),
                               static_cast<IntT>(evalInt(name, 2, time)));
     }
-    openvdb::Vec2R evalVec2R(const char* name, fpreal time) const
+    laovdb::Vec2R evalVec2R(const char* name, fpreal time) const
     {
-        return openvdb::Vec2R(evalFloat(name, 0, time),
+        return laovdb::Vec2R(evalFloat(name, 0, time),
                               evalFloat(name, 1, time));
     }
-    openvdb::Vec2i evalVec2i(const char* name, fpreal time) const
+    laovdb::Vec2i evalVec2i(const char* name, fpreal time) const
     {
-        using IntT = openvdb::Vec2i::ValueType;
-        return openvdb::Vec2i(static_cast<IntT>(evalInt(name, 0, time)),
+        using IntT = laovdb::Vec2i::ValueType;
+        return laovdb::Vec2i(static_cast<IntT>(evalInt(name, 0, time)),
                               static_cast<IntT>(evalInt(name, 1, time)));
     }
 

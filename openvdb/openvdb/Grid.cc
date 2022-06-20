@@ -9,7 +9,7 @@
 #include <mutex>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -427,4 +427,4 @@ GridBase::clipGrid(const BBoxd& worldBBox)
 }
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

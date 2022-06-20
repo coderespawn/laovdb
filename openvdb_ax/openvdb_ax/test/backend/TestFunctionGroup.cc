@@ -16,15 +16,15 @@
 // Framework methods for the subsequent unit tests
 
 /// @brief  Dummy derived function which implemented types
-struct TestFunction : public openvdb::ax::codegen::Function
+struct TestFunction : public laovdb::ax::codegen::Function
 {
     static_assert(std::has_virtual_destructor
-        <openvdb::ax::codegen::Function>::value,
+        <laovdb::ax::codegen::Function>::value,
         "Base class destructor is not virtual");
     TestFunction(const std::vector<llvm::Type*>& types,
           llvm::Type* ret,
           const std::string& symbol)
-        : openvdb::ax::codegen::Function(types.size(), symbol)
+        : laovdb::ax::codegen::Function(types.size(), symbol)
         , mTypes(types), mRet(ret) {}
     ~TestFunction() override {}
     llvm::Type* types(std::vector<llvm::Type*>& types,
@@ -36,11 +36,11 @@ struct TestFunction : public openvdb::ax::codegen::Function
     llvm::Type* mRet;
 };
 
-inline openvdb::ax::codegen::FunctionGroup::Ptr
+inline laovdb::ax::codegen::FunctionGroup::Ptr
 axtestscalar(llvm::LLVMContext& C)
 {
-    using openvdb::ax::codegen::Function;
-    using openvdb::ax::codegen::FunctionGroup;
+    using laovdb::ax::codegen::Function;
+    using laovdb::ax::codegen::FunctionGroup;
     llvm::Type* voidty = llvm::Type::getVoidTy(C);
     FunctionGroup::Ptr group(new FunctionGroup("test",
         "The documentation", {
@@ -55,11 +55,11 @@ axtestscalar(llvm::LLVMContext& C)
     return group;
 }
 
-inline openvdb::ax::codegen::FunctionGroup::Ptr
+inline laovdb::ax::codegen::FunctionGroup::Ptr
 axtestsize(llvm::LLVMContext& C)
 {
-    using openvdb::ax::codegen::Function;
-    using openvdb::ax::codegen::FunctionGroup;
+    using laovdb::ax::codegen::Function;
+    using laovdb::ax::codegen::FunctionGroup;
     llvm::Type* voidty = llvm::Type::getVoidTy(C);
     FunctionGroup::Ptr group(new FunctionGroup("test",
         "The documentation", {
@@ -74,11 +74,11 @@ axtestsize(llvm::LLVMContext& C)
     return group;
 }
 
-inline openvdb::ax::codegen::FunctionGroup::Ptr
+inline laovdb::ax::codegen::FunctionGroup::Ptr
 axtestmulti(llvm::LLVMContext& C)
 {
-    using openvdb::ax::codegen::Function;
-    using openvdb::ax::codegen::FunctionGroup;
+    using laovdb::ax::codegen::Function;
+    using laovdb::ax::codegen::FunctionGroup;
     llvm::Type* voidty = llvm::Type::getVoidTy(C);
     FunctionGroup::Ptr group(new FunctionGroup("test",
         "The documentation", {
@@ -132,8 +132,8 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestFunctionGroup);
 void
 TestFunctionGroup::testFunctionGroup()
 {
-    using openvdb::ax::codegen::Function;
-    using openvdb::ax::codegen::FunctionGroup;
+    using laovdb::ax::codegen::Function;
+    using laovdb::ax::codegen::FunctionGroup;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();
@@ -160,9 +160,9 @@ TestFunctionGroup::testFunctionGroup()
 void
 TestFunctionGroup::testMatch()
 {
-    using openvdb::ax::codegen::LLVMType;
-    using openvdb::ax::codegen::Function;
-    using openvdb::ax::codegen::FunctionGroup;
+    using laovdb::ax::codegen::LLVMType;
+    using laovdb::ax::codegen::Function;
+    using laovdb::ax::codegen::FunctionGroup;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();
@@ -396,9 +396,9 @@ TestFunctionGroup::testMatch()
 void
 TestFunctionGroup::testExecute()
 {
-    using openvdb::ax::codegen::LLVMType;
-    using openvdb::ax::codegen::Function;
-    using openvdb::ax::codegen::FunctionGroup;
+    using laovdb::ax::codegen::LLVMType;
+    using laovdb::ax::codegen::Function;
+    using laovdb::ax::codegen::FunctionGroup;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();

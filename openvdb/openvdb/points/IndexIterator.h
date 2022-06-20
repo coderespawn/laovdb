@@ -13,7 +13,7 @@
 #include <openvdb/version.h>
 #include <openvdb/Types.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -324,6 +324,6 @@ inline Index64 iterCount(const IterT& iter)
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_INDEX_ITERATOR_HAS_BEEN_INCLUDED

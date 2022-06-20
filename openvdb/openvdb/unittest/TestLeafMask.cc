@@ -13,12 +13,12 @@
 class TestLeafMask: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 };
 
 
-typedef openvdb::tree::LeafNode<openvdb::ValueMask, 3> LeafType;
+typedef laovdb::tree::LeafNode<laovdb::ValueMask, 3> LeafType;
 
 
 ////////////////////////////////////////
@@ -27,38 +27,38 @@ typedef openvdb::tree::LeafNode<openvdb::ValueMask, 3> LeafType;
 TEST_F(TestLeafMask, testGetValue)
 {
     {
-        LeafType leaf1(openvdb::Coord(0, 0, 0));
-        openvdb::tree::LeafNode<bool, 3> leaf2(openvdb::Coord(0, 0, 0));
+        LeafType leaf1(laovdb::Coord(0, 0, 0));
+        laovdb::tree::LeafNode<bool, 3> leaf2(laovdb::Coord(0, 0, 0));
         EXPECT_TRUE( leaf1.memUsage() < leaf2.memUsage() );
         //std::cerr << "\nLeafNode<ActiveState, 3> uses " << leaf1.memUsage() << " bytes" << std::endl;
         //std::cerr << "LeafNode<bool, 3> uses " << leaf2.memUsage() << " bytes" << std::endl;
     }
     {
-        LeafType leaf(openvdb::Coord(0, 0, 0), false);
-        for (openvdb::Index n = 0; n < leaf.numValues(); ++n) {
+        LeafType leaf(laovdb::Coord(0, 0, 0), false);
+        for (laovdb::Index n = 0; n < leaf.numValues(); ++n) {
             EXPECT_EQ(false, leaf.getValue(leaf.offsetToLocalCoord(n)));
         }
     }
     {
-        LeafType leaf(openvdb::Coord(0, 0, 0), true);
-        for (openvdb::Index n = 0; n < leaf.numValues(); ++n) {
+        LeafType leaf(laovdb::Coord(0, 0, 0), true);
+        for (laovdb::Index n = 0; n < leaf.numValues(); ++n) {
             EXPECT_EQ(true, leaf.getValue(leaf.offsetToLocalCoord(n)));
         }
     }
     {// test Buffer::data()
-        LeafType leaf(openvdb::Coord(0, 0, 0), false);
+        LeafType leaf(laovdb::Coord(0, 0, 0), false);
         leaf.fill(true);
         LeafType::Buffer::WordType* w = leaf.buffer().data();
-        for (openvdb::Index n = 0; n < LeafType::Buffer::WORD_COUNT; ++n) {
+        for (laovdb::Index n = 0; n < LeafType::Buffer::WORD_COUNT; ++n) {
             EXPECT_EQ(~LeafType::Buffer::WordType(0), w[n]);
         }
     }
     {// test const Buffer::data()
-        LeafType leaf(openvdb::Coord(0, 0, 0), false);
+        LeafType leaf(laovdb::Coord(0, 0, 0), false);
         leaf.fill(true);
         const LeafType& cleaf = leaf;
         const LeafType::Buffer::WordType* w = cleaf.buffer().data();
-        for (openvdb::Index n = 0; n < LeafType::Buffer::WORD_COUNT; ++n) {
+        for (laovdb::Index n = 0; n < LeafType::Buffer::WORD_COUNT; ++n) {
             EXPECT_EQ(~LeafType::Buffer::WordType(0), w[n]);
         }
     }
@@ -67,9 +67,9 @@ TEST_F(TestLeafMask, testGetValue)
 
 TEST_F(TestLeafMask, testSetValue)
 {
-    LeafType leaf(openvdb::Coord(0, 0, 0), false);
+    LeafType leaf(laovdb::Coord(0, 0, 0), false);
 
-    openvdb::Coord xyz(0, 0, 0);
+    laovdb::Coord xyz(0, 0, 0);
     EXPECT_TRUE(!leaf.isValueOn(xyz));
     leaf.setValueOn(xyz);
     EXPECT_TRUE(leaf.isValueOn(xyz));
@@ -96,27 +96,27 @@ TEST_F(TestLeafMask, testSetValue)
 
 TEST_F(TestLeafMask, testProbeValue)
 {
-    LeafType leaf(openvdb::Coord(0, 0, 0));
-    leaf.setValueOn(openvdb::Coord(1, 6, 5));
+    LeafType leaf(laovdb::Coord(0, 0, 0));
+    leaf.setValueOn(laovdb::Coord(1, 6, 5));
 
     bool val;
-    EXPECT_TRUE(leaf.probeValue(openvdb::Coord(1, 6, 5), val));
-    EXPECT_TRUE(!leaf.probeValue(openvdb::Coord(1, 6, 4), val));
+    EXPECT_TRUE(leaf.probeValue(laovdb::Coord(1, 6, 5), val));
+    EXPECT_TRUE(!leaf.probeValue(laovdb::Coord(1, 6, 4), val));
 }
 
 
 TEST_F(TestLeafMask, testIterators)
 {
-    LeafType leaf(openvdb::Coord(0, 0, 0));
-    leaf.setValueOn(openvdb::Coord(1, 2, 3));
-    leaf.setValueOn(openvdb::Coord(5, 2, 3));
-    openvdb::Coord sum;
+    LeafType leaf(laovdb::Coord(0, 0, 0));
+    leaf.setValueOn(laovdb::Coord(1, 2, 3));
+    leaf.setValueOn(laovdb::Coord(5, 2, 3));
+    laovdb::Coord sum;
     for (LeafType::ValueOnIter iter = leaf.beginValueOn(); iter; ++iter) {
         sum += iter.getCoord();
     }
-    EXPECT_EQ(openvdb::Coord(1 + 5, 2 + 2, 3 + 3), sum);
+    EXPECT_EQ(laovdb::Coord(1 + 5, 2 + 2, 3 + 3), sum);
 
-    openvdb::Index count = 0;
+    laovdb::Index count = 0;
     for (LeafType::ValueOffIter iter = leaf.beginValueOff(); iter; ++iter, ++count);
     EXPECT_EQ(leaf.numValues() - 2, count);
 
@@ -126,11 +126,11 @@ TEST_F(TestLeafMask, testIterators)
 
     count = 0;
     for (LeafType::ChildOnIter iter = leaf.beginChildOn(); iter; ++iter, ++count);
-    EXPECT_EQ(openvdb::Index(0), count);
+    EXPECT_EQ(laovdb::Index(0), count);
 
     count = 0;
     for (LeafType::ChildOffIter iter = leaf.beginChildOff(); iter; ++iter, ++count);
-    EXPECT_EQ(openvdb::Index(0), count);
+    EXPECT_EQ(laovdb::Index(0), count);
 
     count = 0;
     for (LeafType::ChildAllIter iter = leaf.beginChildAll(); iter; ++iter, ++count);
@@ -140,9 +140,9 @@ TEST_F(TestLeafMask, testIterators)
 
 TEST_F(TestLeafMask, testIteratorGetCoord)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    LeafType leaf(openvdb::Coord(8, 8, 0));
+    LeafType leaf(laovdb::Coord(8, 8, 0));
 
     EXPECT_EQ(Coord(8, 8, 0), leaf.origin());
 
@@ -161,8 +161,8 @@ TEST_F(TestLeafMask, testIteratorGetCoord)
 
 TEST_F(TestLeafMask, testEquivalence)
 {
-    using openvdb::CoordBBox;
-    using openvdb::Coord;
+    using laovdb::CoordBBox;
+    using laovdb::Coord;
     {
         LeafType leaf(Coord(0, 0, 0), false); // false and inactive
         LeafType leaf2(Coord(0, 0, 0), true); // true and inactive
@@ -224,45 +224,45 @@ TEST_F(TestLeafMask, testEquivalence)
 TEST_F(TestLeafMask, testGetOrigin)
 {
     {
-        LeafType leaf(openvdb::Coord(1, 0, 0), 1);
-        EXPECT_EQ(openvdb::Coord(0, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(1, 0, 0), 1);
+        EXPECT_EQ(laovdb::Coord(0, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(0, 0, 0), 1);
-        EXPECT_EQ(openvdb::Coord(0, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(0, 0, 0), 1);
+        EXPECT_EQ(laovdb::Coord(0, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(8, 0, 0), 1);
-        EXPECT_EQ(openvdb::Coord(8, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(8, 0, 0), 1);
+        EXPECT_EQ(laovdb::Coord(8, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(8, 1, 0), 1);
-        EXPECT_EQ(openvdb::Coord(8, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(8, 1, 0), 1);
+        EXPECT_EQ(laovdb::Coord(8, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(1024, 1, 3), 1);
-        EXPECT_EQ(openvdb::Coord(128*8, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(1024, 1, 3), 1);
+        EXPECT_EQ(laovdb::Coord(128*8, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(1023, 1, 3), 1);
-        EXPECT_EQ(openvdb::Coord(127*8, 0, 0), leaf.origin());
+        LeafType leaf(laovdb::Coord(1023, 1, 3), 1);
+        EXPECT_EQ(laovdb::Coord(127*8, 0, 0), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(512, 512, 512), 1);
-        EXPECT_EQ(openvdb::Coord(512, 512, 512), leaf.origin());
+        LeafType leaf(laovdb::Coord(512, 512, 512), 1);
+        EXPECT_EQ(laovdb::Coord(512, 512, 512), leaf.origin());
     }
     {
-        LeafType leaf(openvdb::Coord(2, 52, 515), 1);
-        EXPECT_EQ(openvdb::Coord(0, 48, 512), leaf.origin());
+        LeafType leaf(laovdb::Coord(2, 52, 515), 1);
+        EXPECT_EQ(laovdb::Coord(0, 48, 512), leaf.origin());
     }
 }
 
 
 TEST_F(TestLeafMask, testNegativeIndexing)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    LeafType leaf(openvdb::Coord(-9, -2, -8));
+    LeafType leaf(laovdb::Coord(-9, -2, -8));
 
     EXPECT_EQ(Coord(-16, -8, -8), leaf.origin());
 
@@ -284,30 +284,30 @@ TEST_F(TestLeafMask, testNegativeIndexing)
 
 TEST_F(TestLeafMask, testIO)
 {
-    LeafType leaf(openvdb::Coord(1, 3, 5));
-    const openvdb::Coord origin = leaf.origin();
+    LeafType leaf(laovdb::Coord(1, 3, 5));
+    const laovdb::Coord origin = leaf.origin();
 
-    leaf.setValueOn(openvdb::Coord(0, 1, 0));
-    leaf.setValueOn(openvdb::Coord(1, 0, 0));
+    leaf.setValueOn(laovdb::Coord(0, 1, 0));
+    leaf.setValueOn(laovdb::Coord(1, 0, 0));
 
     std::ostringstream ostr(std::ios_base::binary);
 
     leaf.writeBuffers(ostr);
 
-    leaf.setValueOff(openvdb::Coord(0, 1, 0));
-    leaf.setValueOn(openvdb::Coord(0, 1, 1));
+    leaf.setValueOff(laovdb::Coord(0, 1, 0));
+    leaf.setValueOn(laovdb::Coord(0, 1, 1));
 
     std::istringstream istr(ostr.str(), std::ios_base::binary);
     // Since the input stream doesn't include a VDB header with file format version info,
     // tag the input stream explicitly with the current version number.
-    openvdb::io::setCurrentVersion(istr);
+    laovdb::io::setCurrentVersion(istr);
 
     leaf.readBuffers(istr);
 
     EXPECT_EQ(origin, leaf.origin());
 
-    EXPECT_TRUE(leaf.isValueOn(openvdb::Coord(0, 1, 0)));
-    EXPECT_TRUE(leaf.isValueOn(openvdb::Coord(1, 0, 0)));
+    EXPECT_TRUE(leaf.isValueOn(laovdb::Coord(0, 1, 0)));
+    EXPECT_TRUE(leaf.isValueOn(laovdb::Coord(1, 0, 0)));
 
     EXPECT_TRUE(leaf.onVoxelCount() == 2);
 }
@@ -315,20 +315,20 @@ TEST_F(TestLeafMask, testIO)
 
 TEST_F(TestLeafMask, testTopologyCopy)
 {
-    using openvdb::Coord;
+    using laovdb::Coord;
 
     // LeafNode<float, Log2Dim> having the same Log2Dim as LeafType
     typedef LeafType::ValueConverter<float>::Type FloatLeafType;
 
     FloatLeafType fleaf(Coord(10, 20, 30), -1.0);
     std::set<Coord> coords;
-    for (openvdb::Index n = 0; n < fleaf.numValues(); n += 10) {
+    for (laovdb::Index n = 0; n < fleaf.numValues(); n += 10) {
         Coord xyz = fleaf.offsetToGlobalCoord(n);
         fleaf.setValueOn(xyz, float(n));
         coords.insert(xyz);
     }
 
-    LeafType leaf(fleaf, openvdb::TopologyCopy());
+    LeafType leaf(fleaf, laovdb::TopologyCopy());
     EXPECT_EQ(fleaf.onVoxelCount(), leaf.onVoxelCount());
 
     EXPECT_TRUE(leaf.hasSameTopology(&fleaf));
@@ -342,8 +342,8 @@ TEST_F(TestLeafMask, testTopologyCopy)
 
 TEST_F(TestLeafMask, testMerge)
 {
-    LeafType leaf(openvdb::Coord(0, 0, 0));
-    for (openvdb::Index n = 0; n < leaf.numValues(); n += 10) {
+    LeafType leaf(laovdb::Coord(0, 0, 0));
+    for (laovdb::Index n = 0; n < leaf.numValues(); n += 10) {
         leaf.setValueOn(n);
     }
     EXPECT_TRUE(!leaf.isValueMaskOn());
@@ -358,7 +358,7 @@ TEST_F(TestLeafMask, testMerge)
     val = active = false;
     EXPECT_TRUE(!leaf2.isConstant(val, active));
 
-    leaf.merge<openvdb::MERGE_ACTIVE_STATES>(leaf2);
+    leaf.merge<laovdb::MERGE_ACTIVE_STATES>(leaf2);
     EXPECT_TRUE(leaf.isValueMaskOn());
     EXPECT_TRUE(!leaf.isValueMaskOff());
     val = active = false;
@@ -370,20 +370,20 @@ TEST_F(TestLeafMask, testMerge)
 TEST_F(TestLeafMask, testCombine)
 {
     struct Local {
-        static void op(openvdb::CombineArgs<bool>& args) {
+        static void op(laovdb::CombineArgs<bool>& args) {
             args.setResult(args.aIsActive() ^ args.bIsActive());// state = value
         }
     };
 
-    LeafType leaf(openvdb::Coord(0, 0, 0));
-    for (openvdb::Index n = 0; n < leaf.numValues(); n += 10) leaf.setValueOn(n);
+    LeafType leaf(laovdb::Coord(0, 0, 0));
+    for (laovdb::Index n = 0; n < leaf.numValues(); n += 10) leaf.setValueOn(n);
     EXPECT_TRUE(!leaf.isValueMaskOn());
     EXPECT_TRUE(!leaf.isValueMaskOff());
     const LeafType::NodeMaskType savedMask = leaf.getValueMask();
     OPENVDB_LOG_DEBUG_RUNTIME(leaf.str());
 
     LeafType leaf2(leaf);
-    for (openvdb::Index n = 0; n < leaf.numValues(); n += 4) leaf2.setValueOn(n);
+    for (laovdb::Index n = 0; n < leaf.numValues(); n += 4) leaf2.setValueOn(n);
 
     EXPECT_TRUE(!leaf2.isValueMaskOn());
     EXPECT_TRUE(!leaf2.isValueMaskOff());
@@ -398,7 +398,7 @@ TEST_F(TestLeafMask, testCombine)
 
 TEST_F(TestLeafMask, testTopologyTree)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
 #if 0
     FloatGrid::Ptr inGrid;
@@ -465,8 +465,8 @@ TEST_F(TestLeafMask, testTopologyTree)
 
 TEST_F(TestLeafMask, testMedian)
 {
-    using namespace openvdb;
-    LeafType leaf(openvdb::Coord(0, 0, 0), /*background=*/false);
+    using namespace laovdb;
+    LeafType leaf(laovdb::Coord(0, 0, 0), /*background=*/false);
     bool state = false;
 
     EXPECT_EQ(Index(0), leaf.medianOn(state));
@@ -528,7 +528,7 @@ TEST_F(TestLeafMask, testMedian)
 // void
 // TestLeafMask::testFilter()
 // {
-//     using namespace openvdb;
+//     using namespace laovdb;
 
 //     BoolGrid::Ptr grid = BoolGrid::create();
 //     EXPECT_TRUE(grid.get() != NULL);
@@ -565,14 +565,14 @@ TEST_F(TestLeafMask, testMedian)
 #if OPENVDB_ABI_VERSION_NUMBER >= 9
 TEST_F(TestLeafMask, testTransientData)
 {
-    LeafType leaf(openvdb::Coord(0, 0, 0), /*background=*/false);
+    LeafType leaf(laovdb::Coord(0, 0, 0), /*background=*/false);
 
-    EXPECT_EQ(openvdb::Index32(0), leaf.transientData());
-    leaf.setTransientData(openvdb::Index32(5));
-    EXPECT_EQ(openvdb::Index32(5), leaf.transientData());
+    EXPECT_EQ(laovdb::Index32(0), leaf.transientData());
+    leaf.setTransientData(laovdb::Index32(5));
+    EXPECT_EQ(laovdb::Index32(5), leaf.transientData());
     LeafType leaf2(leaf);
-    EXPECT_EQ(openvdb::Index32(5), leaf2.transientData());
+    EXPECT_EQ(laovdb::Index32(5), leaf2.transientData());
     LeafType leaf3 = leaf;
-    EXPECT_EQ(openvdb::Index32(5), leaf3.transientData());
+    EXPECT_EQ(laovdb::Index32(5), leaf3.transientData());
 }
 #endif

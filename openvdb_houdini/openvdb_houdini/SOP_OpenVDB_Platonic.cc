@@ -52,13 +52,13 @@ newSopOperator(OP_OperatorTable* table)
 
     { // Grid Class
         const std::vector<std::string> items{
-            openvdb::GridBase::gridClassToString(openvdb::GRID_LEVEL_SET), // token
-            openvdb::GridBase::gridClassToMenuName(openvdb::GRID_LEVEL_SET), // label
+            laovdb::GridBase::gridClassToString(laovdb::GRID_LEVEL_SET), // token
+            laovdb::GridBase::gridClassToMenuName(laovdb::GRID_LEVEL_SET), // label
             "sdf", "Signed Distance Field"
         };
 
         parms.add(hutil::ParmFactory(PRM_STRING, "gridclass", "Grid Class")
-            .setDefault(openvdb::GridBase::gridClassToString(openvdb::GRID_LEVEL_SET))
+            .setDefault(laovdb::GridBase::gridClassToString(laovdb::GRID_LEVEL_SET))
             .setChoiceListItems(PRM_CHOICELIST_SINGLE, items)
             .setDocumentation("\
 The type of volume to generate\n\
@@ -169,35 +169,35 @@ SOP_OpenVDB_Platonic::Cache::cookVDBSop(OP_Context& context)
 
         // Read GUI parameters and generate narrow-band level set of sphere
         const float radius = static_cast<float>(evalFloat("scalarRadius", 0, time));
-        const openvdb::Vec3f center = evalVec3f("center", time);
+        const laovdb::Vec3f center = evalVec3f("center", time);
         const float voxelSize = static_cast<float>(evalFloat("voxelSize", 0, time));
         const float halfWidth = ((evalStdString("gridclass", 0) != "sdf") ?
             3.0f : static_cast<float>(evalFloat("halfWidth", 0, time)));
 
-        openvdb::FloatGrid::Ptr grid;
+        laovdb::FloatGrid::Ptr grid;
         switch (evalInt("solidType", 0, time)) {
         case 0://Sphere
-            grid = openvdb::tools::createLevelSetSphere<openvdb::FloatGrid>
+            grid = laovdb::tools::createLevelSetSphere<laovdb::FloatGrid>
                 (radius, center, voxelSize, halfWidth, &boss.interrupter());
             break;
         case 1:// Tetrahedraon
-            grid = openvdb::tools::createLevelSetTetrahedron<openvdb::FloatGrid>
+            grid = laovdb::tools::createLevelSetTetrahedron<laovdb::FloatGrid>
                 (radius, center, voxelSize, halfWidth, &boss.interrupter());
             break;
         case 2:// Cube
-            grid = openvdb::tools::createLevelSetCube<openvdb::FloatGrid>
+            grid = laovdb::tools::createLevelSetCube<laovdb::FloatGrid>
                 (radius, center, voxelSize, halfWidth, &boss.interrupter());
             break;
         case 3:// Octahedron
-            grid = openvdb::tools::createLevelSetOctahedron<openvdb::FloatGrid>
+            grid = laovdb::tools::createLevelSetOctahedron<laovdb::FloatGrid>
                 (radius, center, voxelSize, halfWidth, &boss.interrupter());
             break;
         case 4:// Dodecahedron
-            grid = openvdb::tools::createLevelSetDodecahedron<openvdb::FloatGrid>
+            grid = laovdb::tools::createLevelSetDodecahedron<laovdb::FloatGrid>
                 (radius, center, voxelSize, halfWidth, &boss.interrupter());
             break;
         case 5:// Icosahedron
-            grid = openvdb::tools::createLevelSetIcosahedron<openvdb::FloatGrid>
+            grid = laovdb::tools::createLevelSetIcosahedron<laovdb::FloatGrid>
                 (radius, center, voxelSize, halfWidth, &boss.interrupter());
             break;
         default:
@@ -207,7 +207,7 @@ SOP_OpenVDB_Platonic::Cache::cookVDBSop(OP_Context& context)
 
         // Fog volume conversion
         if (bool(evalInt("fogVolume", 0, time))) {
-            openvdb::tools::sdfToFogVolume(*grid);
+            laovdb::tools::sdfToFogVolume(*grid);
         }
 
         // Store the grid in a new VDB primitive and add the primitive to the output gdp

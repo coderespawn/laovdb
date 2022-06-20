@@ -17,14 +17,14 @@
 #include <string>
 #include <vector>
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestPointCount: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointCount
 
 using LeafType  = PointDataTree::LeafNodeType;
@@ -54,7 +54,7 @@ TEST_F(TestPointCount, testCount)
 
     // add a new leaf to a tree and re-test
 
-    LeafType* leafPtr = tree.touchLeaf(openvdb::Coord(0, 0, 0));
+    LeafType* leafPtr = tree.touchLeaf(laovdb::Coord(0, 0, 0));
     LeafType& leaf(*leafPtr);
 
     EXPECT_EQ(pointCount(tree), Index64(0));
@@ -64,30 +64,30 @@ TEST_F(TestPointCount, testCount)
     leaf.setOffsetOn(0, 4);
     leaf.setOffsetOn(1, 7);
 
-    ValueVoxelCIter voxelIter = leaf.beginValueVoxel(openvdb::Coord(0, 0, 0));
+    ValueVoxelCIter voxelIter = leaf.beginValueVoxel(laovdb::Coord(0, 0, 0));
 
     IndexIter<ValueVoxelCIter, NullFilter> testIter(voxelIter, NullFilter());
 
-    leaf.beginIndexVoxel(openvdb::Coord(0, 0, 0));
+    leaf.beginIndexVoxel(laovdb::Coord(0, 0, 0));
 
-    EXPECT_EQ(int(*leaf.beginIndexVoxel(openvdb::Coord(0, 0, 0))), 0);
-    EXPECT_EQ(int(leaf.beginIndexVoxel(openvdb::Coord(0, 0, 0)).end()), 4);
+    EXPECT_EQ(int(*leaf.beginIndexVoxel(laovdb::Coord(0, 0, 0))), 0);
+    EXPECT_EQ(int(leaf.beginIndexVoxel(laovdb::Coord(0, 0, 0)).end()), 4);
 
-    EXPECT_EQ(int(*leaf.beginIndexVoxel(openvdb::Coord(0, 0, 1))), 4);
-    EXPECT_EQ(int(leaf.beginIndexVoxel(openvdb::Coord(0, 0, 1)).end()), 7);
+    EXPECT_EQ(int(*leaf.beginIndexVoxel(laovdb::Coord(0, 0, 1))), 4);
+    EXPECT_EQ(int(leaf.beginIndexVoxel(laovdb::Coord(0, 0, 1)).end()), 7);
 
     // test filtered, index voxel iterator
 
-    EXPECT_EQ(int(*leaf.beginIndexVoxel(openvdb::Coord(0, 0, 0), NotZeroFilter())), 1);
-    EXPECT_EQ(int(leaf.beginIndexVoxel(openvdb::Coord(0, 0, 0), NotZeroFilter()).end()), 4);
+    EXPECT_EQ(int(*leaf.beginIndexVoxel(laovdb::Coord(0, 0, 0), NotZeroFilter())), 1);
+    EXPECT_EQ(int(leaf.beginIndexVoxel(laovdb::Coord(0, 0, 0), NotZeroFilter()).end()), 4);
 
     {
-        LeafType::IndexVoxelIter iter = leaf.beginIndexVoxel(openvdb::Coord(0, 0, 0));
+        LeafType::IndexVoxelIter iter = leaf.beginIndexVoxel(laovdb::Coord(0, 0, 0));
 
         EXPECT_EQ(int(*iter), 0);
         EXPECT_EQ(int(iter.end()), 4);
 
-        LeafType::IndexVoxelIter iter2 = leaf.beginIndexVoxel(openvdb::Coord(0, 0, 1));
+        LeafType::IndexVoxelIter iter2 = leaf.beginIndexVoxel(laovdb::Coord(0, 0, 1));
 
         EXPECT_EQ(int(*iter2), 4);
         EXPECT_EQ(int(iter2.end()), 7);
@@ -98,7 +98,7 @@ TEST_F(TestPointCount, testCount)
 
         leaf.setValueOff(1);
 
-        LeafType::IndexVoxelIter iter3 = leaf.beginIndexVoxel(openvdb::Coord(0, 0, 1));
+        LeafType::IndexVoxelIter iter3 = leaf.beginIndexVoxel(laovdb::Coord(0, 0, 1));
 
         EXPECT_EQ(iterCount(iter3), Index64(7 - 4));
 
@@ -153,7 +153,7 @@ TEST_F(TestPointCount, testCount)
 
     // add a new non-empty leaf and check totalPointCount is correct
 
-    LeafType* leaf2Ptr = tree.touchLeaf(openvdb::Coord(0, 0, 8));
+    LeafType* leaf2Ptr = tree.touchLeaf(laovdb::Coord(0, 0, 8));
     LeafType& leaf2(*leaf2Ptr);
 
     // on adding, tree now obtains ownership and is reponsible for deletion
@@ -170,7 +170,7 @@ TEST_F(TestPointCount, testCount)
 
 TEST_F(TestPointCount, testGroup)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     using Descriptor = AttributeSet::Descriptor;
 
@@ -260,7 +260,7 @@ TEST_F(TestPointCount, testGroup)
 
         // confirm that validation fails
 
-        EXPECT_THROW(leafIter->validateOffsets(), openvdb::ValueError);
+        EXPECT_THROW(leafIter->validateOffsets(), laovdb::ValueError);
 
         // replace offsets with original offsets but leave value mask
 
@@ -423,7 +423,7 @@ TEST_F(TestPointCount, testGroup)
 
 TEST_F(TestPointCount, testOffsets)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     // empty tree
     {
@@ -631,7 +631,7 @@ genPoints(std::vector<Vec3R>& positions, const int numPoints, const double scale
 
 TEST_F(TestPointCount, testCountGrid)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     { // five points
         std::vector<Vec3s> positions{   {1, 1, 1},

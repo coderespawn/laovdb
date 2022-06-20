@@ -27,7 +27,7 @@
 
 #include <type_traits>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -200,21 +200,21 @@ struct LLVMType<void>
 
 /// @note void* implemented as signed int_t* to match clang IR generation
 template <> struct LLVMType<void*> : public LLVMType<int_t<sizeof(void*)>::type*> {};
-template <> struct LLVMType<openvdb::math::half>
+template <> struct LLVMType<laovdb::math::half>
 {
     // @note LLVM has a special representation of half types. Don't alias to
     //   uint16_t as we want type->isFloatingPointTy() to still return true.
 
     static inline llvm::Type* get(llvm::LLVMContext& C) { return llvm::Type::getHalfTy(C); }
-    static inline llvm::Constant* get(llvm::LLVMContext& C, const openvdb::math::half V)
+    static inline llvm::Constant* get(llvm::LLVMContext& C, const laovdb::math::half V)
     {
-        llvm::Type* type = LLVMType<openvdb::math::half>::get(C);
+        llvm::Type* type = LLVMType<laovdb::math::half>::get(C);
         assert(llvm::ConstantFP::isValueValidForType(type, llvm::APFloat(V)));
         llvm::Constant* constant = llvm::ConstantFP::get(type, static_cast<double>(V));
         assert(constant);
         return constant;
     }
-    static inline llvm::Constant* get(llvm::LLVMContext& C, const openvdb::math::half* const V)
+    static inline llvm::Constant* get(llvm::LLVMContext& C, const laovdb::math::half* const V)
     {
         return LLVMType<uintptr_t>::get(C, reinterpret_cast<uintptr_t>(V));
     }
@@ -263,11 +263,11 @@ struct AliasTypeMap
 
 /// @brief  Supported aliasing for VDB math types, allowing use in external
 ///         function signatures.
-template <typename T> struct LLVMType<openvdb::math::Vec2<T>> : public AliasTypeMap<openvdb::math::Vec2<T>, T[2]> {};
-template <typename T> struct LLVMType<openvdb::math::Vec3<T>> : public AliasTypeMap<openvdb::math::Vec3<T>, T[3]> {};
-template <typename T> struct LLVMType<openvdb::math::Vec4<T>> : public AliasTypeMap<openvdb::math::Vec4<T>, T[4]> {};
-template <typename T> struct LLVMType<openvdb::math::Mat3<T>> : public AliasTypeMap<openvdb::math::Mat3<T>, T[9]> {};
-template <typename T> struct LLVMType<openvdb::math::Mat4<T>> : public AliasTypeMap<openvdb::math::Mat4<T>, T[16]> {};
+template <typename T> struct LLVMType<laovdb::math::Vec2<T>> : public AliasTypeMap<laovdb::math::Vec2<T>, T[2]> {};
+template <typename T> struct LLVMType<laovdb::math::Vec3<T>> : public AliasTypeMap<laovdb::math::Vec3<T>, T[3]> {};
+template <typename T> struct LLVMType<laovdb::math::Vec4<T>> : public AliasTypeMap<laovdb::math::Vec4<T>, T[4]> {};
+template <typename T> struct LLVMType<laovdb::math::Mat3<T>> : public AliasTypeMap<laovdb::math::Mat3<T>, T[9]> {};
+template <typename T> struct LLVMType<laovdb::math::Mat4<T>> : public AliasTypeMap<laovdb::math::Mat4<T>, T[16]> {};
 
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
@@ -370,7 +370,7 @@ OPENVDB_AX_API ast::tokens::CoreType tokenFromLLVMType(const llvm::Type* type);
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_CODEGEN_TYPES_HAS_BEEN_INCLUDED
 

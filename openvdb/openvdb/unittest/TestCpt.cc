@@ -18,14 +18,14 @@
 class TestCpt: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 };
 
 
 TEST_F(TestCpt, testCpt)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     typedef FloatGrid::ConstAccessor AccessorType;
 
@@ -88,8 +88,8 @@ TEST_F(TestCpt, testCpt)
         EXPECT_TRUE(grid->empty());
         AccessorType inAccessor = grid->getConstAccessor();
 
-        const openvdb::Coord dim(32,32,32);
-        const openvdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
+        const laovdb::Coord dim(32,32,32);
+        const laovdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
         const float radius=10;//i.e. (16,8,10) and (6,8,0) are on the sphere
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -136,8 +136,8 @@ TEST_F(TestCpt, testCpt)
         AccessorType inAccessor = grid->getConstAccessor();
 
 
-        const openvdb::Coord dim(32,32,32);
-        const openvdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
+        const laovdb::Coord dim(32,32,32);
+        const laovdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
         const float radius=10;//i.e. (16,8,10) and (6,8,0) are on the sphere
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -183,7 +183,7 @@ TEST_F(TestCpt, testCpt)
 
 TEST_F(TestCpt, testCptStencil)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     { // UNIT VOXEL TEST
 
@@ -191,8 +191,8 @@ TEST_F(TestCpt, testCptStencil)
         const FloatTree& tree = grid->tree();
         EXPECT_TRUE(tree.empty());
 
-        const openvdb::Coord dim(64,64,64);
-        const openvdb::Vec3f center(35.0f ,30.0f, 40.0f);
+        const laovdb::Coord dim(64,64,64);
+        const laovdb::Vec3f center(35.0f ,30.0f, 40.0f);
         const float radius=0.0f;
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -293,8 +293,8 @@ TEST_F(TestCpt, testCptStencil)
         grid->setTransform(math::Transform::createLinearTransform(voxel_size));
         EXPECT_TRUE(grid->empty());
 
-        const openvdb::Coord dim(32,32,32);
-        const openvdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
+        const laovdb::Coord dim(32,32,32);
+        const laovdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
         const float radius=10;//i.e. (16,8,10) and (6,8,0) are on the sphere
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -346,8 +346,8 @@ TEST_F(TestCpt, testCptStencil)
         EXPECT_TRUE(grid->empty());
 
 
-        const openvdb::Coord dim(32,32,32);
-        const openvdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
+        const laovdb::Coord dim(32,32,32);
+        const laovdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
         const float radius=10;//i.e. (16,8,10) and (6,8,0) are on the sphere
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -396,21 +396,21 @@ TEST_F(TestCpt, testCptStencil)
 
 TEST_F(TestCpt, testCptTool)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = FloatGrid::create(/*background=*/5.0);
     const FloatTree& tree = grid->tree();
     EXPECT_TRUE(tree.empty());
 
-    const openvdb::Coord dim(64,64,64);
-    const openvdb::Vec3f center(35.0f, 30.0f, 40.0f);
+    const laovdb::Coord dim(64,64,64);
+    const laovdb::Vec3f center(35.0f, 30.0f, 40.0f);
     const float radius=0;//point at {35,30,40}
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
     EXPECT_TRUE(!tree.empty());
     EXPECT_EQ(dim[0]*dim[1]*dim[2], int(tree.activeVoxelCount()));
 
     // run the tool
-    typedef openvdb::tools::Cpt<FloatGrid> FloatCpt;
+    typedef laovdb::tools::Cpt<FloatGrid> FloatCpt;
     FloatCpt cpt(*grid);
     FloatCpt::OutGridType::Ptr cptGrid =
         cpt.process(true/*threaded*/, false/*use world transform*/);
@@ -436,26 +436,26 @@ TEST_F(TestCpt, testCptTool)
 
 TEST_F(TestCpt, testCptMaskedTool)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = FloatGrid::create(/*background=*/5.0);
     const FloatTree& tree = grid->tree();
     EXPECT_TRUE(tree.empty());
 
-    const openvdb::Coord dim(64,64,64);
-    const openvdb::Vec3f center(35.0f, 30.0f, 40.0f);
+    const laovdb::Coord dim(64,64,64);
+    const laovdb::Vec3f center(35.0f, 30.0f, 40.0f);
     const float radius=0;//point at {35,30,40}
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
     EXPECT_TRUE(!tree.empty());
     EXPECT_EQ(dim[0]*dim[1]*dim[2], int(tree.activeVoxelCount()));
 
-    const openvdb::CoordBBox maskbbox(openvdb::Coord(35, 30, 30), openvdb::Coord(41, 41, 41));
+    const laovdb::CoordBBox maskbbox(laovdb::Coord(35, 30, 30), laovdb::Coord(41, 41, 41));
     BoolGrid::Ptr maskGrid = BoolGrid::create(false);
     maskGrid->fill(maskbbox, true/*value*/, true/*activate*/);
 
     // run the tool
-    //typedef openvdb::tools::Cpt<FloatGrid> FloatCpt;//fails because MaskT defaults to MaskGrid
-    typedef openvdb::tools::Cpt<FloatGrid, BoolGrid> FloatCpt;
+    //typedef laovdb::tools::Cpt<FloatGrid> FloatCpt;//fails because MaskT defaults to MaskGrid
+    typedef laovdb::tools::Cpt<FloatGrid, BoolGrid> FloatCpt;
     FloatCpt cpt(*grid, *maskGrid);
     FloatCpt::OutGridType::Ptr cptGrid =
         cpt.process(true/*threaded*/, false/*use world transform*/);
@@ -478,7 +478,7 @@ TEST_F(TestCpt, testCptMaskedTool)
 
 TEST_F(TestCpt, testOldStyleStencils)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     {// test of level set to sphere at (6,8,10) with R=10 and dx=0.5
 
@@ -486,8 +486,8 @@ TEST_F(TestCpt, testOldStyleStencils)
         grid->setTransform(math::Transform::createLinearTransform(/*voxel size=*/0.5));
         EXPECT_TRUE(grid->empty());
 
-        const openvdb::Coord dim(32,32,32);
-        const openvdb::Vec3f center(6.0f,8.0f,10.0f);//i.e. (12,16,20) in index space
+        const laovdb::Coord dim(32,32,32);
+        const laovdb::Vec3f center(6.0f,8.0f,10.0f);//i.e. (12,16,20) in index space
         const float radius=10;//i.e. (16,8,10) and (6,8,0) are on the sphere
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);

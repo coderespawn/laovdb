@@ -44,14 +44,14 @@ namespace boost { namespace interprocess { namespace detail {} namespace ipcdeta
 class TestMappedFile
 {
 public:
-    static openvdb::io::MappedFile::Ptr create(const std::string& filename)
+    static laovdb::io::MappedFile::Ptr create(const std::string& filename)
     {
-        return openvdb::SharedPtr<openvdb::io::MappedFile>(new openvdb::io::MappedFile(filename));
+        return laovdb::SharedPtr<laovdb::io::MappedFile>(new laovdb::io::MappedFile(filename));
     }
 };
 
 
-/// @brief Functionality similar to openvdb::util::CpuTimer except with prefix padding and no decimals.
+/// @brief Functionality similar to laovdb::util::CpuTimer except with prefix padding and no decimals.
 ///
 /// @code
 ///    ProfileTimer timer("algorithm 1");
@@ -108,8 +108,8 @@ struct ScopedFile
 };
 
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestAttributeArray: public ::testing::Test
 {
@@ -129,8 +129,8 @@ public:
 namespace {
 
 bool
-matchingNamePairs(const openvdb::NamePair& lhs,
-                  const openvdb::NamePair& rhs)
+matchingNamePairs(const laovdb::NamePair& lhs,
+                  const laovdb::NamePair& rhs)
 {
     if (lhs.first != rhs.first)     return false;
     if (lhs.second != rhs.second)     return false;
@@ -146,23 +146,23 @@ matchingNamePairs(const openvdb::NamePair& lhs,
 
 TEST_F(TestAttributeArray, testFixedPointConversion)
 {
-    openvdb::math::Transform::Ptr transform(openvdb::math::Transform::createLinearTransform(/*voxelSize=*/0.1));
+    laovdb::math::Transform::Ptr transform(laovdb::math::Transform::createLinearTransform(/*voxelSize=*/0.1));
 
     const float value = 33.5688040469035f;
 
     {
         // convert to fixed-point value
 
-        const openvdb::Vec3f worldSpaceValue(value);
-        const openvdb::Vec3f indexSpaceValue = transform->worldToIndex(worldSpaceValue);
+        const laovdb::Vec3f worldSpaceValue(value);
+        const laovdb::Vec3f indexSpaceValue = transform->worldToIndex(worldSpaceValue);
         const float voxelSpaceValue = indexSpaceValue.x() - math::Round(indexSpaceValue.x()) + 0.5f;
         const uint32_t intValue = floatingPointToFixedPoint<uint32_t>(voxelSpaceValue);
 
         // convert back to floating-point value
 
         const float newVoxelSpaceValue = fixedPointToFloatingPoint<float>(intValue);
-        const openvdb::Vec3f newIndexSpaceValue(newVoxelSpaceValue + math::Round(indexSpaceValue.x()) - 0.5f);
-        const openvdb::Vec3f newWorldSpaceValue = transform->indexToWorld(newIndexSpaceValue);
+        const laovdb::Vec3f newIndexSpaceValue(newVoxelSpaceValue + math::Round(indexSpaceValue.x()) - 0.5f);
+        const laovdb::Vec3f newWorldSpaceValue = transform->indexToWorld(newIndexSpaceValue);
 
         const float newValue = newWorldSpaceValue.x();
 
@@ -172,22 +172,22 @@ TEST_F(TestAttributeArray, testFixedPointConversion)
     {
         // convert to fixed-point value (vector)
 
-        const openvdb::Vec3f worldSpaceValue(value, value+1, value+2);
-        const openvdb::Vec3f indexSpaceValue = transform->worldToIndex(worldSpaceValue);
+        const laovdb::Vec3f worldSpaceValue(value, value+1, value+2);
+        const laovdb::Vec3f indexSpaceValue = transform->worldToIndex(worldSpaceValue);
         const float voxelSpaceValueX = indexSpaceValue.x() - math::Round(indexSpaceValue.x()) + 0.5f;
         const float voxelSpaceValueY = indexSpaceValue.y() - math::Round(indexSpaceValue.y()) + 0.5f;
         const float voxelSpaceValueZ = indexSpaceValue.z() - math::Round(indexSpaceValue.z()) + 0.5f;
-        const openvdb::Vec3f voxelSpaceValue(voxelSpaceValueX, voxelSpaceValueY, voxelSpaceValueZ);
-        const openvdb::math::Vec3<uint32_t> intValue = floatingPointToFixedPoint<openvdb::math::Vec3<uint32_t>>(voxelSpaceValue);
+        const laovdb::Vec3f voxelSpaceValue(voxelSpaceValueX, voxelSpaceValueY, voxelSpaceValueZ);
+        const laovdb::math::Vec3<uint32_t> intValue = floatingPointToFixedPoint<laovdb::math::Vec3<uint32_t>>(voxelSpaceValue);
 
         // convert back to floating-point value (vector)
 
-        const openvdb::Vec3f newVoxelSpaceValue = fixedPointToFloatingPoint<openvdb::Vec3f>(intValue);
+        const laovdb::Vec3f newVoxelSpaceValue = fixedPointToFloatingPoint<laovdb::Vec3f>(intValue);
         const float newIndexSpaceValueX = newVoxelSpaceValue.x() + math::Round(indexSpaceValue.x()) - 0.5f;
         const float newIndexSpaceValueY = newVoxelSpaceValue.y() + math::Round(indexSpaceValue.y()) - 0.5f;
         const float newIndexSpaceValueZ = newVoxelSpaceValue.z() + math::Round(indexSpaceValue.z()) - 0.5f;
-        const openvdb::Vec3f newIndexSpaceValue(newIndexSpaceValueX, newIndexSpaceValueY, newIndexSpaceValueZ);
-        const openvdb::Vec3f newWorldSpaceValue = transform->indexToWorld(newIndexSpaceValue);
+        const laovdb::Vec3f newIndexSpaceValue(newIndexSpaceValueX, newIndexSpaceValueY, newIndexSpaceValueZ);
+        const laovdb::Vec3f newWorldSpaceValue = transform->indexToWorld(newIndexSpaceValue);
 
         EXPECT_NEAR(worldSpaceValue.x(), newWorldSpaceValue.x(), /*tolerance=*/1e-6);
         EXPECT_NEAR(worldSpaceValue.y(), newWorldSpaceValue.y(), /*tolerance=*/1e-6);
@@ -281,10 +281,10 @@ TEST_F(TestAttributeArray, testAttributeArray)
         EXPECT_NEAR(double(1.5), value, /*tolerance=*/double(0.0));
 
         // out-of-range get() and set()
-        EXPECT_THROW(typedAttr.set(100, 0.5), openvdb::IndexError);
-        EXPECT_THROW(typedAttr.set(100, 1), openvdb::IndexError);
-        EXPECT_THROW(typedAttr.get(100, value), openvdb::IndexError);
-        EXPECT_THROW(typedAttr.get(100), openvdb::IndexError);
+        EXPECT_THROW(typedAttr.set(100, 0.5), laovdb::IndexError);
+        EXPECT_THROW(typedAttr.set(100, 1), laovdb::IndexError);
+        EXPECT_THROW(typedAttr.get(100, value), laovdb::IndexError);
+        EXPECT_THROW(typedAttr.get(100), laovdb::IndexError);
     }
 
     { // test copy constructor and copy assignment operator
@@ -798,7 +798,7 @@ TEST_F(TestAttributeArray, testAttributeArray)
         EXPECT_NEAR(double(1.0), fixedPoint.get(3), /*tolerance=*/double(0.0001));
     }
 
-    using AttributeArrayU = TypedAttributeArray<openvdb::Vec3f, UnitVecCodec>;
+    using AttributeArrayU = TypedAttributeArray<laovdb::Vec3f, UnitVecCodec>;
 
     { // UnitVec codec test
         AttributeArray::Ptr attr1(new AttributeArrayU(50));
@@ -807,9 +807,9 @@ TEST_F(TestAttributeArray, testAttributeArray)
 
         // all vectors must be unit length
 
-        const openvdb::Vec3f vec1(1.0, 0.0, 0.0);
-        const openvdb::Vec3f vec2(openvdb::Vec3f(1.0, 2.0, 3.0).unit());
-        const openvdb::Vec3f vec3(openvdb::Vec3f(1.0, 2.0, 300000.0).unit());
+        const laovdb::Vec3f vec1(1.0, 0.0, 0.0);
+        const laovdb::Vec3f vec2(laovdb::Vec3f(1.0, 2.0, 3.0).unit());
+        const laovdb::Vec3f vec3(laovdb::Vec3f(1.0, 2.0, 300000.0).unit());
 
         unitVec.set(0, vec1);
         unitVec.set(1, vec2);
@@ -1155,7 +1155,7 @@ TEST_F(TestAttributeArray, testAccessorEval) { testAccessorEval(); }
 
 TEST_F(TestAttributeArray, testAttributeHandle)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     using AttributeI            = TypedAttributeArray<int>;
     using AttributeFH           = TypedAttributeArray<float, TruncateCodec>;
@@ -2187,7 +2187,7 @@ TestAttributeArray::testDelayedLoad()
             io::setStreamMetadataPtr(filein, streamMetadata);
             io::setMappedFilePtr(filein, mappedFile);
 
-            EXPECT_THROW(attrB.readMetadata(filein), openvdb::IoError);
+            EXPECT_THROW(attrB.readMetadata(filein), laovdb::IoError);
         }
 
         // cleanup temp files
@@ -2361,8 +2361,8 @@ void sumH(const Name& prefix, const AttrT& attr)
 
 TEST_F(TestAttributeArray, testProfile)
 {
-    using namespace openvdb::util;
-    using namespace openvdb::math;
+    using namespace laovdb::util;
+    using namespace laovdb::math;
 
     using AttributeArrayF   = TypedAttributeArray<float>;
     using AttributeArrayF16 = TypedAttributeArray<float, FixedPointCodec<false>>;

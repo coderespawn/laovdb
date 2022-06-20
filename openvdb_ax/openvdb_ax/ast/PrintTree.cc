@@ -10,7 +10,7 @@
 
 #include <ostream>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -898,6 +898,6 @@ void reprint(const ast::Node& node, std::ostream& os, const char* indent)
 } // namespace ax
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 

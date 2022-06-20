@@ -11,9 +11,9 @@ class TestMat4Metadata : public ::testing::Test
 
 TEST_F(TestMat4Metadata, testMat4s)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    Metadata::Ptr m(new Mat4SMetadata(openvdb::math::Mat4s(1.0f, 1.0f, 1.0f, 1.0f,
+    Metadata::Ptr m(new Mat4SMetadata(laovdb::math::Mat4s(1.0f, 1.0f, 1.0f, 1.0f,
                                                            1.0f, 1.0f, 1.0f, 1.0f,
                                                            1.0f, 1.0f, 1.0f, 1.0f,
                                                            1.0f, 1.0f, 1.0f, 1.0f)));
@@ -26,15 +26,15 @@ TEST_F(TestMat4Metadata, testMat4s)
     EXPECT_TRUE(m3->typeName().compare("mat4s") == 0);
 
     Mat4SMetadata *s = dynamic_cast<Mat4SMetadata*>(m.get());
-    EXPECT_TRUE(s->value() == openvdb::math::Mat4s(1.0f, 1.0f, 1.0f, 1.0f,
+    EXPECT_TRUE(s->value() == laovdb::math::Mat4s(1.0f, 1.0f, 1.0f, 1.0f,
                                                       1.0f, 1.0f, 1.0f, 1.0f,
                                                       1.0f, 1.0f, 1.0f, 1.0f,
                                                       1.0f, 1.0f, 1.0f, 1.0f));
-    s->value() = openvdb::math::Mat4s(3.0f, 3.0f, 3.0f, 3.0f,
+    s->value() = laovdb::math::Mat4s(3.0f, 3.0f, 3.0f, 3.0f,
                                       3.0f, 3.0f, 3.0f, 3.0f,
                                       3.0f, 3.0f, 3.0f, 3.0f,
                                       3.0f, 3.0f, 3.0f, 3.0f);
-    EXPECT_TRUE(s->value() == openvdb::math::Mat4s(3.0f, 3.0f, 3.0f, 3.0f,
+    EXPECT_TRUE(s->value() == laovdb::math::Mat4s(3.0f, 3.0f, 3.0f, 3.0f,
                                                       3.0f, 3.0f, 3.0f, 3.0f,
                                                       3.0f, 3.0f, 3.0f, 3.0f,
                                                       3.0f, 3.0f, 3.0f, 3.0f));
@@ -42,7 +42,7 @@ TEST_F(TestMat4Metadata, testMat4s)
     m3->copy(*s);
 
     s = dynamic_cast<Mat4SMetadata*>(m3.get());
-    EXPECT_TRUE(s->value() == openvdb::math::Mat4s(3.0f, 3.0f, 3.0f, 3.0f,
+    EXPECT_TRUE(s->value() == laovdb::math::Mat4s(3.0f, 3.0f, 3.0f, 3.0f,
                                                       3.0f, 3.0f, 3.0f, 3.0f,
                                                       3.0f, 3.0f, 3.0f, 3.0f,
                                                       3.0f, 3.0f, 3.0f, 3.0f));
@@ -50,9 +50,9 @@ TEST_F(TestMat4Metadata, testMat4s)
 
 TEST_F(TestMat4Metadata, testMat4d)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    Metadata::Ptr m(new Mat4DMetadata(openvdb::math::Mat4d(1.0, 1.0, 1.0, 1.0,
+    Metadata::Ptr m(new Mat4DMetadata(laovdb::math::Mat4d(1.0, 1.0, 1.0, 1.0,
                                                            1.0, 1.0, 1.0, 1.0,
                                                            1.0, 1.0, 1.0, 1.0,
                                                            1.0, 1.0, 1.0, 1.0)));
@@ -65,15 +65,15 @@ TEST_F(TestMat4Metadata, testMat4d)
     EXPECT_TRUE(m3->typeName().compare("mat4d") == 0);
 
     Mat4DMetadata *s = dynamic_cast<Mat4DMetadata*>(m.get());
-    EXPECT_TRUE(s->value() == openvdb::math::Mat4d(1.0, 1.0, 1.0, 1.0,
+    EXPECT_TRUE(s->value() == laovdb::math::Mat4d(1.0, 1.0, 1.0, 1.0,
                                                       1.0, 1.0, 1.0, 1.0,
                                                       1.0, 1.0, 1.0, 1.0,
                                                       1.0, 1.0, 1.0, 1.0));
-    s->value() = openvdb::math::Mat4d(3.0, 3.0, 3.0, 3.0,
+    s->value() = laovdb::math::Mat4d(3.0, 3.0, 3.0, 3.0,
                                       3.0, 3.0, 3.0, 3.0,
                                       3.0, 3.0, 3.0, 3.0,
                                       3.0, 3.0, 3.0, 3.0);
-    EXPECT_TRUE(s->value() == openvdb::math::Mat4d(3.0, 3.0, 3.0, 3.0,
+    EXPECT_TRUE(s->value() == laovdb::math::Mat4d(3.0, 3.0, 3.0, 3.0,
                                                       3.0, 3.0, 3.0, 3.0,
                                                       3.0, 3.0, 3.0, 3.0,
                                                       3.0, 3.0, 3.0, 3.0));
@@ -81,7 +81,7 @@ TEST_F(TestMat4Metadata, testMat4d)
     m3->copy(*s);
 
     s = dynamic_cast<Mat4DMetadata*>(m3.get());
-    EXPECT_TRUE(s->value() == openvdb::math::Mat4d(3.0, 3.0, 3.0, 3.0,
+    EXPECT_TRUE(s->value() == laovdb::math::Mat4d(3.0, 3.0, 3.0, 3.0,
                                                       3.0, 3.0, 3.0, 3.0,
                                                       3.0, 3.0, 3.0, 3.0,
                                                       3.0, 3.0, 3.0, 3.0));

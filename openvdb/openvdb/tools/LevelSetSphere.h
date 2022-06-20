@@ -26,7 +26,7 @@
 #include <tbb/blocked_range.h>
 #include <thread>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -47,7 +47,7 @@ namespace tools {
 /// using the faster algorithm in ParticlesToLevelSet.h
 template<typename GridType, typename InterruptT>
 typename GridType::Ptr
-createLevelSetSphere(float radius, const openvdb::Vec3f& center, float voxelSize,
+createLevelSetSphere(float radius, const laovdb::Vec3f& center, float voxelSize,
                      float halfWidth = float(LEVEL_SET_HALF_WIDTH),
                      InterruptT* interrupt = nullptr, bool threaded = true);
 
@@ -66,7 +66,7 @@ createLevelSetSphere(float radius, const openvdb::Vec3f& center, float voxelSize
 /// using the faster algorithm in ParticlesToLevelSet.h
 template<typename GridType>
 typename GridType::Ptr
-createLevelSetSphere(float radius, const openvdb::Vec3f& center, float voxelSize,
+createLevelSetSphere(float radius, const laovdb::Vec3f& center, float voxelSize,
                      float halfWidth = float(LEVEL_SET_HALF_WIDTH), bool threaded = true)
 {
     return createLevelSetSphere<GridType, util::NullInterrupter>(radius,center,voxelSize,halfWidth,nullptr,threaded);
@@ -149,7 +149,7 @@ private:
         tbb::enumerable_thread_specific<TreeT> pool(mGrid->tree());
 
         auto kernel = [&](const tbb::blocked_range<int>& r) {
-            openvdb::Coord ijk;
+            laovdb::Coord ijk;
             int &i = ijk[0], &j = ijk[1], &k = ijk[2], m=1;
             TreeT &tree = pool.local();
             typename GridT::Accessor acc(tree);
@@ -189,12 +189,12 @@ private:
                 ~Op() { if (mDelete) delete mTree; }
                 void operator()(RangeT &r) { for (auto i=r.begin(); i!=r.end(); ++i) this->merge(*i);}
                 void join(Op &other) { this->merge(*(other.mTree)); }
-                void merge(TreeT &tree) { mTree->merge(tree, openvdb::MERGE_ACTIVE_STATES); }
+                void merge(TreeT &tree) { mTree->merge(tree, laovdb::MERGE_ACTIVE_STATES); }
             } op( mGrid->tree() );
             tbb::parallel_reduce(RangeT(pool.begin(), pool.end(), 4), op);
         } else {
             kernel(tbb::blocked_range<int>(imin, imax));//serial
-            mGrid->tree().merge(*pool.begin(), openvdb::MERGE_ACTIVE_STATES);
+            mGrid->tree().merge(*pool.begin(), laovdb::MERGE_ACTIVE_STATES);
         }
 
         // Define consistent signed distances outside the narrow-band
@@ -215,7 +215,7 @@ private:
 
 template<typename GridType, typename InterruptT>
 typename GridType::Ptr
-createLevelSetSphere(float radius, const openvdb::Vec3f& center, float voxelSize,
+createLevelSetSphere(float radius, const laovdb::Vec3f& center, float voxelSize,
     float halfWidth, InterruptT* interrupt, bool threaded)
 {
     // GridType::ValueType is required to be a floating-point scalar.
@@ -240,7 +240,7 @@ createLevelSetSphere(float radius, const openvdb::Vec3f& center, float voxelSize
 #endif
 
 #define _FUNCTION(TreeT) \
-    Grid<TreeT>::Ptr createLevelSetSphere<Grid<TreeT>>(float, const openvdb::Vec3f&, float, float, \
+    Grid<TreeT>::Ptr createLevelSetSphere<Grid<TreeT>>(float, const laovdb::Vec3f&, float, float, \
         util::NullInterrupter*, bool)
 OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 #undef _FUNCTION
@@ -250,6 +250,6 @@ OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_LEVELSETSPHERE_HAS_BEEN_INCLUDED

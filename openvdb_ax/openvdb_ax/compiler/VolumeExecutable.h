@@ -28,7 +28,7 @@ class ExecutionEngine;
 class LLVMContext;
 }
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace ax {
@@ -97,8 +97,8 @@ public:
     ///   VolumeExecutable instance on different inputs.
     ///
     /// @param grids  The VDB Volumes to process
-    void execute(openvdb::GridPtrVec& grids) const;
-    void execute(openvdb::GridBase& grids) const;
+    void execute(laovdb::GridPtrVec& grids) const;
+    void execute(laovdb::GridBase& grids) const;
     ///@}
 
     ////////////////////////////////////////////////////////
@@ -304,7 +304,7 @@ private:
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_COMPILER_VOLUME_EXECUTABLE_HAS_BEEN_INCLUDED
 

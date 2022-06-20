@@ -16,7 +16,7 @@
 
 #include "openvdb_ax/compiler/CompilerOptions.h"
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -344,5 +344,5 @@ void insertStringFunctions(FunctionRegistry& registry,
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

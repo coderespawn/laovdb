@@ -44,7 +44,7 @@ using OffsetPairList = std::vector<OffsetPair>;
 using OffsetPairListPtr = std::shared_ptr<OffsetPairList>;
 
 // note that the bool parameter here for toggling in-memory compression is now deprecated
-using AttributeInfoMap = std::map<openvdb::Name, std::pair<int, bool>>;
+using AttributeInfoMap = std::map<laovdb::Name, std::pair<int, bool>>;
 
 using WarnFunc = std::function<void (const std::string&)>;
 
@@ -78,19 +78,19 @@ OPENVDB_HOUDINI_API
 float
 computeVoxelSizeFromHoudini(
     const GU_Detail& detail,
-    const openvdb::Index pointsPerVoxel,
-    const openvdb::math::Mat4d& matrix,
-    const openvdb::Index decimalPlaces,
-    openvdb::util::NullInterrupter& interrupter);
+    const laovdb::Index pointsPerVoxel,
+    const laovdb::math::Mat4d& matrix,
+    const laovdb::Index decimalPlaces,
+    laovdb::util::NullInterrupter& interrupter);
 
 OPENVDB_DEPRECATED_MESSAGE("openvdb_houdini::Interrupter has been deprecated, use openvdb_houdini::HoudiniInterrupter")
 OPENVDB_HOUDINI_API
 float
 computeVoxelSizeFromHoudini(
     const GU_Detail& detail,
-    const openvdb::Index pointsPerVoxel,
-    const openvdb::math::Mat4d& matrix,
-    const openvdb::Index decimalPlaces,
+    const laovdb::Index pointsPerVoxel,
+    const laovdb::math::Mat4d& matrix,
+    const laovdb::Index decimalPlaces,
     Interrupter& interrupter);
 
 
@@ -103,12 +103,12 @@ computeVoxelSizeFromHoudini(
 /// @param  transform      transform to use for the new point grid
 /// @param  warnings       list of warnings to be added to the SOP
 OPENVDB_HOUDINI_API
-openvdb::points::PointDataGrid::Ptr
+laovdb::points::PointDataGrid::Ptr
 convertHoudiniToPointDataGrid(
     const GU_Detail& detail,
     const int compression,
     const AttributeInfoMap& attributes,
-    const openvdb::math::Transform& transform,
+    const laovdb::math::Transform& transform,
     const WarnFunc& warnings = [](const std::string&){});
 
 
@@ -127,7 +127,7 @@ OPENVDB_HOUDINI_API
 void
 convertPointDataGridToHoudini(
     GU_Detail& detail,
-    const openvdb::points::PointDataGrid& grid,
+    const laovdb::points::PointDataGrid& grid,
     const std::vector<std::string>& attributes = {},
     const std::vector<std::string>& includeGroups = {},
     const std::vector<std::string>& excludeGroups = {},
@@ -142,7 +142,7 @@ convertPointDataGridToHoudini(
 OPENVDB_HOUDINI_API
 void
 populateMetadataFromHoudini(
-    openvdb::points::PointDataGrid& grid,
+    laovdb::points::PointDataGrid& grid,
     const GU_Detail& detail,
     const WarnFunc& warnings = [](const std::string&){});
 
@@ -156,7 +156,7 @@ OPENVDB_HOUDINI_API
 void
 convertMetadataToHoudini(
     GU_Detail& detail,
-    const openvdb::MetaMap& metaMap,
+    const laovdb::MetaMap& metaMap,
     const WarnFunc& warnings = [](const std::string&){});
 
 
@@ -180,7 +180,7 @@ attributeStorageType(const GA_Attribute* const attribute);
 ///        versions 15 and earlier, as well as the Operator Information Window.
 OPENVDB_HOUDINI_API
 void
-pointDataGridSpecificInfoText(std::ostream&, const openvdb::GridBase&);
+pointDataGridSpecificInfoText(std::ostream&, const laovdb::GridBase&);
 
 /// @brief  Populates string data with information about the provided OpenVDB
 ///         Points grid.
@@ -195,7 +195,7 @@ pointDataGridSpecificInfoText(std::ostream&, const openvdb::GridBase&);
 ///                       default attributes.
 OPENVDB_HOUDINI_API
 void
-collectPointInfo(const openvdb::points::PointDataGrid& grid,
+collectPointInfo(const laovdb::points::PointDataGrid& grid,
     std::string& countStr,
     std::string& groupStr,
     std::string& attributeStr);

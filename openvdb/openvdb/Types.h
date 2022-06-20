@@ -14,7 +14,7 @@
 #else
 #include <OpenEXR/half.h>
 #endif
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -22,7 +22,7 @@ using half = half;
 }}}
 #else
 #include <openvdb/math/Half.h>
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -44,7 +44,7 @@ using half = internal::half;
 #include <type_traits>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -650,7 +650,7 @@ class Steal {};
 class PartialCreate {};
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 
 #endif // OPENVDB_TYPES_HAS_BEEN_INCLUDED

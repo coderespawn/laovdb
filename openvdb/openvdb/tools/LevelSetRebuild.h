@@ -18,7 +18,7 @@
 #include <type_traits>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -152,8 +152,8 @@ public:
 
     inline void operator()(const tbb::blocked_range<size_t>& range) const
     {
-        openvdb::Vec4I quad;
-        quad[3] = openvdb::util::INVALID_IDX;
+        laovdb::Vec4I quad;
+        quad[3] = laovdb::util::INVALID_IDX;
         std::vector<Vec4I>& primsOut = *mPrimsOut;
 
         for (size_t n = range.begin(); n < range.end(); ++n) {
@@ -168,7 +168,7 @@ public:
 
             // Copy triangles (adaptive mesh)
             for (size_t i = 0, I = polygons.numTriangles(); i < I; ++i) {
-                const openvdb::Vec3I& triangle = polygons.triangle(i);
+                const laovdb::Vec3I& triangle = polygons.triangle(i);
                 quad[0] = triangle[0];
                 quad[1] = triangle[1];
                 quad[2] = triangle[2];
@@ -235,7 +235,7 @@ doLevelSetRebuild(const GridType& grid, typename GridType::ValueType iso,
         std::vector<size_t> indexlist(mesher.polygonPoolListSize());
 
         for (size_t n = 0, N = mesher.polygonPoolListSize(); n < N; ++n) {
-            const openvdb::tools::PolygonPool& polygons = polygonPoolList[n];
+            const laovdb::tools::PolygonPool& polygons = polygonPoolList[n];
             indexlist[n] = numPrimitives;
             numPrimitives += polygons.numQuads();
             numPrimitives += polygons.numTriangles();
@@ -355,6 +355,6 @@ OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_LEVELSETREBUILD_HAS_BEEN_INCLUDED

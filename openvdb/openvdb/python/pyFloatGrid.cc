@@ -3,7 +3,7 @@
 //
 /// @file pyFloatGrid.cc
 /// @author Peter Cucka
-/// @brief Boost.Python wrappers for scalar, floating-point openvdb::Grid types
+/// @brief Boost.Python wrappers for scalar, floating-point laovdb::Grid types
 
 #include "pyGrid.h"
 
@@ -31,8 +31,8 @@ exportFloatGrid()
 
     py::def("createLevelSetSphere",
         &pyGrid::createLevelSetSphere<FloatGrid>,
-        (py::arg("radius"), py::arg("center")=openvdb::Coord(), py::arg("voxelSize")=1.0,
-             py::arg("halfWidth")=openvdb::LEVEL_SET_HALF_WIDTH),
+        (py::arg("radius"), py::arg("center")=laovdb::Coord(), py::arg("voxelSize")=1.0,
+             py::arg("halfWidth")=laovdb::LEVEL_SET_HALF_WIDTH),
         "createLevelSetSphere(radius, center, voxelSize, halfWidth) -> FloatGrid\n\n"
         "Return a grid containing a narrow-band level set representation\n"
         "of a sphere.");

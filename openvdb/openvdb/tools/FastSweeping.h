@@ -53,7 +53,7 @@
 #include <unordered_map>
 #include <utility>// for std::make_pair
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -1911,6 +1911,6 @@ OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_FASTSWEEPING_HAS_BEEN_INCLUDED

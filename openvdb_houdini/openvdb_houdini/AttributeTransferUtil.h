@@ -56,48 +56,48 @@ evalAttr<float>(const GA_Attribute* atr, const GA_AIFTuple* aif,
     return float(value);
 }
 
-template <> inline openvdb::Int32
-evalAttr<openvdb::Int32>(const GA_Attribute* atr, const GA_AIFTuple* aif,
+template <> inline laovdb::Int32
+evalAttr<laovdb::Int32>(const GA_Attribute* atr, const GA_AIFTuple* aif,
     GA_Offset off, int idx)
 {
     int32 value;
     aif->get(atr, off, value, idx);
-    return openvdb::Int32(value);
+    return laovdb::Int32(value);
 }
 
-template <> inline openvdb::Int64
-evalAttr<openvdb::Int64>(const GA_Attribute* atr, const GA_AIFTuple* aif,
+template <> inline laovdb::Int64
+evalAttr<laovdb::Int64>(const GA_Attribute* atr, const GA_AIFTuple* aif,
     GA_Offset off, int idx)
 {
     int64 value;
     aif->get(atr, off, value, idx);
-    return openvdb::Int64(value);
+    return laovdb::Int64(value);
 }
 
-template <> inline openvdb::Vec3i
-evalAttr<openvdb::Vec3i>(const GA_Attribute* atr, const GA_AIFTuple* aif,
+template <> inline laovdb::Vec3i
+evalAttr<laovdb::Vec3i>(const GA_Attribute* atr, const GA_AIFTuple* aif,
     GA_Offset off, int)
 {
-    openvdb::Vec3i vec;
+    laovdb::Vec3i vec;
 
     int32 comp;
     aif->get(atr, off, comp, 0);
-    vec[0] = openvdb::Int32(comp);
+    vec[0] = laovdb::Int32(comp);
 
     aif->get(atr, off, comp, 1);
-    vec[1] = openvdb::Int32(comp);
+    vec[1] = laovdb::Int32(comp);
 
     aif->get(atr, off, comp, 2);
-    vec[2] = openvdb::Int32(comp);
+    vec[2] = laovdb::Int32(comp);
 
     return vec;
 }
 
-template <> inline openvdb::Vec3s
-evalAttr<openvdb::Vec3s>(const GA_Attribute* atr, const GA_AIFTuple* aif,
+template <> inline laovdb::Vec3s
+evalAttr<laovdb::Vec3s>(const GA_Attribute* atr, const GA_AIFTuple* aif,
     GA_Offset off, int)
 {
-    openvdb::Vec3s vec;
+    laovdb::Vec3s vec;
 
     fpreal32 comp;
     aif->get(atr, off, comp, 0);
@@ -112,11 +112,11 @@ evalAttr<openvdb::Vec3s>(const GA_Attribute* atr, const GA_AIFTuple* aif,
     return vec;
 }
 
-template <> inline openvdb::Vec3d
-evalAttr<openvdb::Vec3d>(const GA_Attribute* atr, const GA_AIFTuple* aif,
+template <> inline laovdb::Vec3d
+evalAttr<laovdb::Vec3d>(const GA_Attribute* atr, const GA_AIFTuple* aif,
     GA_Offset off, int)
 {
-    openvdb::Vec3d vec;
+    laovdb::Vec3d vec;
 
     fpreal64 comp;
     aif->get(atr, off, comp, 0);
@@ -139,43 +139,43 @@ evalAttr<openvdb::Vec3d>(const GA_Attribute* atr, const GA_AIFTuple* aif,
 
 template <typename ValueType> inline ValueType
 combine(const ValueType& v0, const ValueType& v1, const ValueType& v2,
-    const openvdb::Vec3d& w)
+    const laovdb::Vec3d& w)
 {
     return ValueType(v0 * w[0] + v1 * w[1] + v2 * w[2]);
 }
 
-template <> inline openvdb::Int32
-combine(const openvdb::Int32& v0, const openvdb::Int32& v1,
-    const openvdb::Int32& v2, const openvdb::Vec3d& w)
+template <> inline laovdb::Int32
+combine(const laovdb::Int32& v0, const laovdb::Int32& v1,
+    const laovdb::Int32& v2, const laovdb::Vec3d& w)
 {
     if (w[2] > w[0] && w[2] > w[1]) return v2;
     if (w[1] > w[0] && w[1] > w[2]) return v1;
     return v0;
 }
 
-template <> inline openvdb::Int64
-combine(const openvdb::Int64& v0, const openvdb::Int64& v1,
-    const openvdb::Int64& v2, const openvdb::Vec3d& w)
+template <> inline laovdb::Int64
+combine(const laovdb::Int64& v0, const laovdb::Int64& v1,
+    const laovdb::Int64& v2, const laovdb::Vec3d& w)
 {
     if (w[2] > w[0] && w[2] > w[1]) return v2;
     if (w[1] > w[0] && w[1] > w[2]) return v1;
     return v0;
 }
 
-template <> inline openvdb::Vec3i
-combine(const openvdb::Vec3i& v0, const openvdb::Vec3i& v1,
-    const openvdb::Vec3i& v2, const openvdb::Vec3d& w)
+template <> inline laovdb::Vec3i
+combine(const laovdb::Vec3i& v0, const laovdb::Vec3i& v1,
+    const laovdb::Vec3i& v2, const laovdb::Vec3d& w)
 {
     if (w[2] > w[0] && w[2] > w[1]) return v2;
     if (w[1] > w[0] && w[1] > w[2]) return v1;
     return v0;
 }
 
-template <> inline openvdb::Vec3s
-combine(const openvdb::Vec3s& v0, const openvdb::Vec3s& v1,
-    const openvdb::Vec3s& v2, const openvdb::Vec3d& w)
+template <> inline laovdb::Vec3s
+combine(const laovdb::Vec3s& v0, const laovdb::Vec3s& v1,
+    const laovdb::Vec3s& v2, const laovdb::Vec3d& w)
 {
-    openvdb::Vec3s vec;
+    laovdb::Vec3s vec;
 
     vec[0] = float(v0[0] * w[0] + v1[0] * w[1] + v2[0] * w[2]);
     vec[1] = float(v0[1] * w[0] + v1[1] * w[1] + v2[1] * w[2]);
@@ -184,11 +184,11 @@ combine(const openvdb::Vec3s& v0, const openvdb::Vec3s& v1,
     return vec;
 }
 
-template <> inline openvdb::Vec3d
-combine(const openvdb::Vec3d& v0, const openvdb::Vec3d& v1,
-    const openvdb::Vec3d& v2, const openvdb::Vec3d& w)
+template <> inline laovdb::Vec3d
+combine(const laovdb::Vec3d& v0, const laovdb::Vec3d& v1,
+    const laovdb::Vec3d& v2, const laovdb::Vec3d& w)
 {
-    openvdb::Vec3d vec;
+    laovdb::Vec3d vec;
 
     vec[0] = v0[0] * w[0] + v1[0] * w[1] + v2[0] * w[2];
     vec[1] = v0[1] * w[0] + v1[1] * w[1] + v2[1] * w[2];
@@ -219,44 +219,44 @@ evalAttrDefault<float>(const GA_Defaults& defaults, int /*idx*/)
     return float(value);
 }
 
-template <> inline openvdb::Int32
-evalAttrDefault<openvdb::Int32>(const GA_Defaults& defaults, int idx)
+template <> inline laovdb::Int32
+evalAttrDefault<laovdb::Int32>(const GA_Defaults& defaults, int idx)
 {
     int32 value;
     defaults.get(idx, value);
-    return openvdb::Int32(value);
+    return laovdb::Int32(value);
 }
 
-template <> inline openvdb::Int64
-evalAttrDefault<openvdb::Int64>(const GA_Defaults& defaults, int idx)
+template <> inline laovdb::Int64
+evalAttrDefault<laovdb::Int64>(const GA_Defaults& defaults, int idx)
 {
     int64 value;
     defaults.get(idx, value);
-    return openvdb::Int64(value);
+    return laovdb::Int64(value);
 }
 
-template <> inline openvdb::Vec3i
-evalAttrDefault<openvdb::Vec3i>(const GA_Defaults& defaults, int)
+template <> inline laovdb::Vec3i
+evalAttrDefault<laovdb::Vec3i>(const GA_Defaults& defaults, int)
 {
-    openvdb::Vec3i vec;
+    laovdb::Vec3i vec;
     int32 value;
 
     defaults.get(0, value);
-    vec[0] = openvdb::Int32(value);
+    vec[0] = laovdb::Int32(value);
 
     defaults.get(1, value);
-    vec[1] = openvdb::Int32(value);
+    vec[1] = laovdb::Int32(value);
 
     defaults.get(2, value);
-    vec[2] = openvdb::Int32(value);
+    vec[2] = laovdb::Int32(value);
 
     return vec;
 }
 
-template <> inline openvdb::Vec3s
-evalAttrDefault<openvdb::Vec3s>(const GA_Defaults& defaults, int)
+template <> inline laovdb::Vec3s
+evalAttrDefault<laovdb::Vec3s>(const GA_Defaults& defaults, int)
 {
-    openvdb::Vec3s vec;
+    laovdb::Vec3s vec;
     fpreal32 value;
 
     defaults.get(0, value);
@@ -271,10 +271,10 @@ evalAttrDefault<openvdb::Vec3s>(const GA_Defaults& defaults, int)
     return vec;
 }
 
-template <> inline openvdb::Vec3d
-evalAttrDefault<openvdb::Vec3d>(const GA_Defaults& defaults, int)
+template <> inline laovdb::Vec3d
+evalAttrDefault<laovdb::Vec3d>(const GA_Defaults& defaults, int)
 {
-    openvdb::Vec3d vec;
+    laovdb::Vec3d vec;
     fpreal64 value;
 
     defaults.get(0, value);
@@ -289,10 +289,10 @@ evalAttrDefault<openvdb::Vec3d>(const GA_Defaults& defaults, int)
     return vec;
 }
 
-template <> inline openvdb::math::Quat<float>
-evalAttrDefault<openvdb::math::Quat<float>>(const GA_Defaults& defaults, int)
+template <> inline laovdb::math::Quat<float>
+evalAttrDefault<laovdb::math::Quat<float>>(const GA_Defaults& defaults, int)
 {
-    openvdb::math::Quat<float> quat;
+    laovdb::math::Quat<float> quat;
     fpreal32 value;
 
     for (int i = 0; i < 4; i++) {
@@ -303,10 +303,10 @@ evalAttrDefault<openvdb::math::Quat<float>>(const GA_Defaults& defaults, int)
     return quat;
 }
 
-template <> inline openvdb::math::Quat<double>
-evalAttrDefault<openvdb::math::Quat<double>>(const GA_Defaults& defaults, int)
+template <> inline laovdb::math::Quat<double>
+evalAttrDefault<laovdb::math::Quat<double>>(const GA_Defaults& defaults, int)
 {
-    openvdb::math::Quat<double> quat;
+    laovdb::math::Quat<double> quat;
     fpreal64 value;
 
     for (int i = 0; i < 4; i++) {
@@ -317,10 +317,10 @@ evalAttrDefault<openvdb::math::Quat<double>>(const GA_Defaults& defaults, int)
     return quat;
 }
 
-template <> inline openvdb::math::Mat3<float>
-evalAttrDefault<openvdb::math::Mat3<float>>(const GA_Defaults& defaults, int)
+template <> inline laovdb::math::Mat3<float>
+evalAttrDefault<laovdb::math::Mat3<float>>(const GA_Defaults& defaults, int)
 {
-    openvdb::math::Mat3<float> mat;
+    laovdb::math::Mat3<float> mat;
     fpreal64 value;
     float* data = mat.asPointer();
 
@@ -332,10 +332,10 @@ evalAttrDefault<openvdb::math::Mat3<float>>(const GA_Defaults& defaults, int)
     return mat;
 }
 
-template <> inline openvdb::math::Mat3<double>
-evalAttrDefault<openvdb::math::Mat3<double>>(const GA_Defaults& defaults, int)
+template <> inline laovdb::math::Mat3<double>
+evalAttrDefault<laovdb::math::Mat3<double>>(const GA_Defaults& defaults, int)
 {
-    openvdb::math::Mat3<double> mat;
+    laovdb::math::Mat3<double> mat;
     fpreal64 value;
     double* data = mat.asPointer();
 
@@ -347,10 +347,10 @@ evalAttrDefault<openvdb::math::Mat3<double>>(const GA_Defaults& defaults, int)
     return mat;
 }
 
-template <> inline openvdb::math::Mat4<float>
-evalAttrDefault<openvdb::math::Mat4<float>>(const GA_Defaults& defaults, int)
+template <> inline laovdb::math::Mat4<float>
+evalAttrDefault<laovdb::math::Mat4<float>>(const GA_Defaults& defaults, int)
 {
-    openvdb::math::Mat4<float> mat;
+    laovdb::math::Mat4<float> mat;
     fpreal64 value;
     float* data = mat.asPointer();
 
@@ -362,10 +362,10 @@ evalAttrDefault<openvdb::math::Mat4<float>>(const GA_Defaults& defaults, int)
     return mat;
 }
 
-template <> inline openvdb::math::Mat4<double>
-evalAttrDefault<openvdb::math::Mat4<double>>(const GA_Defaults& defaults, int)
+template <> inline laovdb::math::Mat4<double>
+evalAttrDefault<laovdb::math::Mat4<double>>(const GA_Defaults& defaults, int)
 {
-    openvdb::math::Mat4<double> mat;
+    laovdb::math::Mat4<double> mat;
     fpreal64 value;
     double* data = mat.asPointer();
 
@@ -391,12 +391,12 @@ public:
     AttributeDetailBase(const AttributeDetailBase&) = default;
     AttributeDetailBase& operator=(const AttributeDetailBase&) = default;
 
-    virtual void set(const openvdb::Coord& ijk, const GA_Offset (&offsets)[3],
-        const openvdb::Vec3d& weights) = 0;
+    virtual void set(const laovdb::Coord& ijk, const GA_Offset (&offsets)[3],
+        const laovdb::Vec3d& weights) = 0;
 
-    virtual void set(const openvdb::Coord& ijk, GA_Offset offset) = 0;
+    virtual void set(const laovdb::Coord& ijk, GA_Offset offset) = 0;
 
-    virtual openvdb::GridBase::Ptr& grid() = 0;
+    virtual laovdb::GridBase::Ptr& grid() = 0;
     virtual std::string& name() = 0;
 
     virtual AttributeDetailBase::Ptr copy() = 0;
@@ -419,18 +419,18 @@ public:
     using ValueType = typename VDBGridType::ValueType;
 
     AttributeDetail(
-        openvdb::GridBase::Ptr grid,
+        laovdb::GridBase::Ptr grid,
         const GA_Attribute* attribute,
         const GA_AIFTuple* tupleAIF,
         const int tupleIndex,
         const bool isVector = false);
 
-    void set(const openvdb::Coord& ijk, const GA_Offset (&offsets)[3],
-        const openvdb::Vec3d& weights) override;
+    void set(const laovdb::Coord& ijk, const GA_Offset (&offsets)[3],
+        const laovdb::Vec3d& weights) override;
 
-    void set(const openvdb::Coord& ijk, GA_Offset offset) override;
+    void set(const laovdb::Coord& ijk, GA_Offset offset) override;
 
-    openvdb::GridBase::Ptr& grid() override { return mGrid; }
+    laovdb::GridBase::Ptr& grid() override { return mGrid; }
     std::string& name() override { return mName; }
 
     AttributeDetailBase::Ptr copy() override;
@@ -439,7 +439,7 @@ protected:
     AttributeDetail();
 
 private:
-    openvdb::GridBase::Ptr mGrid;
+    laovdb::GridBase::Ptr mGrid;
     typename VDBGridType::Accessor mAccessor;
 
     const GA_Attribute* mAttribute;
@@ -460,13 +460,13 @@ AttributeDetail<VDBGridType>::AttributeDetail():
 
 template <class VDBGridType>
 AttributeDetail<VDBGridType>::AttributeDetail(
-    openvdb::GridBase::Ptr grid,
+    laovdb::GridBase::Ptr grid,
     const GA_Attribute* attribute,
     const GA_AIFTuple* tupleAIF,
     const int tupleIndex,
     const bool isVector):
     mGrid(grid),
-    mAccessor(openvdb::GridBase::grid<VDBGridType>(mGrid)->getAccessor()),
+    mAccessor(laovdb::GridBase::grid<VDBGridType>(mGrid)->getAccessor()),
     mAttribute(attribute),
     mTupleAIF(tupleAIF),
     mTupleIndex(tupleIndex)
@@ -486,8 +486,8 @@ AttributeDetail<VDBGridType>::AttributeDetail(
 
 template <class VDBGridType>
 void
-AttributeDetail<VDBGridType>::set(const openvdb::Coord& ijk,
-    const GA_Offset (&offsets)[3], const openvdb::Vec3d& weights)
+AttributeDetail<VDBGridType>::set(const laovdb::Coord& ijk,
+    const GA_Offset (&offsets)[3], const laovdb::Vec3d& weights)
 {
     ValueType v0 = evalAttr<ValueType>(
         mAttribute, mTupleAIF, offsets[0], mTupleIndex);
@@ -503,7 +503,7 @@ AttributeDetail<VDBGridType>::set(const openvdb::Coord& ijk,
 
 template <class VDBGridType>
 void
-AttributeDetail<VDBGridType>::set(const openvdb::Coord& ijk, GA_Offset offset)
+AttributeDetail<VDBGridType>::set(const laovdb::Coord& ijk, GA_Offset offset)
 {
     mAccessor.setValue(ijk,
         evalAttr<ValueType>(mAttribute, mTupleAIF, offset, mTupleIndex));
@@ -526,15 +526,15 @@ AttributeDetail<VDBGridType>::copy()
 class MeshAttrTransfer
 {
 public:
-    using IterRange = openvdb::tree::IteratorRange<openvdb::Int32Tree::LeafCIter>;
+    using IterRange = laovdb::tree::IteratorRange<laovdb::Int32Tree::LeafCIter>;
 
     inline
     MeshAttrTransfer(
         AttributeDetailList &pointAttributes,
         AttributeDetailList &vertexAttributes,
         AttributeDetailList &primitiveAttributes,
-        const openvdb::Int32Grid& closestPrimGrid,
-        const openvdb::math::Transform& transform,
+        const laovdb::Int32Grid& closestPrimGrid,
+        const laovdb::math::Transform& transform,
         const GU_Detail& meshGdp);
 
     inline
@@ -551,9 +551,9 @@ public:
 
 private:
     AttributeDetailList mPointAttributes, mVertexAttributes, mPrimitiveAttributes;
-    const openvdb::Int32Grid& mClosestPrimGrid;
+    const laovdb::Int32Grid& mClosestPrimGrid;
 
-    const openvdb::math::Transform& mTransform;
+    const laovdb::math::Transform& mTransform;
 
     const GA_Detail &mMeshGdp;
 };
@@ -563,8 +563,8 @@ MeshAttrTransfer::MeshAttrTransfer(
     AttributeDetailList& pointAttributes,
     AttributeDetailList& vertexAttributes,
     AttributeDetailList& primitiveAttributes,
-    const openvdb::Int32Grid& closestPrimGrid,
-    const openvdb::math::Transform& transform,
+    const laovdb::Int32Grid& closestPrimGrid,
+    const laovdb::math::Transform& transform,
     const GU_Detail& meshGdp):
     mPointAttributes(pointAttributes),
     mVertexAttributes(vertexAttributes),
@@ -619,15 +619,15 @@ MeshAttrTransfer::runSerial()
 void
 MeshAttrTransfer::operator()(IterRange &range) const
 {
-    openvdb::Int32Tree::LeafNodeType::ValueOnCIter iter;
+    laovdb::Int32Tree::LeafNodeType::ValueOnCIter iter;
 
-    openvdb::Coord ijk;
+    laovdb::Coord ijk;
 
     const bool ptnAttrTransfer = mPointAttributes.size() > 0;
     const bool vtxAttrTransfer = mVertexAttributes.size() > 0;
 
     GA_Offset vtxOffsetList[4], ptnOffsetList[4], vtxOffsets[3], ptnOffsets[3], prmOffset;
-    openvdb::Vec3d ptnList[4], xyz, cpt, cpt2, uvw, uvw2;
+    laovdb::Vec3d ptnList[4], xyz, cpt, cpt2, uvw, uvw2;
 
     for ( ; range; ++range) {
         iter = range.iterator()->beginValueOn();
@@ -713,11 +713,11 @@ MeshAttrTransfer::operator()(IterRange &range) const
 class PointAttrTransfer
 {
 public:
-    using IterRange = openvdb::tree::IteratorRange<openvdb::Int32Tree::LeafCIter>;
+    using IterRange = laovdb::tree::IteratorRange<laovdb::Int32Tree::LeafCIter>;
 
     inline PointAttrTransfer(
         AttributeDetailList &pointAttributes,
-        const openvdb::Int32Grid& closestPtnIdxGrid,
+        const laovdb::Int32Grid& closestPtnIdxGrid,
         const GU_Detail& ptGeop);
 
     inline PointAttrTransfer(const PointAttrTransfer &other);
@@ -732,14 +732,14 @@ public:
 
 private:
     AttributeDetailList mPointAttributes;
-    const openvdb::Int32Grid& mClosestPtnIdxGrid;
+    const laovdb::Int32Grid& mClosestPtnIdxGrid;
     const GA_Detail &mPtGeo;
 };
 
 
 PointAttrTransfer::PointAttrTransfer(
     AttributeDetailList& pointAttributes,
-    const openvdb::Int32Grid& closestPtnIdxGrid,
+    const laovdb::Int32Grid& closestPtnIdxGrid,
     const GU_Detail& ptGeop):
     mPointAttributes(pointAttributes),
     mClosestPtnIdxGrid(closestPtnIdxGrid),
@@ -780,8 +780,8 @@ PointAttrTransfer::runSerial()
 void
 PointAttrTransfer::operator()(IterRange &range) const
 {
-    openvdb::Int32Tree::LeafNodeType::ValueOnCIter iter;
-    openvdb::Coord ijk;
+    laovdb::Int32Tree::LeafNodeType::ValueOnCIter iter;
+    laovdb::Coord ijk;
 
     for ( ; range; ++range) {
         iter = range.iterator()->beginValueOn();
@@ -813,7 +813,7 @@ struct AttributeCopyBase
     virtual ~AttributeCopyBase() {}
     virtual void copy(GA_Offset /*source*/, GA_Offset /*target*/) = 0;
     virtual void copy(GA_Offset&, GA_Offset&, GA_Offset&, GA_Offset /*target*/,
-        const openvdb::Vec3d& /*uvw*/) = 0;
+        const laovdb::Vec3d& /*uvw*/) = 0;
 protected:
     AttributeCopyBase() {}
 };
@@ -841,7 +841,7 @@ public:
     }
 
     void copy(GA_Offset& v0, GA_Offset& v1, GA_Offset& v2, GA_Offset target,
-        const openvdb::Vec3d& uvw) override
+        const laovdb::Vec3d& uvw) override
     {
         doCopy<ValueType>(v0, v1, v2, target, uvw);
     }
@@ -849,7 +849,7 @@ public:
 private:
     template<typename T>
     typename std::enable_if<std::is_integral<T>::value>::type
-    doCopy(GA_Offset& v0, GA_Offset& v1, GA_Offset& v2, GA_Offset target, const openvdb::Vec3d& uvw)
+    doCopy(GA_Offset& v0, GA_Offset& v1, GA_Offset& v2, GA_Offset target, const laovdb::Vec3d& uvw)
     {
         GA_Offset source = v0;
         double min = uvw[0];
@@ -870,7 +870,7 @@ private:
 
     template <typename T>
     typename std::enable_if<std::is_floating_point<T>::value>::type
-    doCopy(GA_Offset& v0, GA_Offset& v1, GA_Offset& v2, GA_Offset target, const openvdb::Vec3d& uvw)
+    doCopy(GA_Offset& v0, GA_Offset& v1, GA_Offset& v2, GA_Offset target, const laovdb::Vec3d& uvw)
     {
         ValueType a, b, c;
         for (int i = 0; i < mTupleSize; ++i) {
@@ -908,7 +908,7 @@ public:
     }
 
     void copy(GA_Offset& v0, GA_Offset& v1, GA_Offset& v2, GA_Offset target,
-        const openvdb::Vec3d& uvw) override
+        const laovdb::Vec3d& uvw) override
     {
         GA_Offset source = v0;
         double min = uvw[0];
@@ -989,8 +989,8 @@ createAttributeCopier(const GA_Attribute& sourceAttr, GA_Attribute& targetAttr)
 
 inline GA_Offset
 findClosestPrimitiveToPoint(
-    const GU_Detail& geo, const std::set<GA_Index>& primitives, const openvdb::Vec3d& p,
-    GA_Offset& vert0, GA_Offset& vert1, GA_Offset& vert2, openvdb::Vec3d& uvw)
+    const GU_Detail& geo, const std::set<GA_Index>& primitives, const laovdb::Vec3d& p,
+    GA_Offset& vert0, GA_Offset& vert1, GA_Offset& vert2, laovdb::Vec3d& uvw)
 {
     std::set<GA_Index>::const_iterator it = primitives.begin();
 
@@ -998,7 +998,7 @@ findClosestPrimitiveToPoint(
     const GA_Primitive * primRef = nullptr;
     double minDist = std::numeric_limits<double>::max();
 
-    openvdb::Vec3d a, b, c, d, tmpUVW;
+    laovdb::Vec3d a, b, c, d, tmpUVW;
     UT_Vector3 tmpPoint;
 
     for (; it != primitives.end(); ++it) {
@@ -1027,7 +1027,7 @@ findClosestPrimitiveToPoint(
             c[2] = tmpPoint.z();
 
             double tmpDist =
-                (p - openvdb::math::closestPointOnTriangleToPoint(a, c, b, p, tmpUVW)).lengthSqr();
+                (p - laovdb::math::closestPointOnTriangleToPoint(a, c, b, p, tmpUVW)).lengthSqr();
 
             if (tmpDist < minDist) {
                 minDist = tmpDist;
@@ -1044,7 +1044,7 @@ findClosestPrimitiveToPoint(
                 d[1] = tmpPoint.y();
                 d[2] = tmpPoint.z();
 
-                tmpDist = (p - openvdb::math::closestPointOnTriangleToPoint(
+                tmpDist = (p - laovdb::math::closestPointOnTriangleToPoint(
                     a, d, c, p, tmpUVW)).lengthSqr();
                 if (tmpDist < minDist) {
                     minDist = tmpDist;
@@ -1066,14 +1066,14 @@ findClosestPrimitiveToPoint(
 // Faster for small primitive counts
 inline GA_Offset
 findClosestPrimitiveToPoint(
-    const GU_Detail& geo, std::vector<GA_Index>& primitives, const openvdb::Vec3d& p,
-    GA_Offset& vert0, GA_Offset& vert1, GA_Offset& vert2, openvdb::Vec3d& uvw)
+    const GU_Detail& geo, std::vector<GA_Index>& primitives, const laovdb::Vec3d& p,
+    GA_Offset& vert0, GA_Offset& vert1, GA_Offset& vert2, laovdb::Vec3d& uvw)
 {
     GA_Offset primOffset = GA_INVALID_OFFSET;
     const GA_Primitive * primRef = nullptr;
     double minDist = std::numeric_limits<double>::max();
 
-    openvdb::Vec3d a, b, c, d, tmpUVW;
+    laovdb::Vec3d a, b, c, d, tmpUVW;
     UT_Vector3 tmpPoint;
 
     std::sort(primitives.begin(), primitives.end());
@@ -1107,7 +1107,7 @@ findClosestPrimitiveToPoint(
             c[2] = tmpPoint.z();
 
             double tmpDist =
-                (p - openvdb::math::closestPointOnTriangleToPoint(a, c, b, p, tmpUVW)).lengthSqr();
+                (p - laovdb::math::closestPointOnTriangleToPoint(a, c, b, p, tmpUVW)).lengthSqr();
 
             if (tmpDist < minDist) {
                 minDist = tmpDist;
@@ -1124,7 +1124,7 @@ findClosestPrimitiveToPoint(
                 d[1] = tmpPoint.y();
                 d[2] = tmpPoint.z();
 
-                tmpDist = (p - openvdb::math::closestPointOnTriangleToPoint(
+                tmpDist = (p - laovdb::math::closestPointOnTriangleToPoint(
                     a, d, c, p, tmpUVW)).lengthSqr();
                 if (tmpDist < minDist) {
                     minDist = tmpDist;
@@ -1249,7 +1249,7 @@ TransferPrimitiveAttributesOp<GridType>::copyPrimAttrs(
     const bool isPolySoup = (targetPrim.getTypeId() == GA_PRIMPOLYSOUP);
 
     // Compute avg. vertex position.
-    openvdb::Vec3d pos(0, 0, 0);
+    laovdb::Vec3d pos(0, 0, 0);
     int count = static_cast<int>(targetPrim.getVertexCount());
     for (int vtx = 0; vtx < count; ++vtx) {
         pos += UTvdbConvert(targetPrim.getPos3(vtx));
@@ -1257,11 +1257,11 @@ TransferPrimitiveAttributesOp<GridType>::copyPrimAttrs(
     if (count > 1) pos /= double(count);
 
     // Find closest source primitive to current avg. vertex position.
-    const auto coord = openvdb::Coord::floor(transform.worldToIndex(pos));
+    const auto coord = laovdb::Coord::floor(transform.worldToIndex(pos));
 
     std::vector<GA_Index> primitives, similarPrimitives;
     IndexT primIndex;
-    openvdb::Coord ijk;
+    laovdb::Coord ijk;
 
     primitives.reserve(8);
     similarPrimitives.reserve(8);
@@ -1271,7 +1271,7 @@ TransferPrimitiveAttributesOp<GridType>::copyPrimAttrs(
         ijk[2] = coord[2] + ((d & 0x04) >> 2);
 
         if (polyIdxAcc.probeValue(ijk, primIndex) &&
-            openvdb::Index32(primIndex) != openvdb::util::INVALID_IDX) {
+            laovdb::Index32(primIndex) != laovdb::util::INVALID_IDX) {
 
             GA_Offset tmpOffset = mSourceGeo.primitiveOffset(primIndex);
             sourceN = mSourceGeo.getGEOPrimitive(tmpOffset)->computeNormal();
@@ -1289,7 +1289,7 @@ TransferPrimitiveAttributesOp<GridType>::copyPrimAttrs(
 
     if (!primitives.empty() || !similarPrimitives.empty()) {
         GA_Offset source, v0, v1, v2;
-        openvdb::Vec3d uvw;
+        laovdb::Vec3d uvw;
         if (!similarPrimitives.empty()) {
             source = findClosestPrimitiveToPoint(
                 mSourceGeo, similarPrimitives, pos, v0, v1, v2, uvw);
@@ -1322,8 +1322,8 @@ TransferPrimitiveAttributesOp<GridType>::copyVertAttrs(
 {
     const auto& transform = mIndexGrid.transform();
 
-    openvdb::Vec3d pos, uvw;
-    openvdb::Coord ijk;
+    laovdb::Vec3d pos, uvw;
+    laovdb::Coord ijk;
     UT_Vector3 sourceNormal;
     std::vector<GA_Index> primitives, similarPrimitives;
 
@@ -1331,7 +1331,7 @@ TransferPrimitiveAttributesOp<GridType>::copyVertAttrs(
     similarPrimitives.reserve(8);
     for (GA_Size vtx = 0, vtxN = targetPrim.getVertexCount(); vtx < vtxN; ++vtx) {
         pos = UTvdbConvert(targetPrim.getPos3(vtx));
-        const auto coord = openvdb::Coord::floor(transform.worldToIndex(pos));
+        const auto coord = laovdb::Coord::floor(transform.worldToIndex(pos));
 
         primitives.clear();
         similarPrimitives.clear();
@@ -1342,7 +1342,7 @@ TransferPrimitiveAttributesOp<GridType>::copyVertAttrs(
             ijk[2] = coord[2] + ((d & 0x04) >> 2);
 
             if (polyIdxAcc.probeValue(ijk, primIndex) &&
-                (openvdb::Index32(primIndex) != openvdb::util::INVALID_IDX))
+                (laovdb::Index32(primIndex) != laovdb::util::INVALID_IDX))
             {
                 GA_Offset tmpOffset = mSourceGeo.primitiveOffset(primIndex);
                 sourceNormal = mSourceGeo.getGEOPrimitive(tmpOffset)->computeNormal();
@@ -1411,10 +1411,10 @@ TransferPointAttributesOp<GridType>::operator()(const GA_SplittableRange& range)
     GA_Offset start, end, vtxOffset, primOffset, target, v0, v1, v2;
 
     typename GridType::ConstAccessor polyIdxAcc = mIndexGrid.getConstAccessor();
-    const openvdb::math::Transform& transform = mIndexGrid.transform();
-    openvdb::Vec3d pos, indexPos, uvw;
+    const laovdb::math::Transform& transform = mIndexGrid.transform();
+    laovdb::Vec3d pos, indexPos, uvw;
     std::vector<GA_Index> primitives;
-    openvdb::Coord ijk, coord;
+    laovdb::Coord ijk, coord;
 
     primitives.reserve(8);
     for (GA_PageIterator pageIt = range.beginPages(); !pageIt.atEnd(); ++pageIt) {
@@ -1462,7 +1462,7 @@ TransferPointAttributesOp<GridType>::operator()(const GA_SplittableRange& range)
                     ijk[2] = coord[2] + ((d & 0x04) >> 2);
 
                     if (polyIdxAcc.probeValue(ijk, primIndex) &&
-                        openvdb::Index32(primIndex) != openvdb::util::INVALID_IDX) {
+                        laovdb::Index32(primIndex) != laovdb::util::INVALID_IDX) {
                         primitives.push_back(primIndex);
                     }
                 }
@@ -1493,7 +1493,7 @@ transferPrimitiveAttributes(
     const GU_Detail& sourceGeo,
     GU_Detail& targetGeo,
     GridType& indexGrid,
-    openvdb::util::NullInterrupter& boss,
+    laovdb::util::NullInterrupter& boss,
     const GA_PrimitiveGroup* primitives = nullptr)
 {
     // Match public primitive attributes

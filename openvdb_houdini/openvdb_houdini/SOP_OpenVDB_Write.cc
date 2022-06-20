@@ -346,7 +346,7 @@ SOP_OpenVDB_Write::doCook(const fpreal time)
     StringSet conflicts;
 
     // Collect pointers to grids from VDB primitives found in the geometry.
-    openvdb::GridPtrSet outGrids;
+    laovdb::GridPtrSet outGrids;
     for (hvdb::VdbPrimIterator it(gdp, group); it; ++it) {
         if (progress.wasInterrupted()) {
             throw std::runtime_error("Interrupted");
@@ -356,7 +356,7 @@ SOP_OpenVDB_Write::doCook(const fpreal time)
 
         // Create a new grid that shares the primitive's tree and transform
         // and then transfer primitive attributes to the new grid as metadata.
-        hvdb::GridPtr grid = openvdb::ConstPtrCast<hvdb::Grid>(vdb->getGrid().copyGrid());
+        hvdb::GridPtr grid = laovdb::ConstPtrCast<hvdb::Grid>(vdb->getGrid().copyGrid());
         GU_PrimVDB::createMetadataFromGridAttrs(*grid, *vdb, *gdp);
         grid->removeMeta("is_vdb");
 
@@ -392,28 +392,28 @@ SOP_OpenVDB_Write::doCook(const fpreal time)
     reportFloatPrecisionConflicts(conflicts);
 
     // Add file-level metadata.
-    openvdb::MetaMap outMeta;
+    laovdb::MetaMap outMeta;
     outMeta.insertMeta("creator",
-        openvdb::StringMetadata("Houdini/SOP_OpenVDB_Write"));
+        laovdb::StringMetadata("Houdini/SOP_OpenVDB_Write"));
 
     // Create a VDB file object.
-    openvdb::io::File file(filename);
+    laovdb::io::File file(filename);
 
 #ifdef OPENVDB_USE_BLOSC
     uint32_t compressionFlags = file.compression();
     if (compression == "none") {
-        compressionFlags &= ~(openvdb::io::COMPRESS_ZIP | openvdb::io::COMPRESS_BLOSC);
+        compressionFlags &= ~(laovdb::io::COMPRESS_ZIP | laovdb::io::COMPRESS_BLOSC);
     } else if (compression == "blosc") {
-        compressionFlags &= ~openvdb::io::COMPRESS_ZIP;
-        compressionFlags |= openvdb::io::COMPRESS_BLOSC;
+        compressionFlags &= ~laovdb::io::COMPRESS_ZIP;
+        compressionFlags |= laovdb::io::COMPRESS_BLOSC;
     } else if (compression == "zip") {
-        compressionFlags |= openvdb::io::COMPRESS_ZIP;
-        compressionFlags &= ~openvdb::io::COMPRESS_BLOSC;
+        compressionFlags |= laovdb::io::COMPRESS_ZIP;
+        compressionFlags &= ~laovdb::io::COMPRESS_BLOSC;
     }
 #else
-    uint32_t compressionFlags = openvdb::io::COMPRESS_ACTIVE_MASK;
+    uint32_t compressionFlags = laovdb::io::COMPRESS_ACTIVE_MASK;
 #ifdef OPENVDB_USE_ZLIB
-    if (zip) compressionFlags |= openvdb::io::COMPRESS_ZIP;
+    if (zip) compressionFlags |= laovdb::io::COMPRESS_ZIP;
 #endif
 #endif // OPENVDB_USE_BLOSC
     file.setCompression(compressionFlags);

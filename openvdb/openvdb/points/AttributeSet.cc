@@ -9,7 +9,7 @@
 #include <algorithm> // std::equal
 #include <string>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -1390,4 +1390,4 @@ AttributeSet::Descriptor::read(std::istream& is)
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

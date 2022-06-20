@@ -24,13 +24,13 @@ namespace {
 class PointList
 {
 public:
-    PointList(const std::vector<openvdb::Vec3R>& points) : mPoints(&points) {}
+    PointList(const std::vector<laovdb::Vec3R>& points) : mPoints(&points) {}
 
     size_t size() const { return mPoints->size(); }
 
-    void getPos(size_t n, openvdb::Vec3R& xyz) const { xyz = (*mPoints)[n]; }
+    void getPos(size_t n, laovdb::Vec3R& xyz) const { xyz = (*mPoints)[n]; }
 protected:
-    std::vector<openvdb::Vec3R> const * const mPoints;
+    std::vector<laovdb::Vec3R> const * const mPoints;
 }; // PointList
 
 } // namespace
@@ -44,75 +44,75 @@ TEST_F(TestPointsToMask, testPointsToMask)
 {
     {// BoolGrid
         // generate one point
-        std::vector<openvdb::Vec3R> points;
-        points.push_back( openvdb::Vec3R(-19.999, 4.50001, 6.71) );
-        //points.push_back( openvdb::Vec3R( 20,-4.5,-5.2) );
+        std::vector<laovdb::Vec3R> points;
+        points.push_back( laovdb::Vec3R(-19.999, 4.50001, 6.71) );
+        //points.push_back( laovdb::Vec3R( 20,-4.5,-5.2) );
         PointList pointList(points);
 
         // construct an empty mask grid
-        openvdb::BoolGrid grid( false );
+        laovdb::BoolGrid grid( false );
         const float voxelSize = 0.1f;
-        grid.setTransform( openvdb::math::Transform::createLinearTransform(voxelSize) );
+        grid.setTransform( laovdb::math::Transform::createLinearTransform(voxelSize) );
         EXPECT_TRUE( grid.empty() );
 
         // generate mask from points
-        openvdb::tools::PointsToMask<openvdb::BoolGrid> mask( grid );
+        laovdb::tools::PointsToMask<laovdb::BoolGrid> mask( grid );
         mask.addPoints( pointList );
         EXPECT_TRUE(!grid.empty() );
         EXPECT_EQ( 1, int(grid.activeVoxelCount()) );
-        openvdb::BoolGrid::ValueOnCIter iter = grid.cbeginValueOn();
+        laovdb::BoolGrid::ValueOnCIter iter = grid.cbeginValueOn();
         //std::cerr << "Coord = " << iter.getCoord() << std::endl;
-        const openvdb::Coord p(-200, 45, 67);
+        const laovdb::Coord p(-200, 45, 67);
         EXPECT_TRUE( iter.getCoord() == p );
         EXPECT_TRUE(grid.tree().isValueOn( p ) );
     }
 
     {// MaskGrid
         // generate one point
-        std::vector<openvdb::Vec3R> points;
-        points.push_back( openvdb::Vec3R(-19.999, 4.50001, 6.71) );
-        //points.push_back( openvdb::Vec3R( 20,-4.5,-5.2) );
+        std::vector<laovdb::Vec3R> points;
+        points.push_back( laovdb::Vec3R(-19.999, 4.50001, 6.71) );
+        //points.push_back( laovdb::Vec3R( 20,-4.5,-5.2) );
         PointList pointList(points);
 
         // construct an empty mask grid
-        openvdb::MaskGrid grid( false );
+        laovdb::MaskGrid grid( false );
         const float voxelSize = 0.1f;
-        grid.setTransform( openvdb::math::Transform::createLinearTransform(voxelSize) );
+        grid.setTransform( laovdb::math::Transform::createLinearTransform(voxelSize) );
         EXPECT_TRUE( grid.empty() );
 
         // generate mask from points
-        openvdb::tools::PointsToMask<> mask( grid );
+        laovdb::tools::PointsToMask<> mask( grid );
         mask.addPoints( pointList );
         EXPECT_TRUE(!grid.empty() );
         EXPECT_EQ( 1, int(grid.activeVoxelCount()) );
-        openvdb::TopologyGrid::ValueOnCIter iter = grid.cbeginValueOn();
+        laovdb::TopologyGrid::ValueOnCIter iter = grid.cbeginValueOn();
         //std::cerr << "Coord = " << iter.getCoord() << std::endl;
-        const openvdb::Coord p(-200, 45, 67);
+        const laovdb::Coord p(-200, 45, 67);
         EXPECT_TRUE( iter.getCoord() == p );
         EXPECT_TRUE(grid.tree().isValueOn( p ) );
     }
 
 
     // generate shared transformation
-    openvdb::Index64 voxelCount = 0;
+    laovdb::Index64 voxelCount = 0;
     const float voxelSize = 0.001f;
-    const openvdb::math::Transform::Ptr xform =
-        openvdb::math::Transform::createLinearTransform(voxelSize);
+    const laovdb::math::Transform::Ptr xform =
+        laovdb::math::Transform::createLinearTransform(voxelSize);
 
     // generate lots of points
-    std::vector<openvdb::Vec3R> points;
+    std::vector<laovdb::Vec3R> points;
     unittest_util::genPoints(15000000, points);
     PointList pointList(points);
 
-    //openvdb::util::CpuTimer timer;
+    //laovdb::util::CpuTimer timer;
     {// serial BoolGrid
         // construct an empty mask grid
-        openvdb::BoolGrid grid( false );
+        laovdb::BoolGrid grid( false );
         grid.setTransform( xform );
         EXPECT_TRUE( grid.empty() );
 
         // generate mask from points
-        openvdb::tools::PointsToMask<openvdb::BoolGrid> mask( grid );
+        laovdb::tools::PointsToMask<laovdb::BoolGrid> mask( grid );
         //timer.start("\nSerial BoolGrid");
         mask.addPoints( pointList, 0 );
         //timer.stop();
@@ -123,12 +123,12 @@ TEST_F(TestPointsToMask, testPointsToMask)
     }
     {// parallel BoolGrid
         // construct an empty mask grid
-        openvdb::BoolGrid grid( false );
+        laovdb::BoolGrid grid( false );
         grid.setTransform( xform );
         EXPECT_TRUE( grid.empty() );
 
         // generate mask from points
-        openvdb::tools::PointsToMask<openvdb::BoolGrid> mask( grid );
+        laovdb::tools::PointsToMask<laovdb::BoolGrid> mask( grid );
         //timer.start("\nParallel BoolGrid");
         mask.addPoints( pointList );
         //timer.stop();
@@ -139,12 +139,12 @@ TEST_F(TestPointsToMask, testPointsToMask)
     }
     {// parallel MaskGrid
         // construct an empty mask grid
-        openvdb::MaskGrid grid( false );
+        laovdb::MaskGrid grid( false );
         grid.setTransform( xform );
         EXPECT_TRUE( grid.empty() );
 
         // generate mask from points
-        openvdb::tools::PointsToMask<> mask( grid );
+        laovdb::tools::PointsToMask<> mask( grid );
         //timer.start("\nParallel MaskGrid");
         mask.addPoints( pointList );
         //timer.stop();
@@ -155,7 +155,7 @@ TEST_F(TestPointsToMask, testPointsToMask)
     }
     {// parallel create TopologyGrid
         //timer.start("\nParallel Create MaskGrid");
-        openvdb::MaskGrid::Ptr grid = openvdb::tools::createPointMask(pointList, *xform);
+        laovdb::MaskGrid::Ptr grid = laovdb::tools::createPointMask(pointList, *xform);
         //timer.stop();
 
         EXPECT_TRUE(!grid->empty() );

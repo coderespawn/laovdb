@@ -12,7 +12,7 @@
 
 #include <numeric> // iota
 
-using String = openvdb::ax::codegen::String;
+using String = laovdb::ax::codegen::String;
 
 class TestStringIR : public CppUnit::TestCase
 {
@@ -308,17 +308,17 @@ TestStringIR::testStringStringIR()
 
     unittest_util::LLVMState state;
     llvm::Module& M = state.module();
-    openvdb::ax::FunctionOptions opts;
+    laovdb::ax::FunctionOptions opts;
     // This test does not test the C bindings and will fail if they are being
     // used as the function addressed wont be linked into the EE.
     // @todo  Expose the global function address binding in Compiler.cc (without
     //   exposing LLVM headers)
     CPPUNIT_ASSERT(opts.mPrioritiseIR);
-    openvdb::ax::codegen::FunctionRegistry::UniquePtr reg =
-        openvdb::ax::codegen::createDefaultRegistry(&opts);
+    laovdb::ax::codegen::FunctionRegistry::UniquePtr reg =
+        laovdb::ax::codegen::createDefaultRegistry(&opts);
 
     // insert all the string::string functions into a module
-    const openvdb::ax::codegen::FunctionGroup* FG =
+    const laovdb::ax::codegen::FunctionGroup* FG =
         reg->getOrInsert("string::string", opts, true);
     CPPUNIT_ASSERT(FG);
     for (auto& F : FG->list()) {
@@ -327,7 +327,7 @@ TestStringIR::testStringStringIR()
     }
 
     // also insert string::clear for the malloc tests
-    const openvdb::ax::codegen::FunctionGroup* SC =
+    const laovdb::ax::codegen::FunctionGroup* SC =
         reg->getOrInsert("string::clear", opts, true);
     CPPUNIT_ASSERT(SC);
     for (auto& F : SC->list()) {
@@ -449,17 +449,17 @@ TestStringIR::testStringAssignIR()
 
     unittest_util::LLVMState state;
     llvm::Module& M = state.module();
-    openvdb::ax::FunctionOptions opts;
+    laovdb::ax::FunctionOptions opts;
     // This test does not test the C bindings and will fail if they are being
     // used as the function addressed wont be linked into the EE.
     // @todo  Expose the global function address binding in Compiler.cc (without
     //   exposing LLVM headers)
     CPPUNIT_ASSERT(opts.mPrioritiseIR);
-    openvdb::ax::codegen::FunctionRegistry::UniquePtr reg =
-        openvdb::ax::codegen::createDefaultRegistry(&opts);
+    laovdb::ax::codegen::FunctionRegistry::UniquePtr reg =
+        laovdb::ax::codegen::createDefaultRegistry(&opts);
 
     // insert all the string::op= functions into a module
-    const openvdb::ax::codegen::FunctionGroup* FG =
+    const laovdb::ax::codegen::FunctionGroup* FG =
         reg->getOrInsert("string::op=", opts, true);
     CPPUNIT_ASSERT(FG);
     for (auto& F : FG->list()) {
@@ -468,7 +468,7 @@ TestStringIR::testStringAssignIR()
     }
 
     // also insert string::clear for the malloc tests
-    const openvdb::ax::codegen::FunctionGroup* SC =
+    const laovdb::ax::codegen::FunctionGroup* SC =
         reg->getOrInsert("string::clear", opts, true);
     CPPUNIT_ASSERT(SC);
     for (auto& F : SC->list()) {
@@ -593,12 +593,12 @@ void TestStringIR::testStringAddIR()
 
     unittest_util::LLVMState state;
     llvm::Module& M = state.module();
-    openvdb::ax::FunctionOptions opts;
-    openvdb::ax::codegen::FunctionRegistry::UniquePtr reg =
-        openvdb::ax::codegen::createDefaultRegistry(&opts);
+    laovdb::ax::FunctionOptions opts;
+    laovdb::ax::codegen::FunctionRegistry::UniquePtr reg =
+        laovdb::ax::codegen::createDefaultRegistry(&opts);
 
     // insert all the string::op+ functions into a module
-    const openvdb::ax::codegen::FunctionGroup* FG =
+    const laovdb::ax::codegen::FunctionGroup* FG =
         reg->getOrInsert("string::op+", opts, true);
     CPPUNIT_ASSERT(FG);
     for (auto& F : FG->list()) {
@@ -607,7 +607,7 @@ void TestStringIR::testStringAddIR()
     }
 
     // also insert string::clear for the malloc tests
-    const openvdb::ax::codegen::FunctionGroup* SC =
+    const laovdb::ax::codegen::FunctionGroup* SC =
         reg->getOrInsert("string::clear", opts, true);
     CPPUNIT_ASSERT(SC);
     for (auto& F : SC->list()) {
@@ -795,12 +795,12 @@ void TestStringIR::testStringClearIR()
 
     unittest_util::LLVMState state;
     llvm::Module& M = state.module();
-    openvdb::ax::FunctionOptions opts;
-    openvdb::ax::codegen::FunctionRegistry::UniquePtr reg =
-        openvdb::ax::codegen::createDefaultRegistry(&opts);
+    laovdb::ax::FunctionOptions opts;
+    laovdb::ax::codegen::FunctionRegistry::UniquePtr reg =
+        laovdb::ax::codegen::createDefaultRegistry(&opts);
 
     // insert all the string::clear functions into a module
-    const openvdb::ax::codegen::FunctionGroup* FG =
+    const laovdb::ax::codegen::FunctionGroup* FG =
         reg->getOrInsert("string::clear", opts, true);
     CPPUNIT_ASSERT(FG);
     for (auto& F : FG->list()) {
@@ -810,7 +810,7 @@ void TestStringIR::testStringClearIR()
 
     // insert all the string::string functions into a module
     // for the malloc clear tests
-    const openvdb::ax::codegen::FunctionGroup* MFG =
+    const laovdb::ax::codegen::FunctionGroup* MFG =
         reg->getOrInsert("string::string", opts, true);
     CPPUNIT_ASSERT(MFG);
     for (auto& F : MFG->list()) {

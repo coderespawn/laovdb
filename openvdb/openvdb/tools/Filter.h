@@ -33,7 +33,7 @@
 #include <functional>
 #include <type_traits>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -55,7 +55,7 @@ public:
     using RangeType = typename LeafManagerType::LeafRange;
     using BufferType = typename LeafManagerType::BufferType;
     static_assert(std::is_floating_point<AlphaType>::value,
-        "openvdb::tools::Filter requires a mask grid with floating-point values");
+        "laovdb::tools::Filter requires a mask grid with floating-point values");
 
     /// Constructor
     /// @param grid Grid to be filtered.
@@ -865,6 +865,6 @@ OPENVDB_INSTANTIATE_CLASS Filter<DoubleGrid, FloatGrid, util::NullInterrupter>;
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_FILTER_HAS_BEEN_INCLUDED

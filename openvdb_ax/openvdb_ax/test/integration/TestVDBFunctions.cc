@@ -45,7 +45,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestVDBFunctions);
 void
 TestVDBFunctions::addremovefromgroup()
 {
-    const std::vector<openvdb::math::Vec3s> positions = {
+    const std::vector<laovdb::math::Vec3s> positions = {
         {1, 1, 1},
         {1, 2, 1},
         {2, 1, 1},
@@ -53,46 +53,46 @@ TestVDBFunctions::addremovefromgroup()
     };
 
     const float voxelSize = 1.0f;
-    const openvdb::math::Transform::ConstPtr transform =
-        openvdb::math::Transform::createLinearTransform(voxelSize);
-    const openvdb::points::PointAttributeVector<openvdb::math::Vec3s> pointList(positions);
+    const laovdb::math::Transform::ConstPtr transform =
+        laovdb::math::Transform::createLinearTransform(voxelSize);
+    const laovdb::points::PointAttributeVector<laovdb::math::Vec3s> pointList(positions);
 
-    openvdb::tools::PointIndexGrid::Ptr pointIndexGrid =
-            openvdb::tools::createPointIndexGrid<openvdb::tools::PointIndexGrid>(
+    laovdb::tools::PointIndexGrid::Ptr pointIndexGrid =
+            laovdb::tools::createPointIndexGrid<laovdb::tools::PointIndexGrid>(
                 pointList, *transform);
 
-    openvdb::points::PointDataGrid::Ptr dataGrid =
-        openvdb::points::createPointDataGrid<openvdb::points::NullCodec, openvdb::points::PointDataGrid>(
+    laovdb::points::PointDataGrid::Ptr dataGrid =
+        laovdb::points::createPointDataGrid<laovdb::points::NullCodec, laovdb::points::PointDataGrid>(
                 *pointIndexGrid, pointList, *transform);
 
-    openvdb::points::PointDataTree& dataTree = dataGrid->tree();
+    laovdb::points::PointDataTree& dataTree = dataGrid->tree();
 
     // apppend a new attribute for stress testing
 
-    openvdb::points::appendAttribute(dataTree, "existingTestAttribute", 2);
-    openvdb::points::appendGroup(dataTree, "existingTestGroup");
+    laovdb::points::appendAttribute(dataTree, "existingTestAttribute", 2);
+    laovdb::points::appendGroup(dataTree, "existingTestGroup");
 
     const std::vector<short> membershipTestGroup1{1, 0, 1, 0};
-    openvdb::points::setGroup(dataTree, pointIndexGrid->tree(), membershipTestGroup1, "existingTestGroup");
+    laovdb::points::setGroup(dataTree, pointIndexGrid->tree(), membershipTestGroup1, "existingTestGroup");
 
     // second pre-existing group.
-    openvdb::points::appendGroup(dataTree, "existingTestGroup2");
-    openvdb::points::setGroup(dataTree, "existingTestGroup2", false);
+    laovdb::points::appendGroup(dataTree, "existingTestGroup2");
+    laovdb::points::setGroup(dataTree, "existingTestGroup2", false);
 
     const std::string code = unittest_util::loadText("test/snippets/vdb_functions/addremovefromgroup");
-    openvdb::ax::run(code.c_str(), *dataGrid);
+    laovdb::ax::run(code.c_str(), *dataGrid);
 
     auto leafIter = dataTree.cbeginLeaf();
 
-    const openvdb::points::AttributeSet& attributeSet = leafIter->attributeSet();
-    const openvdb::points::AttributeSet::Descriptor& desc = attributeSet.descriptor();
+    const laovdb::points::AttributeSet& attributeSet = leafIter->attributeSet();
+    const laovdb::points::AttributeSet::Descriptor& desc = attributeSet.descriptor();
 
     for (size_t i = 1; i <= 9; i++) {
         const std::string groupName = "newTestGroup" + std::to_string(i);
         CPPUNIT_ASSERT_MESSAGE(groupName + " doesn't exist", desc.hasGroup(groupName));
     }
 
-    openvdb::points::GroupHandle newTestGroupHandle = leafIter->groupHandle("newTestGroup9");
+    laovdb::points::GroupHandle newTestGroupHandle = leafIter->groupHandle("newTestGroup9");
     CPPUNIT_ASSERT(!newTestGroupHandle.get(0));
     CPPUNIT_ASSERT(newTestGroupHandle.get(1));
     CPPUNIT_ASSERT(!newTestGroupHandle.get(2));
@@ -100,21 +100,21 @@ TestVDBFunctions::addremovefromgroup()
 
     // other new groups should be untouched
     for (size_t i = 1; i <= 8; i++) {
-        openvdb::points::GroupHandle handle = leafIter->groupHandle("newTestGroup" + std::to_string(i));
+        laovdb::points::GroupHandle handle = leafIter->groupHandle("newTestGroup" + std::to_string(i));
         CPPUNIT_ASSERT(handle.get(0));
         CPPUNIT_ASSERT(handle.get(1));
         CPPUNIT_ASSERT(handle.get(2));
         CPPUNIT_ASSERT(handle.get(3));
     }
 
-    openvdb::points::GroupHandle existingTestGroupHandle = leafIter->groupHandle("existingTestGroup");
+    laovdb::points::GroupHandle existingTestGroupHandle = leafIter->groupHandle("existingTestGroup");
     CPPUNIT_ASSERT(existingTestGroupHandle.get(0));
     CPPUNIT_ASSERT(!existingTestGroupHandle.get(1));
     CPPUNIT_ASSERT(existingTestGroupHandle.get(2));
     CPPUNIT_ASSERT(!existingTestGroupHandle.get(3));
 
     // membership of this group should now mirror exisingTestGroup
-    openvdb::points::GroupHandle existingTestGroup2Handle = leafIter->groupHandle("existingTestGroup2");
+    laovdb::points::GroupHandle existingTestGroup2Handle = leafIter->groupHandle("existingTestGroup2");
     CPPUNIT_ASSERT(existingTestGroup2Handle.get(0));
     CPPUNIT_ASSERT(!existingTestGroup2Handle.get(1));
     CPPUNIT_ASSERT(existingTestGroup2Handle.get(2));
@@ -124,9 +124,9 @@ TestVDBFunctions::addremovefromgroup()
     CPPUNIT_ASSERT(!desc.hasGroup("nonExistentGroup"));
 
     // now check 2 new attributes added to tree
-    openvdb::points::AttributeHandle<int> testResultAttributeHandle1(*attributeSet.get("newTestAttribute1"));
-    openvdb::points::AttributeHandle<int> testResultAttributeHandle2(*attributeSet.get("newTestAttribute2"));
-    for (openvdb::Index i = 0;i < 4; i++) {
+    laovdb::points::AttributeHandle<int> testResultAttributeHandle1(*attributeSet.get("newTestAttribute1"));
+    laovdb::points::AttributeHandle<int> testResultAttributeHandle2(*attributeSet.get("newTestAttribute2"));
+    for (laovdb::Index i = 0;i < 4; i++) {
         CPPUNIT_ASSERT(testResultAttributeHandle1.get(i));
     }
 
@@ -139,7 +139,7 @@ TestVDBFunctions::addremovefromgroup()
     // pre-existing attribute should still be present with the correct value
 
     for (; leafIter; ++leafIter) {
-        openvdb::points::AttributeHandle<int>
+        laovdb::points::AttributeHandle<int>
             handle(leafIter->attributeArray("existingTestAttribute"));
         CPPUNIT_ASSERT(handle.isUniform());
         CPPUNIT_ASSERT_EQUAL(2, handle.get(0));
@@ -170,48 +170,48 @@ void
 TestVDBFunctions::getcoord()
 {
     // create 3 test grids
-    std::vector<openvdb::Int32Grid::Ptr> testGrids(3);
-    openvdb::math::Transform::Ptr transform = openvdb::math::Transform::createLinearTransform(0.1);
+    std::vector<laovdb::Int32Grid::Ptr> testGrids(3);
+    laovdb::math::Transform::Ptr transform = laovdb::math::Transform::createLinearTransform(0.1);
 
     int i = 0;
     for (auto& grid : testGrids) {
-        grid = openvdb::Int32Grid::create();
+        grid = laovdb::Int32Grid::create();
         grid->setTransform(transform);
         grid->setName("a" + std::to_string(i));
-        openvdb::Int32Grid::Accessor accessor = grid->getAccessor();
-        accessor.setValueOn(openvdb::Coord(1, 2, 3), 0);
-        accessor.setValueOn(openvdb::Coord(1, 10, 3), 0);
-        accessor.setValueOn(openvdb::Coord(-1, 1, 10), 0);
+        laovdb::Int32Grid::Accessor accessor = grid->getAccessor();
+        accessor.setValueOn(laovdb::Coord(1, 2, 3), 0);
+        accessor.setValueOn(laovdb::Coord(1, 10, 3), 0);
+        accessor.setValueOn(laovdb::Coord(-1, 1, 10), 0);
         ++i;
     }
 
     // convert to GridBase::Ptr
-    openvdb::GridPtrVec testGridsBase(3);
+    laovdb::GridPtrVec testGridsBase(3);
     std::copy(testGrids.begin(), testGrids.end(), testGridsBase.begin());
 
     const std::string code = unittest_util::loadText("test/snippets/vdb_functions/getcoord");
-    openvdb::ax::run(code.c_str(), testGridsBase);
+    laovdb::ax::run(code.c_str(), testGridsBase);
 
     // each grid has 3 active voxels.  These vectors hold the expected values of those voxels
     // for each grid
-    std::vector<openvdb::Vec3I> expectedVoxelVals(3);
-    expectedVoxelVals[0] = openvdb::Vec3I(1, 1, -1);
-    expectedVoxelVals[1] = openvdb::Vec3I(2, 10, 1);
-    expectedVoxelVals[2] = openvdb::Vec3I(3, 3, 10);
+    std::vector<laovdb::Vec3I> expectedVoxelVals(3);
+    expectedVoxelVals[0] = laovdb::Vec3I(1, 1, -1);
+    expectedVoxelVals[1] = laovdb::Vec3I(2, 10, 1);
+    expectedVoxelVals[2] = laovdb::Vec3I(3, 3, 10);
 
-    std::vector<openvdb::Int32Grid::Ptr> expectedGrids(3);
+    std::vector<laovdb::Int32Grid::Ptr> expectedGrids(3);
 
     for (size_t i = 0; i < 3; i++) {
-        openvdb::Int32Grid::Ptr grid = openvdb::Int32Grid::create();
+        laovdb::Int32Grid::Ptr grid = laovdb::Int32Grid::create();
         grid->setTransform(transform);
         grid->setName("a" + std::to_string(i) + "_expected");
 
-        openvdb::Int32Grid::Accessor accessor = grid->getAccessor();
-        const openvdb::Vec3I& expectedVals = expectedVoxelVals[i];
+        laovdb::Int32Grid::Accessor accessor = grid->getAccessor();
+        const laovdb::Vec3I& expectedVals = expectedVoxelVals[i];
 
-        accessor.setValueOn(openvdb::Coord(1, 2 ,3), expectedVals[0]);
-        accessor.setValueOn(openvdb::Coord(1, 10, 3), expectedVals[1]);
-        accessor.setValueOn(openvdb::Coord(-1, 1, 10), expectedVals[2]);
+        accessor.setValueOn(laovdb::Coord(1, 2 ,3), expectedVals[0]);
+        accessor.setValueOn(laovdb::Coord(1, 10, 3), expectedVals[1]);
+        accessor.setValueOn(laovdb::Coord(-1, 1, 10), expectedVals[2]);
 
         expectedGrids[i] = grid;
     }
@@ -239,7 +239,7 @@ TestVDBFunctions::getvoxelpws()
     mHarness.testSparseVolumes(false); // disable as getvoxelpws will densify
     mHarness.testDenseVolumes(true);
 
-    mHarness.addAttribute<openvdb::Vec3f>("a", openvdb::Vec3f(10.0f), openvdb::Vec3f(0.0f));
+    mHarness.addAttribute<laovdb::Vec3f>("a", laovdb::Vec3f(10.0f), laovdb::Vec3f(0.0f));
     mHarness.executeCode("test/snippets/vdb_functions/getvoxelpws");
     AXTESTS_STANDARD_ASSERT();
 }
@@ -264,15 +264,15 @@ TestVDBFunctions::ingroup()
 {
     // test a tree with no groups
     CPPUNIT_ASSERT(mHarness.mInputPointGrids.size() > 0);
-    openvdb::points::PointDataGrid::Ptr pointDataGrid1 = mHarness.mInputPointGrids.back();
-    openvdb::points::PointDataTree& pointTree = pointDataGrid1->tree();
+    laovdb::points::PointDataGrid::Ptr pointDataGrid1 = mHarness.mInputPointGrids.back();
+    laovdb::points::PointDataTree& pointTree = pointDataGrid1->tree();
 
     // compile and execute
 
-    openvdb::ax::Compiler compiler;
+    laovdb::ax::Compiler compiler;
     std::string code = unittest_util::loadText("test/snippets/vdb_functions/ingroup");
-    openvdb::ax::PointExecutable::Ptr executable =
-        compiler.compile<openvdb::ax::PointExecutable>(code);
+    laovdb::ax::PointExecutable::Ptr executable =
+        compiler.compile<laovdb::ax::PointExecutable>(code);
 
     CPPUNIT_ASSERT_NO_THROW(executable->execute(*pointDataGrid1));
 
@@ -280,8 +280,8 @@ TestVDBFunctions::ingroup()
     // "1" everywhere
 
     for (auto leafIter = pointTree.cbeginLeaf(); leafIter; ++leafIter) {
-        openvdb::points::AttributeHandle<int> handle1(leafIter->attributeArray("groupTest"));
-        openvdb::points::AttributeHandle<int> handle2(leafIter->attributeArray("groupTest2"));
+        laovdb::points::AttributeHandle<int> handle1(leafIter->attributeArray("groupTest"));
+        laovdb::points::AttributeHandle<int> handle2(leafIter->attributeArray("groupTest2"));
         for (auto iter = leafIter->beginIndexAll(); iter; ++iter) {
             CPPUNIT_ASSERT_EQUAL(1, handle1.get(*iter));
             CPPUNIT_ASSERT_EQUAL(1, handle2.get(*iter));
@@ -290,20 +290,20 @@ TestVDBFunctions::ingroup()
 
     // there should be no groups - ensure none have been added by accident by query code
     auto leafIter = pointTree.cbeginLeaf();
-    const openvdb::points::AttributeSet& attributeSet = leafIter->attributeSet();
-    const openvdb::points::AttributeSet::Descriptor& descriptor1 = attributeSet.descriptor();
+    const laovdb::points::AttributeSet& attributeSet = leafIter->attributeSet();
+    const laovdb::points::AttributeSet::Descriptor& descriptor1 = attributeSet.descriptor();
     CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(0), descriptor1.groupMap().size());
 
     // now we add a single group and run the test again
-    openvdb::points::appendGroup(pointTree, "testGroup");
+    laovdb::points::appendGroup(pointTree, "testGroup");
     setGroup(pointTree, "testGroup", false);
 
-    executable = compiler.compile<openvdb::ax::PointExecutable>(code);
+    executable = compiler.compile<laovdb::ax::PointExecutable>(code);
     CPPUNIT_ASSERT_NO_THROW(executable->execute(*pointDataGrid1));
 
     for (auto leafIter = pointTree.cbeginLeaf(); leafIter; ++leafIter) {
-        openvdb::points::AttributeHandle<int> handle1(leafIter->attributeArray("groupTest"));
-        openvdb::points::AttributeHandle<int> handle2(leafIter->attributeArray("groupTest2"));
+        laovdb::points::AttributeHandle<int> handle1(leafIter->attributeArray("groupTest"));
+        laovdb::points::AttributeHandle<int> handle2(leafIter->attributeArray("groupTest2"));
         for (auto iter = leafIter->beginIndexAll(); iter; ++iter) {
             CPPUNIT_ASSERT_EQUAL(1, handle1.get(*iter));
             CPPUNIT_ASSERT_EQUAL(1, handle2.get(*iter));
@@ -312,7 +312,7 @@ TestVDBFunctions::ingroup()
 
     // for the next couple of tests we create a small tree with 4 points.  We wish to test queries of a single group
     // in a tree that has several groups
-    const std::vector<openvdb::math::Vec3s> positions = {
+    const std::vector<laovdb::math::Vec3s> positions = {
         {1, 1, 1},
         {1, 2, 1},
         {2, 1, 1},
@@ -320,34 +320,34 @@ TestVDBFunctions::ingroup()
     };
 
     const float voxelSize = 1.0f;
-    const openvdb::math::Transform::ConstPtr transform =
-        openvdb::math::Transform::createLinearTransform(voxelSize);
-    const openvdb::points::PointAttributeVector<openvdb::math::Vec3s> pointList(positions);
+    const laovdb::math::Transform::ConstPtr transform =
+        laovdb::math::Transform::createLinearTransform(voxelSize);
+    const laovdb::points::PointAttributeVector<laovdb::math::Vec3s> pointList(positions);
 
-    openvdb::tools::PointIndexGrid::Ptr pointIndexGrid =
-            openvdb::tools::createPointIndexGrid<openvdb::tools::PointIndexGrid>
+    laovdb::tools::PointIndexGrid::Ptr pointIndexGrid =
+            laovdb::tools::createPointIndexGrid<laovdb::tools::PointIndexGrid>
                 (pointList, *transform);
 
-    openvdb::points::PointDataGrid::Ptr pointDataGrid2 =
-        openvdb::points::createPointDataGrid<openvdb::points::NullCodec, openvdb::points::PointDataGrid>
+    laovdb::points::PointDataGrid::Ptr pointDataGrid2 =
+        laovdb::points::createPointDataGrid<laovdb::points::NullCodec, laovdb::points::PointDataGrid>
             (*pointIndexGrid, pointList, *transform);
 
-    openvdb::points::PointDataTree::Ptr pointDataTree2 = pointDataGrid2->treePtr();
+    laovdb::points::PointDataTree::Ptr pointDataTree2 = pointDataGrid2->treePtr();
 
     // add 9 groups.  8 groups can be added by using a single group attribute, but this requires adding another attribute
     // and hence exercises the code better
     for (size_t i = 0; i < 9; i++) {
-        openvdb::points::appendGroup(*pointDataTree2, "testGroup" + std::to_string(i));
+        laovdb::points::appendGroup(*pointDataTree2, "testGroup" + std::to_string(i));
     }
     std::vector<short> membershipTestGroup2{0, 0, 1, 0};
-    openvdb::points::setGroup(*pointDataTree2, pointIndexGrid->tree(), membershipTestGroup2, "testGroup2");
+    laovdb::points::setGroup(*pointDataTree2, pointIndexGrid->tree(), membershipTestGroup2, "testGroup2");
 
-    executable = compiler.compile<openvdb::ax::PointExecutable>(code);
+    executable = compiler.compile<laovdb::ax::PointExecutable>(code);
     CPPUNIT_ASSERT_NO_THROW(executable->execute(*pointDataGrid2));
 
     auto leafIter2 = pointDataTree2->cbeginLeaf();
-    const openvdb::points::AttributeSet& attributeSet2 = leafIter2->attributeSet();
-    openvdb::points::AttributeHandle<int> testResultAttributeHandle(*attributeSet2.get("groupTest2"));
+    const laovdb::points::AttributeSet& attributeSet2 = leafIter2->attributeSet();
+    laovdb::points::AttributeHandle<int> testResultAttributeHandle(*attributeSet2.get("groupTest2"));
 
     // these should line up with the defined membership
     CPPUNIT_ASSERT_EQUAL(testResultAttributeHandle.get(0), 1);
@@ -356,7 +356,7 @@ TestVDBFunctions::ingroup()
     CPPUNIT_ASSERT_EQUAL(testResultAttributeHandle.get(3), 1);
 
     // check that no new groups have been created or deleted
-    const openvdb::points::AttributeSet::Descriptor& descriptor2 = attributeSet2.descriptor();
+    const laovdb::points::AttributeSet::Descriptor& descriptor2 = attributeSet2.descriptor();
     CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(9), descriptor2.groupMap().size());
 
     for (size_t i = 0; i < 9; i++) {
@@ -368,12 +368,12 @@ void
 TestVDBFunctions::testValidContext()
 {
     std::shared_ptr<llvm::LLVMContext> C(new llvm::LLVMContext);
-    openvdb::ax::Compiler compiler;
-    openvdb::ax::FunctionOptions ops;
+    laovdb::ax::Compiler compiler;
+    laovdb::ax::FunctionOptions ops;
     ops.mLazyFunctions = false;
 
     /// Generate code which calls the given function
-    auto generate = [&C](const openvdb::ax::codegen::Function::Ptr F,
+    auto generate = [&C](const laovdb::ax::codegen::Function::Ptr F,
                          const std::string& name) -> std::string
     {
         std::vector<llvm::Type*> types;
@@ -384,8 +384,8 @@ TestVDBFunctions::testValidContext()
         size_t idx = 0;
         for (auto T : types) {
             const std::string axtype =
-                openvdb::ax::ast::tokens::typeStringFromToken(
-                    openvdb::ax::codegen::tokenFromLLVMType(T));
+                laovdb::ax::ast::tokens::typeStringFromToken(
+                    laovdb::ax::codegen::tokenFromLLVMType(T));
             code += axtype + " local" + std::to_string(idx) + ";\n";
             args += "local" + std::to_string(idx) + ",";
         }
@@ -399,55 +399,55 @@ TestVDBFunctions::testValidContext()
 
     /// Test Volumes fails when trying to call Point Functions
     {
-        openvdb::ax::codegen::FunctionRegistry::UniquePtr
-            registry(new openvdb::ax::codegen::FunctionRegistry);
-        openvdb::ax::codegen::insertVDBPointFunctions(*registry, &ops);
+        laovdb::ax::codegen::FunctionRegistry::UniquePtr
+            registry(new laovdb::ax::codegen::FunctionRegistry);
+        laovdb::ax::codegen::insertVDBPointFunctions(*registry, &ops);
 
         for (auto& func : registry->map()) {
             // Don't check internal functions
             if (func.second.isInternal()) continue;
 
-            const openvdb::ax::codegen::FunctionGroup* const ptr = func.second.function();
+            const laovdb::ax::codegen::FunctionGroup* const ptr = func.second.function();
             CPPUNIT_ASSERT(ptr);
             const auto& signatures = ptr->list();
             CPPUNIT_ASSERT(!signatures.empty());
 
             // Don't check C bindings
             const auto F = signatures.front();
-            if (dynamic_cast<const openvdb::ax::codegen::CFunctionBase*>(F.get())) continue;
+            if (dynamic_cast<const laovdb::ax::codegen::CFunctionBase*>(F.get())) continue;
 
             const std::string code = generate(F, func.first);
 
             CPPUNIT_ASSERT_THROW_MESSAGE(ERROR_MSG("Expected Compiler Error", code),
-                compiler.compile<openvdb::ax::VolumeExecutable>(code),
-                openvdb::AXCompilerError);
+                compiler.compile<laovdb::ax::VolumeExecutable>(code),
+                laovdb::AXCompilerError);
         }
     }
 
     /// Test Points fails when trying to call Volume Functions
     {
-        openvdb::ax::codegen::FunctionRegistry::UniquePtr
-            registry(new openvdb::ax::codegen::FunctionRegistry);
-        openvdb::ax::codegen::insertVDBVolumeFunctions(*registry, &ops);
+        laovdb::ax::codegen::FunctionRegistry::UniquePtr
+            registry(new laovdb::ax::codegen::FunctionRegistry);
+        laovdb::ax::codegen::insertVDBVolumeFunctions(*registry, &ops);
 
         for (auto& func : registry->map()) {
             // Don't check internal functions
             if (func.second.isInternal()) continue;
 
-            const openvdb::ax::codegen::FunctionGroup* const ptr = func.second.function();
+            const laovdb::ax::codegen::FunctionGroup* const ptr = func.second.function();
             CPPUNIT_ASSERT(ptr);
             const auto& signatures = ptr->list();
             CPPUNIT_ASSERT(!signatures.empty());
 
             // Don't check C bindings
             const auto F = signatures.front();
-            if (dynamic_cast<const openvdb::ax::codegen::CFunctionBase*>(F.get())) continue;
+            if (dynamic_cast<const laovdb::ax::codegen::CFunctionBase*>(F.get())) continue;
 
             const std::string code = generate(F, func.first);
 
             CPPUNIT_ASSERT_THROW_MESSAGE(ERROR_MSG("Expected Compiler Error", code),
-                compiler.compile<openvdb::ax::PointExecutable>(code),
-                openvdb::AXCompilerError);
+                compiler.compile<laovdb::ax::PointExecutable>(code),
+                laovdb::AXCompilerError);
         }
     }
 }

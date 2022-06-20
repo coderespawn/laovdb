@@ -18,7 +18,7 @@
 
 class TestLeaf;
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tree {
@@ -465,6 +465,6 @@ template<Index Log2Dim> const bool LeafBuffer<bool, Log2Dim>::sOff = false;
 
 } // namespace tree
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TREE_LEAFBUFFER_HAS_BEEN_INCLUDED

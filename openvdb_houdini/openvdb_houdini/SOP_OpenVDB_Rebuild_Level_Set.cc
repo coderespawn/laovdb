@@ -290,9 +290,9 @@ SOP_OpenVDB_Rebuild_Level_Set::Cache::cookVDBSop(
 
             if (vdbPrim->getStorageType() == UT_VDB_FLOAT) {
 
-                openvdb::FloatGrid& grid = UTvdbGridCast<openvdb::FloatGrid>(vdbPrim->getGrid());
+                laovdb::FloatGrid& grid = UTvdbGridCast<laovdb::FloatGrid>(vdbPrim->getGrid());
 
-                openvdb::FloatGrid::Ptr newGrid = openvdb::tools::levelSetRebuild(
+                laovdb::FloatGrid::Ptr newGrid = laovdb::tools::levelSetRebuild(
                     grid, iso, exWidth, inWidth, /*xform=*/nullptr, &boss.interrupter());
                 newGrid->insertMeta(*grid.copyMeta());
 
@@ -303,9 +303,9 @@ SOP_OpenVDB_Rebuild_Level_Set::Cache::cookVDBSop(
 
             } else if (vdbPrim->getStorageType() == UT_VDB_DOUBLE) {
 
-                openvdb::DoubleGrid& grid = UTvdbGridCast<openvdb::DoubleGrid>(vdbPrim->getGrid());
+                laovdb::DoubleGrid& grid = UTvdbGridCast<laovdb::DoubleGrid>(vdbPrim->getGrid());
 
-                openvdb::DoubleGrid::Ptr newGrid = openvdb::tools::levelSetRebuild(
+                laovdb::DoubleGrid::Ptr newGrid = laovdb::tools::levelSetRebuild(
                     grid, iso, exWidth, inWidth, /*xform=*/nullptr, &boss.interrupter());
                 newGrid->insertMeta(*grid.copyMeta());
 

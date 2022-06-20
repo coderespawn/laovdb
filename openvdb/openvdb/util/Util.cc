@@ -4,7 +4,7 @@
 #include "Util.h"
 #include <limits>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace util {
@@ -43,4 +43,4 @@ const Coord COORD_OFFSETS[26] =
 
 } // namespace util
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

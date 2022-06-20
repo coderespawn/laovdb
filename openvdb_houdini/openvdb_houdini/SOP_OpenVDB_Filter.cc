@@ -112,7 +112,7 @@ struct FilterParms {
     float maxMask = 0.0f;
     bool invertMask = false;
     bool useWorldRadius = false;
-    const openvdb::FloatGrid* mask = nullptr;
+    const laovdb::FloatGrid* mask = nullptr;
 #ifndef SESI_OPENVDB
     float offset = 0.0f;
     bool verbose = false;
@@ -397,9 +397,9 @@ SOP_OpenVDB_Filter::updateParmsFlags()
 struct FilterOp
 {
     template <typename GridT>
-    using FilterT = openvdb::tools::Filter<GridT, openvdb::FloatGrid>;
+    using FilterT = laovdb::tools::Filter<GridT, laovdb::FloatGrid>;
 
-    FilterOp(const FilterParms& parms, openvdb::util::NullInterrupter& interrupt)
+    FilterOp(const FilterParms& parms, laovdb::util::NullInterrupter& interrupt)
         : mParms(parms), mInterrupt(interrupt) {}
 
     template<typename GridT>
@@ -465,7 +465,7 @@ struct FilterOp
     }
 
     const FilterParms& mParms;
-    openvdb::util::NullInterrupter& mInterrupt;
+    laovdb::util::NullInterrupter& mInterrupt;
 };
 
 
@@ -486,7 +486,7 @@ SOP_OpenVDB_Filter::Cache::evalFilterParms(const fpreal now)
     parms.offset = static_cast<float>(evalFloat("offset", 0, now));
     parms.verbose = bool(evalInt("verbose", 0, now));
 #endif
-    openvdb::FloatGrid::ConstPtr maskGrid;
+    laovdb::FloatGrid::ConstPtr maskGrid;
     if (this->nInputs() == 2 && evalInt("mask", 0, now)) {
         const GU_Detail* maskGeo = inputGeo(1);
 
@@ -501,7 +501,7 @@ SOP_OpenVDB_Filter::Cache::evalFilterParms(const fpreal now)
                 hvdb::VdbPrimCIterator maskIt(maskGeo, maskGroup);
                 if (maskIt) {
                     if (maskIt->getStorageType() == UT_VDB_FLOAT) {
-                        maskGrid = openvdb::gridConstPtrCast<openvdb::FloatGrid>(
+                        maskGrid = laovdb::gridConstPtrCast<laovdb::FloatGrid>(
                             maskIt->getGridPtr());
                     } else {
                         addWarning(SOP_MESSAGE, "The mask grid has to be a FloatGrid.");

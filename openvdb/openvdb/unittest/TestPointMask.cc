@@ -12,14 +12,14 @@
 #include <string>
 #include <vector>
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestPointMask: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointMask
 
 
@@ -35,8 +35,8 @@ TEST_F(TestPointMask, testMask)
     const PointAttributeVector<Vec3s> pointList(positions);
 
     const float voxelSize = 0.1f;
-    openvdb::math::Transform::Ptr transform(
-        openvdb::math::Transform::createLinearTransform(voxelSize));
+    laovdb::math::Transform::Ptr transform(
+        laovdb::math::Transform::createLinearTransform(voxelSize));
 
     tools::PointIndexGrid::Ptr pointIndexGrid =
         tools::createPointIndexGrid<tools::PointIndexGrid>(pointList, *transform);
@@ -99,8 +99,8 @@ TEST_F(TestPointMask, testMask)
 
     { // use a much larger voxel size that splits the points into two regions
         const float newVoxelSize(4);
-        openvdb::math::Transform::Ptr newTransform(
-            openvdb::math::Transform::createLinearTransform(newVoxelSize));
+        laovdb::math::Transform::Ptr newTransform(
+            laovdb::math::Transform::createLinearTransform(newVoxelSize));
 
         auto mask = convertPointsToMask(*points, *newTransform);
 
@@ -150,7 +150,7 @@ struct YOffsetDeformer
     Vec3d mOffset;
 };
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -169,7 +169,7 @@ struct DeformerTraits<YOffsetDeformer<false>> {
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 
 TEST_F(TestPointMask, testMaskDeformer)
@@ -189,8 +189,8 @@ TEST_F(TestPointMask, testMaskDeformer)
     const PointAttributeVector<Vec3s> pointList(positions);
 
     const float voxelSize = 0.1f;
-    openvdb::math::Transform::Ptr transform(
-        openvdb::math::Transform::createLinearTransform(voxelSize));
+    laovdb::math::Transform::Ptr transform(
+        laovdb::math::Transform::createLinearTransform(voxelSize));
 
     tools::PointIndexGrid::Ptr pointIndexGrid =
         tools::createPointIndexGrid<tools::PointIndexGrid>(pointList, *transform);
@@ -293,8 +293,8 @@ TEST_F(TestPointMask, testMaskDeformer)
         // use a different transform to verify deformers and transforms can be used together
 
         const float newVoxelSize = 0.02f;
-        openvdb::math::Transform::Ptr newTransform(
-            openvdb::math::Transform::createLinearTransform(newVoxelSize));
+        laovdb::math::Transform::Ptr newTransform(
+            laovdb::math::Transform::createLinearTransform(newVoxelSize));
 
         auto mask2 = point_mask_internal::convertPointsToScalar<MaskGrid>(
             *points, *newTransform, nullFilter, deformer);

@@ -49,17 +49,17 @@ struct AlwaysFalse {
 
 struct FiniteValue {
     template<typename Iterator>
-    bool operator()(const Iterator& it) const { return openvdb::math::isFinite(*it); }
+    bool operator()(const Iterator& it) const { return laovdb::math::isFinite(*it); }
 };
 
 template<typename ValueType>
 struct ApproxEqual {
     ApproxEqual(const ValueType& val,
-        const ValueType& tol = openvdb::math::Tolerance<ValueType>::value())
+        const ValueType& tol = laovdb::math::Tolerance<ValueType>::value())
         : mValue(val), mTol(tol) {}
     template<typename Iterator>
     bool operator()(const Iterator& it) const {
-        return openvdb::math::isApproxEqual(mValue, *it, mTol);
+        return laovdb::math::isApproxEqual(mValue, *it, mTol);
     }
     const ValueType mValue, mTol;
 };
@@ -67,11 +67,11 @@ struct ApproxEqual {
 template<typename ValueType>
 struct AbsApproxEqual {
     AbsApproxEqual(const ValueType& val,
-        const ValueType& tol = openvdb::math::Tolerance<ValueType>::value())
-        : mValue(openvdb::math::Abs(val)), mTol(tol) {}
+        const ValueType& tol = laovdb::math::Tolerance<ValueType>::value())
+        : mValue(laovdb::math::Abs(val)), mTol(tol) {}
     template<typename Iterator>
     bool operator()(const Iterator& it) const {
-        return openvdb::math::isApproxEqual(mValue, openvdb::math::Abs(*it), mTol);
+        return laovdb::math::isApproxEqual(mValue, laovdb::math::Abs(*it), mTol);
     }
     const ValueType mValue, mTol;
 };
@@ -79,10 +79,10 @@ struct AbsApproxEqual {
 
 template<typename ValueType>
 struct AbsLessThan {
-    AbsLessThan(ValueType val) : mValue(openvdb::math::Abs(val)) {}
+    AbsLessThan(ValueType val) : mValue(laovdb::math::Abs(val)) {}
     template<typename Iterator>
     bool operator()(const Iterator& it) const {
-        return !(ValueType(openvdb::math::Abs(*it)) < mValue);
+        return !(ValueType(laovdb::math::Abs(*it)) < mValue);
     }
     const ValueType mValue;
 };
@@ -91,7 +91,7 @@ template<typename T>
 inline float toFloat(const T s) { return float(s); }
 
 template<typename T>
-inline float toFloat(const openvdb::math::Vec3<T> v) { return float(v[0]); }
+inline float toFloat(const laovdb::math::Vec3<T> v) { return float(v[0]); }
 
 struct InRange {
     InRange(float minValue, float maxValue) : mMin(minValue), mMax(maxValue) {}
@@ -102,7 +102,7 @@ struct InRange {
     bool test(const T& s) const { return !(s < T(mMin) || T(mMax) < s); }
 
     template<typename T>
-    bool test(const openvdb::math::Vec3<T>& v) const { return test(v.length()); }
+    bool test(const laovdb::math::Vec3<T>& v) const { return test(v.length()); }
 
     const float mMin, mMax;
 };
@@ -120,7 +120,7 @@ struct GradientNorm {
     template<typename Iterator>
     bool operator()(const Iterator& it) {
 
-        const openvdb::Coord ijk = it.getCoord();
+        const laovdb::Coord ijk = it.getCoord();
 
         // ignore voxels adjacent to the active narrow band boundary
         if (!mAcc.isValueOn(ijk.offsetBy(-1, 0, 0))) return true;
@@ -130,14 +130,14 @@ struct GradientNorm {
         if (!mAcc.isValueOn(ijk.offsetBy( 0, 0,-1))) return true;
         if (!mAcc.isValueOn(ijk.offsetBy( 0, 0, 1))) return true;
 
-        return openvdb::math::isApproxEqual(ValueType(1.0), gradientNorm(ijk, mScale), mTol);
+        return laovdb::math::isApproxEqual(ValueType(1.0), gradientNorm(ijk, mScale), mTol);
     }
 
     template<typename T>
     inline T
-    gradientNorm(const openvdb::Coord& ijk, const T scale) {
+    gradientNorm(const laovdb::Coord& ijk, const T scale) {
         return scale * T(std::sqrt(double(
-            openvdb::math::ISGradientNormSqrd<openvdb::math::FIRST_BIAS>::result(mAcc, ijk))));
+            laovdb::math::ISGradientNormSqrd<laovdb::math::FIRST_BIAS>::result(mAcc, ijk))));
     }
 
     /// @{
@@ -145,17 +145,17 @@ struct GradientNorm {
     // but this class needs to compile for all grid types.
 
     template<typename T>
-    inline openvdb::math::Vec3<T>
-    gradientNorm(const openvdb::Coord&, const openvdb::math::Vec3<T>) {
-        return openvdb::math::Vec3<T>(0);
+    inline laovdb::math::Vec3<T>
+    gradientNorm(const laovdb::Coord&, const laovdb::math::Vec3<T>) {
+        return laovdb::math::Vec3<T>(0);
     }
 
-    inline bool gradientNorm(const openvdb::Coord&, bool) { return false; }
+    inline bool gradientNorm(const laovdb::Coord&, bool) { return false; }
     /// @}
 
 private:
     GradientNorm& operator=(const GradientNorm&); // disable assignment
-    openvdb::tree::ValueAccessor<const TreeType> mAcc;
+    laovdb::tree::ValueAccessor<const TreeType> mAcc;
     const ValueType mScale, mTol;
 };
 
@@ -175,7 +175,7 @@ struct SameSign {
 
 private:
     SameSign& operator=(const SameSign&); // disable assignment
-    openvdb::tree::ValueAccessor<const TreeType> mAcc;
+    laovdb::tree::ValueAccessor<const TreeType> mAcc;
 };
 
 
@@ -297,7 +297,7 @@ private:
 
         void operator()(const tbb::blocked_range<size_t>& range) {
 
-            openvdb::tree::ValueAccessor<BoolTreeType> mask(*mMask);
+            laovdb::tree::ValueAccessor<BoolTreeType> mask(*mMask);
 
             for (size_t n = range.begin(), N = range.end(); n < N; ++n) {
 
@@ -354,7 +354,7 @@ private:
 
         void operator()(const tbb::blocked_range<size_t>& range) {
 
-            openvdb::Coord ijk;
+            laovdb::Coord ijk;
             const int dim = int(InternalNodeType::ChildNodeType::DIM) - 1;
 
             for (size_t n = range.begin(), N = range.end(); n < N; ++n) {
@@ -367,7 +367,7 @@ private:
                     {
                         if (!node.isChildMaskOn(it.pos()) && !mTest(it)) {
                             ijk = it.getCoord();
-                            mMask->fill(openvdb::CoordBBox(ijk, ijk.offsetBy(dim)), true);
+                            mMask->fill(laovdb::CoordBBox(ijk, ijk.offsetBy(dim)), true);
                         }
                     }
                 } else if (mState == INACTIVE_VALUES) {
@@ -376,7 +376,7 @@ private:
                     {
                         if (!node.isChildMaskOn(it.pos()) && !mTest(it)) {
                             ijk = it.getCoord();
-                            mMask->fill(openvdb::CoordBBox(ijk, ijk.offsetBy(dim)), true);
+                            mMask->fill(laovdb::CoordBBox(ijk, ijk.offsetBy(dim)), true);
                         }
                     }
                 } else {
@@ -385,7 +385,7 @@ private:
                     {
                         if (!node.isChildMaskOn(it.pos()) && !mTest(it)) {
                             ijk = it.getCoord();
-                            mMask->fill(openvdb::CoordBBox(ijk, ijk.offsetBy(dim)), true);
+                            mMask->fill(laovdb::CoordBBox(ijk, ijk.offsetBy(dim)), true);
                         }
                     }
                 }
@@ -418,7 +418,7 @@ template<typename BoolLeafNodeType>
 struct GetPoints
 {
     GetPoints(const BoolLeafNodeType ** maskNodes, UT_Vector3* points,
-        const size_t* offsetTable, const openvdb::math::Transform& xform)
+        const size_t* offsetTable, const laovdb::math::Transform& xform)
         : mMaskNodes(maskNodes)
         , mPoints(points)
         , mOffsetTable(offsetTable)
@@ -428,7 +428,7 @@ struct GetPoints
 
     void operator()(const tbb::blocked_range<size_t>& range) const {
 
-        openvdb::Vec3d xyz;
+        laovdb::Vec3d xyz;
 
         for (size_t n = range.begin(), N = range.end(); n < N; ++n) {
 
@@ -449,13 +449,13 @@ struct GetPoints
     BoolLeafNodeType const * const * const mMaskNodes;
     UT_Vector3                     * const mPoints;
     size_t                   const * const mOffsetTable;
-    openvdb::math::Transform               mXform;
+    laovdb::math::Transform               mXform;
 }; // struct GetPoints
 
 
 template<typename BoolTreeType>
 inline size_t
-getPoints(const openvdb::math::Transform& xform, const BoolTreeType& mask,
+getPoints(const laovdb::math::Transform& xform, const BoolTreeType& mask,
     UT_UniquePtr<UT_Vector3[]>& points)
 {
     using BoolLeafNodeType = typename BoolTreeType::LeafNodeType;
@@ -487,7 +487,7 @@ getPoints(const openvdb::math::Transform& xform, const BoolTreeType& mask,
             points.reset(new UT_Vector3[tileCount]);
         }
 
-        openvdb::Vec3d xyz;
+        laovdb::Vec3d xyz;
 
         typename BoolTreeType::ValueOnCIter it(mask);
         it.setMaxDepth(BoolTreeType::ValueOnCIter::LEAF_DEPTH - 1);
@@ -539,7 +539,7 @@ struct GetValues
 
     void operator()(const tbb::blocked_range<size_t>& range) const {
 
-        openvdb::tree::ValueAccessor<const TreeType> acc(*mTree);
+        laovdb::tree::ValueAccessor<const TreeType> acc(*mTree);
 
         for (size_t n = range.begin(), N = range.end(); n < N; ++n) {
 
@@ -601,7 +601,7 @@ getValues(const TreeType& tree,
         typename BoolTreeType::ValueOnCIter it(mask);
         it.setMaxDepth(BoolTreeType::ValueOnCIter::LEAF_DEPTH - 1);
 
-        openvdb::tree::ValueAccessor<const TreeType> acc(tree);
+        laovdb::tree::ValueAccessor<const TreeType> acc(tree);
 
         for (size_t idx = voxelCount; it; ++it, ++idx) {
             values[idx] = acc.getValue(it.getCoord());
@@ -628,14 +628,14 @@ transferValues(GU_Detail& detail, const std::string& name, GA_Offset startOffset
 template<typename ValueType>
 inline void
 transferValues(GU_Detail& detail, const std::string& name, GA_Offset startOffset,
-    const UT_UniquePtr<openvdb::math::Vec3<ValueType>[]>& values, size_t pointCount)
+    const UT_UniquePtr<laovdb::math::Vec3<ValueType>[]>& values, size_t pointCount)
 {
     GA_RWAttributeRef attr = detail.addFloatTuple(
         GA_ATTRIB_POINT, (name + "_vector").c_str(), 3, GA_Defaults(0));
     GA_RWHandleV3 handle = attr.getAttribute();
 
     UT_Vector3 vec(0.0f, 0.0f, 0.0f);
-    using VectorType = openvdb::math::Vec3<ValueType>;
+    using VectorType = laovdb::math::Vec3<ValueType>;
 
     for (size_t n = 0, N = pointCount; n < N; ++n) {
         const VectorType& val = values[n];
@@ -760,10 +760,10 @@ inline
 typename std::enable_if<std::is_floating_point<typename GridType::ValueType>::value, void>::type
 normalizeLevelSet(GridType& grid)
 {
-    openvdb::tools::LevelSetTracker<GridType> op(grid);
+    laovdb::tools::LevelSetTracker<GridType> op(grid);
     op.setNormCount(3);
-    op.setSpatialScheme(openvdb::math::FIRST_BIAS);
-    op.setTemporalScheme(openvdb::math::TVD_RK3);
+    op.setSpatialScheme(laovdb::math::FIRST_BIAS);
+    op.setTemporalScheme(laovdb::math::TVD_RK3);
     op.normalize();
 }
 
@@ -785,10 +785,10 @@ clampValueAndVectorMagnitude(T s, const T& minVal, const T& maxVal)
 }
 
 template<typename T>
-inline openvdb::math::Vec3<T>
-clampValueAndVectorMagnitude(openvdb::math::Vec3<T> v,
-    const openvdb::math::Vec3<T>& minVal,
-    const openvdb::math::Vec3<T>& maxVal)
+inline laovdb::math::Vec3<T>
+clampValueAndVectorMagnitude(laovdb::math::Vec3<T> v,
+    const laovdb::math::Vec3<T>& minVal,
+    const laovdb::math::Vec3<T>& maxVal)
 {
     const T scale = clampValueAndVectorMagnitude(v.length(), minVal[0], maxVal[0]);
     v.normalize();
@@ -818,7 +818,7 @@ struct FixVoxelValues
     void operator()(const tbb::blocked_range<size_t>& range) const {
 
         using ValueOnCIter = typename BoolLeafNodeType::ValueOnCIter;
-        openvdb::tree::ValueAccessor<TreeType> acc(*mTree);
+        laovdb::tree::ValueAccessor<TreeType> acc(*mTree);
 
         const ValueType minVal = mMaskData->minValue;
         const ValueType maxVal = mMaskData->maxValue;
@@ -886,8 +886,8 @@ fixValues(const GridType& grid, std::vector<MaskData<GridType> > fixMasks,
         typename BoolTreeType::ValueOnCIter it(mask);
         it.setMaxDepth(BoolTreeType::ValueOnCIter::LEAF_DEPTH - 1);
 
-        openvdb::tree::ValueAccessor<TreeType> acc(replacementGrid->tree());
-        openvdb::Coord ijk;
+        laovdb::tree::ValueAccessor<TreeType> acc(replacementGrid->tree());
+        laovdb::Coord ijk;
 
         if (fix.isRange) { // clamp
 
@@ -936,19 +936,19 @@ outputMaskAndPoints(const GridType& grid, const std::string& gridName,
     bool outputMask,
     bool outputPoints,
     GU_Detail& detail,
-    openvdb::util::NullInterrupter& interrupter,
+    laovdb::util::NullInterrupter& interrupter,
     const GridType* replacementGrid = nullptr)
 {
     using TreeType = typename GridType::TreeType;
     using ValueType = typename GridType::ValueType;
     using BoolTreeType = typename TreeType::template ValueConverter<bool>::Type;
-    using BoolGridType = typename openvdb::Grid<BoolTreeType>;
+    using BoolGridType = typename laovdb::Grid<BoolTreeType>;
 
     if (outputMask || outputPoints) {
 
         const TreeType& tree = grid.tree();
 
-        typename BoolGridType::Ptr maskGrid = openvdb::createGrid<BoolGridType>(false);
+        typename BoolGridType::Ptr maskGrid = laovdb::createGrid<BoolGridType>(false);
         BoolTreeType& mask = maskGrid->tree();
 
         for (size_t n = 0, N = masks.size(); n < N; ++n) {
@@ -1003,7 +1003,7 @@ outputMaskAndPoints(const GridType& grid, const std::string& gridName,
 struct TestCollection
 {
     TestCollection(const TestData& test, GU_Detail& detail,
-        openvdb::util::NullInterrupter& interrupter, UT_ErrorManager* errorManager = nullptr)
+        laovdb::util::NullInterrupter& interrupter, UT_ErrorManager* errorManager = nullptr)
         : mTest(test)
         , mDetail(&detail)
         , mInterrupter(&interrupter)
@@ -1042,7 +1042,7 @@ struct TestCollection
 
     bool hasReplacementGrid() const { return mReplacementGrid != nullptr; }
 
-    openvdb::GridBase::Ptr replacementGrid() { return mReplacementGrid; }
+    laovdb::GridBase::Ptr replacementGrid() { return mReplacementGrid; }
 
 
     template<typename GridType>
@@ -1094,7 +1094,7 @@ struct TestCollection
         if (mInterrupter->wasInterrupted()) return;
 
         if (mTest.testUniformBackground
-            && (!mTest.respectGridClass || grid.getGridClass() != openvdb::GRID_LEVEL_SET))
+            && (!mTest.respectGridClass || grid.getGridClass() != laovdb::GRID_LEVEL_SET))
         {
             ApproxEqual<ValueType> test(tree.background());
             if (!visitor.run(VisitorType::TILES_AND_VOXELS, VisitorType::INACTIVE_VALUES, test)) {
@@ -1140,7 +1140,7 @@ struct TestCollection
 
 
         // Level Set tests
-        if (!mTest.respectGridClass || grid.getGridClass() == openvdb::GRID_LEVEL_SET) {
+        if (!mTest.respectGridClass || grid.getGridClass() == laovdb::GRID_LEVEL_SET) {
 
             if (mTest.testUniformVoxelSize) {
                 if (!grid.hasUniformVoxels()) log.appendFailed("'Uniform Voxel Size'");
@@ -1165,7 +1165,7 @@ struct TestCollection
             if (mTest.testSymmetricNarrowBand) {
 
                 if (std::is_floating_point<ValueType>::value) {
-                    const ValueType background = openvdb::math::Abs(tree.background());
+                    const ValueType background = laovdb::math::Abs(tree.background());
                     AbsApproxEqual<ValueType> bgTest(background);
                     InRange valueTest(-toFloat(background), toFloat(background));
                     if (!visitor.run(VisitorType::TILES_AND_VOXELS,
@@ -1208,7 +1208,7 @@ struct TestCollection
             if (mTest.testClosedSurface) {
 
                 if (std::is_floating_point<ValueType>::value) {
-                    typename GridType::Ptr levelSet = openvdb::tools::levelSetRebuild(
+                    typename GridType::Ptr levelSet = laovdb::tools::levelSetRebuild(
                         grid, 0.0f, 2.0f, 2.0f, nullptr, mInterrupter);
 
                     SameSign<TreeType> test(levelSet->tree());
@@ -1253,7 +1253,7 @@ struct TestCollection
 
 
         // Fog Volume tests
-        if (!mTest.respectGridClass || grid.getGridClass() == openvdb::GRID_FOG_VOLUME) {
+        if (!mTest.respectGridClass || grid.getGridClass() == laovdb::GRID_FOG_VOLUME) {
 
             if (mTest.testBackgroundZero) {
 
@@ -1315,11 +1315,11 @@ struct TestCollection
 private:
     TestData                    mTest;
     GU_Detail           * const mDetail;
-    openvdb::util::NullInterrupter * const mInterrupter;
+    laovdb::util::NullInterrupter * const mInterrupter;
     UT_ErrorManager     * const mErrorManager;
     std::string                 mMessageStr, mPrimitiveName;
     int                         mPrimitiveIndex, mGridsFailed;
-    openvdb::GridBase::Ptr      mReplacementGrid;
+    laovdb::GridBase::Ptr      mReplacementGrid;
 }; // struct TestCollection
 
 

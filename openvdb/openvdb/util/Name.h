@@ -10,7 +10,7 @@
 #include <iostream>
 #include <vector>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -36,6 +36,6 @@ writeString(std::ostream& os, const Name& name)
 }
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_UTIL_NAME_HAS_BEEN_INCLUDED

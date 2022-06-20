@@ -29,7 +29,7 @@
 #include <llvm/Pass.h>
 #include <llvm/Support/MathExtras.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -879,5 +879,5 @@ bool PointComputeGenerator::visit(const ast::Attribute* node)
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

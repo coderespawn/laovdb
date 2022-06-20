@@ -49,7 +49,7 @@
 
 using namespace std;
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -73,7 +73,7 @@ half::overflow ()
 
     for (int i = 0; i < 10; i++)
         f *= f;                         // this will overflow before
-                                        // the for­loop terminates
+                                        // the forï¿½loop terminates
     return f;
 }
 
@@ -16774,4 +16774,4 @@ const unsigned short    half::_eLut[1 << 9] =
 } // namespace internal
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

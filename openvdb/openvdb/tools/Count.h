@@ -16,7 +16,7 @@
 #include <openvdb/tree/LeafManager.h>
 #include <openvdb/tree/NodeManager.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -118,7 +118,7 @@ struct ActiveVoxelCountOp
         count += other.count;
     }
 
-    openvdb::Index64 count{0};
+    laovdb::Index64 count{0};
 }; // struct ActiveVoxelCountOp
 
 /// @brief A DynamicNodeManager operator to count active voxels in a tree
@@ -199,7 +199,7 @@ struct ActiveVoxelCountBBoxOp
         count += other.count;
     }
 
-    openvdb::Index64 count{0};
+    laovdb::Index64 count{0};
 private:
     CoordBBox mBBox;
 }; // struct ActiveVoxelCountBBoxOp
@@ -250,7 +250,7 @@ struct InactiveVoxelCountOp
         count += other.count;
     }
 
-    openvdb::Index64 count{0};
+    laovdb::Index64 count{0};
 }; // struct InactiveVoxelCountOp
 
 /// @brief A DynamicNodeManager operator to count active tiles in a tree
@@ -289,7 +289,7 @@ struct ActiveTileCountOp
         count += other.count;
     }
 
-    openvdb::Index64 count{0};
+    laovdb::Index64 count{0};
 }; // struct ActiveTileCountOp
 
 /// @brief A DynamicNodeManager operator to sum the number of bytes of memory used
@@ -333,7 +333,7 @@ struct MemUsageOp
         mCount += other.mCount;
     }
 
-    openvdb::Index64 mCount{0};
+    laovdb::Index64 mCount{0};
     const bool mInCoreOnly;
 }; // struct MemUsageOp
 
@@ -527,6 +527,6 @@ math::MinMax<typename TreeT::ValueType> minMax(const TreeT& tree, bool threaded)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_COUNT_HAS_BEEN_INCLUDED

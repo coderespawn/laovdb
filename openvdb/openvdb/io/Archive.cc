@@ -56,7 +56,7 @@ namespace boost { namespace interprocess { namespace detail {} namespace ipcdeta
 #include <system_error> // for std::error_code()
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace io {
@@ -1469,4 +1469,4 @@ Archive::writeGridInstance(GridDescriptor& gd, GridBase::ConstPtr grid,
 
 } // namespace io
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

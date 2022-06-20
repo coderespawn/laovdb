@@ -19,7 +19,7 @@
 
 #include <stdexcept>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -335,7 +335,7 @@ inline std::string keywordNameFromToken(const KeywordToken keyw)
 } // namespace ast
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_AST_TOKENS_HAS_BEEN_INCLUDED
 

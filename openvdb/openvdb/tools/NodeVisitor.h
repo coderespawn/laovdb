@@ -18,7 +18,7 @@
 #include <openvdb/version.h>
 #include <openvdb/Types.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -129,7 +129,7 @@ namespace tools {
 ///     // No child, this is a constant node!
 ///     if (iter.isValueOn())
 ///     {
-///         openvdb::CoordBBox  b;
+///         laovdb::CoordBBox  b;
 ///         b.min() = iter.getCoord();
 ///         b.max() = b.min().offsetBy(IterT::ChildNodeType::DIM);
 ///
@@ -158,7 +158,7 @@ namespace tools {
 ///     // iterate over active tiles
 ///     for (auto iter = node.beginValueOn(); iter; ++iter)
 ///     {
-///         openvdb::CoordBBox  b;
+///         laovdb::CoordBBox  b;
 ///         b.min() = iter.getCoord();
 ///         b.max() = b.min().offsetBy(NodeT::ChildNodeType::DIM);
 ///
@@ -237,6 +237,6 @@ size_t visitNodesDepthFirst(TreeT& tree, OpT& op, size_t idx)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_NODE_VISITOR_HAS_BEEN_INCLUDED

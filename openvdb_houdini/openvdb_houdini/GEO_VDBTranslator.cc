@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <iostream>
 
-using namespace openvdb_houdini;
+using namespace laovdb_houdini;
 using std::cerr;
 
 namespace {
@@ -104,7 +104,7 @@ GEO_VDBTranslator::fileStat(const char *filename, GA_Stat &stat, uint /*level*/)
     stat.clear();
 
     try {
-        openvdb::io::File file(filename);
+        laovdb::io::File file(filename);
 
         file.open(/*delayLoad*/false);
 
@@ -113,7 +113,7 @@ GEO_VDBTranslator::fileStat(const char *filename, GA_Stat &stat, uint /*level*/)
         bbox.makeInvalid();
 
         // Loop over all grids in the file.
-        for (openvdb::io::File::NameIterator nameIter = file.beginName();
+        for (laovdb::io::File::NameIterator nameIter = file.beginName();
             nameIter != file.endName(); ++nameIter)
         {
             const std::string& gridName = nameIter.gridName();
@@ -123,13 +123,13 @@ GEO_VDBTranslator::fileStat(const char *filename, GA_Stat &stat, uint /*level*/)
 
             auto stats = grid->getStatsMetadata();
 
-            openvdb::Vec3IMetadata::Ptr         meta_minbbox, meta_maxbbox;
+            laovdb::Vec3IMetadata::Ptr         meta_minbbox, meta_maxbbox;
             UT_BoundingBox                      voxelbox;
 
             voxelbox.initBounds();
 
-            meta_minbbox = stats->getMetadata<openvdb::Vec3IMetadata>("file_bbox_min");
-            meta_maxbbox = stats->getMetadata<openvdb::Vec3IMetadata>("file_bbox_max");
+            meta_minbbox = stats->getMetadata<laovdb::Vec3IMetadata>("file_bbox_min");
+            meta_maxbbox = stats->getMetadata<laovdb::Vec3IMetadata>("file_bbox_max");
             // empty vdbs have invalid bounding boxes, and often very
             // huge ones, so we intentionally skip them here.
             if (meta_minbbox && meta_maxbbox &&
@@ -202,10 +202,10 @@ GEO_VDBTranslator::fileLoad(GEO_Detail *geogdp, UT_IStream &is, bool /*ate_magic
 
     try {
         // Create and open a VDB file, but don't read any grids yet.
-        openvdb::io::Stream file(*stdstream, /*delayLoad*/false);
+        laovdb::io::Stream file(*stdstream, /*delayLoad*/false);
 
         // Read the file-level metadata into global attributes.
-        openvdb::MetaMap::Ptr fileMetadata = file.getMetadata();
+        laovdb::MetaMap::Ptr fileMetadata = file.getMetadata();
         if (fileMetadata) {
             GU_PrimVDB::createAttrsFromMetadata(
                 GA_ATTRIB_GLOBAL, GA_Offset(0), *fileMetadata, *geogdp);
@@ -242,13 +242,13 @@ fileSaveVDB(const GEO_Detail *geogdp, OutputT os)
     try {
         // Populate an output GridMap with VDB grid primitives found in the
         // geometry.
-        openvdb::GridPtrVec outGrids;
+        laovdb::GridPtrVec outGrids;
         for (VdbPrimCIterator it(gdp); it; ++it) {
             const GU_PrimVDB* vdb = *it;
 
             // Create a new grid that shares the primitive's tree and transform
             // and then transfer primitive attributes to the new grid as metadata.
-            GridPtr grid = openvdb::ConstPtrCast<Grid>(vdb->getGrid().copyGrid());
+            GridPtr grid = laovdb::ConstPtrCast<Grid>(vdb->getGrid().copyGrid());
             GU_PrimVDB::createMetadataFromGridAttrs(*grid, *vdb, *gdp);
             grid->removeMeta("is_vdb");
 
@@ -259,13 +259,13 @@ fileSaveVDB(const GEO_Detail *geogdp, OutputT os)
         }
 
         // Add file-level metadata.
-        openvdb::MetaMap fileMetadata;
+        laovdb::MetaMap fileMetadata;
 
         std::string versionStr = "Houdini ";
         versionStr += UTgetFullVersion();
         versionStr += "/GEO_VDBTranslator";
 
-        fileMetadata.insertMeta("creator", openvdb::StringMetadata(versionStr));
+        fileMetadata.insertMeta("creator", laovdb::StringMetadata(versionStr));
 
 #if defined(SESI_OPENVDB)
         GU_PrimVDB::createMetadataFromAttrs(
@@ -276,12 +276,12 @@ fileSaveVDB(const GEO_Detail *geogdp, OutputT os)
 
         // Always enable active mask compression, since it is fast
         // and compresses level sets and fog volumes well.
-        uint32_t compression = openvdb::io::COMPRESS_ACTIVE_MASK;
+        uint32_t compression = laovdb::io::COMPRESS_ACTIVE_MASK;
 
         // Enable Blosc unless backwards compatibility is requested.
-        if (openvdb::io::Archive::hasBloscCompression()
+        if (laovdb::io::Archive::hasBloscCompression()
             && !UT_EnvControl::getInt(ENV_HOUDINI13_VOLUME_COMPATIBILITY)) {
-            compression |= openvdb::io::COMPRESS_BLOSC;
+            compression |= laovdb::io::COMPRESS_BLOSC;
         }
         file.setCompression(compression);
 
@@ -300,7 +300,7 @@ GEO_VDBTranslator::fileSave(const GEO_Detail *geogdp, std::ostream &os)
 {
     // Saving via io::Stream will NOT save grid offsets, disabling partial
     // reading.
-    return fileSaveVDB<openvdb::io::Stream, std::ostream &>(geogdp, os);
+    return fileSaveVDB<laovdb::io::Stream, std::ostream &>(geogdp, os);
 }
 
 GA_Detail::IOStatus
@@ -308,7 +308,7 @@ GEO_VDBTranslator::fileSaveToFile(const GEO_Detail *geogdp, const char *fname)
 {
     // Saving via io::File will save grid offsets that allow for partial
     // reading.
-    return fileSaveVDB<openvdb::io::File, const char *>(geogdp, fname);
+    return fileSaveVDB<laovdb::io::File, const char *>(geogdp, fname);
 }
 
 } // unnamed namespace
@@ -328,7 +328,7 @@ newGeometryIO(void *data)
 {
     // Initialize the version of the OpenVDB library that this library is built against
     // (i.e., not the HDK native OpenVDB library).
-    openvdb::initialize();
+    laovdb::initialize();
     // Register a .vdb file translator.
     new_VDBGeometryIO(data);
 }

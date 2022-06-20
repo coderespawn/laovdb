@@ -350,22 +350,22 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestComputeGeneratorFailures);
 void
 TestComputeGeneratorFailures::testFailures()
 {
-    openvdb::ax::FunctionOptions opts;
-    openvdb::ax::codegen::FunctionRegistry::UniquePtr reg =
-        openvdb::ax::codegen::createDefaultRegistry(&opts);
+    laovdb::ax::FunctionOptions opts;
+    laovdb::ax::codegen::FunctionRegistry::UniquePtr reg =
+        laovdb::ax::codegen::createDefaultRegistry(&opts);
 
     // create logger that suppresses all messages, but still logs number of errors/warnings
-    openvdb::ax::Logger logger([](const std::string&) {});
+    laovdb::ax::Logger logger([](const std::string&) {});
     logger.setMaxErrors(1);
 
     for (const auto& code : tests) {
-        const openvdb::ax::ast::Tree::ConstPtr ast =
-            openvdb::ax::ast::parse(code.c_str(), logger);
+        const laovdb::ax::ast::Tree::ConstPtr ast =
+            laovdb::ax::ast::parse(code.c_str(), logger);
         CPPUNIT_ASSERT_MESSAGE(ERROR_MSG("Unable to parse", code), ast.get());
         CPPUNIT_ASSERT(!logger.hasError());
 
         unittest_util::LLVMState state;
-        openvdb::ax::codegen::codegen_internal::ComputeGenerator gen(state.module(), opts, *reg, logger);
+        laovdb::ax::codegen::codegen_internal::ComputeGenerator gen(state.module(), opts, *reg, logger);
         gen.generate(*ast);
 
         CPPUNIT_ASSERT_MESSAGE(ERROR_MSG("Expected Compiler Error", code), logger.hasError());

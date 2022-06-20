@@ -7,13 +7,13 @@
 
 #include <gtest/gtest.h>
 
-using namespace openvdb;
+using namespace laovdb;
 
 class TestPointRasterizeSDF: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointRasterizeSDF
 
 

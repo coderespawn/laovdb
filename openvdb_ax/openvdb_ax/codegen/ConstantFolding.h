@@ -20,7 +20,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -166,7 +166,7 @@ private:
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_CODEGEN_CONSTANT_FOLDING_HAS_BEEN_INCLUDED
 

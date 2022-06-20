@@ -32,7 +32,7 @@
 #include <memory>
 #include <string>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -52,7 +52,7 @@ class BasePointScatter;
 /// class PointAccessor {
 ///   ...
 /// public:
-///   void add(const openvdb::Vec3R &pos);// appends point with world positions pos
+///   void add(const laovdb::Vec3R &pos);// appends point with world positions pos
 /// };
 /// @endcode
 ///
@@ -416,6 +416,6 @@ protected:
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_POINT_SCATTER_HAS_BEEN_INCLUDED

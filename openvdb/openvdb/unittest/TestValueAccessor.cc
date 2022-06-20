@@ -14,30 +14,30 @@
 
 
 using ValueType = float;
-using Tree2Type = openvdb::tree::Tree<
-    openvdb::tree::RootNode<
-    openvdb::tree::LeafNode<ValueType, 3> > >;
-using Tree3Type = openvdb::tree::Tree<
-    openvdb::tree::RootNode<
-    openvdb::tree::InternalNode<
-    openvdb::tree::LeafNode<ValueType, 3>, 4> > >;
-using Tree4Type = openvdb::tree::Tree4<ValueType, 5, 4, 3>::Type;
-using Tree5Type = openvdb::tree::Tree<
-    openvdb::tree::RootNode<
-    openvdb::tree::InternalNode<
-    openvdb::tree::InternalNode<
-    openvdb::tree::InternalNode<
-    openvdb::tree::LeafNode<ValueType, 3>, 4>, 5>, 5> > >;
+using Tree2Type = laovdb::tree::Tree<
+    laovdb::tree::RootNode<
+    laovdb::tree::LeafNode<ValueType, 3> > >;
+using Tree3Type = laovdb::tree::Tree<
+    laovdb::tree::RootNode<
+    laovdb::tree::InternalNode<
+    laovdb::tree::LeafNode<ValueType, 3>, 4> > >;
+using Tree4Type = laovdb::tree::Tree4<ValueType, 5, 4, 3>::Type;
+using Tree5Type = laovdb::tree::Tree<
+    laovdb::tree::RootNode<
+    laovdb::tree::InternalNode<
+    laovdb::tree::InternalNode<
+    laovdb::tree::InternalNode<
+    laovdb::tree::LeafNode<ValueType, 3>, 4>, 5>, 5> > >;
 using TreeType = Tree4Type;
 
 
-using namespace openvdb::tree;
+using namespace laovdb::tree;
 
 class TestValueAccessor: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 
     // Test odd combinations of trees and ValueAccessors
     // cache node level 0 and 1
@@ -137,7 +137,7 @@ TestValueAccessor::accessorTest()
     // subtract one because getValueDepth() returns 0 for values at the root
 
     const ValueType background = 5.0f, value = -9.345f;
-    const openvdb::Coord c0(5, 10, 20), c1(500000, 200000, 300000);
+    const laovdb::Coord c0(5, 10, 20), c1(500000, 200000, 300000);
 
     {
         TreeType tree(background);
@@ -183,13 +183,13 @@ TestValueAccessor::accessorTest()
         ASSERT_DOUBLES_EXACTLY_EQUAL(background, v);
         EXPECT_EQ(leafDepth, acc.getValueDepth(c0)); // leaf-level voxel value
         EXPECT_EQ(-1, acc.getValueDepth(c1)); // background value
-        EXPECT_EQ(leafDepth, acc.getValueDepth(openvdb::Coord(7, 10, 20)));
+        EXPECT_EQ(leafDepth, acc.getValueDepth(laovdb::Coord(7, 10, 20)));
         const int depth = leafDepth == 1 ? -1 : leafDepth - 1;
-        EXPECT_EQ(depth, acc.getValueDepth(openvdb::Coord(8, 10, 20)));
+        EXPECT_EQ(depth, acc.getValueDepth(laovdb::Coord(8, 10, 20)));
         EXPECT_TRUE( acc.isVoxel(c0)); // leaf-level voxel value
         EXPECT_TRUE(!acc.isVoxel(c1));
-        EXPECT_TRUE( acc.isVoxel(openvdb::Coord(7, 10, 20)));
-        EXPECT_TRUE(!acc.isVoxel(openvdb::Coord(8, 10, 20)));
+        EXPECT_TRUE( acc.isVoxel(laovdb::Coord(7, 10, 20)));
+        EXPECT_TRUE(!acc.isVoxel(laovdb::Coord(8, 10, 20)));
 
         ASSERT_DOUBLES_EXACTLY_EQUAL(background, acc.getValue(c1));
         EXPECT_TRUE(!acc.isCached(c1)); // uncached background value
@@ -279,7 +279,7 @@ TestValueAccessor::constAccessorTest()
         // subtract one because getValueDepth() returns 0 for values at the root
 
     const ValueType background = 5.0f, value = -9.345f;
-    const openvdb::Coord c0(5, 10, 20), c1(500000, 200000, 300000);
+    const laovdb::Coord c0(5, 10, 20), c1(500000, 200000, 300000);
     ValueType v;
 
     TreeType tree(background);
@@ -373,9 +373,9 @@ TEST_F(TestValueAccessor, testMultithreadedAccessor)
 {
 #define MAX_COORD 5000
 
-    using AccessorT = openvdb::tree::ValueAccessorRW<Tree4Type>;
+    using AccessorT = laovdb::tree::ValueAccessorRW<Tree4Type>;
     // Substituting the following alias typically results in assertion failures:
-    //using AccessorT = openvdb::tree::ValueAccessor<Tree4Type>;
+    //using AccessorT = laovdb::tree::ValueAccessor<Tree4Type>;
 
     // Task to perform multiple reads through a shared accessor
     struct ReadTask {
@@ -384,7 +384,7 @@ TEST_F(TestValueAccessor, testMultithreadedAccessor)
         void execute()
         {
             for (int i = -MAX_COORD; i < MAX_COORD; ++i) {
-                ASSERT_DOUBLES_EXACTLY_EQUAL(double(i), acc.getValue(openvdb::Coord(i)));
+                ASSERT_DOUBLES_EXACTLY_EQUAL(double(i), acc.getValue(laovdb::Coord(i)));
             }
         }
     };
@@ -395,10 +395,10 @@ TEST_F(TestValueAccessor, testMultithreadedAccessor)
         void execute()
         {
             for (int i = -MAX_COORD; i < MAX_COORD; ++i) {
-                float f = acc.getValue(openvdb::Coord(i));
+                float f = acc.getValue(laovdb::Coord(i));
                 ASSERT_DOUBLES_EXACTLY_EQUAL(float(i), f);
-                acc.setValue(openvdb::Coord(i), float(i));
-                ASSERT_DOUBLES_EXACTLY_EQUAL(float(i), acc.getValue(openvdb::Coord(i)));
+                acc.setValue(laovdb::Coord(i), float(i));
+                ASSERT_DOUBLES_EXACTLY_EQUAL(float(i), acc.getValue(laovdb::Coord(i)));
             }
         }
     };
@@ -421,7 +421,7 @@ TEST_F(TestValueAccessor, testMultithreadedAccessor)
     AccessorT acc(tree);
     // Populate the tree.
     for (int i = -MAX_COORD; i < MAX_COORD; ++i) {
-        acc.setValue(openvdb::Coord(i), float(i));
+        acc.setValue(laovdb::Coord(i), float(i));
     }
 
     // Run multiple read and write tasks in parallel.
@@ -434,47 +434,47 @@ TEST_F(TestValueAccessor, testMultithreadedAccessor)
 
 TEST_F(TestValueAccessor, testAccessorRegistration)
 {
-    using openvdb::Index;
+    using laovdb::Index;
 
     const float background = 5.0f, value = -9.345f;
-    const openvdb::Coord c0(5, 10, 20);
+    const laovdb::Coord c0(5, 10, 20);
 
-    openvdb::FloatTree::Ptr tree(new openvdb::FloatTree(background));
-    openvdb::tree::ValueAccessor<openvdb::FloatTree> acc(*tree);
+    laovdb::FloatTree::Ptr tree(new laovdb::FloatTree(background));
+    laovdb::tree::ValueAccessor<laovdb::FloatTree> acc(*tree);
 
     // Set a single leaf voxel via the accessor and verify that
     // the cache is populated.
     acc.setValue(c0, value);
     EXPECT_EQ(Index(1), tree->leafCount());
     EXPECT_EQ(tree->root().getLevel(), tree->nonLeafCount());
-    EXPECT_TRUE(acc.getNode<openvdb::FloatTree::LeafNodeType>() != nullptr);
+    EXPECT_TRUE(acc.getNode<laovdb::FloatTree::LeafNodeType>() != nullptr);
 
     // Reset the voxel to the background value and verify that no nodes
     // have been deleted and that the cache is still populated.
     tree->setValueOff(c0, background);
     EXPECT_EQ(Index(1), tree->leafCount());
     EXPECT_EQ(tree->root().getLevel(), tree->nonLeafCount());
-    EXPECT_TRUE(acc.getNode<openvdb::FloatTree::LeafNodeType>() != nullptr);
+    EXPECT_TRUE(acc.getNode<laovdb::FloatTree::LeafNodeType>() != nullptr);
 
     // Prune the tree and verify that only the root node remains and that
     // the cache has been cleared.
-    openvdb::tools::prune(*tree);
+    laovdb::tools::prune(*tree);
     //tree->prune();
     EXPECT_EQ(Index(0), tree->leafCount());
     EXPECT_EQ(Index(1), tree->nonLeafCount()); // root node only
-    EXPECT_TRUE(acc.getNode<openvdb::FloatTree::LeafNodeType>() == nullptr);
+    EXPECT_TRUE(acc.getNode<laovdb::FloatTree::LeafNodeType>() == nullptr);
 
     // Set the leaf voxel again and verify that the cache is repopulated.
     acc.setValue(c0, value);
     EXPECT_EQ(Index(1), tree->leafCount());
     EXPECT_EQ(tree->root().getLevel(), tree->nonLeafCount());
-    EXPECT_TRUE(acc.getNode<openvdb::FloatTree::LeafNodeType>() != nullptr);
+    EXPECT_TRUE(acc.getNode<laovdb::FloatTree::LeafNodeType>() != nullptr);
 
     // Delete the tree and verify that the cache has been cleared.
     tree.reset();
     EXPECT_TRUE(acc.getTree() == nullptr);
-    EXPECT_TRUE(acc.getNode<openvdb::FloatTree::RootNodeType>() == nullptr);
-    EXPECT_TRUE(acc.getNode<openvdb::FloatTree::LeafNodeType>() == nullptr);
+    EXPECT_TRUE(acc.getNode<laovdb::FloatTree::RootNodeType>() == nullptr);
+    EXPECT_TRUE(acc.getNode<laovdb::FloatTree::LeafNodeType>() == nullptr);
 }
 
 
@@ -483,12 +483,12 @@ TEST_F(TestValueAccessor, testGetNode)
     using LeafT = Tree4Type::LeafNodeType;
 
     const ValueType background = 5.0f, value = -9.345f;
-    const openvdb::Coord c0(5, 10, 20);
+    const laovdb::Coord c0(5, 10, 20);
 
     Tree4Type tree(background);
     tree.setValue(c0, value);
     {
-        openvdb::tree::ValueAccessor<Tree4Type> acc(tree);
+        laovdb::tree::ValueAccessor<Tree4Type> acc(tree);
         // Prime the cache.
         acc.getValue(c0);
         // Verify that the cache contains a leaf node.
@@ -502,7 +502,7 @@ TEST_F(TestValueAccessor, testGetNode)
     }
     {
         // As above, but with a const tree.
-        openvdb::tree::ValueAccessor<const Tree4Type> acc(tree);
+        laovdb::tree::ValueAccessor<const Tree4Type> acc(tree);
         acc.getValue(c0);
         const LeafT* node = acc.getNode<const LeafT>();
         EXPECT_TRUE(node != nullptr);

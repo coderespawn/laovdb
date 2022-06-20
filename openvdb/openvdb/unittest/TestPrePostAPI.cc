@@ -17,7 +17,7 @@ class TestPrePostAPI: public ::testing::Test
 
 TEST_F(TestPrePostAPI, testMat4)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     double TOL = 1e-7;
 
@@ -67,7 +67,7 @@ TEST_F(TestPrePostAPI, testMat4)
 
 TEST_F(TestPrePostAPI, testMat4Rotate)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     double TOL = 1e-7;
 
@@ -107,7 +107,7 @@ TEST_F(TestPrePostAPI, testMat4Rotate)
 
 TEST_F(TestPrePostAPI, testMat4Scale)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     double TOL = 1e-7;
 
@@ -134,7 +134,7 @@ TEST_F(TestPrePostAPI, testMat4Scale)
 
 TEST_F(TestPrePostAPI, testMat4Shear)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     double TOL = 1e-7;
 
@@ -161,7 +161,7 @@ TEST_F(TestPrePostAPI, testMat4Shear)
 
 TEST_F(TestPrePostAPI, testMaps)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     double TOL = 1e-7;
 
@@ -418,7 +418,7 @@ TEST_F(TestPrePostAPI, testMaps)
 
 TEST_F(TestPrePostAPI, testLinearTransform)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     double TOL = 1e-7;
     {
@@ -530,7 +530,7 @@ TEST_F(TestPrePostAPI, testLinearTransform)
 
 TEST_F(TestPrePostAPI, testFrustumTransform)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     using BBoxd = BBox<Vec3d>;
 
@@ -563,9 +563,9 @@ TEST_F(TestPrePostAPI, testFrustumTransform)
         // test this by verifying that equvilent interal matrix
         // represenations are inverses
         NonlinearFrustumMap::Ptr frustum =
-            openvdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(t->baseMap());
+            laovdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(t->baseMap());
         NonlinearFrustumMap::Ptr frustuminv =
-            openvdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(tinv->baseMap());
+            laovdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(tinv->baseMap());
 
         Mat4d m = frustum->secondMap().getMat4();
         Mat4d minv = frustuminv->secondMap().getMat4();
@@ -628,7 +628,7 @@ TEST_F(TestPrePostAPI, testFrustumTransform)
         t->postMult(minv);
 
         NonlinearFrustumMap::Ptr frustum =
-            openvdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(t->baseMap());
+            laovdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(t->baseMap());
         Mat4d mtest = frustum->secondMap().getMat4();
 
         // verify that the results is the scale

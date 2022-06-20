@@ -55,7 +55,7 @@
 
 class TestIndexFilter;
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -229,7 +229,7 @@ class RandomLeafFilter
 {
 public:
     using SeedCountPair = std::pair<Index, Index>;
-    using LeafMap       = std::unordered_map<openvdb::Coord, SeedCountPair>;
+    using LeafMap       = std::unordered_map<laovdb::Coord, SeedCountPair>;
 
     RandomLeafFilter(   const PointDataTreeT& tree,
                         const Index64 targetPoints,
@@ -277,7 +277,7 @@ public:
 
         auto it = mLeafMap.find(leaf.origin());
         if (it == mLeafMap.end()) {
-            OPENVDB_THROW(openvdb::KeyError,
+            OPENVDB_THROW(laovdb::KeyError,
                 "Cannot find leaf origin in map for random filter - " << leaf.origin());
         }
 
@@ -375,7 +375,7 @@ class LevelSetFilter
 {
 public:
     using ValueT = typename LevelSetGridT::ValueType;
-    using Handle = AttributeHandle<openvdb::Vec3f>;
+    using Handle = AttributeHandle<laovdb::Vec3f>;
 
     LevelSetFilter( const LevelSetGridT& grid,
                     const math::Transform& transform,
@@ -413,15 +413,15 @@ public:
         assert(mPositionHandle);
         assert(iter);
 
-        const openvdb::Coord ijk = iter.getCoord();
-        const openvdb::Vec3f voxelIndexSpace = ijk.asVec3d();
+        const laovdb::Coord ijk = iter.getCoord();
+        const laovdb::Vec3f voxelIndexSpace = ijk.asVec3d();
 
         // Retrieve point position in voxel space
-        const openvdb::Vec3f& pointVoxelSpace = mPositionHandle->get(*iter);
+        const laovdb::Vec3f& pointVoxelSpace = mPositionHandle->get(*iter);
 
         // Compute point position in index space
-        const openvdb::Vec3f pointWorldSpace = mTransform.indexToWorld(pointVoxelSpace + voxelIndexSpace);
-        const openvdb::Vec3f pointIndexSpace = mLevelSetTransform.worldToIndex(pointWorldSpace);
+        const laovdb::Vec3f pointWorldSpace = mTransform.indexToWorld(pointVoxelSpace + voxelIndexSpace);
+        const laovdb::Vec3f pointIndexSpace = mLevelSetTransform.worldToIndex(pointWorldSpace);
 
         // Perform level-set sampling
         const typename LevelSetGridT::ValueType value = tools::BoxSampler::sample(mAccessor, pointIndexSpace);
@@ -447,10 +447,10 @@ private:
 class BBoxFilter
 {
 public:
-    using Handle = AttributeHandle<openvdb::Vec3f>;
+    using Handle = AttributeHandle<laovdb::Vec3f>;
 
-    BBoxFilter(const openvdb::math::Transform& transform,
-             const openvdb::BBoxd& bboxWS)
+    BBoxFilter(const laovdb::math::Transform& transform,
+             const laovdb::BBoxd& bboxWS)
             : mTransform(transform)
             , mBbox(transform.worldToIndex(bboxWS)) { }
 
@@ -479,21 +479,21 @@ public:
     bool valid(const IterT& iter) const {
         assert(mPositionHandle);
 
-        const openvdb::Coord ijk = iter.getCoord();
-        const openvdb::Vec3f voxelIndexSpace = ijk.asVec3d();
+        const laovdb::Coord ijk = iter.getCoord();
+        const laovdb::Vec3f voxelIndexSpace = ijk.asVec3d();
 
         // Retrieve point position in voxel space
-        const openvdb::Vec3f& pointVoxelSpace = mPositionHandle->get(*iter);
+        const laovdb::Vec3f& pointVoxelSpace = mPositionHandle->get(*iter);
 
         // Compute point position in index space
-        const openvdb::Vec3f pointIndexSpace = pointVoxelSpace + voxelIndexSpace;
+        const laovdb::Vec3f pointIndexSpace = pointVoxelSpace + voxelIndexSpace;
 
         return mBbox.isInside(pointIndexSpace);
     }
 
 private:
-    const openvdb::math::Transform& mTransform;
-    const openvdb::BBoxd mBbox;
+    const laovdb::math::Transform& mTransform;
+    const laovdb::BBoxd mBbox;
     Handle::UniquePtr mPositionHandle;
 }; // class BBoxFilter
 
@@ -578,6 +578,6 @@ struct FilterTraits<BinaryFilter<T0, T1, And>> {
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_INDEX_FILTER_HAS_BEEN_INCLUDED

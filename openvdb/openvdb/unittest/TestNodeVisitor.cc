@@ -17,18 +17,18 @@ struct NodeCountOp
     template <typename NodeT>
     void operator()(const NodeT&, size_t)
     {
-        const openvdb::Index level = NodeT::LEVEL;
+        const laovdb::Index level = NodeT::LEVEL;
         while (level >= counts.size())     counts.emplace_back(0);
         counts[level]++;
     }
 
-    std::vector<openvdb::Index32> counts;
+    std::vector<laovdb::Index32> counts;
 }; // struct NodeCountOp
 
 
 TEST_F(TestNodeVisitor, testNodeCount)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     auto grid = tools::createLevelSetCube<FloatGrid>(/*scale=*/10.0f);
 
@@ -55,13 +55,13 @@ struct LeafCountOp
     void operator()(const NodeT&, size_t) { }
     void operator()(const LeafT&, size_t) { count++; }
 
-    openvdb::Index32 count{0};
+    laovdb::Index32 count{0};
 }; // struct LeafCountOp
 
 
 TEST_F(TestNodeVisitor, testLeafCount)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = tools::createLevelSetCube<FloatGrid>(/*scale=*/10.0f);
 
@@ -86,21 +86,21 @@ struct DescendOp
     template <typename NodeT>
     void operator()(const NodeT&, size_t)
     {
-        const openvdb::Index level = NodeT::LEVEL;
+        const laovdb::Index level = NodeT::LEVEL;
         // count the number of times the operator descends
         // from a higher-level node to a lower-level node
         if (NodeT::LEVEL < previousLevel)   count++;
         previousLevel = level;
     }
 
-    openvdb::Index32 previousLevel{0};
-    openvdb::Index32 count{0};
+    laovdb::Index32 previousLevel{0};
+    laovdb::Index32 count{0};
 }; // struct DescendOp
 
 
 TEST_F(TestNodeVisitor, testDepthFirst)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = tools::createLevelSetCube<FloatGrid>(/*scale=*/10.0f);
 
@@ -117,13 +117,13 @@ struct StoreOriginsOp
 {
     using RootT = typename TreeT::RootNodeType;
 
-    StoreOriginsOp(std::vector<openvdb::Coord>& _origins)
+    StoreOriginsOp(std::vector<laovdb::Coord>& _origins)
         : origins(_origins) { }
 
     void operator()(const RootT&, size_t idx)
     {
         // root node has no origin
-        origins[idx] = openvdb::Coord::max();
+        origins[idx] = laovdb::Coord::max();
     }
 
     template <typename NodeT>
@@ -132,13 +132,13 @@ struct StoreOriginsOp
         origins[idx] = node.origin();
     }
 
-    std::vector<openvdb::Coord>& origins;
+    std::vector<laovdb::Coord>& origins;
 }; // struct StoreOriginsOp
 
 
 TEST_F(TestNodeVisitor, testOriginArray)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = tools::createLevelSetCube<FloatGrid>(/*scale=*/10.0f);
 
@@ -192,7 +192,7 @@ struct DeactivateOp
 
 TEST_F(TestNodeVisitor, testPartialDeactivate)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = tools::createLevelSetCube<FloatGrid>(/*scale=*/10.0f);
 
@@ -267,7 +267,7 @@ private:
 // this is the example from the documentation
 TEST_F(TestNodeVisitor, testOffset)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = tools::createLevelSetCube<FloatGrid>(/*scale=*/10.0f);
 

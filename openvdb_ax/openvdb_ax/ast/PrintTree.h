@@ -16,7 +16,7 @@
 
 #include <iostream>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -53,7 +53,7 @@ OPENVDB_AX_API void reprint(const ast::Node& node,
 } // namespace ax
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_AST_PRINT_TREE_HAS_BEEN_INCLUDED
 

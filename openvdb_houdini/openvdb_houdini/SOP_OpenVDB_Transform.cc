@@ -144,11 +144,11 @@ namespace {
 // to the voxel values of vector-valued grids
 struct VecXformOp
 {
-    openvdb::Mat4d mat;
-    VecXformOp(const openvdb::Mat4d& _mat): mat(_mat) {}
+    laovdb::Mat4d mat;
+    VecXformOp(const laovdb::Mat4d& _mat): mat(_mat) {}
     template<typename GridT> void operator()(GridT& grid) const
     {
-        openvdb::tools::transformVectors(grid, mat);
+        laovdb::tools::transformVectors(grid, mat);
     }
 };
 
@@ -159,15 +159,15 @@ OP_ERROR
 SOP_OpenVDB_Transform::Cache::cookVDBSop(OP_Context& context)
 {
     try {
-        using MapBase = openvdb::math::MapBase;
-        using AffineMap = openvdb::math::AffineMap;
-        using NonlinearFrustumMap = openvdb::math::NonlinearFrustumMap;
-        using Transform = openvdb::math::Transform;
+        using MapBase = laovdb::math::MapBase;
+        using AffineMap = laovdb::math::AffineMap;
+        using NonlinearFrustumMap = laovdb::math::NonlinearFrustumMap;
+        using Transform = laovdb::math::Transform;
 
         const fpreal time = context.getTime();
 
         // Get UI parameters
-        openvdb::Vec3R t(evalVec3R("t", time)), r(evalVec3R("r", time)),
+        laovdb::Vec3R t(evalVec3R("t", time)), r(evalVec3R("r", time)),
             s(evalVec3R("s", time)), p(evalVec3R("p", time));
 
         s *= evalFloat("uniformScale", 0, time);
@@ -206,13 +206,13 @@ SOP_OpenVDB_Transform::Cache::cookVDBSop(OP_Context& context)
         // Build up the transform matrix from the UI parameters
         const double deg2rad = hboost::math::constants::pi<double>() / 180.0;
 
-        openvdb::Mat4R mat(openvdb::Mat4R::identity());
+        laovdb::Mat4R mat(laovdb::Mat4R::identity());
         const auto rotate = [&]() {
             for (auto axis = rotOrder.rbegin(); axis != rotOrder.rend(); ++axis) {
                 switch (*axis) {
-                    case 'x': mat.preRotate(openvdb::math::X_AXIS, deg2rad*r[0]); break;
-                    case 'y': mat.preRotate(openvdb::math::Y_AXIS, deg2rad*r[1]); break;
-                    case 'z': mat.preRotate(openvdb::math::Z_AXIS, deg2rad*r[2]); break;
+                    case 'x': mat.preRotate(laovdb::math::X_AXIS, deg2rad*r[0]); break;
+                    case 'y': mat.preRotate(laovdb::math::Y_AXIS, deg2rad*r[1]); break;
+                    case 'z': mat.preRotate(laovdb::math::Z_AXIS, deg2rad*r[2]); break;
                 }
             }
         };
@@ -281,7 +281,7 @@ SOP_OpenVDB_Transform::Cache::cookVDBSop(OP_Context& context)
                 new AffineMap(*transform.baseMap()->getAffineMap(), map));
 
             // Simplify the affine compound map
-            auto affineMap = openvdb::math::simplify(compound);
+            auto affineMap = laovdb::math::simplify(compound);
 
             Transform::Ptr newTransform;
             if (transform.isLinear()) {
@@ -308,7 +308,7 @@ SOP_OpenVDB_Transform::Cache::cookVDBSop(OP_Context& context)
             vdb->setGrid(*copyOfGrid);
 
             if (xformVec && vdb->getConstGrid().isInWorldSpace()
-                && vdb->getConstGrid().getVectorType() != openvdb::VEC_INVARIANT)
+                && vdb->getConstGrid().getVectorType() != laovdb::VEC_INVARIANT)
             {
                 // If (and only if) the grid is vector-valued, deep copy it,
                 // then apply the transform to each voxel's value.

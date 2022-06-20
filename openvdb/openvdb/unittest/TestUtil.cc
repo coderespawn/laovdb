@@ -79,7 +79,7 @@ TEST_F(TestUtil, testFormats)
       const double milliseconds = 347.6;
       const double mseconds = milliseconds + (seconds + (minutes + (hours + days*24)*60)*60)*1000.0;
       std::ostringstream ostr1, ostr2;
-      EXPECT_EQ(4, openvdb::util::printTime(ostr2, mseconds, "Completed in ", "", width, precision, verbose ));
+      EXPECT_EQ(4, laovdb::util::printTime(ostr2, mseconds, "Completed in ", "", width, precision, verbose ));
       ostr1 << std::setprecision(precision) << std::setiosflags(std::ios::fixed);
       ostr1 << "Completed in " << days << " day, " << hours << " hours, " << minutes << " minutes, "
             << seconds << " seconds and " << std::setw(width) << milliseconds << " milliseconds (" << mseconds << "ms)";
@@ -95,7 +95,7 @@ TEST_F(TestUtil, testFormats)
       const double milliseconds = 347.6;
       const double mseconds = milliseconds + (seconds + (minutes + (hours + days*24)*60)*60)*1000.0;
       std::ostringstream ostr1, ostr2;
-      EXPECT_EQ(4, openvdb::util::printTime(ostr2, mseconds, "Completed in ", "", width, precision, verbose ));
+      EXPECT_EQ(4, laovdb::util::printTime(ostr2, mseconds, "Completed in ", "", width, precision, verbose ));
       ostr1 << std::setprecision(precision) << std::setiosflags(std::ios::fixed);
       ostr1 << "Completed in " << days << "d " << hours << "h " << minutes << "m "
             << std::setw(width) << (seconds + milliseconds/1000.0) << "s";
@@ -121,7 +121,7 @@ TEST_F(TestUtil, testCpuTimer)
 
     const int expected = 159, tolerance = 20;//milliseconds
     {
-        openvdb::util::CpuTimer timer;
+        laovdb::util::CpuTimer timer;
         sleep_for(expected);
         const int actual1 = static_cast<int>(timer.milliseconds());
         EXPECT_NEAR(expected, actual1, tolerance);
@@ -130,7 +130,7 @@ TEST_F(TestUtil, testCpuTimer)
         EXPECT_NEAR(2*expected, actual2, tolerance);
     }
     {
-        openvdb::util::CpuTimer timer;
+        laovdb::util::CpuTimer timer;
         sleep_for(expected);
         auto t1 = timer.restart();
         sleep_for(expected);
@@ -144,14 +144,14 @@ TEST_F(TestUtil, testPagedArray)
 {
 #ifdef BENCHMARK_PAGED_ARRAY
     const size_t problemSize = 2560000;
-    openvdb::util::CpuTimer timer;
+    laovdb::util::CpuTimer timer;
     std::cerr << "\nProblem size for benchmark: " << problemSize << std::endl;
 #else
     const size_t problemSize = 256000;
 #endif
 
     {//serial PagedArray::push_back (check return value)
-        openvdb::util::PagedArray<int> d;
+        laovdb::util::PagedArray<int> d;
 
         EXPECT_TRUE(d.isEmpty());
         EXPECT_EQ(size_t(0), d.size());
@@ -188,7 +188,7 @@ TEST_F(TestUtil, testPagedArray)
 #ifdef BENCHMARK_PAGED_ARRAY
         timer.start("2: Serial PagedArray::push_back_unsafe with default page size");
 #endif
-        openvdb::util::PagedArray<size_t> d;
+        laovdb::util::PagedArray<size_t> d;
         for (size_t i=0; i<problemSize; ++i) d.push_back_unsafe(i);
 #ifdef BENCHMARK_PAGED_ARRAY
         timer.stop();
@@ -229,7 +229,7 @@ TEST_F(TestUtil, testPagedArray)
 
         v.clear();
         timer.start("8: Parallel tbb::concurrent_vector::push_back");
-        using ArrayT = openvdb::util::PagedArray<size_t>;
+        using ArrayT = laovdb::util::PagedArray<size_t>;
         tbb::parallel_for(tbb::blocked_range<size_t>(0, problemSize, ArrayT::pageSize()),
                           [&v](const tbb::blocked_range<size_t> &range){
                           for (size_t i=range.begin(); i!=range.end(); ++i) v.push_back(i);});
@@ -240,7 +240,7 @@ TEST_F(TestUtil, testPagedArray)
 #endif
 
     {//serial PagedArray::ValueBuffer::push_back
-        using ArrayT = openvdb::util::PagedArray<size_t, 3UL>;
+        using ArrayT = laovdb::util::PagedArray<size_t, 3UL>;
         ArrayT d;
 
         EXPECT_EQ(size_t(0), d.size());
@@ -287,7 +287,7 @@ TEST_F(TestUtil, testPagedArray)
 
     }
     {//parallel PagedArray::ValueBuffer::push_back
-        using ArrayT = openvdb::util::PagedArray<size_t>;
+        using ArrayT = laovdb::util::PagedArray<size_t>;
         ArrayT d;
 #ifdef BENCHMARK_PAGED_ARRAY
         timer.start("10: Parallel PagedArray::ValueBuffer::push_back");
@@ -335,7 +335,7 @@ TEST_F(TestUtil, testPagedArray)
         for (size_t i=0, n=d.capacity(); i<n; ++i) EXPECT_EQ(v, d[i]);
     }
     {//test PagedArray::ValueBuffer::flush
-        using ArrayT = openvdb::util::PagedArray<size_t>;
+        using ArrayT = laovdb::util::PagedArray<size_t>;
         ArrayT d;
         EXPECT_EQ(size_t(0), d.size());
         {
@@ -354,7 +354,7 @@ TEST_F(TestUtil, testPagedArray)
         EXPECT_EQ(size_t(2), d[1]);
     }
     {//thread-local-storage PagedArray::ValueBuffer::push_back followed by parallel sort
-        using ArrayT = openvdb::util::PagedArray<size_t>;
+        using ArrayT = laovdb::util::PagedArray<size_t>;
         ArrayT d;
 
 #ifdef BENCHMARK_PAGED_ARRAY
@@ -396,7 +396,7 @@ TEST_F(TestUtil, testPagedArray)
         for (size_t i=0, n=d.size(); i<n; ++i) EXPECT_EQ(i, d[i]);
     }
     {//parallel PagedArray::merge followed by parallel sort
-        using ArrayT = openvdb::util::PagedArray<size_t>;
+        using ArrayT = laovdb::util::PagedArray<size_t>;
         ArrayT d, d2;
 
         tbb::parallel_for(tbb::blocked_range<size_t>(0, problemSize, d.pageSize()),
@@ -451,33 +451,33 @@ TEST_F(TestUtil, testPagedArray)
     }
     {//examples in doxygen
         {// 1
-            openvdb::util::PagedArray<int> array;
+            laovdb::util::PagedArray<int> array;
             for (int i=0; i<100000; ++i) array.push_back_unsafe(i);
             for (int i=0; i<100000; ++i) EXPECT_EQ(i, array[i]);
         }
         {//2A
-            openvdb::util::PagedArray<int> array;
-            openvdb::util::PagedArray<int>::ValueBuffer buffer(array);
+            laovdb::util::PagedArray<int> array;
+            laovdb::util::PagedArray<int>::ValueBuffer buffer(array);
             for (int i=0; i<100000; ++i) buffer.push_back(i);
             buffer.flush();
             for (int i=0; i<100000; ++i) EXPECT_EQ(i, array[i]);
         }
         {//2B
-            openvdb::util::PagedArray<int> array;
+            laovdb::util::PagedArray<int> array;
             {//local scope of a single thread
-                openvdb::util::PagedArray<int>::ValueBuffer buffer(array);
+                laovdb::util::PagedArray<int>::ValueBuffer buffer(array);
                 for (int i=0; i<100000; ++i) buffer.push_back(i);
             }
             for (int i=0; i<100000; ++i) EXPECT_EQ(i, array[i]);
         }
         {//3A
-            openvdb::util::PagedArray<int> array;
+            laovdb::util::PagedArray<int> array;
             array.resize(100000);
             for (int i=0; i<100000; ++i) array[i] = i;
             for (int i=0; i<100000; ++i) EXPECT_EQ(i, array[i]);
         }
         {//3B
-            using ArrayT = openvdb::util::PagedArray<int>;
+            using ArrayT = laovdb::util::PagedArray<int>;
             ArrayT array;
             array.resize(100000);
             for (ArrayT::Iterator i=array.begin(); i!=array.end(); ++i) *i = int(i.pos());

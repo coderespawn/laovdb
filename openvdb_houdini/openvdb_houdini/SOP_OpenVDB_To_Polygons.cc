@@ -69,10 +69,10 @@ public:
 
         template<class GridType>
         void referenceMeshing(
-            std::list<openvdb::GridBase::ConstPtr>&,
-            openvdb::tools::VolumeToMesh&,
+            std::list<laovdb::GridBase::ConstPtr>&,
+            laovdb::tools::VolumeToMesh&,
             const GU_Detail* refGeo,
-            openvdb::util::NullInterrupter&,
+            laovdb::util::NullInterrupter&,
             const fpreal time);
     };
 
@@ -356,7 +356,7 @@ SOP_OpenVDB_To_Polygons::updateParmsFlags()
 ////////////////////////////////////////
 
 
-void copyMesh(GU_Detail&, openvdb::tools::VolumeToMesh&, openvdb::util::NullInterrupter&,
+void copyMesh(GU_Detail&, laovdb::tools::VolumeToMesh&, laovdb::util::NullInterrupter&,
     const bool usePolygonSoup = true, const char* gridName = nullptr,
     GA_PrimitiveGroup* surfaceGroup = nullptr, GA_PrimitiveGroup* interiorGroup = nullptr,
     GA_PrimitiveGroup* seamGroup = nullptr, GA_PointGroup* seamPointGroup = nullptr);
@@ -365,8 +365,8 @@ void copyMesh(GU_Detail&, openvdb::tools::VolumeToMesh&, openvdb::util::NullInte
 void
 copyMesh(
     GU_Detail& detail,
-    openvdb::tools::VolumeToMesh& mesher,
-    openvdb::util::NullInterrupter&,
+    laovdb::tools::VolumeToMesh& mesher,
+    laovdb::util::NullInterrupter&,
     const bool usePolygonSoup,
     const char* gridName,
     GA_PrimitiveGroup* surfaceGroup,
@@ -374,17 +374,17 @@ copyMesh(
     GA_PrimitiveGroup* seamGroup,
     GA_PointGroup* seamPointGroup)
 {
-    const openvdb::tools::PointList& points = mesher.pointList();
-    openvdb::tools::PolygonPoolList& polygonPoolList = mesher.polygonPoolList();
+    const laovdb::tools::PointList& points = mesher.pointList();
+    laovdb::tools::PolygonPoolList& polygonPoolList = mesher.polygonPoolList();
 
-    const char exteriorFlag = char(openvdb::tools::POLYFLAG_EXTERIOR);
-    const char seamLineFlag = char(openvdb::tools::POLYFLAG_FRACTURE_SEAM);
+    const char exteriorFlag = char(laovdb::tools::POLYFLAG_EXTERIOR);
+    const char seamLineFlag = char(laovdb::tools::POLYFLAG_FRACTURE_SEAM);
 
     const GA_Index firstPrim = detail.getNumPrimitives();
 
     GA_Size npoints = mesher.pointListSize();
     const GA_Offset startpt = detail.appendPointBlock(npoints);
-    UT_ASSERT_COMPILETIME(sizeof(openvdb::tools::PointList::element_type) == sizeof(UT_Vector3));
+    UT_ASSERT_COMPILETIME(sizeof(laovdb::tools::PointList::element_type) == sizeof(UT_Vector3));
     GA_RWHandleV3 pthandle(detail.getP());
     pthandle.setBlock(startpt, npoints, reinterpret_cast<UT_Vector3*>(points.get()));
 
@@ -407,7 +407,7 @@ copyMesh(
     GA_Size nquads[4] = {0, 0, 0, 0};
     GA_Size ntris[4]  = {0, 0, 0, 0};
     for (size_t n = 0, N = mesher.polygonPoolListSize(); n < N; ++n) {
-        const openvdb::tools::PolygonPool& polygons = polygonPoolList[n];
+        const laovdb::tools::PolygonPool& polygons = polygonPoolList[n];
         for (size_t i = 0, I = polygons.numQuads(); i < I; ++i) {
             int flags = (((polygons.quadFlags(i) & exteriorFlag)!=0) << 1)
                        | ((polygons.quadFlags(i) & seamLineFlag)!=0);
@@ -436,11 +436,11 @@ copyMesh(
     GA_Size itri[4]  = {nquads[0]*4, nquads[1]*4, nquads[2]*4, nquads[3]*4};
 
     for (size_t n = 0, N = mesher.polygonPoolListSize(); n < N; ++n) {
-        const openvdb::tools::PolygonPool& polygons = polygonPoolList[n];
+        const laovdb::tools::PolygonPool& polygons = polygonPoolList[n];
 
         // Copy quads
         for (size_t i = 0, I = polygons.numQuads(); i < I; ++i) {
-            const openvdb::Vec4I& quad = polygons.quad(i);
+            const laovdb::Vec4I& quad = polygons.quad(i);
             int flags = (((polygons.quadFlags(i) & exteriorFlag)!=0) << 1)
                        | ((polygons.quadFlags(i) & seamLineFlag)!=0);
             verts[flags](iquad[flags]++) = quad[0];
@@ -451,7 +451,7 @@ copyMesh(
 
         // Copy triangles (adaptive mesh)
         for (size_t i = 0, I = polygons.numTriangles(); i < I; ++i) {
-            const openvdb::Vec3I& triangle = polygons.triangle(i);
+            const laovdb::Vec3I& triangle = polygons.triangle(i);
             int flags = (((polygons.triangleFlags(i) & exteriorFlag)!=0) << 1)
                        | ((polygons.triangleFlags(i) & seamLineFlag)!=0);
             verts[flags](itri[flags]++) = triangle[0];
@@ -537,11 +537,11 @@ struct InteriorMaskOp
     template<typename GridType>
     void operator()(const GridType& grid)
     {
-        outGridPtr = openvdb::tools::interiorMask(grid, inIsovalue);
+        outGridPtr = laovdb::tools::interiorMask(grid, inIsovalue);
     }
 
     const double inIsovalue;
-    openvdb::BoolGrid::Ptr outGridPtr;
+    laovdb::BoolGrid::Ptr outGridPtr;
 };
 
 
@@ -551,7 +551,7 @@ getMaskFromGrid(const hvdb::GridCPtr& gridPtr, double isovalue = 0.0)
 {
     hvdb::GridCPtr maskGridPtr;
     if (gridPtr) {
-        if (gridPtr->isType<openvdb::BoolGrid>()) {
+        if (gridPtr->isType<laovdb::BoolGrid>()) {
             // If the input grid is already boolean, return it.
             maskGridPtr = gridPtr;
         } else {
@@ -600,7 +600,7 @@ SOP_OpenVDB_To_Polygons::Cache::cookVDBSop(OP_Context& context)
 
 
         // Setup level set mesher
-        openvdb::tools::VolumeToMesh mesher(iso, adaptivity);
+        laovdb::tools::VolumeToMesh mesher(iso, adaptivity);
 
         // Check mask input
         const GU_Detail* maskGeo = inputGeo(2);
@@ -635,8 +635,8 @@ SOP_OpenVDB_To_Polygons::Cache::cookVDBSop(OP_Context& context)
                 } else {
                     hvdb::VdbPrimCIterator maskIt(maskGeo, maskGroup);
                     if (maskIt) {
-                        openvdb::FloatGrid::ConstPtr grid =
-                            openvdb::gridConstPtrCast<openvdb::FloatGrid>(maskIt->getGridPtr());
+                        laovdb::FloatGrid::ConstPtr grid =
+                            laovdb::gridConstPtrCast<laovdb::FloatGrid>(maskIt->getGridPtr());
 
                         mesher.setSpatialAdaptivity(grid);
                     }
@@ -650,13 +650,13 @@ SOP_OpenVDB_To_Polygons::Cache::cookVDBSop(OP_Context& context)
         if (refGeo) {
 
             // Collect all level set grids.
-            std::list<openvdb::GridBase::ConstPtr> grids;
+            std::list<laovdb::GridBase::ConstPtr> grids;
             std::vector<std::string> nonLevelSetList, nonLinearList;
             for (; vdbIt; ++vdbIt) {
                 if (boss.wasInterrupted()) break;
 
-                const openvdb::GridClass gridClass = vdbIt->getGrid().getGridClass();
-                if (gridClass != openvdb::GRID_LEVEL_SET) {
+                const laovdb::GridClass gridClass = vdbIt->getGrid().getGridClass();
+                if (gridClass != laovdb::GRID_LEVEL_SET) {
                     nonLevelSetList.push_back(vdbIt.getPrimitiveNameOrIndex().toStdString());
                     continue;
                 }
@@ -668,7 +668,7 @@ SOP_OpenVDB_To_Polygons::Cache::cookVDBSop(OP_Context& context)
 
                 // (We need a shallow copy to sync primitive & grid names).
                 grids.push_back(vdbIt->getGrid().copyGrid());
-                openvdb::ConstPtrCast<openvdb::GridBase>(grids.back())->setName(
+                laovdb::ConstPtrCast<laovdb::GridBase>(grids.back())->setName(
                     vdbIt->getGridName());
             }
 
@@ -689,10 +689,10 @@ SOP_OpenVDB_To_Polygons::Cache::cookVDBSop(OP_Context& context)
             // Mesh using a reference surface
             if (!grids.empty() && !boss.wasInterrupted()) {
 
-                if (grids.front()->isType<openvdb::FloatGrid>()) {
-                    referenceMeshing<openvdb::FloatGrid>(grids, mesher, refGeo, boss.interrupter(), time);
-                } else if (grids.front()->isType<openvdb::DoubleGrid>()) {
-                    referenceMeshing<openvdb::DoubleGrid>(grids, mesher, refGeo, boss.interrupter(), time);
+                if (grids.front()->isType<laovdb::FloatGrid>()) {
+                    referenceMeshing<laovdb::FloatGrid>(grids, mesher, refGeo, boss.interrupter(), time);
+                } else if (grids.front()->isType<laovdb::DoubleGrid>()) {
+                    referenceMeshing<laovdb::DoubleGrid>(grids, mesher, refGeo, boss.interrupter(), time);
                 } else {
                     addError(SOP_MESSAGE, "Unsupported grid type.");
                 }
@@ -734,10 +734,10 @@ SOP_OpenVDB_To_Polygons::Cache::cookVDBSop(OP_Context& context)
 template<class GridType>
 void
 SOP_OpenVDB_To_Polygons::Cache::referenceMeshing(
-    std::list<openvdb::GridBase::ConstPtr>& grids,
-    openvdb::tools::VolumeToMesh& mesher,
+    std::list<laovdb::GridBase::ConstPtr>& grids,
+    laovdb::tools::VolumeToMesh& mesher,
     const GU_Detail* refGeo,
-    openvdb::util::NullInterrupter& boss,
+    laovdb::util::NullInterrupter& boss,
     const fpreal time)
 {
     if (refGeo == nullptr) return;
@@ -752,9 +752,9 @@ SOP_OpenVDB_To_Polygons::Cache::referenceMeshing(
     using ValueType = typename GridType::ValueType;
 
     // Get the first grid's transform and background value.
-    openvdb::math::Transform::Ptr transform = grids.front()->transform().copy();
+    laovdb::math::Transform::Ptr transform = grids.front()->transform().copy();
 
-    typename GridType::ConstPtr firstGrid = openvdb::gridConstPtrCast<GridType>(grids.front());
+    typename GridType::ConstPtr firstGrid = laovdb::gridConstPtrCast<GridType>(grids.front());
 
     if (!firstGrid) {
         addError(SOP_MESSAGE, "Unsupported grid type.");
@@ -762,13 +762,13 @@ SOP_OpenVDB_To_Polygons::Cache::referenceMeshing(
     }
 
     const ValueType backgroundValue = firstGrid->background();
-    const openvdb::GridClass gridClass = firstGrid->getGridClass();
+    const laovdb::GridClass gridClass = firstGrid->getGridClass();
 
     typename GridType::ConstPtr refGrid;
-    using IntGridT = typename GridType::template ValueConverter<openvdb::Int32>::Type;
+    using IntGridT = typename GridType::template ValueConverter<laovdb::Int32>::Type;
     typename IntGridT::Ptr indexGrid; // replace
 
-    openvdb::tools::MeshToVoxelEdgeData edgeData;
+    laovdb::tools::MeshToVoxelEdgeData edgeData;
 
 # if 0
     // Check for reference VDB
@@ -776,9 +776,9 @@ SOP_OpenVDB_To_Polygons::Cache::referenceMeshing(
         const GA_PrimitiveGroup *refGroup = matchGroup(*refGeo, "");
         hvdb::VdbPrimCIterator refIt(refGeo, refGroup);
         if (refIt) {
-            const openvdb::GridClass refClass = refIt->getGrid().getGridClass();
-            if (refIt && refClass == openvdb::GRID_LEVEL_SET) {
-                refGrid = openvdb::gridConstPtrCast<GridType>(refIt->getGridPtr());
+            const laovdb::GridClass refClass = refIt->getGrid().getGridClass();
+            if (refIt && refClass == laovdb::GRID_LEVEL_SET) {
+                refGrid = laovdb::gridConstPtrCast<GridType>(refIt->getGridPtr());
             }
         }
     }
@@ -795,8 +795,8 @@ SOP_OpenVDB_To_Polygons::Cache::referenceMeshing(
             if (!warningStr.empty()) addWarning(SOP_MESSAGE, warningStr.c_str());
         }
 
-        std::vector<openvdb::Vec3s> pointList;
-        std::vector<openvdb::Vec4I> primList;
+        std::vector<laovdb::Vec3s> pointList;
+        std::vector<laovdb::Vec4I> primList;
 
         pointList.resize(refGeo->getNumPoints());
         primList.resize(refGeo->getNumPrimitives());
@@ -809,18 +809,18 @@ SOP_OpenVDB_To_Polygons::Cache::referenceMeshing(
 
         if (boss.wasInterrupted()) return;
 
-        openvdb::tools::QuadAndTriangleDataAdapter<openvdb::Vec3s, openvdb::Vec4I>
+        laovdb::tools::QuadAndTriangleDataAdapter<laovdb::Vec3s, laovdb::Vec4I>
             mesh(pointList, primList);
 
         float bandWidth = 3.0;
 
-        if (gridClass != openvdb::GRID_LEVEL_SET) {
+        if (gridClass != laovdb::GRID_LEVEL_SET) {
             bandWidth = float(backgroundValue) / float(transform->voxelSize()[0]);
         }
 
         indexGrid.reset(new IntGridT(0));
 
-        refGrid = openvdb::tools::meshToVolume<GridType>(boss,
+        refGrid = laovdb::tools::meshToVolume<GridType>(boss,
             mesh, *transform, bandWidth, bandWidth, 0, indexGrid.get());
 
         if (sharpenFeatures) edgeData.convert(pointList, primList);
@@ -836,16 +836,16 @@ SOP_OpenVDB_To_Polygons::Cache::referenceMeshing(
     if (sharpenFeatures) {
         maskTree = typename BoolTreeType::Ptr(new BoolTreeType(false));
         maskTree->topologyUnion(indexGrid->tree());
-        openvdb::tree::LeafManager<BoolTreeType> maskLeafs(*maskTree);
+        laovdb::tree::LeafManager<BoolTreeType> maskLeafs(*maskTree);
 
         hvdb::GenAdaptivityMaskOp<typename IntGridT::TreeType, BoolTreeType>
             op(*refGeo, indexGrid->tree(), maskLeafs, edgetolerance);
         op.run();
 
-        openvdb::tools::pruneInactive(*maskTree);
+        laovdb::tools::pruneInactive(*maskTree);
 
-        openvdb::tools::dilateActiveValues(*maskTree, 2,
-            openvdb::tools::NN_FACE, openvdb::tools::IGNORE_TILES);
+        laovdb::tools::dilateActiveValues(*maskTree, 2,
+            laovdb::tools::NN_FACE, laovdb::tools::IGNORE_TILES);
 
         mesher.setAdaptivityMask(maskTree);
     }
@@ -893,7 +893,7 @@ SOP_OpenVDB_To_Polygons::Cache::referenceMeshing(
 
         if (boss.wasInterrupted()) break;
 
-        typename GridType::ConstPtr grid = openvdb::gridConstPtrCast<GridType>(*it);
+        typename GridType::ConstPtr grid = laovdb::gridConstPtrCast<GridType>(*it);
 
         if (!grid) {
             badTypeList.push_back(grid->getName());
@@ -905,7 +905,7 @@ SOP_OpenVDB_To_Polygons::Cache::referenceMeshing(
             continue;
         }
 
-        if (!openvdb::math::isApproxEqual(grid->background(), backgroundValue)) {
+        if (!laovdb::math::isApproxEqual(grid->background(), backgroundValue)) {
             badBackgroundList.push_back(grid->getName());
             continue;
         }

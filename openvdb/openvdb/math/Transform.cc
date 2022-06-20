@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -478,7 +478,7 @@ Transform::print(std::ostream& os, const std::string& indent) const
     }
 
     if (this->isLinear()) {
-        openvdb::Mat4R v2w = this->baseMap()->getAffineMap()->getMat4();
+        laovdb::Mat4R v2w = this->baseMap()->getAffineMap()->getMat4();
 
         ostr << indent << std::left << "index to world:\n";
         for (int row = 0; row < 4; ++row) {
@@ -488,7 +488,7 @@ Transform::print(std::ostream& os, const std::string& indent) const
     } else if (this->mapType() == NonlinearFrustumMap::mapType()) {
         const NonlinearFrustumMap& frustum =
             static_cast<const NonlinearFrustumMap&>(*this->baseMap());
-        const openvdb::Mat4R linear = this->baseMap()->getAffineMap()->getMat4();
+        const laovdb::Mat4R linear = this->baseMap()->getAffineMap()->getMat4();
 
         std::vector<std::string> linearRow;
         size_t w = 0;
@@ -544,4 +544,4 @@ operator<<(std::ostream& os, const Transform& t)
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

@@ -17,7 +17,7 @@ class TestPointPartitioner: public ::testing::Test
 namespace {
 
 struct PointList {
-    typedef openvdb::Vec3s PosType;
+    typedef laovdb::Vec3s PosType;
 
     PointList(const std::vector<PosType>& points) : mPoints(&points) {}
 
@@ -39,17 +39,17 @@ TEST_F(TestPointPartitioner, testPartitioner)
     const size_t pointCount = 10000;
     const float voxelSize = 0.1f;
 
-    std::vector<openvdb::Vec3s> points(pointCount, openvdb::Vec3s(0.f));
+    std::vector<laovdb::Vec3s> points(pointCount, laovdb::Vec3s(0.f));
     for (size_t n = 1; n < pointCount; ++n) {
         points[n].x() = points[n-1].x() + voxelSize;
     }
 
     PointList pointList(points);
 
-    const openvdb::math::Transform::Ptr transform =
-            openvdb::math::Transform::createLinearTransform(voxelSize);
+    const laovdb::math::Transform::Ptr transform =
+            laovdb::math::Transform::createLinearTransform(voxelSize);
 
-    typedef openvdb::tools::UInt32PointPartitioner PointPartitioner;
+    typedef laovdb::tools::UInt32PointPartitioner PointPartitioner;
 
     PointPartitioner::Ptr partitioner =
             PointPartitioner::create(pointList, *transform);
@@ -62,7 +62,7 @@ TEST_F(TestPointPartitioner, testPartitioner)
     const size_t expectedPageCount = pointCount / (1u << PointPartitioner::LOG2DIM);
 
     EXPECT_EQ(expectedPageCount, partitioner->size());
-    EXPECT_EQ(openvdb::Coord(0), partitioner->origin(0));
+    EXPECT_EQ(laovdb::Coord(0), partitioner->origin(0));
 
     PointPartitioner::IndexIterator it = partitioner->indices(0);
 

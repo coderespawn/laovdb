@@ -15,7 +15,7 @@
 #include "ValueTransformer.h"
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -404,6 +404,6 @@ opStatistics(const IterT& iter, const OperatorT& op, bool threaded)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_STATISTICS_HAS_BEEN_INCLUDED

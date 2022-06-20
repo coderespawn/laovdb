@@ -280,7 +280,7 @@ buildFilterMenu(std::vector<std::string>& items, OperatorType op)
 
 struct FilterParms
 {
-    using TrimMode = openvdb::tools::lstrack::TrimMode;
+    using TrimMode = laovdb::tools::lstrack::TrimMode;
 
     std::string mGroup;
     std::string mMaskName;
@@ -335,7 +335,7 @@ public:
         OP_ERROR cookVDBSop(OP_Context&) override;
 
     private:
-        using BossT = openvdb::util::NullInterrupter;
+        using BossT = laovdb::util::NullInterrupter;
 
         OP_ERROR evalFilterParms(OP_Context&, FilterParms&);
 
@@ -827,8 +827,8 @@ SOP_OpenVDB_Filter_Level_Set::Cache::cookVDBSop(
         for (hvdb::VdbPrimIterator it(gdp, group); it; ++it) {
 
             // Check grid class
-            const openvdb::GridClass gridClass = it->getGrid().getGridClass();
-            if (gridClass != openvdb::GRID_LEVEL_SET) {
+            const laovdb::GridClass gridClass = it->getGrid().getGridClass();
+            if (gridClass != laovdb::GRID_LEVEL_SET) {
                 std::string s = it.getPrimitiveNameOrIndex().toStdString();
                 s = "VDB primitive " + s + " was skipped because it is not a level-set grid.";
                 addWarning(SOP_MESSAGE, s.c_str());
@@ -837,13 +837,13 @@ SOP_OpenVDB_Filter_Level_Set::Cache::cookVDBSop(
 
             // Appply filters
 
-            bool wasFiltered = applyFilters<openvdb::FloatGrid>(
+            bool wasFiltered = applyFilters<laovdb::FloatGrid>(
                 *it, filterParms, boss.interrupter(), context, *gdp, verbose);
 
             if (boss.wasInterrupted()) break;
 
             if (!wasFiltered) {
-                wasFiltered = applyFilters<openvdb::DoubleGrid>(
+                wasFiltered = applyFilters<laovdb::DoubleGrid>(
                     *it, filterParms, boss.interrupter(), context, *gdp, verbose);
             }
 
@@ -939,19 +939,19 @@ SOP_OpenVDB_Filter_Level_Set::Cache::applyFilters(
     bool verbose)
 {
     vdbPrim->makeGridUnique();
-    typename GridT::Ptr grid = openvdb::gridPtrCast<GridT>(vdbPrim->getGridPtr());
+    typename GridT::Ptr grid = laovdb::gridPtrCast<GridT>(vdbPrim->getGridPtr());
 
     if (!grid) return false;
 
     using ValueT = typename GridT::ValueType;
-    using MaskT = openvdb::FloatGrid;
-    using FilterT = openvdb::tools::LevelSetFilter<GridT, MaskT, BossT>;
+    using MaskT = laovdb::FloatGrid;
+    using FilterT = laovdb::tools::LevelSetFilter<GridT, MaskT, BossT>;
 
     const float voxelSize = static_cast<float>(grid->voxelSize()[0]);
     FilterT filter(*grid, &boss);
-    filter.setTemporalScheme(openvdb::math::TVD_RK1);
+    filter.setTemporalScheme(laovdb::math::TVD_RK1);
 
-    if (grid->background() < ValueT(openvdb::LEVEL_SET_HALF_WIDTH * voxelSize)) {
+    if (grid->background() < ValueT(laovdb::LEVEL_SET_HALF_WIDTH * voxelSize)) {
         std::string msg = "VDB primitive '"
             + std::string(vdbPrim->getGridName())
             + "' has a narrow band width that is less than 3 voxel units. ";
@@ -999,7 +999,7 @@ SOP_OpenVDB_Filter_Level_Set::Cache::filterGrid(
                 hvdb::VdbPrimCIterator maskIt(maskGeo, maskGroup);
                 if (maskIt) {
                     if (maskIt->getStorageType() == UT_VDB_FLOAT) {
-                        maskGrid = openvdb::gridConstPtrCast<MaskT>(maskIt->getGridPtr());
+                        maskGrid = laovdb::gridConstPtrCast<MaskT>(maskIt->getGridPtr());
                     } else {
                         addWarning(SOP_MESSAGE, "The mask grid has to be a FloatGrid.");
                     }
@@ -1015,11 +1015,11 @@ SOP_OpenVDB_Filter_Level_Set::Cache::filterGrid(
     filter.setTrimming(parms.mTrimMode);
 
     switch (parms.mAccuracy) {
-        case ACCURACY_UPWIND_FIRST:  filter.setSpatialScheme(openvdb::math::FIRST_BIAS);   break;
-        case ACCURACY_UPWIND_SECOND: filter.setSpatialScheme(openvdb::math::SECOND_BIAS);  break;
-        case ACCURACY_UPWIND_THIRD:  filter.setSpatialScheme(openvdb::math::THIRD_BIAS);   break;
-        case ACCURACY_WENO:          filter.setSpatialScheme(openvdb::math::WENO5_BIAS);   break;
-        case ACCURACY_HJ_WENO:       filter.setSpatialScheme(openvdb::math::HJWENO5_BIAS); break;
+        case ACCURACY_UPWIND_FIRST:  filter.setSpatialScheme(laovdb::math::FIRST_BIAS);   break;
+        case ACCURACY_UPWIND_SECOND: filter.setSpatialScheme(laovdb::math::SECOND_BIAS);  break;
+        case ACCURACY_UPWIND_THIRD:  filter.setSpatialScheme(laovdb::math::THIRD_BIAS);   break;
+        case ACCURACY_WENO:          filter.setSpatialScheme(laovdb::math::WENO5_BIAS);   break;
+        case ACCURACY_HJ_WENO:       filter.setSpatialScheme(laovdb::math::HJWENO5_BIAS); break;
     }
 
     const float voxelSize = float(filter.grid().voxelSize()[0]);
@@ -1224,7 +1224,7 @@ SOP_OpenVDB_Filter_Level_Set::Cache::renormalize(
 
     filter.setNormCount(parms.mIterations);
 
-    filter.setTemporalScheme(openvdb::math::TVD_RK3);
+    filter.setTemporalScheme(laovdb::math::TVD_RK3);
 
     if (verbose) std::cout << "Renormalize #" << parms.mIterations << std::endl;
 

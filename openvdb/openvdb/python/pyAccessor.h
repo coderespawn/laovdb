@@ -11,7 +11,7 @@
 namespace pyAccessor {
 
 namespace py = boost::python;
-using namespace openvdb::OPENVDB_VERSION_NAME;
+using namespace laovdb::OPENVDB_VERSION_NAME;
 
 
 //@{
@@ -121,7 +121,7 @@ extractValueArg(
 /// automatically.  But if the Python method were called with an object of
 /// a type that is not convertible to a Coord, then the TypeError message
 /// would say something like "TypeError: No registered converter was able to
-/// produce a C++ rvalue of type openvdb::math::Coord...".
+/// produce a C++ rvalue of type laovdb::math::Coord...".
 /// Handling the type conversion manually is more work, but it allows us to
 /// instead generate messages like "TypeError: expected tuple(int, int, int),
 /// found str as argument to FloatGridAccessor.getValue()".
@@ -221,7 +221,7 @@ public:
     {
         const std::string
             pyGridTypeName = pyutil::GridTraits<GridType>::name(),
-            pyValueTypeName = openvdb::typeNameAsString<typename GridType::ValueType>(),
+            pyValueTypeName = laovdb::typeNameAsString<typename GridType::ValueType>(),
             pyAccessorTypeName = Traits::typeName();
 
         py::class_<AccessorWrap> clss(

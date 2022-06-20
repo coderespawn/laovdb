@@ -24,7 +24,7 @@ class TestMaps: public ::testing::Test
 
 TEST_F(TestMaps, testApproxInverse)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     Mat4d singular = Mat4d::identity();
     singular[1][1] = 0.f;
@@ -74,7 +74,7 @@ TEST_F(TestMaps, testApproxInverse)
 
 TEST_F(TestMaps, testUniformScale)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     AffineMap map;
 
@@ -98,7 +98,7 @@ TEST_F(TestMaps, testUniformScale)
 
 TEST_F(TestMaps, testTranslation)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     double TOL = 1e-7;
 
@@ -155,7 +155,7 @@ TEST_F(TestMaps, testTranslation)
 
 TEST_F(TestMaps, testScaleDefault)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     double TOL = 1e-7;
 
@@ -190,7 +190,7 @@ TEST_F(TestMaps, testScaleDefault)
 
 TEST_F(TestMaps, testRotation)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     double TOL = 1e-7;
 
@@ -249,7 +249,7 @@ TEST_F(TestMaps, testRotation)
 
 TEST_F(TestMaps, testScaleTranslate)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     double TOL = 1e-7;
 
@@ -311,7 +311,7 @@ TEST_F(TestMaps, testScaleTranslate)
 
 TEST_F(TestMaps, testUniformScaleTranslate)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     double TOL = 1e-7;
 
@@ -374,7 +374,7 @@ TEST_F(TestMaps, testUniformScaleTranslate)
 
 TEST_F(TestMaps, testDecomposition)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     //double TOL = 1e-7;
 
@@ -417,16 +417,16 @@ TEST_F(TestMaps, testDecomposition)
 
 TEST_F(TestMaps, testFrustum)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
-    openvdb::BBoxd bbox(Vec3d(0), Vec3d(100));
+    laovdb::BBoxd bbox(Vec3d(0), Vec3d(100));
     NonlinearFrustumMap frustum(bbox, 1./6., 5);
     /// frustum will have depth, far plane - near plane = 5
     /// the frustum has width 1 in the front and 6 in the back
 
     Vec3d trans(2,2,2);
     NonlinearFrustumMap::Ptr map =
-        openvdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(
+        laovdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(
             frustum.preScale(Vec3d(10,10,10))->postTranslate(trans));
 
     EXPECT_TRUE(!map->hasUniformScale());
@@ -535,24 +535,24 @@ TEST_F(TestMaps, testFrustum)
 
 TEST_F(TestMaps, testCalcBoundingBox)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
-    openvdb::BBoxd world_bbox(Vec3d(0,0,0), Vec3d(1,1,1));
-    openvdb::BBoxd voxel_bbox;
-    openvdb::BBoxd expected;
+    laovdb::BBoxd world_bbox(Vec3d(0,0,0), Vec3d(1,1,1));
+    laovdb::BBoxd voxel_bbox;
+    laovdb::BBoxd expected;
     {
         AffineMap affine;
         affine.accumPreScale(Vec3d(2,2,2));
 
-        openvdb::util::calculateBounds<AffineMap>(affine, world_bbox, voxel_bbox);
+        laovdb::util::calculateBounds<AffineMap>(affine, world_bbox, voxel_bbox);
 
-        expected = openvdb::BBoxd(Vec3d(0,0,0), Vec3d(0.5, 0.5, 0.5));
+        expected = laovdb::BBoxd(Vec3d(0,0,0), Vec3d(0.5, 0.5, 0.5));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.min(), expected.min()));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.max(), expected.max()));
 
         affine.accumPostTranslation(Vec3d(1,1,1));
-        openvdb::util::calculateBounds<AffineMap>(affine, world_bbox, voxel_bbox);
-        expected = openvdb::BBoxd(Vec3d(-0.5,-0.5,-0.5), Vec3d(0, 0, 0));
+        laovdb::util::calculateBounds<AffineMap>(affine, world_bbox, voxel_bbox);
+        expected = laovdb::BBoxd(Vec3d(-0.5,-0.5,-0.5), Vec3d(0, 0, 0));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.min(), expected.min()));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.max(), expected.max()));
     }
@@ -564,8 +564,8 @@ TEST_F(TestMaps, testCalcBoundingBox)
         Vec3d center(0,0,0);
         double radius = 10;
 
-        openvdb::util::calculateBounds<AffineMap>(affine, center, radius, voxel_bbox);
-        expected = openvdb::BBoxd(Vec3d(-5.5,-5.5,-5.5), Vec3d(4.5, 4.5, 4.5));
+        laovdb::util::calculateBounds<AffineMap>(affine, center, radius, voxel_bbox);
+        expected = laovdb::BBoxd(Vec3d(-5.5,-5.5,-5.5), Vec3d(4.5, 4.5, 4.5));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.min(), expected.min()));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.max(), expected.max()));
     }
@@ -577,8 +577,8 @@ TEST_F(TestMaps, testCalcBoundingBox)
         Vec3d center(0,0,0);
         double radius = 10;
 
-        openvdb::util::calculateBounds<AffineMap>(affine, center, radius, voxel_bbox);
-        expected = openvdb::BBoxd(Vec3d(-5,-5,-5), Vec3d(5, 5, 5));
+        laovdb::util::calculateBounds<AffineMap>(affine, center, radius, voxel_bbox);
+        expected = laovdb::BBoxd(Vec3d(-5,-5,-5), Vec3d(5, 5, 5));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.min(), expected.min()));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.max(), expected.max()));
     }
@@ -590,8 +590,8 @@ TEST_F(TestMaps, testCalcBoundingBox)
         Vec3d center(0,0,0);
         double radius = 10;
 
-        openvdb::util::calculateBounds<AffineMap>(affine, center, radius, voxel_bbox);
-        expected = openvdb::BBoxd(Vec3d(-5,-10,-10), Vec3d(5, 10, 10));
+        laovdb::util::calculateBounds<AffineMap>(affine, center, radius, voxel_bbox);
+        expected = laovdb::BBoxd(Vec3d(-5,-10,-10), Vec3d(5, 10, 10));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.min(), expected.min()));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.max(), expected.max()));
      }
@@ -604,26 +604,26 @@ TEST_F(TestMaps, testCalcBoundingBox)
         Vec3d center(1,1,1);
         double radius = 10;
 
-        openvdb::util::calculateBounds<AffineMap>(affine, center, radius, voxel_bbox);
-        expected = openvdb::BBoxd(Vec3d(-5,-10,-10), Vec3d(5, 10, 10));
+        laovdb::util::calculateBounds<AffineMap>(affine, center, radius, voxel_bbox);
+        expected = laovdb::BBoxd(Vec3d(-5,-10,-10), Vec3d(5, 10, 10));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.min(), expected.min()));
         EXPECT_TRUE(isApproxEqual(voxel_bbox.max(), expected.max()));
      }
      {
-         openvdb::BBoxd bbox(Vec3d(0), Vec3d(100));
+         laovdb::BBoxd bbox(Vec3d(0), Vec3d(100));
          NonlinearFrustumMap frustum(bbox, 2, 5);
          NonlinearFrustumMap::Ptr map =
-             openvdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(
+             laovdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(
                  frustum.preScale(Vec3d(2,2,2)));
          Vec3d center(20,20,10);
          double radius(1);
 
-         openvdb::util::calculateBounds<NonlinearFrustumMap>(*map, center, radius, voxel_bbox);
+         laovdb::util::calculateBounds<NonlinearFrustumMap>(*map, center, radius, voxel_bbox);
      }
 }
 TEST_F(TestMaps, testJacobians)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
     const double TOL = 1e-7;
     {
         AffineMap affine;
@@ -732,14 +732,14 @@ TEST_F(TestMaps, testJacobians)
         EXPECT_NEAR(tmp(2), test(2), TOL);
     }
     {
-        openvdb::BBoxd bbox(Vec3d(0), Vec3d(100));
+        laovdb::BBoxd bbox(Vec3d(0), Vec3d(100));
         NonlinearFrustumMap frustum(bbox, 1./6., 5);
         /// frustum will have depth, far plane - near plane = 5
         /// the frustum has width 1 in the front and 6 in the back
 
         Vec3d trans(2,2,2);
         NonlinearFrustumMap::Ptr map =
-            openvdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(
+            laovdb::StaticPtrCast<NonlinearFrustumMap, MapBase>(
                 frustum.preScale(Vec3d(10,10,10))->postTranslate(trans));
 
         const Vec3d test(1,2,3);

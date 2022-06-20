@@ -15,7 +15,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -62,14 +62,14 @@ namespace tools {
 /// {
 /// public:
 ///     // Standard tree type (e.g. MaskTree or FloatTree in openvdb.h)
-///     using ResultTreeType = typename openvdb::tree::Tree4<ValueType, 5, 4, 3>::Type;
+///     using ResultTreeType = typename laovdb::tree::Tree4<ValueType, 5, 4, 3>::Type;
 ///
 ///     using ResultLeafNodeType = typename ResultTreeType::LeafNodeType;
 ///     using ResultValueType = typename ResultTreeType::ValueType;
 ///
 ///     using DenseValueType = float;
 ///
-///     using Index = openvdb::Coord::ValueType;
+///     using Index = laovdb::Coord::ValueType;
 ///
 ///     Rule(const DenseValueType& value): mMaskValue(value){};
 ///
@@ -141,8 +141,8 @@ extractSparseTreeWithMask(const DenseType& dense,
 /// @endcode
 /// NB: only Dense grids with memory layout zxy are supported
 template<typename ValueT, typename OpType>
-void transformDense(Dense<ValueT, openvdb::tools::LayoutZYX>& dense,
-                    const openvdb::CoordBBox& bbox, const OpType& op, bool parallel=true);
+void transformDense(Dense<ValueT, laovdb::tools::LayoutZYX>& dense,
+                    const laovdb::CoordBBox& bbox, const OpType& op, bool parallel=true);
 
 /// We currrently support the following operations when compositing sparse
 /// data into a dense grid.
@@ -173,7 +173,7 @@ template<typename OpType, typename DenseType>
 class SparseExtractor
 {
 public:
-    using Index = openvdb::math::Coord::ValueType;
+    using Index = laovdb::math::Coord::ValueType;
 
     using DenseValueType = typename DenseType::ValueType;
     using ResultTreeType = typename OpType::ResultTreeType;
@@ -187,10 +187,10 @@ private:
     const DenseType&                     mDense;
     const OpType&                        mFunctor;
     const ResultValueType                mBackground;
-    const openvdb::math::CoordBBox       mBBox;
+    const laovdb::math::CoordBBox       mBBox;
     const Index                          mWidth;
     typename ResultTreeType::Ptr         mMask;
-    openvdb::math::Coord                 mMin;
+    laovdb::math::Coord                 mMin;
 
 public:
     SparseExtractor(const DenseType& dense, const OpType& functor,
@@ -203,7 +203,7 @@ public:
     {}
 
     SparseExtractor(const DenseType& dense,
-                    const openvdb::math::CoordBBox& bbox,
+                    const laovdb::math::CoordBBox& bbox,
                     const OpType& functor,
                     const ResultValueType background) :
         mDense(dense), mFunctor(functor),
@@ -233,8 +233,8 @@ public:
 
         // Snap the bbox to nearest leaf nodes min and max
 
-        openvdb::math::Coord padded_min = mBBox.min();
-        openvdb::math::Coord padded_max = mBBox.max();
+        laovdb::math::Coord padded_min = mBBox.min();
+        laovdb::math::Coord padded_max = mBBox.max();
 
 
         padded_min &= ~(mWidth - 1);
@@ -291,8 +291,8 @@ public:
                 for (Index k = kmin; k < kmax; ++k) {
 
                     // Calculate the origin of candidate leaf
-                    const openvdb::math::Coord origin =
-                        mMin + openvdb::math::Coord(mWidth * i,
+                    const laovdb::math::Coord origin =
+                        mMin + laovdb::math::Coord(mWidth * i,
                                                     mWidth * j,
                                                     mWidth * k );
 
@@ -306,7 +306,7 @@ public:
 
                     // The bounding box for this leaf
 
-                    openvdb::math::CoordBBox localBBox = leaf->getNodeBoundingBox();
+                    laovdb::math::CoordBBox localBBox = leaf->getNodeBoundingBox();
 
                     // Shrink to the intersection with mBBox (i.e. the dense
                     // volume)
@@ -318,15 +318,15 @@ public:
                     if (localBBox.empty()) continue;
 
 
-                    const openvdb::math::Coord start = localBBox.getStart();
-                    const openvdb::math::Coord end   = localBBox.getEnd();
+                    const laovdb::math::Coord start = localBBox.getStart();
+                    const laovdb::math::Coord end   = localBBox.getEnd();
 
                     // Order the looping to respect the memory layout in
                     // the Dense source
 
-                    if (mDense.memoryLayout() == openvdb::tools::LayoutZYX) {
+                    if (mDense.memoryLayout() == laovdb::tools::LayoutZYX) {
 
-                        openvdb::math::Coord ijk;
+                        laovdb::math::Coord ijk;
                         Index offset;
                         const DenseValueType* dp;
                         for (ijk[0] = start.x(); ijk[0] < end.x(); ++ijk[0] ) {
@@ -343,7 +343,7 @@ public:
 
                     } else {
 
-                        openvdb::math::Coord ijk;
+                        laovdb::math::Coord ijk;
                         const DenseValueType* dp;
                         for (ijk[2] = start.z(); ijk[2] < end.z(); ++ijk[2]) {
                             for (ijk[1] = start.y(); ijk[1] < end.y(); ++ijk[1]) {
@@ -456,7 +456,7 @@ public:
 
             // The bounding box for this leaf
 
-            openvdb::math::CoordBBox localBBox = maskLeaf->getNodeBoundingBox();
+            laovdb::math::CoordBBox localBBox = maskLeaf->getNodeBoundingBox();
 
             // Shrink to the intersection with the dense volume
 
@@ -479,12 +479,12 @@ public:
             // Iterate over the intersecting bounding box
             // copying active values to the result tree
 
-            const openvdb::math::Coord start = localBBox.getStart();
-            const openvdb::math::Coord end   = localBBox.getEnd();
+            const laovdb::math::Coord start = localBBox.getStart();
+            const laovdb::math::Coord end   = localBBox.getEnd();
 
-            openvdb::math::Coord ijk;
+            laovdb::math::Coord ijk;
 
-            if (mDense.memoryLayout() == openvdb::tools::LayoutZYX
+            if (mDense.memoryLayout() == laovdb::tools::LayoutZYX
                   && maskLeaf->isDense()) {
 
                 Index offset;
@@ -541,7 +541,7 @@ public:
 private:
     const DenseType&                   mDense;
     const ResultValueType              mBackground;
-    const openvdb::math::CoordBBox&    mBBox;
+    const laovdb::math::CoordBBox&    mBBox;
     const MaskLeafVec&                 mLeafVec;
 
     typename ResultTreeType::Ptr       mResult;
@@ -645,17 +645,17 @@ class DenseTransformer
 {
 public:
     using ValueT = _ValueT;
-    using DenseT = Dense<ValueT, openvdb::tools::LayoutZYX>;
-    using IntType = openvdb::math::Coord::ValueType;
+    using DenseT = Dense<ValueT, laovdb::tools::LayoutZYX>;
+    using IntType = laovdb::math::Coord::ValueType;
     using RangeType = tbb::blocked_range2d<IntType, IntType>;
 
 private:
     DenseT&                  mDense;
     const OpType&            mOp;
-    openvdb::math::CoordBBox mBBox;
+    laovdb::math::CoordBBox mBBox;
 
 public:
-    DenseTransformer(DenseT& dense, const openvdb::math::CoordBBox& bbox, const OpType& functor):
+    DenseTransformer(DenseT& dense, const laovdb::math::CoordBBox& bbox, const OpType& functor):
         mDense(dense), mOp(functor), mBBox(dense.bbox())
     {
         // The iteration space is the intersection of the
@@ -673,8 +673,8 @@ public:
         if (mBBox.empty()) return;
 
 
-        const openvdb::math::Coord start = mBBox.getStart();
-        const openvdb::math::Coord end   = mBBox.getEnd();
+        const laovdb::math::Coord start = mBBox.getStart();
+        const laovdb::math::Coord end   = mBBox.getEnd();
 
         // The iteration range only the slower two directions.
         const RangeType range(start.x(), end.x(), 1,
@@ -700,7 +700,7 @@ public:
         const IntType jmax = range.cols().end();
 
 
-        openvdb::math::Coord xyz(imin, jmin, mBBox.min().z());
+        laovdb::math::Coord xyz(imin, jmin, mBBox.min().z());
         for (xyz[0] = imin; xyz[0] != imax; ++xyz[0]) {
             for (xyz[1] = jmin; xyz[1] != jmax; ++xyz[1]) {
 
@@ -719,8 +719,8 @@ struct ContiguousOp
 {
     ContiguousOp(const PointWiseOp& op) : mOp(op){}
 
-    using DenseT = Dense<ValueT, openvdb::tools::LayoutZYX>;
-    inline void transform(DenseT& dense, openvdb::math::Coord& ijk, size_t size) const
+    using DenseT = Dense<ValueT, laovdb::tools::LayoutZYX>;
+    inline void transform(DenseT& dense, laovdb::math::Coord& ijk, size_t size) const
     {
         ValueT* dp = const_cast<ValueT*>(&dense.getValue(ijk));
 
@@ -736,8 +736,8 @@ struct ContiguousOp
 /// Apply a point-wise functor to the intersection of a dense grid and a given bounding box
 template<typename ValueT, typename PointwiseOpT>
 void
-transformDense(Dense<ValueT, openvdb::tools::LayoutZYX>& dense,
-               const openvdb::CoordBBox& bbox,
+transformDense(Dense<ValueT, laovdb::tools::LayoutZYX>& dense,
+               const laovdb::CoordBBox& bbox,
                const PointwiseOpT& functor, bool parallel)
 {
     using OpT = ContiguousOp<ValueT, PointwiseOpT>;
@@ -761,8 +761,8 @@ public:
     using LeafT = typename TreeT::LeafNodeType;
     using MaskTreeT = typename TreeT::template ValueConverter<ValueMask>::Type;
     using MaskLeafT = typename MaskTreeT::LeafNodeType;
-    using DenseT = Dense<ValueT, openvdb::tools::LayoutZYX>;
-    using Index = openvdb::math::Coord::ValueType;
+    using DenseT = Dense<ValueT, laovdb::tools::LayoutZYX>;
+    using Index = laovdb::math::Coord::ValueType;
     using Range3d = tbb::blocked_range3d<Index, Index, Index>;
 
     SparseToDenseCompositor(DenseT& dense, const TreeT& source, const TreeT& alpha,
@@ -782,13 +782,13 @@ public:
 
         // construct a tree that defines the iteration space
 
-        MaskTreeT maskTree(mSource, false /*background*/, openvdb::TopologyCopy());
+        MaskTreeT maskTree(mSource, false /*background*/, laovdb::TopologyCopy());
         maskTree.topologyUnion(mAlpha);
 
         // Composite regions that are represented by leafnodes in either mAlpha or mSource
         // Parallelize over bool-leafs
 
-        openvdb::tree::LeafManager<const MaskTreeT> maskLeafs(maskTree);
+        laovdb::tree::LeafManager<const MaskTreeT> maskLeafs(maskTree);
         maskLeafs.foreach(*this, threaded);
 
         // Composite regions that are represented by tiles
@@ -804,19 +804,19 @@ public:
 
         for (; citer; ++citer) {
 
-            const openvdb::math::Coord org = citer.getCoord();
+            const laovdb::math::Coord org = citer.getCoord();
 
             // Early out if both alpha and source are zero in this tile.
 
             const ValueT alphaValue = alphaAccessor.getValue(org);
             const ValueT sourceValue = sourceAccessor.getValue(org);
 
-            if (openvdb::math::isZero(alphaValue) &&
-                openvdb::math::isZero(sourceValue)) continue;
+            if (laovdb::math::isZero(alphaValue) &&
+                laovdb::math::isZero(sourceValue)) continue;
 
             // Compute overlap of tile with the dense grid
 
-            openvdb::math::CoordBBox localBBox = citer.getBoundingBox();
+            laovdb::math::CoordBBox localBBox = citer.getBoundingBox();
             localBBox.intersect(mDense.bbox());
 
             // Early out if there is no intersection
@@ -834,14 +834,14 @@ public:
     void inline operator()(const MaskLeafT& maskLeaf, size_t /*i*/) const
     {
         using ULeaf = UniformLeaf;
-        openvdb::math::CoordBBox localBBox = maskLeaf.getNodeBoundingBox();
+        laovdb::math::CoordBBox localBBox = maskLeaf.getNodeBoundingBox();
         localBBox.intersect(mDense.bbox());
 
         // Early out for non-overlapping leafs
 
         if (localBBox.empty()) return;
 
-        const openvdb::math::Coord org = maskLeaf.origin();
+        const laovdb::math::Coord org = maskLeaf.origin();
         const LeafT* alphaLeaf = mAlpha.probeLeaf(org);
         const LeafT* sourceLeaf   = mSource.probeLeaf(org);
 
@@ -880,14 +880,14 @@ public:
     // i.e.  it assumes that all valueOff Alpha voxels have value 0.
 
     template<typename LeafT1, typename LeafT2>
-    inline static void compositeFromLeaf(DenseT& dense, const openvdb::math::CoordBBox& bbox,
+    inline static void compositeFromLeaf(DenseT& dense, const laovdb::math::CoordBBox& bbox,
                                          const LeafT1& source, const LeafT2& alpha,
                                          const ValueT beta, const ValueT strength)
     {
-        using IntType = openvdb::math::Coord::ValueType;
+        using IntType = laovdb::math::Coord::ValueType;
 
         const ValueT sbeta = strength * beta;
-        openvdb::math::Coord ijk = bbox.min();
+        laovdb::math::Coord ijk = bbox.min();
 
 
         if (alpha.isDense() /*all active values*/) {
@@ -926,7 +926,7 @@ public:
         }
     }
 
-    inline static void compositeFromTile(DenseT& dense, openvdb::math::CoordBBox& bbox,
+    inline static void compositeFromTile(DenseT& dense, laovdb::math::CoordBBox& bbox,
         const ValueT& sourceValue, const ValueT& alphaValue,
         const ValueT& beta, const ValueT& strength,
         bool threaded)
@@ -943,7 +943,7 @@ public:
     {
         /// Construct a range that corresponds to the
         /// bounding box of the dense volume
-        const openvdb::math::CoordBBox& bbox = mDense.bbox();
+        const laovdb::math::CoordBBox& bbox = mDense.bbox();
 
         Range3d  range(bbox.min().x(), bbox.max().x(), LeafT::DIM,
                        bbox.min().y(), bbox.max().y(), LeafT::DIM,
@@ -982,7 +982,7 @@ public:
         const Index kmin = range.cols().begin();
         const Index kmax = range.cols().end();
 
-        openvdb::Coord ijk;
+        laovdb::Coord ijk;
         for (ijk[0] = imin; ijk[0] < imax; ++ijk[0]) {
             for (ijk[1] = jmin; ijk[1] < jmax; ++ijk[1]) {
                 for (ijk[2] = kmin; ijk[2] < kmax; ++ijk[2]) {
@@ -1038,16 +1038,16 @@ private:
 
         static const BaseT init(const ValueT& value) {
             BaseT tmp;
-            for (openvdb::Index i = 0; i < LeafT::DIM; ++i) {
+            for (laovdb::Index i = 0; i < LeafT::DIM; ++i) {
                 tmp.mValues[i] = value;
             }
             return tmp;
         }
 
         bool isDense() const { return true; }
-        bool isValueOn(openvdb::math::Coord&) const { return true; }
+        bool isValueOn(laovdb::math::Coord&) const { return true; }
 
-        const ValueT& getValue(const openvdb::math::Coord&) const { return  BaseT::mValues[0]; }
+        const ValueT& getValue(const laovdb::math::Coord&) const { return  BaseT::mValues[0]; }
     };
 
 private:
@@ -1170,12 +1170,12 @@ compositeToDense(
     using Translator = ds::CompositeFunctorTranslator<OpT, ValueT>;
     using Method = typename Translator::OpT;
 
-    if (openvdb::math::isZero(strength)) return;
+    if (laovdb::math::isZero(strength)) return;
 
     SparseToDenseCompositor<Method, TreeT> tool(dense, source, alpha, beta, strength);
 
-    if (openvdb::math::isZero(alpha.background()) &&
-        openvdb::math::isZero(source.background()))
+    if (laovdb::math::isZero(alpha.background()) &&
+        laovdb::math::isZero(source.background()))
     {
         // Use the sparsity of (alpha U source) as the iteration space.
         tool.sparseComposite(threaded);
@@ -1187,6 +1187,6 @@ compositeToDense(
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif //OPENVDB_TOOLS_DENSESPARSETOOLS_HAS_BEEN_INCLUDED

@@ -12,7 +12,7 @@
 #include <iomanip>// for setprecision
 #include "Formats.h"// for printTime
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace util {
@@ -186,7 +186,7 @@ private:
 
 } // namespace util
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 
 #endif // OPENVDB_UTIL_CPUTIMER_HAS_BEEN_INCLUDED

@@ -19,14 +19,14 @@
 #include <string>
 #include <vector>
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestPointMove: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 
     void testCachedDeformer();
 }; // class TestPointMove
@@ -87,8 +87,8 @@ positionsToGrid(const std::vector<Vec3s>& positions, const float voxelSize = 1.0
 {
     const PointAttributeVector<Vec3s> pointList(positions);
 
-    openvdb::math::Transform::Ptr transform(
-        openvdb::math::Transform::createLinearTransform(voxelSize));
+    laovdb::math::Transform::Ptr transform(
+        laovdb::math::Transform::createLinearTransform(voxelSize));
 
     tools::PointIndexGrid::Ptr pointIndexGrid =
         tools::createPointIndexGrid<tools::PointIndexGrid>(pointList, *transform);
@@ -119,14 +119,14 @@ gridToPositions(const PointDataGrid::Ptr& points, bool sort = true)
 
     for (auto leaf = points->tree().beginLeaf(); leaf; ++leaf) {
 
-        const openvdb::points::AttributeArray& positionArray =
+        const laovdb::points::AttributeArray& positionArray =
             leaf->constAttributeArray("P");
-        openvdb::points::AttributeHandle<openvdb::Vec3f> positionHandle(positionArray);
+        laovdb::points::AttributeHandle<laovdb::Vec3f> positionHandle(positionArray);
 
         for (auto iter = leaf->beginIndexOn(); iter; ++iter) {
-            openvdb::Vec3f voxelPosition = positionHandle.get(*iter);
-            openvdb::Vec3d xyz = iter.getCoord().asVec3d();
-            openvdb::Vec3f worldPosition = points->transform().indexToWorld(voxelPosition + xyz);
+            laovdb::Vec3f voxelPosition = positionHandle.get(*iter);
+            laovdb::Vec3d xyz = iter.getCoord().asVec3d();
+            laovdb::Vec3f worldPosition = points->transform().indexToWorld(voxelPosition + xyz);
 
             positions.push_back(worldPosition);
         }
@@ -226,7 +226,7 @@ void TestPointMove::testCachedDeformer()
     EXPECT_TRUE(cachedDeformer.mLeafMap == nullptr);
 
     // throw when resetting cachedDeformer with an empty cache
-    EXPECT_THROW(cachedDeformer.reset(nullObject, size_t(0)), openvdb::IndexError);
+    EXPECT_THROW(cachedDeformer.reset(nullObject, size_t(0)), laovdb::IndexError);
 
     // manually create one leaf in the cache
     cache.leafs.resize(1);
@@ -700,7 +700,7 @@ struct CustomDeformer
 {
     using LeafT = PointDataGrid::TreeType::LeafNodeType;
 
-    CustomDeformer(const openvdb::Vec3d& offset,
+    CustomDeformer(const laovdb::Vec3d& offset,
                    std::atomic<int>& resetCalls,
                    std::atomic<int>& applyCalls)
         : mOffset(offset)
@@ -723,7 +723,7 @@ struct CustomDeformer
         mApplyCalls++;
     }
 
-    const openvdb::Vec3d mOffset;
+    const laovdb::Vec3d mOffset;
     std::atomic<int>& mResetCalls;
     std::atomic<int>& mApplyCalls;
 }; // struct CustomDeformer
@@ -731,7 +731,7 @@ struct CustomDeformer
 // Custom Deformer that always returns the position supplied in the constructor
 struct StaticDeformer
 {
-    StaticDeformer(const openvdb::Vec3d& position)
+    StaticDeformer(const laovdb::Vec3d& position)
         : mPosition(position) { }
 
     template <typename LeafT>
@@ -743,7 +743,7 @@ struct StaticDeformer
         position = mPosition;
     }
 
-    const openvdb::Vec3d mPosition;
+    const laovdb::Vec3d mPosition;
 }; // struct StaticDeformer
 
 } // namespace
@@ -933,8 +933,8 @@ TEST_F(TestPointMove, testPointData)
 
         const PointAttributeVector<Vec3s> pointList(positions);
 
-        openvdb::math::Transform::Ptr transform(
-            openvdb::math::Transform::createLinearTransform(voxelSize));
+        laovdb::math::Transform::Ptr transform(
+            laovdb::math::Transform::createLinearTransform(voxelSize));
 
         tools::PointIndexGrid::Ptr pointIndexGrid =
             tools::createPointIndexGrid<tools::PointIndexGrid>(pointList, *transform);
@@ -943,31 +943,31 @@ TEST_F(TestPointMove, testPointData)
                 createPointDataGrid<NullCodec, PointDataGrid>(*pointIndexGrid,
                                                               pointList, *transform);
         auto idAttributeType =
-            openvdb::points::TypedAttributeArray<int>::attributeType();
-        openvdb::points::appendAttribute(points->tree(), "id", idAttributeType);
+            laovdb::points::TypedAttributeArray<int>::attributeType();
+        laovdb::points::appendAttribute(points->tree(), "id", idAttributeType);
 
         // create a wrapper around the id vector
-        openvdb::points::PointAttributeVector<int> idWrapper(id);
+        laovdb::points::PointAttributeVector<int> idWrapper(id);
 
-        openvdb::points::populateAttribute<openvdb::points::PointDataTree,
-            openvdb::tools::PointIndexTree, openvdb::points::PointAttributeVector<int>>(
+        laovdb::points::populateAttribute<laovdb::points::PointDataTree,
+            laovdb::tools::PointIndexTree, laovdb::points::PointAttributeVector<int>>(
                 points->tree(), pointIndexGrid->tree(), "id", idWrapper);
 
         // use fixed-point codec for radius
         // note that this attribute type is not registered by default so needs to be
         // explicitly registered.
-        using Codec = openvdb::points::FixedPointCodec</*1-byte=*/false,
-                openvdb::points::UnitRange>;
-        openvdb::points::TypedAttributeArray<float, Codec>::registerType();
+        using Codec = laovdb::points::FixedPointCodec</*1-byte=*/false,
+                laovdb::points::UnitRange>;
+        laovdb::points::TypedAttributeArray<float, Codec>::registerType();
         auto radiusAttributeType =
-            openvdb::points::TypedAttributeArray<float, Codec>::attributeType();
-        openvdb::points::appendAttribute(points->tree(), "pscale", radiusAttributeType);
+            laovdb::points::TypedAttributeArray<float, Codec>::attributeType();
+        laovdb::points::appendAttribute(points->tree(), "pscale", radiusAttributeType);
 
         // create a wrapper around the radius vector
-        openvdb::points::PointAttributeVector<float> radiusWrapper(radius);
+        laovdb::points::PointAttributeVector<float> radiusWrapper(radius);
 
-        openvdb::points::populateAttribute<openvdb::points::PointDataTree,
-            openvdb::tools::PointIndexTree, openvdb::points::PointAttributeVector<float>>(
+        laovdb::points::populateAttribute<laovdb::points::PointDataTree,
+            laovdb::tools::PointIndexTree, laovdb::points::PointAttributeVector<float>>(
                 points->tree(), pointIndexGrid->tree(), "pscale", radiusWrapper);
 
         appendGroup(points->tree(), "odd");
@@ -1043,16 +1043,16 @@ TEST_F(TestPointMove, testPointData)
     }
 
     { // larger data set with a cached deformer and group filtering
-        std::vector<openvdb::Vec3R> newPositions;
+        std::vector<laovdb::Vec3R> newPositions;
         const int count = 10000;
         unittest_util::genPoints(count, newPositions);
 
         // manually construct point data grid instead of using positionsToGrid()
 
-        const PointAttributeVector<openvdb::Vec3R> pointList(newPositions);
+        const PointAttributeVector<laovdb::Vec3R> pointList(newPositions);
 
-        openvdb::math::Transform::Ptr transform(
-            openvdb::math::Transform::createLinearTransform(/*voxelSize=*/0.1));
+        laovdb::math::Transform::Ptr transform(
+            laovdb::math::Transform::createLinearTransform(/*voxelSize=*/0.1));
 
         tools::PointIndexGrid::Ptr pointIndexGrid =
             tools::createPointIndexGrid<tools::PointIndexGrid>(pointList, *transform);

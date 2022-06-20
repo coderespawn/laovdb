@@ -12,8 +12,8 @@
 #include <iostream>
 #include <iomanip>//for setprecision
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestIndexIterator: public ::testing::Test
 {
@@ -23,7 +23,7 @@ class TestIndexIterator: public ::testing::Test
 ////////////////////////////////////////
 
 
-/// @brief Functionality similar to openvdb::util::CpuTimer except with prefix padding and no decimals.
+/// @brief Functionality similar to laovdb::util::CpuTimer except with prefix padding and no decimals.
 ///
 /// @code
 ///    ProfileTimer timer("algorithm 1");
@@ -87,7 +87,7 @@ TEST_F(TestIndexIterator, testNullFilter)
 
 TEST_F(TestIndexIterator, testValueIndexIterator)
 {
-    using namespace openvdb::tree;
+    using namespace laovdb::tree;
 
     using LeafNode      = LeafNode<unsigned, 1>;
     using ValueOnIter   = LeafNode::ValueOnIter;
@@ -118,22 +118,22 @@ TEST_F(TestIndexIterator, testValueIndexIterator)
         // check coord value
         Coord xyz;
         iter.getCoord(xyz);
-        EXPECT_EQ(xyz, openvdb::Coord(0, 0, 1));
-        EXPECT_EQ(iter.getCoord(), openvdb::Coord(0, 0, 1));
+        EXPECT_EQ(xyz, laovdb::Coord(0, 0, 1));
+        EXPECT_EQ(iter.getCoord(), laovdb::Coord(0, 0, 1));
 
         // check iterators retrieval
-        EXPECT_EQ(iter.valueIter().getCoord(), openvdb::Coord(0, 0, 1));
+        EXPECT_EQ(iter.valueIter().getCoord(), laovdb::Coord(0, 0, 1));
         EXPECT_EQ(iter.end(), Index32(2));
 
         ++iter;
 
         // check coord value
         iter.getCoord(xyz);
-        EXPECT_EQ(xyz, openvdb::Coord(0, 1, 0));
-        EXPECT_EQ(iter.getCoord(), openvdb::Coord(0, 1, 0));
+        EXPECT_EQ(xyz, laovdb::Coord(0, 1, 0));
+        EXPECT_EQ(iter.getCoord(), laovdb::Coord(0, 1, 0));
 
         // check iterators retrieval
-        EXPECT_EQ(iter.valueIter().getCoord(), openvdb::Coord(0, 1, 0));
+        EXPECT_EQ(iter.valueIter().getCoord(), laovdb::Coord(0, 1, 0));
         EXPECT_EQ(iter.end(), Index32(3));
     }
 
@@ -307,9 +307,9 @@ TEST_F(TestIndexIterator, testFilterIndexIterator)
 
 TEST_F(TestIndexIterator, testProfile)
 {
-    using namespace openvdb::util;
-    using namespace openvdb::math;
-    using namespace openvdb::tree;
+    using namespace laovdb::util;
+    using namespace laovdb::math;
+    using namespace laovdb::tree;
 
 #ifdef PROFILE
     const int elements(1000 * 1000 * 1000);

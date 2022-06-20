@@ -73,7 +73,7 @@ private:
 #ifdef _WIN32
             using namespace boost::interprocess::detail;
             using namespace boost::interprocess::ipcdetail;
-            using openvdb::Index64;
+            using laovdb::Index64;
 
             if (void* fh = open_existing_file(regionFilename, boost::interprocess::read_only)) {
                 FILETIME mtime;
@@ -85,7 +85,7 @@ private:
 #else
             struct stat info;
             if (0 == ::stat(regionFilename, &info)) {
-                mLastWriteTime = openvdb::Index64(info.st_mtime);
+                mLastWriteTime = laovdb::Index64(info.st_mtime);
             }
 #endif
         }
@@ -95,13 +95,13 @@ private:
         boost::interprocess::mapped_region mRegion;
         bool mAutoDelete = false;
         Notifier mNotifier;
-        mutable std::atomic<openvdb::Index64> mLastWriteTime;
+        mutable std::atomic<laovdb::Index64> mLastWriteTime;
     }; // class Impl
     std::unique_ptr<Impl> mImpl;
 }; // class ProxyMappedFile
 
-using namespace openvdb;
-using namespace openvdb::compression;
+using namespace laovdb;
+using namespace laovdb::compression;
 
 class TestStreamCompression: public ::testing::Test
 {
@@ -157,7 +157,7 @@ TEST_F(TestStreamCompression, testBlosc)
 
         // incorrect number of expected bytes
         EXPECT_THROW(newUncompressedBuffer =
-            bloscDecompress(compressedBuffer.get(), 1), openvdb::RuntimeError);
+            bloscDecompress(compressedBuffer.get(), 1), laovdb::RuntimeError);
 
         EXPECT_TRUE(newUncompressedBuffer);
 #else
@@ -166,14 +166,14 @@ TEST_F(TestStreamCompression, testBlosc)
 
         // uncompressedSize
 
-        EXPECT_THROW(bloscUncompressedSize(compressedBuffer.get()), openvdb::RuntimeError);
+        EXPECT_THROW(bloscUncompressedSize(compressedBuffer.get()), laovdb::RuntimeError);
 
         // decompress
 
         std::unique_ptr<char[]> newUncompressedBuffer;
         EXPECT_THROW(
             newUncompressedBuffer = bloscDecompress(compressedBuffer.get(), uncompressedBytes),
-            openvdb::RuntimeError);
+            laovdb::RuntimeError);
 
         EXPECT_TRUE(!newUncompressedBuffer);
 #endif
@@ -265,13 +265,13 @@ TEST_F(TestStreamCompression, testBlosc)
 
         EXPECT_THROW(buffer = bloscDecompress(
             reinterpret_cast<char*>(compressedBuffer.get()), invalidBytes - 16),
-            openvdb::RuntimeError);
+            laovdb::RuntimeError);
 
         EXPECT_TRUE(!buffer);
 
         EXPECT_THROW(bloscDecompress(
             reinterpret_cast<char*>(compressedBuffer.get()), count * sizeof(int) + 1),
-            openvdb::RuntimeError);
+            laovdb::RuntimeError);
 #endif
     }
 
@@ -473,7 +473,7 @@ TestStreamCompression::testPagedStreams()
             std::ofstream fileout(filename.c_str(), std::ios_base::binary);
 
             io::setStreamMetadataPtr(fileout, streamMetadata);
-            io::setDataCompression(fileout, openvdb::io::COMPRESS_BLOSC);
+            io::setDataCompression(fileout, laovdb::io::COMPRESS_BLOSC);
 
             std::vector<uint8_t> values;
             values.resize(10*1000*1000);

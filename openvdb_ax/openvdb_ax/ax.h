@@ -23,7 +23,7 @@
 #include <openvdb/version.h>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace ax {
@@ -71,7 +71,7 @@ OPENVDB_AX_API void uninitialize();
 ///                  {{"axname0","dataname0"}, {"axname1","dataname1"}} see
 ///                  AttributeBindings.h for details.
 OPENVDB_AX_API
-void run(const char* ax, openvdb::GridBase& grid,
+void run(const char* ax, laovdb::GridBase& grid,
          const AttributeBindings& bindings = {});
 
 /// @brief  Run a full AX pipeline (parse, compile and execute) on a vector of
@@ -100,12 +100,12 @@ void run(const char* ax, openvdb::GridBase& grid,
 ///                  {{"axname0","dataname0"}, {"axname1","dataname1"}} see
 ///                  AttributeBindings.h for details.
 OPENVDB_AX_API
-void run(const char* ax, openvdb::GridPtrVec& grids,
+void run(const char* ax, laovdb::GridPtrVec& grids,
          const AttributeBindings& bindings = {});
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_AX_HAS_BEEN_INCLUDED
 

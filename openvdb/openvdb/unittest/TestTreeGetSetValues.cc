@@ -20,7 +20,7 @@ class TestTreeGetSetValues: public ::testing::Test
 
 
 namespace {
-typedef openvdb::tree::Tree4<float, 3, 2, 3>::Type Tree323f; // 8^3 x 4^3 x 8^3
+typedef laovdb::tree::Tree4<float, 3, 2, 3>::Type Tree323f; // 8^3 x 4^3 x 8^3
 }
 
 
@@ -37,29 +37,29 @@ TEST_F(TestTreeGetSetValues, testGetValues)
 {
     Tree323f tree(/*background=*/256.0f);
 
-    tree.setValue(openvdb::Coord(0, 0,  0), 1.0);
-    tree.setValue(openvdb::Coord(1, 0,  0), 1.5);
-    tree.setValue(openvdb::Coord(0, 0,  8), 2.0);
-    tree.setValue(openvdb::Coord(1, 0,  8), 2.5);
-    tree.setValue(openvdb::Coord(0, 0, 16), 3.0);
-    tree.setValue(openvdb::Coord(1, 0, 16), 3.5);
-    tree.setValue(openvdb::Coord(0, 0, 24), 4.0);
-    tree.setValue(openvdb::Coord(1, 0, 24), 4.5);
+    tree.setValue(laovdb::Coord(0, 0,  0), 1.0);
+    tree.setValue(laovdb::Coord(1, 0,  0), 1.5);
+    tree.setValue(laovdb::Coord(0, 0,  8), 2.0);
+    tree.setValue(laovdb::Coord(1, 0,  8), 2.5);
+    tree.setValue(laovdb::Coord(0, 0, 16), 3.0);
+    tree.setValue(laovdb::Coord(1, 0, 16), 3.5);
+    tree.setValue(laovdb::Coord(0, 0, 24), 4.0);
+    tree.setValue(laovdb::Coord(1, 0, 24), 4.5);
 
-    ASSERT_DOUBLES_EXACTLY_EQUAL(1.0, tree.getValue(openvdb::Coord(0, 0,  0)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(1.5, tree.getValue(openvdb::Coord(1, 0,  0)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(2.0, tree.getValue(openvdb::Coord(0, 0,  8)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(2.5, tree.getValue(openvdb::Coord(1, 0,  8)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(3.0, tree.getValue(openvdb::Coord(0, 0, 16)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(3.5, tree.getValue(openvdb::Coord(1, 0, 16)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(4.0, tree.getValue(openvdb::Coord(0, 0, 24)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5, tree.getValue(openvdb::Coord(1, 0, 24)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(1.0, tree.getValue(laovdb::Coord(0, 0,  0)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(1.5, tree.getValue(laovdb::Coord(1, 0,  0)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(2.0, tree.getValue(laovdb::Coord(0, 0,  8)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(2.5, tree.getValue(laovdb::Coord(1, 0,  8)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(3.0, tree.getValue(laovdb::Coord(0, 0, 16)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(3.5, tree.getValue(laovdb::Coord(1, 0, 16)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(4.0, tree.getValue(laovdb::Coord(0, 0, 24)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5, tree.getValue(laovdb::Coord(1, 0, 24)));
 }
 
 
 TEST_F(TestTreeGetSetValues, testSetValues)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const float background = 256.0;
     Tree323f tree(background);
@@ -67,22 +67,22 @@ TEST_F(TestTreeGetSetValues, testSetValues)
     for (int activeTile = 0; activeTile < 2; ++activeTile) {
         if (activeTile) tree.fill(CoordBBox(Coord(0), Coord(31)), background, /*active=*/true);
 
-        tree.setValue(openvdb::Coord(0, 0,  0), 1.0);
-        tree.setValue(openvdb::Coord(1, 0,  0), 1.5);
-        tree.setValue(openvdb::Coord(0, 0,  8), 2.0);
-        tree.setValue(openvdb::Coord(1, 0,  8), 2.5);
-        tree.setValue(openvdb::Coord(0, 0, 16), 3.0);
-        tree.setValue(openvdb::Coord(1, 0, 16), 3.5);
-        tree.setValue(openvdb::Coord(0, 0, 24), 4.0);
-        tree.setValue(openvdb::Coord(1, 0, 24), 4.5);
+        tree.setValue(laovdb::Coord(0, 0,  0), 1.0);
+        tree.setValue(laovdb::Coord(1, 0,  0), 1.5);
+        tree.setValue(laovdb::Coord(0, 0,  8), 2.0);
+        tree.setValue(laovdb::Coord(1, 0,  8), 2.5);
+        tree.setValue(laovdb::Coord(0, 0, 16), 3.0);
+        tree.setValue(laovdb::Coord(1, 0, 16), 3.5);
+        tree.setValue(laovdb::Coord(0, 0, 24), 4.0);
+        tree.setValue(laovdb::Coord(1, 0, 24), 4.5);
 
         const int expectedActiveCount = (!activeTile ? 8 : 32 * 32 * 32);
         EXPECT_EQ(expectedActiveCount, int(tree.activeVoxelCount()));
 
         float val = 1.f;
         for (Tree323f::LeafCIter iter = tree.cbeginLeaf(); iter; ++iter) {
-            ASSERT_DOUBLES_EXACTLY_EQUAL(val, iter->getValue(openvdb::Coord(0, 0, 0)));
-            ASSERT_DOUBLES_EXACTLY_EQUAL(val+0.5, iter->getValue(openvdb::Coord(1, 0, 0)));
+            ASSERT_DOUBLES_EXACTLY_EQUAL(val, iter->getValue(laovdb::Coord(0, 0, 0)));
+            ASSERT_DOUBLES_EXACTLY_EQUAL(val+0.5, iter->getValue(laovdb::Coord(1, 0, 0)));
             val = val + 1.f;
         }
     }
@@ -91,7 +91,7 @@ TEST_F(TestTreeGetSetValues, testSetValues)
 
 TEST_F(TestTreeGetSetValues, testUnsetValues)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const float background = 256.0;
     Tree323f tree(background);
@@ -136,8 +136,8 @@ TEST_F(TestTreeGetSetValues, testUnsetValues)
 
 TEST_F(TestTreeGetSetValues, testFill)
 {
-    using openvdb::CoordBBox;
-    using openvdb::Coord;
+    using laovdb::CoordBBox;
+    using laovdb::Coord;
 
     const float background = 256.0;
     Tree323f tree(background);
@@ -151,7 +151,7 @@ TEST_F(TestTreeGetSetValues, testFill)
         xyzMax = std::max(xyz, xyzMax);
         ASSERT_DOUBLES_EXACTLY_EQUAL(2.0, *iter);
     }
-    EXPECT_EQ(openvdb::Index64(5*5*5), tree.activeVoxelCount());
+    EXPECT_EQ(laovdb::Index64(5*5*5), tree.activeVoxelCount());
     EXPECT_EQ(Coord(-2), xyzMin);
     EXPECT_EQ(Coord( 2), xyzMax);
 
@@ -166,7 +166,7 @@ TEST_F(TestTreeGetSetValues, testFill)
             && xyz[0] <= 3 && xyz[1] <= 3 && xyz[2] <= 3) ? 3.0 : 2.0;
         ASSERT_DOUBLES_EXACTLY_EQUAL(expectedValue, *iter);
     }
-    openvdb::Index64 expectedCount =
+    laovdb::Index64 expectedCount =
           5*5*5  // (-2,-2,-2) to (2,2,2)
         + 3*3*3  // (1,1,1) to (3,3,3)
         - 2*2*2; // (1,1,1) to (2,2,2) overlap
@@ -224,108 +224,108 @@ TEST_F(TestTreeGetSetValues, testFill)
     // The following tests assume a [3,2,3] tree configuration.
 
     tree.clear();
-    EXPECT_EQ(openvdb::Index32(0), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(1), tree.nonLeafCount()); // root node
+    EXPECT_EQ(laovdb::Index32(0), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(1), tree.nonLeafCount()); // root node
 
     // Partially fill a single leaf node.
     tree.fill(CoordBBox(Coord(8), Coord(14)), 0.0);
-    EXPECT_EQ(openvdb::Index32(1), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(3), tree.nonLeafCount());
+    EXPECT_EQ(laovdb::Index32(1), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(3), tree.nonLeafCount());
 
     // Completely fill the leaf node, replacing it with a tile.
     tree.fill(CoordBBox(Coord(8), Coord(15)), 0.0);
-    EXPECT_EQ(openvdb::Index32(0), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(3), tree.nonLeafCount());
+    EXPECT_EQ(laovdb::Index32(0), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(3), tree.nonLeafCount());
 
     {
         const int activeVoxelCount = int(tree.activeVoxelCount());
 
         // Fill a single voxel of the tile with a different (active) value.
         tree.fill(CoordBBox(Coord(10), Coord(10)), 1.0);
-        EXPECT_EQ(openvdb::Index32(1), tree.leafCount());
-        EXPECT_EQ(openvdb::Index32(3), tree.nonLeafCount());
+        EXPECT_EQ(laovdb::Index32(1), tree.leafCount());
+        EXPECT_EQ(laovdb::Index32(3), tree.nonLeafCount());
         EXPECT_EQ(activeVoxelCount, int(tree.activeVoxelCount()));
         // Fill the voxel with an inactive value.
         tree.fill(CoordBBox(Coord(10), Coord(10)), 1.0, /*active=*/false);
-        EXPECT_EQ(openvdb::Index32(1), tree.leafCount());
-        EXPECT_EQ(openvdb::Index32(3), tree.nonLeafCount());
+        EXPECT_EQ(laovdb::Index32(1), tree.leafCount());
+        EXPECT_EQ(laovdb::Index32(3), tree.nonLeafCount());
         EXPECT_EQ(activeVoxelCount - 1, int(tree.activeVoxelCount()));
 
         // Completely fill the leaf node, replacing it with a tile again.
         tree.fill(CoordBBox(Coord(8), Coord(15)), 0.0);
-        EXPECT_EQ(openvdb::Index32(0), tree.leafCount());
-        EXPECT_EQ(openvdb::Index32(3), tree.nonLeafCount());
+        EXPECT_EQ(laovdb::Index32(0), tree.leafCount());
+        EXPECT_EQ(laovdb::Index32(3), tree.nonLeafCount());
     }
 
     // Expand by one voxel, creating seven neighboring leaf nodes.
     tree.fill(CoordBBox(Coord(8), Coord(16)), 0.0);
-    EXPECT_EQ(openvdb::Index32(7), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(3), tree.nonLeafCount());
+    EXPECT_EQ(laovdb::Index32(7), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(3), tree.nonLeafCount());
 
     // Completely fill the internal node containing the tile, replacing it with
     // a tile at the next level of the tree.
     tree.fill(CoordBBox(Coord(0), Coord(31)), 0.0);
-    EXPECT_EQ(openvdb::Index32(0), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(2), tree.nonLeafCount());
+    EXPECT_EQ(laovdb::Index32(0), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(2), tree.nonLeafCount());
 
     // Expand by one voxel, creating a layer of leaf nodes on three faces.
     tree.fill(CoordBBox(Coord(0), Coord(32)), 0.0);
-    EXPECT_EQ(openvdb::Index32(5*5 + 4*5 + 4*4), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(2 + 7), tree.nonLeafCount()); // +7 internal nodes
+    EXPECT_EQ(laovdb::Index32(5*5 + 4*5 + 4*4), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(2 + 7), tree.nonLeafCount()); // +7 internal nodes
 
     // Completely fill the second-level internal node, replacing it with a root-level tile.
     tree.fill(CoordBBox(Coord(0), Coord(255)), 0.0);
-    EXPECT_EQ(openvdb::Index32(0), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(1), tree.nonLeafCount());
+    EXPECT_EQ(laovdb::Index32(0), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(1), tree.nonLeafCount());
 
     // Repeat, filling with an inactive value.
 
     tree.clear();
-    EXPECT_EQ(openvdb::Index32(0), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(1), tree.nonLeafCount()); // root node
+    EXPECT_EQ(laovdb::Index32(0), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(1), tree.nonLeafCount()); // root node
 
     // Partially fill a single leaf node.
     tree.fill(CoordBBox(Coord(8), Coord(14)), 0.0, /*active=*/false);
-    EXPECT_EQ(openvdb::Index32(1), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(3), tree.nonLeafCount());
+    EXPECT_EQ(laovdb::Index32(1), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(3), tree.nonLeafCount());
 
     // Completely fill the leaf node, replacing it with a tile.
     tree.fill(CoordBBox(Coord(8), Coord(15)), 0.0, /*active=*/false);
-    EXPECT_EQ(openvdb::Index32(0), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(3), tree.nonLeafCount());
+    EXPECT_EQ(laovdb::Index32(0), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(3), tree.nonLeafCount());
 
     // Expand by one voxel, creating seven neighboring leaf nodes.
     tree.fill(CoordBBox(Coord(8), Coord(16)), 0.0, /*active=*/false);
-    EXPECT_EQ(openvdb::Index32(7), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(3), tree.nonLeafCount());
+    EXPECT_EQ(laovdb::Index32(7), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(3), tree.nonLeafCount());
 
     // Completely fill the internal node containing the tile, replacing it with
     // a tile at the next level of the tree.
     tree.fill(CoordBBox(Coord(0), Coord(31)), 0.0, /*active=*/false);
-    EXPECT_EQ(openvdb::Index32(0), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(2), tree.nonLeafCount());
+    EXPECT_EQ(laovdb::Index32(0), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(2), tree.nonLeafCount());
 
     // Expand by one voxel, creating a layer of leaf nodes on three faces.
     tree.fill(CoordBBox(Coord(0), Coord(32)), 0.0, /*active=*/false);
-    EXPECT_EQ(openvdb::Index32(5*5 + 4*5 + 4*4), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(2 + 7), tree.nonLeafCount()); // +7 internal nodes
+    EXPECT_EQ(laovdb::Index32(5*5 + 4*5 + 4*4), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(2 + 7), tree.nonLeafCount()); // +7 internal nodes
 
     // Completely fill the second-level internal node, replacing it with a root-level tile.
     tree.fill(CoordBBox(Coord(0), Coord(255)), 0.0, /*active=*/false);
-    EXPECT_EQ(openvdb::Index32(0), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(1), tree.nonLeafCount());
+    EXPECT_EQ(laovdb::Index32(0), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(1), tree.nonLeafCount());
 
     tree.clear();
-    EXPECT_EQ(openvdb::Index32(0), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(1), tree.nonLeafCount()); // root node
+    EXPECT_EQ(laovdb::Index32(0), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(1), tree.nonLeafCount()); // root node
     EXPECT_TRUE(tree.empty());
 
     // Partially fill a region with inactive background values.
     tree.fill(CoordBBox(Coord(27), Coord(254)), background, /*active=*/false);
     // Confirm that after pruning, the tree is empty.
-    openvdb::tools::prune(tree);
-    EXPECT_EQ(openvdb::Index32(0), tree.leafCount());
-    EXPECT_EQ(openvdb::Index32(1), tree.nonLeafCount()); // root node
+    laovdb::tools::prune(tree);
+    EXPECT_EQ(laovdb::Index32(0), tree.leafCount());
+    EXPECT_EQ(laovdb::Index32(1), tree.nonLeafCount()); // root node
     EXPECT_TRUE(tree.empty());
 }
 
@@ -334,7 +334,7 @@ TEST_F(TestTreeGetSetValues, testFill)
 // In particular, it should preserve the active states of surrounding voxels.
 TEST_F(TestTreeGetSetValues, testSetActiveStates)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const float background = 256.0;
     Tree323f tree(background);
@@ -404,10 +404,10 @@ TEST_F(TestTreeGetSetValues, testHasActiveTiles)
     EXPECT_TRUE(!tree.hasActiveTiles());
 
     // Fill from (-2,-2,-2) to (2,2,2) with active value 2.
-    tree.fill(openvdb::CoordBBox(openvdb::Coord(-2), openvdb::Coord(2)), 2.0f);
+    tree.fill(laovdb::CoordBBox(laovdb::Coord(-2), laovdb::Coord(2)), 2.0f);
     EXPECT_TRUE(!tree.hasActiveTiles());
 
     // Fill from (-200,-200,-200) to (-4,-4,-4) with active value 3.
-    tree.fill(openvdb::CoordBBox(openvdb::Coord(-200), openvdb::Coord(-4)), 3.0f);
+    tree.fill(laovdb::CoordBBox(laovdb::Coord(-200), laovdb::Coord(-4)), 3.0f);
     EXPECT_TRUE(tree.hasActiveTiles());
 }

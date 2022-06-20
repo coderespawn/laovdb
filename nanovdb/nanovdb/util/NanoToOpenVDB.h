@@ -29,32 +29,32 @@ struct ConvertTrait;
 
 /// @brief Forward declaration of free-standing function that de-serializes a typed NanoVDB grid into an OpenVDB Grid
 template<typename ValueT>
-typename openvdb::Grid<typename openvdb::tree::Tree4<typename ConvertTrait<ValueT>::Type>::Type>::Ptr
+typename laovdb::Grid<typename laovdb::tree::Tree4<typename ConvertTrait<ValueT>::Type>::Type>::Ptr
 nanoToOpenVDB(const NanoGrid<ValueT>& grid, int verbose = 0);
 
 /// @brief Forward declaration of free-standing function that de-serializes a NanoVDB GridHandle into an OpenVDB GridBase
 template<typename BufferT>
-openvdb::GridBase::Ptr
+laovdb::GridBase::Ptr
 nanoToOpenVDB(const GridHandle<BufferT>& handle, int verbose = 0);
 
 /// @brief This class will serialize an OpenVDB grid into a NanoVDB grid managed by a GridHandle.
 template<typename ValueType>
 class NanoToOpenVDB
 {
-    using ValueT = typename ConvertTrait<ValueType>::Type; // e.g. float -> float but nanovdb::Vec3<float> -> openvdb::Vec3<float>
-    using SrcNode0 = LeafNode<ValueT, openvdb::Coord, openvdb::util::NodeMask>; // note that it's using openvdb types!
+    using ValueT = typename ConvertTrait<ValueType>::Type; // e.g. float -> float but nanovdb::Vec3<float> -> laovdb::Vec3<float>
+    using SrcNode0 = LeafNode<ValueT, laovdb::Coord, laovdb::util::NodeMask>; // note that it's using openvdb types!
     using SrcNode1 = InternalNode<SrcNode0>;
     using SrcNode2 = InternalNode<SrcNode1>;
     using SrcRootT = RootNode<SrcNode2>;
     using SrcTreeT = Tree<SrcRootT>;
     using SrcGridT = Grid<SrcTreeT>;
 
-    using DstNode0 = openvdb::tree::LeafNode<ValueT, SrcNode0::LOG2DIM>; // leaf
-    using DstNode1 = openvdb::tree::InternalNode<DstNode0, SrcNode1::LOG2DIM>; // lower
-    using DstNode2 = openvdb::tree::InternalNode<DstNode1, SrcNode2::LOG2DIM>; // upper
-    using DstRootT = openvdb::tree::RootNode<DstNode2>;
-    using DstTreeT = openvdb::tree::Tree<DstRootT>;
-    using DstGridT = openvdb::Grid<DstTreeT>;
+    using DstNode0 = laovdb::tree::LeafNode<ValueT, SrcNode0::LOG2DIM>; // leaf
+    using DstNode1 = laovdb::tree::InternalNode<DstNode0, SrcNode1::LOG2DIM>; // lower
+    using DstNode2 = laovdb::tree::InternalNode<DstNode1, SrcNode2::LOG2DIM>; // upper
+    using DstRootT = laovdb::tree::RootNode<DstNode2>;
+    using DstTreeT = laovdb::tree::Tree<DstRootT>;
+    using DstGridT = laovdb::Grid<DstTreeT>;
 
 public:
     /// @brief Construction from an existing const OpenVDB Grid.
@@ -82,13 +82,13 @@ struct ConvertTrait
 template<typename T>
 struct ConvertTrait< Vec3<T> >
 {
-    using Type = openvdb::math::Vec3<T>;
+    using Type = laovdb::math::Vec3<T>;
 };
 
 template<typename T>
 struct ConvertTrait< Vec4<T> >
 {
-    using Type = openvdb::math::Vec4<T>;
+    using Type = laovdb::math::Vec4<T>;
 };
 
 template<typename T>
@@ -97,17 +97,17 @@ NanoToOpenVDB<T>::operator()(const NanoGrid<T>& grid, int /*verbose*/)
 {
     // since the input nanovdb grid might use nanovdb types (Coord, Mask, Vec3) we cast to use openvdb types
     const SrcGridT *srcGrid = reinterpret_cast<const SrcGridT*>(&grid);
-    auto dstGrid = openvdb::createGrid<DstGridT>(srcGrid->tree().background());
+    auto dstGrid = laovdb::createGrid<DstGridT>(srcGrid->tree().background());
     dstGrid->setName(srcGrid->gridName()); // set grid name
     switch (srcGrid->gridClass()) { // set grid class
     case nanovdb::GridClass::LevelSet:
-        dstGrid->setGridClass(openvdb::GRID_LEVEL_SET);
+        dstGrid->setGridClass(laovdb::GRID_LEVEL_SET);
         break;
     case nanovdb::GridClass::FogVolume:
-        dstGrid->setGridClass(openvdb::GRID_FOG_VOLUME);
+        dstGrid->setGridClass(laovdb::GRID_FOG_VOLUME);
         break;
     case nanovdb::GridClass::Staggered:
-        dstGrid->setGridClass(openvdb::GRID_STAGGERED);
+        dstGrid->setGridClass(laovdb::GRID_STAGGERED);
         break;
     case nanovdb::GridClass::PointIndex:
         throw std::runtime_error("NanoToOpenVDB does not yet support PointIndexGrids");
@@ -116,15 +116,15 @@ NanoToOpenVDB<T>::operator()(const NanoGrid<T>& grid, int /*verbose*/)
     case nanovdb::GridClass::Topology:
         throw std::runtime_error("NanoToOpenVDB does not yet support Mask (or Topology) Grids");
     default:
-        dstGrid->setGridClass(openvdb::GRID_UNKNOWN);
+        dstGrid->setGridClass(laovdb::GRID_UNKNOWN);
     }
     // set transform
     const nanovdb::Map& nanoMap = reinterpret_cast<const GridData*>(srcGrid)->mMap;
-    auto                mat = openvdb::math::Mat4<double>::identity();
-    mat.setMat3(openvdb::math::Mat3<double>(nanoMap.mMatD));
+    auto                mat = laovdb::math::Mat4<double>::identity();
+    mat.setMat3(laovdb::math::Mat3<double>(nanoMap.mMatD));
     mat.transpose(); // the 3x3 in nanovdb is transposed relative to openvdb's 3x3
-    mat.setTranslation(openvdb::math::Vec3<double>(nanoMap.mVecD));
-    dstGrid->setTransform(openvdb::math::Transform::createLinearTransform(mat)); // calls simplify!
+    mat.setTranslation(laovdb::math::Vec3<double>(nanoMap.mVecD));
+    dstGrid->setTransform(laovdb::math::Transform::createLinearTransform(mat)); // calls simplify!
 
     // process root node
     auto &root = dstGrid->tree().root();
@@ -198,7 +198,7 @@ NanoToOpenVDB<T>::process(const SrcNode0 *srcNode)
 } // process(SrcNode0)
 
 template<typename ValueT>
-typename openvdb::Grid<typename openvdb::tree::Tree4<typename ConvertTrait<ValueT>::Type>::Type>::Ptr
+typename laovdb::Grid<typename laovdb::tree::Tree4<typename ConvertTrait<ValueT>::Type>::Type>::Ptr
 nanoToOpenVDB(const NanoGrid<ValueT>& grid, int verbose)
 {
     nanovdb::NanoToOpenVDB<ValueT> tmp;
@@ -206,7 +206,7 @@ nanoToOpenVDB(const NanoGrid<ValueT>& grid, int verbose)
 }
 
 template<typename BufferT>
-openvdb::GridBase::Ptr
+laovdb::GridBase::Ptr
 nanoToOpenVDB(const GridHandle<BufferT>& handle, int verbose)
 {
     if (auto grid = handle.template grid<float>()) {
@@ -226,7 +226,7 @@ nanoToOpenVDB(const GridHandle<BufferT>& handle, int verbose)
     } else if (auto grid = handle.template grid<nanovdb::Vec4d>()) {
         return nanovdb::nanoToOpenVDB(*grid, verbose);
     } else {
-        OPENVDB_THROW(openvdb::RuntimeError, "Unsupported NanoVDB grid type");
+        OPENVDB_THROW(laovdb::RuntimeError, "Unsupported NanoVDB grid type");
     }
 }
 

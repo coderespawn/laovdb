@@ -7,7 +7,7 @@
 #include <sstream>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -199,4 +199,4 @@ operator<<(std::ostream& ostr, const MetaMap& metamap)
 }
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

@@ -39,12 +39,12 @@ struct ComparisonResult
 {
     ComparisonResult(std::ostream& os = std::cout)
         : mOs(os)
-        , mDifferingTopology(openvdb::MaskGrid::create())
-        , mDifferingValues(openvdb::MaskGrid::create()) {}
+        , mDifferingTopology(laovdb::MaskGrid::create())
+        , mDifferingValues(laovdb::MaskGrid::create()) {}
 
     std::ostream& mOs;
-    openvdb::MaskGrid::Ptr mDifferingTopology; // Always empty if mCheckActiveStates is false
-    openvdb::MaskGrid::Ptr mDifferingValues;   // Always empty if mCheckBufferValues is false
+    laovdb::MaskGrid::Ptr mDifferingTopology; // Always empty if mCheckActiveStates is false
+    laovdb::MaskGrid::Ptr mDifferingValues;   // Always empty if mCheckBufferValues is false
                                                // or if mCheckBufferValues and mCheckArrayValues
                                                // is false for point data grids
 };
@@ -54,15 +54,15 @@ bool compareGrids(ComparisonResult& resultData,
                   const GridType& firstGrid,
                   const GridType& secondGrid,
                   const ComparisonSettings& settings,
-                  const openvdb::MaskGrid::ConstPtr maskGrid,
+                  const laovdb::MaskGrid::ConstPtr maskGrid,
                   const typename GridType::ValueType tolerance =
-                    openvdb::zeroVal<typename GridType::ValueType>());
+                    laovdb::zeroVal<typename GridType::ValueType>());
 
 bool compareUntypedGrids(ComparisonResult& resultData,
-                         const openvdb::GridBase& firstGrid,
-                         const openvdb::GridBase& secondGrid,
+                         const laovdb::GridBase& firstGrid,
+                         const laovdb::GridBase& secondGrid,
                          const ComparisonSettings& settings,
-                         const openvdb::MaskGrid::ConstPtr maskGrid);
+                         const laovdb::MaskGrid::ConstPtr maskGrid);
 
 } // namespace unittest_util
 

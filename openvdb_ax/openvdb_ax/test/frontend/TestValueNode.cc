@@ -13,8 +13,8 @@
 #include <string>
 #include <cstdlib>
 
-using namespace openvdb::ax::ast;
-using namespace openvdb::ax::ast::tokens;
+using namespace laovdb::ax::ast;
+using namespace laovdb::ax::ast::tokens;
 
 namespace {
 
@@ -199,9 +199,9 @@ void TestValueNode::testASTNode()
             if (!unittest_util::compareLinearTrees(expectedList, resultList)) {
                 std::ostringstream os;
                 os << "\nExpected:\n";
-                openvdb::ax::ast::print(*expected, true, os);
+                laovdb::ax::ast::print(*expected, true, os);
                 os << "Result:\n";
-                openvdb::ax::ast::print(*result, true, os);
+                laovdb::ax::ast::print(*result, true, os);
                 CPPUNIT_FAIL(ERROR_MSG("Mismatching Trees for Value (literal) code", code) + os.str());
             }
         }

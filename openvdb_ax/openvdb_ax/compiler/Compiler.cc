@@ -55,7 +55,7 @@
 
 #include <unordered_map>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -463,7 +463,7 @@ bool initializeGlobalFunctions(const codegen::FunctionRegistry& registry,
     return count == logger.errors();
 }
 
-bool verifyTypedAccesses(const ast::Tree& tree, openvdb::ax::Logger& logger)
+bool verifyTypedAccesses(const ast::Tree& tree, laovdb::ax::Logger& logger)
 {
     // verify the attributes and external variables requested in the syntax tree
     // only have a single type. Note that the executer will also throw a runtime
@@ -631,10 +631,10 @@ registerExternalGlobals(const codegen::SymbolTable& globals,
 }
 
 struct PointDefaultModifier :
-    public openvdb::ax::ast::Visitor<PointDefaultModifier, /*non-const*/false>
+    public laovdb::ax::ast::Visitor<PointDefaultModifier, /*non-const*/false>
 {
-    using openvdb::ax::ast::Visitor<PointDefaultModifier, false>::traverse;
-    using openvdb::ax::ast::Visitor<PointDefaultModifier, false>::visit;
+    using laovdb::ax::ast::Visitor<PointDefaultModifier, false>::traverse;
+    using laovdb::ax::ast::Visitor<PointDefaultModifier, false>::visit;
 
     const std::set<std::string> autoVecAttribs {"P", "v", "N", "Cd"};
 
@@ -642,8 +642,8 @@ struct PointDefaultModifier :
         if (!attrib->inferred()) return true;
         if (autoVecAttribs.find(attrib->name()) == autoVecAttribs.end()) return true;
 
-        openvdb::ax::ast::Attribute::UniquePtr
-            replacement(new openvdb::ax::ast::Attribute(attrib->name(), ast::tokens::VEC3F, true));
+        laovdb::ax::ast::Attribute::UniquePtr
+            replacement(new laovdb::ax::ast::Attribute(attrib->name(), ast::tokens::VEC3F, true));
         if (!attrib->replace(replacement.get())) {
             OPENVDB_THROW(AXCompilerError,
                 "Auto conversion of inferred attributes failed.");
@@ -774,7 +774,7 @@ Compiler::compile<PointExecutable>(const ast::Tree& syntaxTree,
 {
     using GenT = codegen::codegen_internal::PointComputeGenerator;
 
-    openvdb::SharedPtr<ast::Tree> tree(syntaxTree.copy());
+    laovdb::SharedPtr<ast::Tree> tree(syntaxTree.copy());
     PointDefaultModifier modifier;
     modifier.traverse(tree.get());
 
@@ -808,5 +808,5 @@ Compiler::compile<VolumeExecutable>(const ast::Tree& syntaxTree,
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

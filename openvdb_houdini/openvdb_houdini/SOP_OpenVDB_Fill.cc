@@ -239,39 +239,39 @@ namespace {
 
 // Overload for scalar types (discards all but the first vector component)
 template<typename ValueType>
-inline typename std::enable_if<!openvdb::VecTraits<ValueType>::IsVec, ValueType>::type
-convertValue(const openvdb::Vec3R& val)
+inline typename std::enable_if<!laovdb::VecTraits<ValueType>::IsVec, ValueType>::type
+convertValue(const laovdb::Vec3R& val)
 {
     return ValueType(val[0]);
 }
 
 // Overload for Vec2 types (not currently used)
 template<typename ValueType>
-inline typename std::enable_if<openvdb::VecTraits<ValueType>::IsVec
-    && openvdb::VecTraits<ValueType>::Size == 2, ValueType>::type
-convertValue(const openvdb::Vec3R& val)
+inline typename std::enable_if<laovdb::VecTraits<ValueType>::IsVec
+    && laovdb::VecTraits<ValueType>::Size == 2, ValueType>::type
+convertValue(const laovdb::Vec3R& val)
 {
-    using ElemType = typename openvdb::VecTraits<ValueType>::ElementType;
+    using ElemType = typename laovdb::VecTraits<ValueType>::ElementType;
     return ValueType(ElemType(val[0]), ElemType(val[1]));
 }
 
 // Overload for Vec3 types
 template<typename ValueType>
-inline typename std::enable_if<openvdb::VecTraits<ValueType>::IsVec
-    && openvdb::VecTraits<ValueType>::Size == 3, ValueType>::type
-convertValue(const openvdb::Vec3R& val)
+inline typename std::enable_if<laovdb::VecTraits<ValueType>::IsVec
+    && laovdb::VecTraits<ValueType>::Size == 3, ValueType>::type
+convertValue(const laovdb::Vec3R& val)
 {
-    using ElemType = typename openvdb::VecTraits<ValueType>::ElementType;
+    using ElemType = typename laovdb::VecTraits<ValueType>::ElementType;
     return ValueType(ElemType(val[0]), ElemType(val[1]), ElemType(val[2]));
 }
 
 // Overload for Vec4 types (not currently used)
 template<typename ValueType>
-inline typename std::enable_if<openvdb::VecTraits<ValueType>::IsVec
-    && openvdb::VecTraits<ValueType>::Size == 4, ValueType>::type
-convertValue(const openvdb::Vec3R& val)
+inline typename std::enable_if<laovdb::VecTraits<ValueType>::IsVec
+    && laovdb::VecTraits<ValueType>::Size == 4, ValueType>::type
+convertValue(const laovdb::Vec3R& val)
 {
-    using ElemType = typename openvdb::VecTraits<ValueType>::ElementType;
+    using ElemType = typename laovdb::VecTraits<ValueType>::ElementType;
     return ValueType(ElemType(val[0]), ElemType(val[1]), ElemType(val[2]), ElemType(1.0));
 }
 
@@ -281,28 +281,28 @@ convertValue(const openvdb::Vec3R& val)
 
 struct FillOp
 {
-    const openvdb::CoordBBox indexBBox;
-    const openvdb::BBoxd worldBBox;
-    const openvdb::Vec3R value;
+    const laovdb::CoordBBox indexBBox;
+    const laovdb::BBoxd worldBBox;
+    const laovdb::Vec3R value;
     const bool active, sparse;
 
-    FillOp(const openvdb::CoordBBox& b, const openvdb::Vec3R& val, bool on, bool sparse_):
+    FillOp(const laovdb::CoordBBox& b, const laovdb::Vec3R& val, bool on, bool sparse_):
         indexBBox(b), value(val), active(on), sparse(sparse_)
     {}
 
-    FillOp(const openvdb::BBoxd& b, const openvdb::Vec3R& val, bool on, bool sparse_):
+    FillOp(const laovdb::BBoxd& b, const laovdb::Vec3R& val, bool on, bool sparse_):
         worldBBox(b), value(val), active(on), sparse(sparse_)
     {}
 
     template<typename GridT>
     void operator()(GridT& grid) const
     {
-        openvdb::CoordBBox bbox = indexBBox;
+        laovdb::CoordBBox bbox = indexBBox;
         if (worldBBox) {
-            openvdb::math::Vec3d imin, imax;
-            openvdb::math::calculateBounds(grid.constTransform(),
+            laovdb::math::Vec3d imin, imax;
+            laovdb::math::calculateBounds(grid.constTransform(),
                worldBBox.min(), worldBBox.max(), imin, imax);
-            bbox.reset(openvdb::Coord::floor(imin), openvdb::Coord::ceil(imax));
+            bbox.reset(laovdb::Coord::floor(imin), laovdb::Coord::ceil(imax));
         }
         using ValueT = typename GridT::ValueType;
         if (sparse) {
@@ -324,7 +324,7 @@ SOP_OpenVDB_Fill::Cache::cookVDBSop(OP_Context& context)
 
         const GA_PrimitiveGroup* group = matchGroup(*gdp, evalStdString("group", t));
 
-        const openvdb::Vec3R value = evalVec3R("val", t);
+        const laovdb::Vec3R value = evalVec3R("val", t);
         const bool
             active = evalInt("active", 0, t),
             sparse = evalInt("sparse", 0, t);
@@ -333,26 +333,26 @@ SOP_OpenVDB_Fill::Cache::cookVDBSop(OP_Context& context)
         switch (SOP_OpenVDB_Fill::getMode(evalStdString("mode", t))) {
             case MODE_INDEX:
             {
-                const openvdb::CoordBBox bbox(
-                    openvdb::Coord(
-                        static_cast<openvdb::Int32>(evalInt("min", 0, t)),
-                        static_cast<openvdb::Int32>(evalInt("min", 1, t)),
-                        static_cast<openvdb::Int32>(evalInt("min", 2, t))),
-                    openvdb::Coord(
-                        static_cast<openvdb::Int32>(evalInt("max", 0, t)),
-                        static_cast<openvdb::Int32>(evalInt("max", 1, t)),
-                        static_cast<openvdb::Int32>(evalInt("max", 2, t))));
+                const laovdb::CoordBBox bbox(
+                    laovdb::Coord(
+                        static_cast<laovdb::Int32>(evalInt("min", 0, t)),
+                        static_cast<laovdb::Int32>(evalInt("min", 1, t)),
+                        static_cast<laovdb::Int32>(evalInt("min", 2, t))),
+                    laovdb::Coord(
+                        static_cast<laovdb::Int32>(evalInt("max", 0, t)),
+                        static_cast<laovdb::Int32>(evalInt("max", 1, t)),
+                        static_cast<laovdb::Int32>(evalInt("max", 2, t))));
                 fillOp.reset(new FillOp(bbox, value, active, sparse));
                 break;
             }
             case MODE_WORLD:
             {
-                const openvdb::BBoxd bbox(
-                    openvdb::BBoxd::ValueType(
+                const laovdb::BBoxd bbox(
+                    laovdb::BBoxd::ValueType(
                         evalFloat("worldmin", 0, t),
                         evalFloat("worldmin", 1, t),
                         evalFloat("worldmin", 2, t)),
-                    openvdb::BBoxd::ValueType(
+                    laovdb::BBoxd::ValueType(
                         evalFloat("worldmax", 0, t),
                         evalFloat("worldmax", 1, t),
                         evalFloat("worldmax", 2, t)));
@@ -361,7 +361,7 @@ SOP_OpenVDB_Fill::Cache::cookVDBSop(OP_Context& context)
             }
             case MODE_GEOM:
             {
-                openvdb::BBoxd bbox;
+                laovdb::BBoxd bbox;
                 if (const GU_Detail* refGeo = inputGeo(1)) {
                     UT_BoundingBox b;
                     refGeo->getBBox(&b);

@@ -9,7 +9,7 @@
 #include <gtest/gtest.h>
 
 
-using namespace openvdb::math;
+using namespace laovdb::math;
 
 class TestQuat: public ::testing::Test
 {

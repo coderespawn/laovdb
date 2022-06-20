@@ -394,7 +394,7 @@ MStatus OpenVDBVisualizeNode::compute(const MPlug& plug, MDataBlock& data)
     if (status != MS::kSuccess) return status;
     std::string names = selectionHandle.asString().asChar();
 
-    std::vector<openvdb::GridBase::ConstPtr> grids;
+    std::vector<laovdb::GridBase::ConstPtr> grids;
     mvdb::getGrids(grids, *inputVdb, names);
 
     if (grids.empty()) {

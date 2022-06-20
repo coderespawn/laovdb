@@ -6,7 +6,7 @@
 #include "AttributeArray.h"
 #include <map>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -200,4 +200,4 @@ AttributeArray::operator==(const AttributeArray& other) const
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

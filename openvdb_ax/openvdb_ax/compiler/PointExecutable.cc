@@ -25,7 +25,7 @@
 #include <openvdb/points/PointMove.h>
 #include <openvdb/points/PointDelete.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -203,7 +203,7 @@ struct PointFunctionArguments
         using FunctionTraitsT = codegen::PointKernelAttributeArray::FunctionTraitsT;
         using ReturnT = FunctionTraitsT::ReturnType;
 
-        return [&](const openvdb::Coord& origin, void* buffer, bool active, const size_t index) -> ReturnT {
+        return [&](const laovdb::Coord& origin, void* buffer, bool active, const size_t index) -> ReturnT {
             mData.mKernelAttributeArray(static_cast<FunctionTraitsT::Arg<0>::Type>(mData.mCustomData),
                 reinterpret_cast<FunctionTraitsT::Arg<1>::Type>(origin.data()),
                 static_cast<FunctionTraitsT::Arg<2>::Type>(buffer),
@@ -225,7 +225,7 @@ struct PointFunctionArguments
 
         assert(mData.mUseBufferKernel);
 
-        return [&](const openvdb::Coord& origin, void* buffer, Index64* mask, const size_t size) -> ReturnT {
+        return [&](const laovdb::Coord& origin, void* buffer, Index64* mask, const size_t size) -> ReturnT {
             mData.mKernelBufferRange(static_cast<FunctionTraitsT::Arg<0>::Type>(mData.mCustomData),
                 reinterpret_cast<FunctionTraitsT::Arg<1>::Type>(origin.data()),
                 static_cast<FunctionTraitsT::Arg<2>::Type>(buffer),
@@ -363,7 +363,7 @@ private:
     {
         const size_t pos = leaf.attributeSet().find(name);
         //assert(!leaf.attributeSet().isShared(pos));
-        assert(pos != openvdb::points::AttributeSet::INVALID_POS);
+        assert(pos != laovdb::points::AttributeSet::INVALID_POS);
         if (write) this->addWriteHandle<ValueType>(leaf, pos);
         else       this->addHandle<ValueType>(leaf, pos);
     }
@@ -384,7 +384,7 @@ private:
 ///////////////////////////////////////////////////////////////////////////
 
 
-template<typename FilterT = openvdb::points::NullFilter>
+template<typename FilterT = laovdb::points::NullFilter>
 struct PointExecuterDeformer
 {
     PointExecuterDeformer(const std::string& positionAttribute,
@@ -422,16 +422,16 @@ struct PointExecuterDeformer
 /// @brief  VDB Points executer for a compiled function pointer
 struct PointExecuterOp
 {
-    using LeafManagerT = openvdb::tree::LeafManager<openvdb::points::PointDataTree>;
-    using LeafNode = openvdb::points::PointDataTree::LeafNodeType;
-    using GroupFilter = openvdb::points::GroupFilter;
+    using LeafManagerT = laovdb::tree::LeafManager<laovdb::points::PointDataTree>;
+    using LeafNode = laovdb::points::PointDataTree::LeafNodeType;
+    using GroupFilter = laovdb::points::GroupFilter;
 
     PointExecuterOp(const OpData& data,
                std::vector<PointLeafLocalData::UniquePtr>& leafLocalData)
         : mData(data)
         , mLeafLocalData(leafLocalData) {}
 
-    template<typename FilterT = openvdb::points::NullFilter>
+    template<typename FilterT = laovdb::points::NullFilter>
     inline std::unique_ptr<points::AttributeWriteHandle<Vec3f>>
     initPositions(LeafNode& leaf, const FilterT& filter = FilterT()) const
     {
@@ -441,7 +441,7 @@ struct PointExecuterOp
 
         for (auto iter = leaf.beginIndexAll(filter); iter; ++iter) {
             const Index idx = *iter;
-            const openvdb::Vec3f pos = positions.get(idx) + iter.getCoord().asVec3s();
+            const laovdb::Vec3f pos = positions.get(idx) + iter.getCoord().asVec3s();
             pws->set(idx, mData.mTransform->indexToWorld(pos));
         }
 
@@ -572,7 +572,7 @@ void processAttributes(points::PointDataGrid& grid,
         if (name == "P") {
             positionAccess = {iter.reads(), iter.writes()};
             posWS = desc.uniqueName("__P");
-            points::appendAttribute<openvdb::Vec3f>(grid.tree(), posWS);
+            points::appendAttribute<laovdb::Vec3f>(grid.tree(), posWS);
             attributeInfo.emplace_back(posWS, ast::tokens::VEC3F, positionAccess.second);
             continue;
         }
@@ -685,9 +685,9 @@ PointExecutable::PointExecutable(const PointExecutable& other)
 
 PointExecutable::~PointExecutable() {}
 
-void PointExecutable::execute(openvdb::points::PointDataGrid& grid) const
+void PointExecutable::execute(laovdb::points::PointDataGrid& grid) const
 {
-    using LeafManagerT = openvdb::tree::LeafManager<openvdb::points::PointDataTree>;
+    using LeafManagerT = laovdb::tree::LeafManager<laovdb::points::PointDataTree>;
 
     Logger* logger;
     std::unique_ptr<Logger> log;
@@ -723,7 +723,7 @@ void PointExecutable::execute(openvdb::points::PointDataGrid& grid) const
             (mFunctionAddresses.at(codegen::PointKernelBufferRange::getDefaultName()));
     data.mTransform = &grid.transform();
     data.mCustomData = mCustomData.get();
-    data.mGroupIndex.first = openvdb::points::AttributeSet::INVALID_POS;
+    data.mGroupIndex.first = laovdb::points::AttributeSet::INVALID_POS;
     data.mAttributeRegistry = mAttributeRegistry.get();
     //data.mPositionAccess = mAttributeRegistry->accessPattern("P", ast::tokens::VEC3F);
 
@@ -828,8 +828,8 @@ void PointExecutable::execute(openvdb::points::PointDataGrid& grid) const
                     handle.collapse(tmpHandle->get(0));
                 }
                 else {
-                    const openvdb::Index size = tmpHandle->size();
-                    for (openvdb::Index i = 0; i < size; ++i) {
+                    const laovdb::Index size = tmpHandle->size();
+                    for (laovdb::Index i = 0; i < size; ++i) {
                         handle.set(i, tmpHandle->get(i));
                     }
                 }
@@ -853,13 +853,13 @@ void PointExecutable::execute(openvdb::points::PointDataGrid& grid) const
     if (data.mPositionAccess.second) {
         // if position is writable, sort the points
         if (usingGroup) {
-            openvdb::points::GroupFilter filter(data.mGroupIndex);
-            PointExecuterDeformer<openvdb::points::GroupFilter> deformer(data.mPositionAttribute, filter);
-            openvdb::points::movePoints(grid, deformer);
+            laovdb::points::GroupFilter filter(data.mGroupIndex);
+            PointExecuterDeformer<laovdb::points::GroupFilter> deformer(data.mPositionAttribute, filter);
+            laovdb::points::movePoints(grid, deformer);
         }
         else {
             PointExecuterDeformer<> deformer(data.mPositionAttribute);
-            openvdb::points::movePoints(grid, deformer);
+            laovdb::points::movePoints(grid, deformer);
         }
     }
 
@@ -986,5 +986,5 @@ bool PointExecutable::usesAcceleratedKernel(const points::PointDataTree& tree) c
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

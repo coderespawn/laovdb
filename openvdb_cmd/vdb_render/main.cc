@@ -65,21 +65,21 @@ struct RenderOpts
 {
     std::string shader;
     std::string color;
-    openvdb::Vec3SGrid::Ptr colorgrid;
+    laovdb::Vec3SGrid::Ptr colorgrid;
     std::string camera;
     float aperture, focal, frame, znear, zfar;
     double isovalue;
-    openvdb::Vec3d rotate;
-    openvdb::Vec3d translate;
-    openvdb::Vec3d target;
-    openvdb::Vec3d up;
+    laovdb::Vec3d rotate;
+    laovdb::Vec3d translate;
+    laovdb::Vec3d target;
+    laovdb::Vec3d up;
     bool lookat;
     size_t samples;
-    openvdb::Vec3d absorb;
+    laovdb::Vec3d absorb;
     std::vector<double> light;
-    openvdb::Vec3d scatter;
+    laovdb::Vec3d scatter;
     double cutoff, gain;
-    openvdb::Vec2d step;
+    laovdb::Vec2d step;
     size_t width, height;
     std::string compression;
     int threads;
@@ -170,7 +170,7 @@ void
 usage [[noreturn]] (int exitStatus = EXIT_FAILURE)
 {
     RenderOpts opts; // default options
-    const double fov = openvdb::tools::PerspectiveCamera::focalLengthToFieldOfView(
+    const double fov = laovdb::tools::PerspectiveCamera::focalLengthToFieldOfView(
         opts.focal, opts.aperture);
 
     std::ostringstream ostr;
@@ -256,28 +256,28 @@ inline void isExtensionSupported(const std::string& fname)
     else if (boost::iends_with(fname, ".exr"))
     {
 #ifndef OPENVDB_USE_EXR
-        OPENVDB_THROW(openvdb::RuntimeError,
+        OPENVDB_THROW(laovdb::RuntimeError,
             "vdb_render has not been compiled with .exr support.");
 #endif
     }
     else if (boost::iends_with(fname, ".png"))
     {
 #ifndef OPENVDB_USE_PNG
-        OPENVDB_THROW(openvdb::RuntimeError,
+        OPENVDB_THROW(laovdb::RuntimeError,
             "vdb_render has not been compiled with .png support.");
 #endif
     }
     else {
-        OPENVDB_THROW(openvdb::ValueError,
+        OPENVDB_THROW(laovdb::ValueError,
             "unsupported image file format (" + fname + ")");
     }
 }
 
 #ifdef OPENVDB_USE_EXR
 void
-saveEXR(const std::string& fname, const openvdb::tools::Film& film, const RenderOpts& opts)
+saveEXR(const std::string& fname, const laovdb::tools::Film& film, const RenderOpts& opts)
 {
-    using RGBA = openvdb::tools::Film::RGBA;
+    using RGBA = laovdb::tools::Film::RGBA;
 
     std::string filename = fname;
     if (!boost::iends_with(filename, ".exr")) filename += ".exr";
@@ -299,7 +299,7 @@ saveEXR(const std::string& fname, const openvdb::tools::Film& film, const Render
     } else if (opts.compression == "zip") {
         header.compression() = Imf::ZIP_COMPRESSION;
     } else {
-        OPENVDB_THROW(openvdb::ValueError,
+        OPENVDB_THROW(laovdb::ValueError,
             "expected none, rle or zip compression, got \"" << opts.compression << "\"");
     }
     header.channels().insert("R", Imf::Channel(Imf::FLOAT));
@@ -332,9 +332,9 @@ saveEXR(const std::string& fname, const openvdb::tools::Film& film, const Render
 }
 #else
 void
-saveEXR(const std::string&, const openvdb::tools::Film&, const RenderOpts&)
+saveEXR(const std::string&, const laovdb::tools::Film&, const RenderOpts&)
 {
-    OPENVDB_THROW(openvdb::RuntimeError,
+    OPENVDB_THROW(laovdb::RuntimeError,
         "vdb_render has not been compiled with .exr support.");
 }
 #endif
@@ -345,26 +345,26 @@ struct PngWriter
     PngWriter() = default;
     ~PngWriter() { this->reset(); }
 
-    inline void write(const std::string& fname, const openvdb::tools::Film& film)
+    inline void write(const std::string& fname, const laovdb::tools::Film& film)
     {
         png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-        if (!png) OPENVDB_THROW(openvdb::RuntimeError, "png_create_write_struct failed");
+        if (!png) OPENVDB_THROW(laovdb::RuntimeError, "png_create_write_struct failed");
         info = png_create_info_struct(png);
-        if (!info) OPENVDB_THROW(openvdb::RuntimeError, "png_create_info_struct failed.")
+        if (!info) OPENVDB_THROW(laovdb::RuntimeError, "png_create_info_struct failed.")
 
         fp = std::fopen(fname.c_str(), "wb");
         if (!fp) {
-            OPENVDB_THROW(openvdb::IoError,
+            OPENVDB_THROW(laovdb::IoError,
                 "Unable to open '" + fname + "' for writing");
         }
 
         if (setjmp(png_jmpbuf(png))) {
-            OPENVDB_THROW(openvdb::IoError, "Error during initialization of PNG I/O.");
+            OPENVDB_THROW(laovdb::IoError, "Error during initialization of PNG I/O.");
         }
         png_init_io(png, fp);
 
         if (setjmp(png_jmpbuf(png))) {
-            OPENVDB_THROW(openvdb::IoError, "Error writing PNG file header.");
+            OPENVDB_THROW(laovdb::IoError, "Error writing PNG file header.");
         }
         // Output is 8bit depth, RGB format.
         png_set_IHDR(png, info,
@@ -388,7 +388,7 @@ struct PngWriter
         }
 
         if (setjmp(png_jmpbuf(png))) {
-            OPENVDB_THROW(openvdb::IoError, "Error writing PNG data buffers.");
+            OPENVDB_THROW(laovdb::IoError, "Error writing PNG data buffers.");
         }
         /* write out the entire image data in one call */
         png_write_image(png, row_pointers.get());
@@ -413,8 +413,8 @@ private:
 };
 #else
 struct PngWriter {
-    inline void write(const std::string&, const openvdb::tools::Film&) {
-        OPENVDB_THROW(openvdb::RuntimeError,
+    inline void write(const std::string&, const laovdb::tools::Film&) {
+        OPENVDB_THROW(laovdb::RuntimeError,
             "vdb_render has not been compiled with .png support.");
     }
 };
@@ -424,7 +424,7 @@ template<typename GridType>
 void
 render(const GridType& grid, const std::string& imgFilename, const RenderOpts& opts)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const bool isLevelSet = (grid.getGridClass() == GRID_LEVEL_SET);
 
@@ -447,7 +447,7 @@ render(const GridType& grid, const std::string& imgFilename, const RenderOpts& o
     std::unique_ptr<tools::BaseShader> shader;
     if (opts.shader == "matte") {
         if (opts.colorgrid) {
-            shader.reset(new tools::MatteShader<openvdb::Vec3SGrid>(*opts.colorgrid));
+            shader.reset(new tools::MatteShader<laovdb::Vec3SGrid>(*opts.colorgrid));
         } else {
             shader.reset(new tools::MatteShader<>());
         }
@@ -552,13 +552,13 @@ strToVec(const std::string& s)
 }
 
 
-openvdb::Vec3d
+laovdb::Vec3d
 strToVec3d(const std::string& s)
 {
-    openvdb::Vec3d result(0.0, 0.0, 0.0);
+    laovdb::Vec3d result(0.0, 0.0, 0.0);
     std::vector<double> elems = strToVec(s);
     if (!elems.empty()) {
-        result = openvdb::Vec3d(elems[0]);
+        result = laovdb::Vec3d(elems[0]);
         for (int i = 1, N = std::min(3, int(elems.size())); i < N; ++i) {
             result[i] = elems[i];
         }
@@ -603,7 +603,7 @@ main(int argc, char *argv[])
 
     if (argc == 1) usage();
 
-    openvdb::logging::initialize(argc, argv);
+    laovdb::logging::initialize(argc, argv);
 
     std::string vdbFilename, imgFilename, gridName;
     RenderOpts opts;
@@ -702,9 +702,9 @@ main(int argc, char *argv[])
                 opts.verbose = true;
             } else if (arg == "-version" || arg == "--version") {
                 std::cout << "OpenVDB library version: "
-                    << openvdb::getLibraryAbiVersionString() << "\n";
+                    << laovdb::getLibraryAbiVersionString() << "\n";
                 std::cout << "OpenVDB file format version: "
-                    << openvdb::OPENVDB_FILE_VERSION << std::endl;
+                    << laovdb::OPENVDB_FILE_VERSION << std::endl;
                 return EXIT_SUCCESS;
             } else if (arg == "-h" || arg == "-help" || arg == "--help") {
                 usage(EXIT_SUCCESS);
@@ -729,7 +729,7 @@ main(int argc, char *argv[])
             usage();
         }
         opts.focal = float(
-            openvdb::tools::PerspectiveCamera::fieldOfViewToFocalLength(fov, opts.aperture));
+            laovdb::tools::PerspectiveCamera::fieldOfViewToFocalLength(fov, opts.aperture));
     }
     if (hasLookAt && hasRotate) {
         OPENVDB_LOG_FATAL("specify -lookat or -r[otate], but not both");
@@ -754,7 +754,7 @@ main(int argc, char *argv[])
             control.reset(new tbb::global_control(tbb::global_control::max_allowed_parallelism, opts.threads));
         }
 
-        openvdb::initialize();
+        laovdb::initialize();
 
         const tbb::tick_count start = tbb::tick_count::now();
         if (opts.verbose) {
@@ -763,43 +763,43 @@ main(int argc, char *argv[])
             std::cout << vdbFilename << "..." << std::endl;
         }
 
-        openvdb::FloatGrid::Ptr grid;
+        laovdb::FloatGrid::Ptr grid;
         {
-            openvdb::io::File file(vdbFilename);
+            laovdb::io::File file(vdbFilename);
 
             if (!gridName.empty()) {
                 file.open();
-                grid = openvdb::gridPtrCast<openvdb::FloatGrid>(file.readGrid(gridName));
+                grid = laovdb::gridPtrCast<laovdb::FloatGrid>(file.readGrid(gridName));
                 if (!grid) {
-                    OPENVDB_THROW(openvdb::ValueError,
+                    OPENVDB_THROW(laovdb::ValueError,
                         gridName + " is not a scalar, floating-point volume");
                 }
             } else {
                 // If no grid was specified by name, retrieve the first float grid from the file.
                 file.open(/*delayLoad=*/false);
-                openvdb::io::File::NameIterator it = file.beginName();
-                openvdb::GridPtrVecPtr grids = file.readAllGridMetadata();
+                laovdb::io::File::NameIterator it = file.beginName();
+                laovdb::GridPtrVecPtr grids = file.readAllGridMetadata();
                 for (size_t i = 0; i < grids->size(); ++i, ++it) {
-                    grid = openvdb::gridPtrCast<openvdb::FloatGrid>(grids->at(i));
+                    grid = laovdb::gridPtrCast<laovdb::FloatGrid>(grids->at(i));
                     if (grid) {
                         gridName = *it;
                         file.close();
                         file.open();
-                        grid = openvdb::gridPtrCast<openvdb::FloatGrid>(file.readGrid(gridName));
+                        grid = laovdb::gridPtrCast<laovdb::FloatGrid>(file.readGrid(gridName));
                         break;
                     }
                 }
                 if (!grid) {
-                    OPENVDB_THROW(openvdb::ValueError,
+                    OPENVDB_THROW(laovdb::ValueError,
                         "no scalar, floating-point volumes in file " + vdbFilename);
                 }
             }
 
             if (!opts.color.empty()) {
                 opts.colorgrid =
-                    openvdb::gridPtrCast<openvdb::Vec3SGrid>(file.readGrid(opts.color));
+                    laovdb::gridPtrCast<laovdb::Vec3SGrid>(file.readGrid(opts.color));
                 if (!opts.colorgrid) {
-                    OPENVDB_THROW(openvdb::ValueError,
+                    OPENVDB_THROW(laovdb::ValueError,
                         opts.color + " is not a vec3s color volume");
                 }
             }
@@ -823,7 +823,7 @@ main(int argc, char *argv[])
 
             if (opts.verbose) std::cout << opts << std::endl;
 
-            render<openvdb::FloatGrid>(*grid, imgFilename, opts);
+            render<laovdb::FloatGrid>(*grid, imgFilename, opts);
         }
     } catch (std::exception& e) {
         OPENVDB_LOG_FATAL(e.what());

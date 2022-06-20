@@ -14,7 +14,7 @@ class TestDelayedLoadMetadata : public ::testing::Test
 
 TEST_F(TestDelayedLoadMetadata, test)
 {
-    using namespace openvdb::io;
+    using namespace laovdb::io;
 
     // registration
 
@@ -28,7 +28,7 @@ TEST_F(TestDelayedLoadMetadata, test)
 
     EXPECT_TRUE(!DelayedLoadMetadata::isRegisteredType());
 
-    openvdb::initialize();
+    laovdb::initialize();
 
     EXPECT_TRUE(DelayedLoadMetadata::isRegisteredType());
 
@@ -67,9 +67,9 @@ TEST_F(TestDelayedLoadMetadata, test)
     EXPECT_EQ(metadataCopy1.getMask(0), DelayedLoadMetadata::MaskType(5));
     EXPECT_EQ(metadataCopy1.getCompressedSize(2), DelayedLoadMetadata::CompressedSizeType(-13522));
 
-    openvdb::Metadata::Ptr baseMetadataCopy2 = metadata.copy();
+    laovdb::Metadata::Ptr baseMetadataCopy2 = metadata.copy();
     DelayedLoadMetadata::Ptr metadataCopy2 =
-        openvdb::StaticPtrCast<DelayedLoadMetadata>(baseMetadataCopy2);
+        laovdb::StaticPtrCast<DelayedLoadMetadata>(baseMetadataCopy2);
 
     EXPECT_EQ(metadataCopy2->getMask(0), DelayedLoadMetadata::MaskType(5));
     EXPECT_EQ(metadataCopy2->getCompressedSize(2), DelayedLoadMetadata::CompressedSizeType(-13522));
@@ -79,10 +79,10 @@ TEST_F(TestDelayedLoadMetadata, test)
     metadata.clear();
     EXPECT_TRUE(metadata.empty());
 
-    const size_t headerInitialSize(sizeof(openvdb::Index32));
-    const size_t headerCountSize(sizeof(openvdb::Index32));
-    const size_t headerMaskSize(sizeof(openvdb::Index32));
-    const size_t headerCompressedSize(sizeof(openvdb::Index32));
+    const size_t headerInitialSize(sizeof(laovdb::Index32));
+    const size_t headerCountSize(sizeof(laovdb::Index32));
+    const size_t headerMaskSize(sizeof(laovdb::Index32));
+    const size_t headerCompressedSize(sizeof(laovdb::Index32));
     const size_t headerTotalSize(headerInitialSize + headerCountSize + headerMaskSize + headerCompressedSize);
 
     { // empty buffer
@@ -180,7 +180,7 @@ TEST_F(TestDelayedLoadMetadata, test)
 
         std::stringstream ss(std::ios_base::out | std::ios_base::in | std::ios_base::binary);
 
-        openvdb::MetaMap metamap;
+        laovdb::MetaMap metamap;
         metamap.insertMeta("delayload", metadata);
 
         EXPECT_EQ(size_t(1), metamap.metaCount());
@@ -188,7 +188,7 @@ TEST_F(TestDelayedLoadMetadata, test)
         metamap.writeMeta(ss);
 
         {
-            openvdb::MetaMap newMetamap;
+            laovdb::MetaMap newMetamap;
             newMetamap.readMeta(ss);
 
             EXPECT_EQ(size_t(1), newMetamap.metaCount());
@@ -197,7 +197,7 @@ TEST_F(TestDelayedLoadMetadata, test)
         {
             DelayedLoadMetadata::unregisterType();
 
-            openvdb::MetaMap newMetamap;
+            laovdb::MetaMap newMetamap;
             newMetamap.readMeta(ss);
 
             EXPECT_EQ(size_t(0), newMetamap.metaCount());

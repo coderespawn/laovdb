@@ -15,7 +15,7 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/Support/raw_os_ostream.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -452,5 +452,5 @@ FunctionGroup::execute(const std::vector<llvm::Value*>& args,
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

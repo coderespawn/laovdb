@@ -63,7 +63,7 @@ newSopOperator(OP_OperatorTable* table)
 {
     if (table == nullptr) return;
 
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     hutil::ParmList parms;
 
@@ -371,12 +371,12 @@ namespace {
 struct AdvectionParms {
     AdvectionParms()
         : mGroup(nullptr)
-        , mAdvectSpatial(openvdb::math::UNKNOWN_BIAS)
-        , mRenormSpatial(openvdb::math::UNKNOWN_BIAS)
-        , mAdvectTemporal(openvdb::math::UNKNOWN_TIS)
-        , mRenormTemporal(openvdb::math::UNKNOWN_TIS)
-        , mIntegrator(openvdb::tools::Scheme::SEMI)
-        , mLimiter(openvdb::tools::Scheme::NO_LIMITER)
+        , mAdvectSpatial(laovdb::math::UNKNOWN_BIAS)
+        , mRenormSpatial(laovdb::math::UNKNOWN_BIAS)
+        , mAdvectTemporal(laovdb::math::UNKNOWN_TIS)
+        , mRenormTemporal(laovdb::math::UNKNOWN_TIS)
+        , mIntegrator(laovdb::tools::Scheme::SEMI)
+        , mLimiter(laovdb::tools::Scheme::NO_LIMITER)
         , mNormCount(1)
         , mSubSteps(1)
         , mTimeStep(0.0)
@@ -387,10 +387,10 @@ struct AdvectionParms {
 
     const GA_PrimitiveGroup *                   mGroup;
     hvdb::Grid::ConstPtr                        mVelocityGrid;
-    openvdb::math::BiasedGradientScheme         mAdvectSpatial, mRenormSpatial;
-    openvdb::math::TemporalIntegrationScheme    mAdvectTemporal, mRenormTemporal;
-    openvdb::tools::Scheme::SemiLagrangian      mIntegrator;
-    openvdb::tools::Scheme::Limiter             mLimiter;
+    laovdb::math::BiasedGradientScheme         mAdvectSpatial, mRenormSpatial;
+    laovdb::math::TemporalIntegrationScheme    mAdvectTemporal, mRenormTemporal;
+    laovdb::tools::Scheme::SemiLagrangian      mIntegrator;
+    laovdb::tools::Scheme::Limiter             mLimiter;
     int                                         mNormCount, mSubSteps;
     float                                       mTimeStep;
     bool                                        mStaggered, mRespectClass;
@@ -401,7 +401,7 @@ template<class VelocityGridT>
 class AdvectOp
 {
 public:
-    AdvectOp(AdvectionParms& parms, const VelocityGridT& velGrid, openvdb::util::NullInterrupter& boss)
+    AdvectOp(AdvectionParms& parms, const VelocityGridT& velGrid, laovdb::util::NullInterrupter& boss)
         : mParms(parms)
         , mVelGrid(velGrid)
         , mBoss(boss)
@@ -411,10 +411,10 @@ public:
     template<typename GridT, typename SamplerT>
     void process(GridT& grid)
     {
-        using FieldT = openvdb::tools::DiscreteField<VelocityGridT, SamplerT>;
+        using FieldT = laovdb::tools::DiscreteField<VelocityGridT, SamplerT>;
         const FieldT field(mVelGrid);
 
-        openvdb::tools::LevelSetAdvection<GridT, FieldT>
+        laovdb::tools::LevelSetAdvection<GridT, FieldT>
             advection(grid, field, &mBoss);
 
         advection.setSpatialScheme(mParms.mAdvectSpatial);
@@ -434,8 +434,8 @@ public:
     {
         if (mBoss.wasInterrupted()) return;
 
-        if (mParms.mStaggered) process<GridT, openvdb::tools::StaggeredBoxSampler>(grid);
-        else process<GridT, openvdb::tools::BoxSampler>(grid);
+        if (mParms.mStaggered) process<GridT, laovdb::tools::StaggeredBoxSampler>(grid);
+        else process<GridT, laovdb::tools::BoxSampler>(grid);
     }
 
 private:
@@ -444,17 +444,17 @@ private:
 
     AdvectionParms& mParms;
     const VelocityGridT& mVelGrid;
-    openvdb::util::NullInterrupter& mBoss;
+    laovdb::util::NullInterrupter& mBoss;
 };
 
 
 template<typename VelocityGridT, bool StaggeredVelocity>
 inline bool
-processGrids(GU_Detail* gdp, AdvectionParms& parms, openvdb::util::NullInterrupter& boss,
+processGrids(GU_Detail* gdp, AdvectionParms& parms, laovdb::util::NullInterrupter& boss,
     const std::function<void (const std::string&)>& warningCallback)
 {
     using VolumeAdvection =
-        openvdb::tools::VolumeAdvection<VelocityGridT, StaggeredVelocity>;
+        laovdb::tools::VolumeAdvection<VelocityGridT, StaggeredVelocity>;
     using VelocityGridCPtr = typename VelocityGridT::ConstPtr;
 
     VelocityGridCPtr velGrid = hvdb::Grid::constGrid<VelocityGridT>(parms.mVelocityGrid);
@@ -476,16 +476,16 @@ processGrids(GU_Detail* gdp, AdvectionParms& parms, openvdb::util::NullInterrupt
 
         GU_PrimVDB* vdbPrim = *it;
 
-        if (parms.mRespectClass && vdbPrim->getGrid().getGridClass() == openvdb::GRID_LEVEL_SET) {
+        if (parms.mRespectClass && vdbPrim->getGrid().getGridClass() == laovdb::GRID_LEVEL_SET) {
 
             if (vdbPrim->getStorageType() == UT_VDB_FLOAT) {
                 vdbPrim->makeGridUnique();
-                auto& grid = UTvdbGridCast<openvdb::FloatGrid>(vdbPrim->getGrid());
+                auto& grid = UTvdbGridCast<laovdb::FloatGrid>(vdbPrim->getGrid());
                 advectLevelSet(grid);
             }
             //else if (vdbPrim->getStorageType() == UT_VDB_DOUBLE) {
             //    vdbPrim->makeGridUnique();
-            //    auto& grid = UTvdbGridCast<openvdb::DoubleGrid>(vdbPrim->getGrid());
+            //    auto& grid = UTvdbGridCast<laovdb::DoubleGrid>(vdbPrim->getGrid());
             //    advectLevelSet(grid);
             //}
             else {
@@ -497,27 +497,27 @@ processGrids(GU_Detail* gdp, AdvectionParms& parms, openvdb::util::NullInterrupt
 
             case UT_VDB_FLOAT:
             {
-                const auto& inGrid = UTvdbGridCast<openvdb::FloatGrid>(vdbPrim->getConstGrid());
-                auto outGrid = advectVolume.template advect<openvdb::FloatGrid,
-                    openvdb::tools::Sampler<1, false>>(inGrid, parms.mTimeStep);
+                const auto& inGrid = UTvdbGridCast<laovdb::FloatGrid>(vdbPrim->getConstGrid());
+                auto outGrid = advectVolume.template advect<laovdb::FloatGrid,
+                    laovdb::tools::Sampler<1, false>>(inGrid, parms.mTimeStep);
                 hvdb::replaceVdbPrimitive(*gdp, outGrid, *vdbPrim);
                 break;
             }
 
             case UT_VDB_DOUBLE:
             {
-                const auto& inGrid = UTvdbGridCast<openvdb::DoubleGrid>(vdbPrim->getConstGrid());
-                auto outGrid = advectVolume.template advect<openvdb::DoubleGrid,
-                    openvdb::tools::Sampler<1, false>>(inGrid, parms.mTimeStep);
+                const auto& inGrid = UTvdbGridCast<laovdb::DoubleGrid>(vdbPrim->getConstGrid());
+                auto outGrid = advectVolume.template advect<laovdb::DoubleGrid,
+                    laovdb::tools::Sampler<1, false>>(inGrid, parms.mTimeStep);
                 hvdb::replaceVdbPrimitive(*gdp, outGrid, *vdbPrim);
                 break;
             }
 
             case UT_VDB_VEC3F:
             {
-                const auto& inGrid = UTvdbGridCast<openvdb::Vec3SGrid>(vdbPrim->getConstGrid());
-                auto outGrid = advectVolume.template advect<openvdb::Vec3SGrid,
-                    openvdb::tools::Sampler<1, false>>(inGrid, parms.mTimeStep);
+                const auto& inGrid = UTvdbGridCast<laovdb::Vec3SGrid>(vdbPrim->getConstGrid());
+                auto outGrid = advectVolume.template advect<laovdb::Vec3SGrid,
+                    laovdb::tools::Sampler<1, false>>(inGrid, parms.mTimeStep);
                 hvdb::replaceVdbPrimitive(*gdp, outGrid, *vdbPrim);
                 break;
             }
@@ -558,26 +558,26 @@ SOP_OpenVDB_Advect::Cache::cookVDBSop(OP_Context& context)
             parms.mTimeStep = static_cast<float>(evalFloat("timestep", 0, now));
 
             parms.mAdvectSpatial =
-                openvdb::math::stringToBiasedGradientScheme(evalStdString("advectspatial", now));
-            if (parms.mAdvectSpatial == openvdb::math::UNKNOWN_BIAS) {
+                laovdb::math::stringToBiasedGradientScheme(evalStdString("advectspatial", now));
+            if (parms.mAdvectSpatial == laovdb::math::UNKNOWN_BIAS) {
                 throw std::runtime_error{"Advect: Unknown biased gradient"};
             }
 
-            parms.mRenormSpatial = openvdb::math::stringToBiasedGradientScheme(
+            parms.mRenormSpatial = laovdb::math::stringToBiasedGradientScheme(
                 evalStdString("renormspatial", now));
-            if (parms.mRenormSpatial == openvdb::math::UNKNOWN_BIAS) {
+            if (parms.mRenormSpatial == laovdb::math::UNKNOWN_BIAS) {
                 throw std::runtime_error{"Renorm: Unknown biased gradient"};
             }
 
-            parms.mAdvectTemporal = openvdb::math::stringToTemporalIntegrationScheme(
+            parms.mAdvectTemporal = laovdb::math::stringToTemporalIntegrationScheme(
                 evalStdString("advecttemporal", now));
-            if (parms.mAdvectTemporal == openvdb::math::UNKNOWN_TIS) {
+            if (parms.mAdvectTemporal == laovdb::math::UNKNOWN_TIS) {
                 throw std::runtime_error{"Advect: Unknown temporal integration"};
             }
 
-            parms.mRenormTemporal = openvdb::math::stringToTemporalIntegrationScheme(
+            parms.mRenormTemporal = laovdb::math::stringToTemporalIntegrationScheme(
                 evalStdString("renormtemporal", now));
-            if (parms.mRenormTemporal == openvdb::math::UNKNOWN_TIS) {
+            if (parms.mRenormTemporal == laovdb::math::UNKNOWN_TIS) {
                 throw std::runtime_error{"Renorm: Unknown temporal integration"};
             }
 
@@ -597,7 +597,7 @@ SOP_OpenVDB_Advect::Cache::cookVDBSop(OP_Context& context)
                 throw std::runtime_error{"Missing velocity grid"};
             }
 
-            parms.mStaggered = parms.mVelocityGrid->getGridClass() == openvdb::GRID_STAGGERED;
+            parms.mStaggered = parms.mVelocityGrid->getGridClass() == laovdb::GRID_STAGGERED;
             parms.mRespectClass = bool(evalInt("respectclass", 0, now));
 
             // General advection options
@@ -606,25 +606,25 @@ SOP_OpenVDB_Advect::Cache::cookVDBSop(OP_Context& context)
 
             {
                 const auto str = evalStdString("advection", now);
-                if (str == "semi")       { parms.mIntegrator = openvdb::tools::Scheme::SEMI; }
-                else if (str == "mid")   { parms.mIntegrator = openvdb::tools::Scheme::MID; }
-                else if (str == "rk3")   { parms.mIntegrator = openvdb::tools::Scheme::RK3; }
-                else if (str == "rk4")   { parms.mIntegrator = openvdb::tools::Scheme::RK4; }
-                else if (str == "mac")   { parms.mIntegrator = openvdb::tools::Scheme::MAC; }
-                else if (str == "bfecc") { parms.mIntegrator = openvdb::tools::Scheme::BFECC; }
+                if (str == "semi")       { parms.mIntegrator = laovdb::tools::Scheme::SEMI; }
+                else if (str == "mid")   { parms.mIntegrator = laovdb::tools::Scheme::MID; }
+                else if (str == "rk3")   { parms.mIntegrator = laovdb::tools::Scheme::RK3; }
+                else if (str == "rk4")   { parms.mIntegrator = laovdb::tools::Scheme::RK4; }
+                else if (str == "mac")   { parms.mIntegrator = laovdb::tools::Scheme::MAC; }
+                else if (str == "bfecc") { parms.mIntegrator = laovdb::tools::Scheme::BFECC; }
                 else { throw std::runtime_error{"Invalid advection scheme"}; }
             }
             {
                 const auto str = evalStdString("limiter", now);
                 if (str == "none") {
-                    parms.mLimiter = openvdb::tools::Scheme::NO_LIMITER;
-                    if (parms.mIntegrator == openvdb::tools::Scheme::MAC) {
+                    parms.mLimiter = laovdb::tools::Scheme::NO_LIMITER;
+                    if (parms.mIntegrator == laovdb::tools::Scheme::MAC) {
                         addWarning(SOP_MESSAGE, "MacCormack is unstable without a limiter");
                     }
                 } else if (str == "clamp") {
-                    parms.mLimiter = openvdb::tools::Scheme::CLAMP;
+                    parms.mLimiter = laovdb::tools::Scheme::CLAMP;
                 } else if (str == "revert") {
-                    parms.mLimiter = openvdb::tools::Scheme::REVERT;
+                    parms.mLimiter = laovdb::tools::Scheme::REVERT;
                 } else {
                     throw std::runtime_error{"Invalid limiter scheme"};
                 }
@@ -638,9 +638,9 @@ SOP_OpenVDB_Advect::Cache::cookVDBSop(OP_Context& context)
         };
 
         if (parms.mStaggered) {
-            processGrids<openvdb::Vec3SGrid, true>(gdp, parms, boss.interrupter(), warningCallback);
+            processGrids<laovdb::Vec3SGrid, true>(gdp, parms, boss.interrupter(), warningCallback);
         } else {
-            processGrids<openvdb::Vec3SGrid, false>(gdp, parms, boss.interrupter(), warningCallback);
+            processGrids<laovdb::Vec3SGrid, false>(gdp, parms, boss.interrupter(), warningCallback);
         }
 
         if (boss.wasInterrupted()) addWarning(SOP_MESSAGE, "Process was interrupted");

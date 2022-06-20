@@ -26,7 +26,7 @@
 
 #include <unordered_map>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -287,7 +287,7 @@ inline void AttributeRegistry::print(std::ostream& os) const
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_COMPILER_TARGET_REGISTRY_HAS_BEEN_INCLUDED
 

@@ -12,21 +12,21 @@
 class TestGradient: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 };
 
 
 TEST_F(TestGradient, testISGradient)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     using AccessorType = FloatGrid::ConstAccessor;
     FloatGrid::Ptr grid = createGrid<FloatGrid>(/*background=*/5.0);
     FloatTree& tree = grid->tree();
 
-    const openvdb::Coord dim(64,64,64);
-    const openvdb::Vec3f center(35.0f ,30.0f, 40.0f);
+    const laovdb::Coord dim(64,64,64);
+    const laovdb::Vec3f center(35.0f ,30.0f, 40.0f);
     const float radius=10.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 
@@ -75,13 +75,13 @@ TEST_F(TestGradient, testISGradient)
 
 TEST_F(TestGradient, testISGradientStencil)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = createGrid<FloatGrid>(/*background=*/5.0);
     FloatTree& tree = grid->tree();
 
-    const openvdb::Coord dim(64,64,64);
-    const openvdb::Vec3f center(35.0f ,30.0f, 40.0f);
+    const laovdb::Coord dim(64,64,64);
+    const laovdb::Vec3f center(35.0f ,30.0f, 40.0f);
     const float radius = 10.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 
@@ -134,7 +134,7 @@ TEST_F(TestGradient, testISGradientStencil)
 
 TEST_F(TestGradient, testWSGradient)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     using AccessorType = FloatGrid::ConstAccessor;
 
@@ -143,8 +143,8 @@ TEST_F(TestGradient, testWSGradient)
     grid->setTransform(math::Transform::createLinearTransform(voxel_size));
     EXPECT_TRUE(grid->empty());
 
-    const openvdb::Coord dim(32,32,32);
-    const openvdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
+    const laovdb::Coord dim(32,32,32);
+    const laovdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
     const float radius = 10.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 
@@ -254,11 +254,11 @@ TEST_F(TestGradient, testWSGradient)
 
 TEST_F(TestGradient, testWSGradientStencilFrustum)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // Construct a frustum that matches the one in TestMaps::testFrustum()
 
-    openvdb::BBoxd bbox(Vec3d(0), Vec3d(100));
+    laovdb::BBoxd bbox(Vec3d(0), Vec3d(100));
     math::NonlinearFrustumMap frustum(bbox, 1./6., 5);
     /// frustum will have depth, far plane - near plane = 5
     /// the frustum has width 1 in the front and 6 in the back
@@ -342,15 +342,15 @@ TEST_F(TestGradient, testWSGradientStencilFrustum)
 
 TEST_F(TestGradient, testWSGradientStencil)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     double voxel_size = 0.5;
     FloatGrid::Ptr grid = FloatGrid::create(/*background=*/5.0);
     grid->setTransform(math::Transform::createLinearTransform(voxel_size));
     EXPECT_TRUE(grid->empty());
 
-    const openvdb::Coord dim(32,32,32);
-    const openvdb::Vec3f center(6.0f, 8.0f ,10.0f);//i.e. (12,16,20) in index space
+    const laovdb::Coord dim(32,32,32);
+    const laovdb::Vec3f center(6.0f, 8.0f ,10.0f);//i.e. (12,16,20) in index space
     const float radius = 10;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 
@@ -465,7 +465,7 @@ TEST_F(TestGradient, testWSGradientStencil)
 
 TEST_F(TestGradient, testWSGradientNormSqr)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     using AccessorType = FloatGrid::ConstAccessor;
     double voxel_size = 0.5;
@@ -473,8 +473,8 @@ TEST_F(TestGradient, testWSGradientNormSqr)
     grid->setTransform(math::Transform::createLinearTransform(voxel_size));
     EXPECT_TRUE(grid->empty());
 
-    const openvdb::Coord dim(32,32,32);
-    const openvdb::Vec3f center(6.0f,8.0f,10.0f);//i.e. (12,16,20) in index space
+    const laovdb::Coord dim(32,32,32);
+    const laovdb::Vec3f center(6.0f,8.0f,10.0f);//i.e. (12,16,20) in index space
     const float radius = 10.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 
@@ -509,15 +509,15 @@ TEST_F(TestGradient, testWSGradientNormSqr)
 
 TEST_F(TestGradient, testWSGradientNormSqrStencil)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     double voxel_size = 0.5;
     FloatGrid::Ptr grid = FloatGrid::create(/*background=*/5.0);
     grid->setTransform(math::Transform::createLinearTransform(voxel_size));
     EXPECT_TRUE(grid->empty());
 
-    const openvdb::Coord dim(32,32,32);
-    const openvdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
+    const laovdb::Coord dim(32,32,32);
+    const laovdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
     const float radius = 10.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 
@@ -563,13 +563,13 @@ TEST_F(TestGradient, testWSGradientNormSqrStencil)
 
 TEST_F(TestGradient, testGradientTool)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = createGrid<FloatGrid>(/*background=*/5.0);
     FloatTree& tree = grid->tree();
 
-    const openvdb::Coord dim(64, 64, 64);
-    const openvdb::Vec3f center(35.0f, 30.0f, 40.0f);
+    const laovdb::Coord dim(64, 64, 64);
+    const laovdb::Vec3f center(35.0f, 30.0f, 40.0f);
     const float radius = 10.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 
@@ -586,20 +586,20 @@ TEST_F(TestGradient, testGradientTool)
 
 TEST_F(TestGradient, testGradientMaskedTool)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = createGrid<FloatGrid>(/*background=*/5.0);
     FloatTree& tree = grid->tree();
 
-    const openvdb::Coord dim(64, 64, 64);
-    const openvdb::Vec3f center(35.0f, 30.0f, 40.0f);
+    const laovdb::Coord dim(64, 64, 64);
+    const laovdb::Vec3f center(35.0f, 30.0f, 40.0f);
     const float radius = 10.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 
     EXPECT_TRUE(!tree.empty());
     EXPECT_EQ(dim[0]*dim[1]*dim[2], int(tree.activeVoxelCount()));
 
-    const openvdb::CoordBBox maskbbox(openvdb::Coord(35, 30, 30), openvdb::Coord(41, 41, 41));
+    const laovdb::CoordBBox maskbbox(laovdb::Coord(35, 30, 30), laovdb::Coord(41, 41, 41));
     BoolGrid::Ptr maskGrid = BoolGrid::create(false);
     maskGrid->fill(maskbbox, true/*value*/, true/*activate*/);
 
@@ -621,7 +621,7 @@ TEST_F(TestGradient, testGradientMaskedTool)
 
 TEST_F(TestGradient, testIntersectsIsoValue)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     {// test zero crossing in -x
         FloatGrid  grid(/*backgroundValue=*/5.0);
@@ -715,14 +715,14 @@ TEST_F(TestGradient, testIntersectsIsoValue)
 
 TEST_F(TestGradient, testOldStyleStencils)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = FloatGrid::create(/*backgroundValue=*/5.0);
     grid->setTransform(math::Transform::createLinearTransform(/*voxel size=*/0.5));
     EXPECT_TRUE(grid->empty());
 
-    const openvdb::Coord dim(32,32,32);
-    const openvdb::Vec3f center(6.0f,8.0f,10.0f);//i.e. (12,16,20) in index space
+    const laovdb::Coord dim(32,32,32);
+    const laovdb::Vec3f center(6.0f,8.0f,10.0f);//i.e. (12,16,20) in index space
     const float radius=10.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 

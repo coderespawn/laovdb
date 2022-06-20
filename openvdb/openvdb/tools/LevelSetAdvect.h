@@ -20,7 +20,7 @@
 #include <functional>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -36,7 +36,7 @@ namespace tools {
 /// class VelocityField {
 ///   ...
 /// public:
-///   openvdb::VectorType operator() (const openvdb::Coord& xyz, ValueType time) const;
+///   laovdb::VectorType operator() (const laovdb::Coord& xyz, ValueType time) const;
 ///   ...
 /// };
 /// @endcode
@@ -590,6 +590,6 @@ OPENVDB_INSTANTIATE_CLASS LevelSetAdvection<DoubleGrid, DiscreteField<Vec3SGrid,
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_LEVEL_SET_ADVECT_HAS_BEEN_INCLUDED

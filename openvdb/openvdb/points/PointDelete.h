@@ -23,7 +23,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -139,12 +139,12 @@ struct DeleteByFilterOp
                 const AttributeArray* existingArray = existingAttributeSet.getConst(i);
 
                 if (!newArray->hasConstantStride() || !existingArray->hasConstantStride()) {
-                    OPENVDB_THROW(openvdb::NotImplementedError,
+                    OPENVDB_THROW(laovdb::NotImplementedError,
                         "Transfer of attribute values for dynamic arrays not currently supported.");
                 }
 
                 if (newArray->stride() != existingArray->stride()) {
-                    OPENVDB_THROW(openvdb::LookupError,
+                    OPENVDB_THROW(laovdb::LookupError,
                         "Cannot transfer attribute values with mis-matching strides.");
                 }
 
@@ -202,7 +202,7 @@ inline void deleteFromGroups(PointDataTreeT& pointTree,
 
     if (!leafIter)    return;
 
-    const openvdb::points::AttributeSet& attributeSet = leafIter->attributeSet();
+    const laovdb::points::AttributeSet& attributeSet = leafIter->attributeSet();
     const AttributeSet::Descriptor& descriptor = attributeSet.descriptor();
     std::vector<std::string> availableGroups;
 
@@ -261,6 +261,6 @@ inline void deleteFromGroup(PointDataTreeT& pointTree,
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_POINT_DELETE_HAS_BEEN_INCLUDED

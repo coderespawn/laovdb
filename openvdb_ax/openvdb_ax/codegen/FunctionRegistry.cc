@@ -9,7 +9,7 @@
 
 #include "../Exceptions.h"
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -116,5 +116,5 @@ void FunctionRegistry::createAll(const FunctionOptions& op, const bool verify)
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

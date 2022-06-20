@@ -30,8 +30,8 @@
 #include <vector>
 
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 namespace hvdb = openvdb_houdini;
 
 
@@ -337,7 +337,7 @@ registerProcedural(VRAY_ProceduralFactory *factory)
 
 VRAY_OpenVDB_Points::VRAY_OpenVDB_Points()
 {
-    openvdb::initialize();
+    laovdb::initialize();
 }
 
 const char *
@@ -554,7 +554,7 @@ VRAY_OpenVDB_Points::render()
 
                 // create new Cd attribute if one did not previously exist
                 if (colorIndex == AttributeSet::INVALID_POS) {
-                    openvdb::points::appendAttribute<Vec3f, FixedPointCodec<false, UnitRange>>(
+                    laovdb::points::appendAttribute<Vec3f, FixedPointCodec<false, UnitRange>>(
                         tree, "Cd");
                     colorIndex = leafIter->attributeSet().find("Cd");
                 }

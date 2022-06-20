@@ -69,8 +69,8 @@ struct ProgOptions
     std::string mOutputVDBFile = "";
     bool mCopyFileMeta = false;
     bool mVerbose = false;
-    openvdb::ax::CompilerOptions::OptLevel mOptLevel =
-        openvdb::ax::CompilerOptions::OptLevel::O3;
+    laovdb::ax::CompilerOptions::OptLevel mOptLevel =
+        laovdb::ax::CompilerOptions::OptLevel::O3;
 
     // Analyze options
     bool mPrintAST = false;
@@ -103,29 +103,29 @@ tryCompileStringToCompilation(const std::string& str)
     fatal("invalid option given for --try-compile level.");
 }
 
-openvdb::ax::CompilerOptions::OptLevel
+laovdb::ax::CompilerOptions::OptLevel
 optStringToLevel(const std::string& str)
 {
-    if (str == "NONE") return openvdb::ax::CompilerOptions::OptLevel::NONE;
-    if (str == "O0")   return openvdb::ax::CompilerOptions::OptLevel::O0;
-    if (str == "O1")   return openvdb::ax::CompilerOptions::OptLevel::O1;
-    if (str == "O2")   return openvdb::ax::CompilerOptions::OptLevel::O2;
-    if (str == "Os")   return openvdb::ax::CompilerOptions::OptLevel::Os;
-    if (str == "Oz")   return openvdb::ax::CompilerOptions::OptLevel::Oz;
-    if (str == "O3")   return openvdb::ax::CompilerOptions::OptLevel::O3;
+    if (str == "NONE") return laovdb::ax::CompilerOptions::OptLevel::NONE;
+    if (str == "O0")   return laovdb::ax::CompilerOptions::OptLevel::O0;
+    if (str == "O1")   return laovdb::ax::CompilerOptions::OptLevel::O1;
+    if (str == "O2")   return laovdb::ax::CompilerOptions::OptLevel::O2;
+    if (str == "Os")   return laovdb::ax::CompilerOptions::OptLevel::Os;
+    if (str == "Oz")   return laovdb::ax::CompilerOptions::OptLevel::Oz;
+    if (str == "O3")   return laovdb::ax::CompilerOptions::OptLevel::O3;
     fatal("invalid option given for --opt level");
 }
 
 inline std::string
-optLevelToString(const openvdb::ax::CompilerOptions::OptLevel level)
+optLevelToString(const laovdb::ax::CompilerOptions::OptLevel level)
 {
     switch (level) {
-        case  openvdb::ax::CompilerOptions::OptLevel::NONE : return "NONE";
-        case  openvdb::ax::CompilerOptions::OptLevel::O1 : return "O1";
-        case  openvdb::ax::CompilerOptions::OptLevel::O2 : return "O2";
-        case  openvdb::ax::CompilerOptions::OptLevel::Os : return "Os";
-        case  openvdb::ax::CompilerOptions::OptLevel::Oz : return "Oz";
-        case  openvdb::ax::CompilerOptions::OptLevel::O3 : return "O3";
+        case  laovdb::ax::CompilerOptions::OptLevel::NONE : return "NONE";
+        case  laovdb::ax::CompilerOptions::OptLevel::O1 : return "O1";
+        case  laovdb::ax::CompilerOptions::OptLevel::O2 : return "O2";
+        case  laovdb::ax::CompilerOptions::OptLevel::Os : return "Os";
+        case  laovdb::ax::CompilerOptions::OptLevel::Oz : return "Oz";
+        case  laovdb::ax::CompilerOptions::OptLevel::O3 : return "O3";
         default : return "";
     }
 }
@@ -285,19 +285,19 @@ struct OptParse
 struct ScopedInitialize
 {
     ScopedInitialize(int argc, char *argv[]) {
-        openvdb::logging::initialize(argc, argv);
-        openvdb::initialize();
+        laovdb::logging::initialize(argc, argv);
+        laovdb::initialize();
     }
 
     ~ScopedInitialize() {
-        if (openvdb::ax::isInitialized()) {
-            openvdb::ax::uninitialize();
+        if (laovdb::ax::isInitialized()) {
+            laovdb::ax::uninitialize();
         }
-        openvdb::uninitialize();
+        laovdb::uninitialize();
     }
 
-    inline void initializeCompiler() const { openvdb::ax::initialize(); }
-    inline bool isInitialized() const { return openvdb::ax::isInitialized(); }
+    inline void initializeCompiler() const { laovdb::ax::initialize(); }
+    inline bool isInitialized() const { return laovdb::ax::isInitialized(); }
 };
 
 void printFunctions(const bool namesOnly,
@@ -306,16 +306,16 @@ void printFunctions(const bool namesOnly,
 {
     static const size_t maxHelpTextWidth = 100;
 
-    openvdb::ax::FunctionOptions opts;
+    laovdb::ax::FunctionOptions opts;
     opts.mLazyFunctions = false;
-    const openvdb::ax::codegen::FunctionRegistry::UniquePtr registry =
-        openvdb::ax::codegen::createDefaultRegistry(&opts);
+    const laovdb::ax::codegen::FunctionRegistry::UniquePtr registry =
+        laovdb::ax::codegen::createDefaultRegistry(&opts);
 
     // convert to ordered map for alphabetical sorting
     // only include non internal functions and apply any search
     // criteria
 
-    std::map<std::string, const openvdb::ax::codegen::FunctionGroup*> functionMap;
+    std::map<std::string, const laovdb::ax::codegen::FunctionGroup*> functionMap;
     for (const auto& iter : registry->map()) {
         if (iter.second.isInternal()) continue;
         if (!search.empty() && iter.first.find(search) == std::string::npos) {
@@ -357,7 +357,7 @@ void printFunctions(const bool namesOnly,
         llvm::LLVMContext C;
 
         for (const auto& iter : functionMap) {
-            const openvdb::ax::codegen::FunctionGroup* const function = iter.second;
+            const laovdb::ax::codegen::FunctionGroup* const function = iter.second;
             const char* cdocs = function->doc();
             if (!cdocs || cdocs[0] == '\0') {
                 cdocs = "<No documentation exists for this function>";
@@ -378,7 +378,7 @@ void printFunctions(const bool namesOnly,
             os << "| - " << docs << '\n' << '|' << '\n';
 
             const auto& list = function->list();
-            for (const openvdb::ax::codegen::Function::Ptr& decl : list) {
+            for (const laovdb::ax::codegen::Function::Ptr& decl : list) {
                 os << "|  - ";
                 decl->print(C, os);
                 os << '\n';
@@ -402,11 +402,11 @@ main(int argc, char *argv[])
     OptParse parser(argc, argv);
     ProgOptions opts;
 
-    openvdb::util::CpuTimer timer;
+    laovdb::util::CpuTimer timer;
     auto getTime = [&timer]() -> std::string {
         const double msec = timer.milliseconds();
         std::ostringstream os;
-        openvdb::util::printTime(os, msec, "", "", 1, 1, 0);
+        laovdb::util::printTime(os, msec, "", "", 1, 1, 0);
         return os.str();
     };
 
@@ -531,7 +531,7 @@ main(int argc, char *argv[])
     }
 
     if (opts.mVerbose) {
-        axlog("OpenVDB AX " << openvdb::getLibraryVersionString() << '\n');
+        axlog("OpenVDB AX " << laovdb::getLibraryVersionString() << '\n');
         axlog("----------------\n");
         axlog("Inputs\n");
         axlog("  mode    : " << modeString(opts.mMode));
@@ -605,16 +605,16 @@ main(int argc, char *argv[])
         control.reset(new tbb::global_control(tbb::global_control::max_allowed_parallelism, opts.threads));
     }
 
-    openvdb::GridPtrVec grids;
-    openvdb::MetaMap::Ptr meta;
+    laovdb::GridPtrVec grids;
+    laovdb::MetaMap::Ptr meta;
 
     if (opts.mMode == ProgOptions::Execute) {
         // read vdb file data for
         axlog("[INFO] Reading VDB data"
-            << (openvdb::io::Archive::isDelayedLoadingEnabled() ?
+            << (laovdb::io::Archive::isDelayedLoadingEnabled() ?
                 " (delay-load)" : "") << '\n');
         for (const auto& filename : opts.mInputVDBFiles) {
-            openvdb::io::File file(filename);
+            laovdb::io::File file(filename);
             try {
                 axlog("[INFO] | \"" << filename << "\"");
                 axtimer();
@@ -625,7 +625,7 @@ main(int argc, char *argv[])
                 if (opts.mCopyFileMeta && !meta) meta = file.getMetadata();
                 file.close();
                 axlog(": " << axtime() << '\n');
-            } catch (openvdb::Exception& e) {
+            } catch (laovdb::Exception& e) {
                 axlog('\n');
                 OPENVDB_LOG_ERROR(e.what() << " (" << filename << ")");
                 return EXIT_FAILURE;
@@ -656,7 +656,7 @@ main(int argc, char *argv[])
 
     // set up logger
 
-    openvdb::ax::Logger
+    laovdb::ax::Logger
         logs([](const std::string& msg) { std::cerr << msg << std::endl; },
              [](const std::string& msg) { std::cerr << msg << std::endl; });
     logs.setMaxErrors(opts.mMaxErrors);
@@ -669,8 +669,8 @@ main(int argc, char *argv[])
     axtimer();
     axlog("[INFO] Parsing input code" << std::flush);
 
-    const openvdb::ax::ast::Tree::ConstPtr syntaxTree =
-        openvdb::ax::ast::parse(opts.mInputCode->c_str(), logs);
+    const laovdb::ax::ast::Tree::ConstPtr syntaxTree =
+        laovdb::ax::ast::parse(opts.mInputCode->c_str(), logs);
         axlog(": " << axtime() << '\n');
     if (!syntaxTree) {
         return EXIT_FAILURE;
@@ -680,16 +680,16 @@ main(int argc, char *argv[])
         axlog("[INFO] Running analysis options\n" << std::flush);
         if (opts.mPrintAST) {
             axlog("[INFO] | Printing AST\n" << std::flush);
-            openvdb::ax::ast::print(*syntaxTree, true, std::cout);
+            laovdb::ax::ast::print(*syntaxTree, true, std::cout);
         }
         if (opts.mReprint) {
             axlog("[INFO] | Reprinting code\n" << std::flush);
-            openvdb::ax::ast::reprint(*syntaxTree, std::cout);
+            laovdb::ax::ast::reprint(*syntaxTree, std::cout);
         }
         if (opts.mAttribRegPrint) {
             axlog("[INFO] | Printing Attribute Registry\n" << std::flush);
-            const openvdb::ax::AttributeRegistry::ConstPtr reg =
-                openvdb::ax::AttributeRegistry::create(*syntaxTree);
+            const laovdb::ax::AttributeRegistry::ConstPtr reg =
+                laovdb::ax::AttributeRegistry::create(*syntaxTree);
             reg->print(std::cout);
             std::cout << std::flush;
         }
@@ -704,13 +704,13 @@ main(int argc, char *argv[])
     axtimer();
     axlog("[INFO] Creating Compiler\n");
     axlog("[INFO] | Optimization Level [" << optLevelToString(opts.mOptLevel) << "]\n" << std::flush);
-    openvdb::ax::CompilerOptions compOpts;
+    laovdb::ax::CompilerOptions compOpts;
     compOpts.mOptLevel = opts.mOptLevel;
 
-    openvdb::ax::Compiler::Ptr compiler =
-        openvdb::ax::Compiler::create(compOpts);
-    openvdb::ax::CustomData::Ptr customData =
-        openvdb::ax::CustomData::create();
+    laovdb::ax::Compiler::Ptr compiler =
+        laovdb::ax::Compiler::create(compOpts);
+    laovdb::ax::CustomData::Ptr customData =
+        laovdb::ax::CustomData::create();
     axlog("[INFO] | " << axtime() << '\n' << std::flush);
 
     // Check what we need to compile for if performing execution
@@ -719,7 +719,7 @@ main(int argc, char *argv[])
         bool points = false;
         bool volumes = false;
         for (auto grid : grids) {
-            points |= grid->isType<openvdb::points::PointDataGrid>();
+            points |= grid->isType<laovdb::points::PointDataGrid>();
             volumes |= !points;
             if (points && volumes) break;
         }
@@ -737,7 +737,7 @@ main(int argc, char *argv[])
             axtimer();
             axlog("[INFO] Compiling for VDB Points\n" << std::flush);
             try {
-                compiler->compile<openvdb::ax::PointExecutable>(*syntaxTree, logs, customData);
+                compiler->compile<laovdb::ax::PointExecutable>(*syntaxTree, logs, customData);
                 if (logs.hasError()) {
                     axlog("[INFO] Compilation error(s)!\n");
                     psuccess = false;
@@ -764,7 +764,7 @@ main(int argc, char *argv[])
             axtimer();
             axlog("[INFO] Compiling for VDB Volumes\n" << std::flush);
             try {
-                compiler->compile<openvdb::ax::VolumeExecutable>(*syntaxTree, logs, customData);
+                compiler->compile<laovdb::ax::VolumeExecutable>(*syntaxTree, logs, customData);
                 if (logs.hasError()) {
                     axlog("[INFO] Compilation error(s)!\n");
                     vsuccess = false;
@@ -794,12 +794,12 @@ main(int argc, char *argv[])
 
         axlog("[INFO] VDB PointDataGrids Found\n" << std::flush);
 
-        openvdb::ax::PointExecutable::Ptr pointExe;
+        laovdb::ax::PointExecutable::Ptr pointExe;
 
         axtimer();
         try {
             axlog("[INFO] Compiling for VDB Points\n" << std::flush);
-            pointExe = compiler->compile<openvdb::ax::PointExecutable>(*syntaxTree, logs, customData);
+            pointExe = compiler->compile<laovdb::ax::PointExecutable>(*syntaxTree, logs, customData);
         } catch (std::exception& e) {
             OPENVDB_LOG_FATAL("Fatal error!\nErrors:\n" << e.what());
             return EXIT_FAILURE;
@@ -821,15 +821,15 @@ main(int argc, char *argv[])
         size_t total = 0, count = 1;
         if (opts.mVerbose) {
             for (auto grid : grids) {
-                if (!grid->isType<openvdb::points::PointDataGrid>()) continue;
+                if (!grid->isType<laovdb::points::PointDataGrid>()) continue;
                 ++total;
             }
         }
 
         for (auto grid :grids) {
-            if (!grid->isType<openvdb::points::PointDataGrid>()) continue;
-            openvdb::points::PointDataGrid::Ptr points =
-                openvdb::gridPtrCast<openvdb::points::PointDataGrid>(grid);
+            if (!grid->isType<laovdb::points::PointDataGrid>()) continue;
+            laovdb::points::PointDataGrid::Ptr points =
+                laovdb::gridPtrCast<laovdb::points::PointDataGrid>(grid);
             axtimer();
             axlog("[INFO] Executing on \"" << points->getName() << "\" "
                   << count << " of " << total << '\n' << std::flush);
@@ -837,8 +837,8 @@ main(int argc, char *argv[])
 
             try {
                 pointExe->execute(*points);
-                if (openvdb::ax::ast::callsFunction(*syntaxTree, "deletepoint")) {
-                    openvdb::points::deleteFromGroup(points->tree(), "dead", false, false);
+                if (laovdb::ax::ast::callsFunction(*syntaxTree, "deletepoint")) {
+                    laovdb::points::deleteFromGroup(points->tree(), "dead", false, false);
                 }
             }
             catch (std::exception& e) {
@@ -858,10 +858,10 @@ main(int argc, char *argv[])
 
         axlog("[INFO] VDB Volumes Found\n" << std::flush);
 
-        openvdb::ax::VolumeExecutable::Ptr volumeExe;
+        laovdb::ax::VolumeExecutable::Ptr volumeExe;
         try {
             axlog("[INFO] Compiling for VDB Points\n" << std::flush);
-            volumeExe = compiler->compile<openvdb::ax::VolumeExecutable>(*syntaxTree, logs, customData);
+            volumeExe = compiler->compile<laovdb::ax::VolumeExecutable>(*syntaxTree, logs, customData);
         } catch (std::exception& e) {
             OPENVDB_LOG_FATAL("Fatal error!\nErrors:\n" << e.what());
             return EXIT_FAILURE;
@@ -884,7 +884,7 @@ main(int argc, char *argv[])
             std::vector<const std::string*> names;
             axlog("[INFO] Executing using:\n");
             for (auto grid : grids) {
-                if (grid->isType<openvdb::points::PointDataGrid>()) continue;
+                if (grid->isType<laovdb::points::PointDataGrid>()) continue;
                 axlog("  " << grid->getName() << '\n');
                 axlog("    " << grid->valueType() << '\n');
                 axlog("    " << grid->gridClassToString(grid->getGridClass()) << '\n');
@@ -905,11 +905,11 @@ main(int argc, char *argv[])
     if (!opts.mOutputVDBFile.empty()) {
         axtimer();
         axlog("[INFO] Writing results" << std::flush);
-        openvdb::io::File out(opts.mOutputVDBFile);
+        laovdb::io::File out(opts.mOutputVDBFile);
         try {
             if (meta) out.write(grids, *meta);
             else      out.write(grids);
-        } catch (openvdb::Exception& e) {
+        } catch (laovdb::Exception& e) {
             OPENVDB_LOG_ERROR(e.what() << " (" << out.filename() << ")");
             return EXIT_FAILURE;
         }

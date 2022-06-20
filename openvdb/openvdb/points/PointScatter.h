@@ -32,7 +32,7 @@
 #include <tbb/parallel_sort.h>
 #include <tbb/parallel_for.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -550,7 +550,7 @@ nonUniformPointScatter(const GridT& grid,
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 
 #endif // OPENVDB_POINTS_POINT_SCATTER_HAS_BEEN_INCLUDED

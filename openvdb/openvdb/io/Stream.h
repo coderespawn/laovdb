@@ -9,7 +9,7 @@
 #include <memory>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace io {
@@ -84,6 +84,6 @@ Stream::write(const GridPtrContainerT& container, const MetaMap& metadata) const
 
 } // namespace io
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_IO_STREAM_HAS_BEEN_INCLUDED

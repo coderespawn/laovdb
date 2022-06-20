@@ -304,7 +304,7 @@ SOP_OpenVDB_Resample::syncNodeVersion(const char* oldVersion, const char*, bool*
     // VDB version string prior to 6.2.0 - "17.5.204"
     // VDB version string since 6.2.0 - "vdb6.2.0 houdini17.5.204"
 
-    openvdb::Name oldVersionStr(oldVersion);
+    laovdb::Name oldVersionStr(oldVersion);
 
     bool enableAxisAlignedLinearTransform = false;
     size_t spacePos = oldVersionStr.find_first_of(' ');
@@ -395,7 +395,7 @@ namespace {
 struct RebuildOp
 {
     std::function<void (const std::string&)> addWarning;
-    openvdb::math::Transform xform;
+    laovdb::math::Transform xform;
     hvdb::GridPtr outGrid;
 
     template<typename GridT>
@@ -407,13 +407,13 @@ struct RebuildOp
 
         hvdb::HoudiniInterrupter interrupter;
         try {
-            outGrid = openvdb::tools::doLevelSetRebuild(grid,
-                /*isovalue=*/openvdb::zeroVal<ValueT>(),
+            outGrid = laovdb::tools::doLevelSetRebuild(grid,
+                /*isovalue=*/laovdb::zeroVal<ValueT>(),
                 /*exWidth=*/halfWidth, /*inWidth=*/halfWidth, &xform, &interrupter.interrupter());
-        } catch (openvdb::TypeError&) {
+        } catch (laovdb::TypeError&) {
             addWarning("skipped rebuild of level set grid " + grid.getName()
                 + " of type " + grid.type());
-            outGrid = openvdb::ConstPtrCast<GridT>(grid.copy());
+            outGrid = laovdb::ConstPtrCast<GridT>(grid.copy());
         }
     }
 }; // struct RebuildOp
@@ -423,11 +423,11 @@ struct RebuildOp
 // to the voxel values of vector-valued grids
 struct VecXformOp
 {
-    openvdb::Mat4d mat;
-    VecXformOp(const openvdb::Mat4d& _mat): mat(_mat) {}
+    laovdb::Mat4d mat;
+    VecXformOp(const laovdb::Mat4d& _mat): mat(_mat) {}
     template<typename GridT> void operator()(GridT& grid) const
     {
-        openvdb::tools::transformVectors(grid, mat);
+        laovdb::tools::transformVectors(grid, mat);
     }
 };
 
@@ -465,7 +465,7 @@ SOP_OpenVDB_Resample::Cache::cookVDBSop(OP_Context& context)
                 + ", got " + std::to_string(mode)};
         }
 
-        const openvdb::Vec3R
+        const laovdb::Vec3R
             translate = evalVec3R("t", time),
             rotate = (M_PI / 180.0) * evalVec3R("r", time),
             scale = evalVec3R("s", time),
@@ -510,14 +510,14 @@ SOP_OpenVDB_Resample::Cache::cookVDBSop(OP_Context& context)
 
             const UT_VDBType valueType = vdb->getStorageType();
 
-            const bool isLevelSet = ((vdb->getGrid().getGridClass() == openvdb::GRID_LEVEL_SET)
+            const bool isLevelSet = ((vdb->getGrid().getGridClass() == laovdb::GRID_LEVEL_SET)
                 && (valueType == UT_VDB_FLOAT || valueType == UT_VDB_DOUBLE));
 
             if (isLevelSet && !rebuild) {
                 // If the input grid is a level set but level set rebuild is disabled,
                 // set the grid's class to "unknown", to prevent the resample tool
                 // from triggering a rebuild.
-                vdb->getGrid().setGridClass(openvdb::GRID_UNKNOWN);
+                vdb->getGrid().setGridClass(laovdb::GRID_UNKNOWN);
             }
 
             const hvdb::Grid& grid = vdb->getGrid();
@@ -539,22 +539,22 @@ SOP_OpenVDB_Resample::Cache::cookVDBSop(OP_Context& context)
                 ("Resampling " + it.getPrimitiveName().toStdString()).c_str());
 
             if (refGrid || mode == MODE_VOXEL_SIZE || mode == MODE_VOXEL_SCALE) {
-                openvdb::math::Transform::Ptr refXform;
+                laovdb::math::Transform::Ptr refXform;
                 if (mode == MODE_VOXEL_SIZE) {
                     if (linearXform) {
                         // create a new linear transform with requested voxel size
-                        refXform = openvdb::math::Transform::createLinearTransform(voxelSize);
+                        refXform = laovdb::math::Transform::createLinearTransform(voxelSize);
                     } else {
                         // copy the input grid transform and change the voxel size
                         refXform = grid.transform().copy();
                         // reset the voxel size back to 1.0 before applying the new voxel size
-                        openvdb::Vec3d revertVoxelSize(1.0 / refXform->voxelSize());
+                        laovdb::Vec3d revertVoxelSize(1.0 / refXform->voxelSize());
                         refXform->preScale(revertVoxelSize * voxelSize);
                     }
                 } else if (mode == MODE_VOXEL_SCALE) {
                     if (linearXform) {
                         // create a new linear transform scaling input grid voxel size by voxel scale
-                        refXform = openvdb::math::Transform::createLinearTransform();
+                        refXform = laovdb::math::Transform::createLinearTransform();
                         refXform->preScale(grid.voxelSize() * voxelScale);
                     } else {
                         // copy the input grid transform and scale the voxel size
@@ -583,21 +583,21 @@ SOP_OpenVDB_Resample::Cache::cookVDBSop(OP_Context& context)
                     outGrid->setTransform(refXform);
 
                     if (curOrder == 0) {
-                        hvdb::GridResampleToMatchOp<openvdb::tools::PointSampler> op(outGrid);
+                        hvdb::GridResampleToMatchOp<laovdb::tools::PointSampler> op(outGrid);
                         grid.apply<hvdb::AllGridTypes>(op);
                     } else if (curOrder == 1) {
-                        hvdb::GridResampleToMatchOp<openvdb::tools::BoxSampler> op(outGrid);
+                        hvdb::GridResampleToMatchOp<laovdb::tools::BoxSampler> op(outGrid);
                         grid.apply<hvdb::AllGridTypes>(op);
                     } else if (curOrder == 2) {
-                        hvdb::GridResampleToMatchOp<openvdb::tools::QuadraticSampler> op(outGrid);
+                        hvdb::GridResampleToMatchOp<laovdb::tools::QuadraticSampler> op(outGrid);
                         grid.apply<hvdb::AllGridTypes>(op);
                     }
 
 #ifdef SESI_OPENVDB
                     if (isLevelSet) {
-                        auto tempgrid = UTvdbGridCast<openvdb::FloatGrid>(outGrid);
-                        openvdb::tools::pruneLevelSet(tempgrid->tree());
-                        openvdb::tools::signedFloodFill(tempgrid->tree());
+                        auto tempgrid = UTvdbGridCast<laovdb::FloatGrid>(outGrid);
+                        laovdb::tools::pruneLevelSet(tempgrid->tree());
+                        laovdb::tools::signedFloodFill(tempgrid->tree());
                     }
 #endif
                 }
@@ -606,7 +606,7 @@ SOP_OpenVDB_Resample::Cache::cookVDBSop(OP_Context& context)
                 // Resample into the output grid using the user-supplied transform.
                 // The output grid's transform will be the same as the input grid's.
 
-                openvdb::tools::GridTransformer xform(pivot, scale, rotate, translate,
+                laovdb::tools::GridTransformer xform(pivot, scale, rotate, translate,
                     xformOrder.toStdString(), rotOrder.toStdString());
 
                 if (isLevelSet && rebuild) {
@@ -631,27 +631,27 @@ SOP_OpenVDB_Resample::Cache::cookVDBSop(OP_Context& context)
                     xform.setInterrupter(interrupter.interrupter());
 
                     if (curOrder == 0) {
-                        hvdb::GridTransformOp<openvdb::tools::PointSampler> op(outGrid, xform);
+                        hvdb::GridTransformOp<laovdb::tools::PointSampler> op(outGrid, xform);
                         hvdb::GEOvdbApply<hvdb::VolumeGridTypes>(*vdb, op);
                     } else if (curOrder == 1) {
-                        hvdb::GridTransformOp<openvdb::tools::BoxSampler> op(outGrid, xform);
+                        hvdb::GridTransformOp<laovdb::tools::BoxSampler> op(outGrid, xform);
                         hvdb::GEOvdbApply<hvdb::VolumeGridTypes>(*vdb, op);
                     } else if (curOrder == 2) {
-                        hvdb::GridTransformOp<openvdb::tools::QuadraticSampler> op(outGrid, xform);
+                        hvdb::GridTransformOp<laovdb::tools::QuadraticSampler> op(outGrid, xform);
                         hvdb::GEOvdbApply<hvdb::VolumeGridTypes>(*vdb, op);
                     }
 
 #ifdef SESI_OPENVDB
                     if (isLevelSet) {
-                        auto tempgrid = UTvdbGridCast<openvdb::FloatGrid>(outGrid);
-                        openvdb::tools::pruneLevelSet(tempgrid->tree());
-                        openvdb::tools::signedFloodFill(tempgrid->tree());
+                        auto tempgrid = UTvdbGridCast<laovdb::FloatGrid>(outGrid);
+                        laovdb::tools::pruneLevelSet(tempgrid->tree());
+                        laovdb::tools::signedFloodFill(tempgrid->tree());
                     }
 #endif
                 }
 
                 if (xformVec && outGrid->isInWorldSpace()
-                    && outGrid->getVectorType() != openvdb::VEC_INVARIANT)
+                    && outGrid->getVectorType() != laovdb::VEC_INVARIANT)
                 {
                     // If (and only if) the grid is vector-valued, apply the transform
                     // to each voxel's value.

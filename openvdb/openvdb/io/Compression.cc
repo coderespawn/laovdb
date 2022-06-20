@@ -14,7 +14,7 @@
 #endif
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace io {
@@ -309,4 +309,4 @@ bloscFromStream(std::istream& is, char* data, size_t numBytes)
 
 } // namespace io
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

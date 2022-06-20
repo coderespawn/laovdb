@@ -28,16 +28,16 @@ template<typename GridType, typename Sampler>
 void
 TestGridTransformer::transformGrid()
 {
-    using openvdb::Coord;
-    using openvdb::CoordBBox;
-    using openvdb::Vec3R;
+    using laovdb::Coord;
+    using laovdb::CoordBBox;
+    using laovdb::Vec3R;
 
     typedef typename GridType::ValueType ValueT;
 
     const int radius = Sampler::radius();
-    const openvdb::Vec3R zeroVec(0, 0, 0), oneVec(1, 1, 1);
+    const laovdb::Vec3R zeroVec(0, 0, 0), oneVec(1, 1, 1);
     const ValueT
-        zero = openvdb::zeroVal<ValueT>(),
+        zero = laovdb::zeroVal<ValueT>(),
         one = zero + 1,
         two = one + 1,
         background = one;
@@ -54,31 +54,31 @@ TestGridTransformer::transformGrid()
     inAcc.setValue(Coord( 0, 20, 20),  zero);
     inAcc.setValue(Coord(20, 20,  0),  zero);
     inAcc.setValue(Coord(20, 20, 20),  zero);
-    EXPECT_EQ(openvdb::Index64(8), inGrid->activeVoxelCount());
+    EXPECT_EQ(laovdb::Index64(8), inGrid->activeVoxelCount());
 
     // For various combinations of scaling, rotation and translation...
     for (int i = 0; i < 8; ++i) {
-        const openvdb::Vec3R
-            scale = i & 1 ? openvdb::Vec3R(10, 4, 7.5) : oneVec,
-            rotate = (i & 2 ? openvdb::Vec3R(30, 230, -190) : zeroVec) * (M_PI / 180),
-            translate = i & 4 ? openvdb::Vec3R(-5, 0, 10) : zeroVec,
-            pivot = i & 8 ? openvdb::Vec3R(0.5, 4, -3.3) : zeroVec;
-        openvdb::tools::GridTransformer transformer(pivot, scale, rotate, translate);
+        const laovdb::Vec3R
+            scale = i & 1 ? laovdb::Vec3R(10, 4, 7.5) : oneVec,
+            rotate = (i & 2 ? laovdb::Vec3R(30, 230, -190) : zeroVec) * (M_PI / 180),
+            translate = i & 4 ? laovdb::Vec3R(-5, 0, 10) : zeroVec,
+            pivot = i & 8 ? laovdb::Vec3R(0.5, 4, -3.3) : zeroVec;
+        laovdb::tools::GridTransformer transformer(pivot, scale, rotate, translate);
         transformer.setTransformTiles(transformTiles);
 
         // Add a tile (either active or inactive) in the interior of the cube.
         const bool tileIsActive = (i % 2);
         inGrid->fill(CoordBBox(Coord(8), Coord(15)), two, tileIsActive);
         if (tileIsActive) {
-            EXPECT_EQ(openvdb::Index64(512 + 8), inGrid->activeVoxelCount());
+            EXPECT_EQ(laovdb::Index64(512 + 8), inGrid->activeVoxelCount());
         } else {
-            EXPECT_EQ(openvdb::Index64(8), inGrid->activeVoxelCount());
+            EXPECT_EQ(laovdb::Index64(8), inGrid->activeVoxelCount());
         }
         // Verify that a voxel outside the cube has the background value.
-        EXPECT_TRUE(openvdb::math::isExactlyEqual(inAcc.getValue(Coord(21, 0, 0)), background));
+        EXPECT_TRUE(laovdb::math::isExactlyEqual(inAcc.getValue(Coord(21, 0, 0)), background));
         EXPECT_EQ(false, inAcc.isValueOn(Coord(21, 0, 0)));
         // Verify that a voxel inside the cube has value two.
-        EXPECT_TRUE(openvdb::math::isExactlyEqual(inAcc.getValue(Coord(12)), two));
+        EXPECT_TRUE(laovdb::math::isExactlyEqual(inAcc.getValue(Coord(12)), two));
         EXPECT_EQ(tileIsActive, inAcc.isValueOn(Coord(12)));
 
         // Verify that the bounding box of all active values is 20 x 20 x 20.
@@ -90,7 +90,7 @@ TestGridTransformer::transformGrid()
 
         // Transform the corners of the input grid's bounding box
         // and compute the enclosing bounding box in the output grid.
-        const openvdb::Mat4R xform = transformer.getTransform();
+        const laovdb::Mat4R xform = transformer.getTransform();
         const Vec3R
             inRMin(imin.x(), imin.y(), imin.z()),
             inRMax(imax.x(), imax.y(), imax.z());
@@ -101,25 +101,25 @@ TestGridTransformer::transformGrid()
                 j & 1 ? inRMax.x() : inRMin.x(),
                 j & 2 ? inRMax.y() : inRMin.y(),
                 j & 4 ? inRMax.z() : inRMin.z());
-            outRMin = openvdb::math::minComponent(outRMin, corner * xform);
-            outRMax = openvdb::math::maxComponent(outRMax, corner * xform);
+            outRMin = laovdb::math::minComponent(outRMin, corner * xform);
+            outRMax = laovdb::math::maxComponent(outRMax, corner * xform);
         }
 
         CoordBBox bbox(
-            Coord(openvdb::tools::local_util::floorVec3(outRMin) - radius),
-            Coord(openvdb::tools::local_util::ceilVec3(outRMax)  + radius));
+            Coord(laovdb::tools::local_util::floorVec3(outRMin) - radius),
+            Coord(laovdb::tools::local_util::ceilVec3(outRMax)  + radius));
 
         // Transform the test grid.
         typename GridType::Ptr outGrid = GridType::create(background);
         transformer.transformGrid<Sampler>(*inGrid, *outGrid);
-        openvdb::tools::prune(outGrid->tree());
+        laovdb::tools::prune(outGrid->tree());
 
         // Verify that the bounding box of the transformed grid
         // matches the transformed bounding box of the original grid.
 
         activeVoxelBBox = outGrid->evalActiveVoxelBoundingBox();
         EXPECT_TRUE(!activeVoxelBBox.empty());
-        const openvdb::Vec3i
+        const laovdb::Vec3i
             omin = activeVoxelBBox.min().asVec3i(),
             omax = activeVoxelBBox.max().asVec3i();
         const int bboxTolerance = 1; // allow for rounding
@@ -140,7 +140,7 @@ TestGridTransformer::transformGrid()
         // transformed correctly.
         const Coord center = Coord::round(Vec3R(12) * xform);
         const typename GridType::TreeType& outTree = outGrid->tree();
-        EXPECT_TRUE(openvdb::math::isExactlyEqual(transformTiles ? two : background,
+        EXPECT_TRUE(laovdb::math::isExactlyEqual(transformTiles ? two : background,
             outTree.getValue(center)));
         if (transformTiles && tileIsActive) EXPECT_TRUE(outTree.isValueOn(center));
         else EXPECT_TRUE(!outTree.isValueOn(center));
@@ -149,23 +149,23 @@ TestGridTransformer::transformGrid()
 
 
 TEST_F(TestGridTransformer, testTransformBoolPoint)
-    { transformGrid<openvdb::BoolGrid, openvdb::tools::PointSampler>(); }
+    { transformGrid<laovdb::BoolGrid, laovdb::tools::PointSampler>(); }
 TEST_F(TestGridTransformer, TransformFloatPoint)
-    { transformGrid<openvdb::FloatGrid, openvdb::tools::PointSampler>(); }
+    { transformGrid<laovdb::FloatGrid, laovdb::tools::PointSampler>(); }
 TEST_F(TestGridTransformer, TransformFloatBox)
-    { transformGrid<openvdb::FloatGrid, openvdb::tools::BoxSampler>(); }
+    { transformGrid<laovdb::FloatGrid, laovdb::tools::BoxSampler>(); }
 TEST_F(TestGridTransformer, TransformFloatQuadratic)
-    { transformGrid<openvdb::FloatGrid, openvdb::tools::QuadraticSampler>(); }
+    { transformGrid<laovdb::FloatGrid, laovdb::tools::QuadraticSampler>(); }
 TEST_F(TestGridTransformer, TransformDoubleBox)
-    { transformGrid<openvdb::DoubleGrid, openvdb::tools::BoxSampler>(); }
+    { transformGrid<laovdb::DoubleGrid, laovdb::tools::BoxSampler>(); }
 TEST_F(TestGridTransformer, TransformInt32Box)
-    { transformGrid<openvdb::Int32Grid, openvdb::tools::BoxSampler>(); }
+    { transformGrid<laovdb::Int32Grid, laovdb::tools::BoxSampler>(); }
 TEST_F(TestGridTransformer, TransformInt64Box)
-    { transformGrid<openvdb::Int64Grid, openvdb::tools::BoxSampler>(); }
+    { transformGrid<laovdb::Int64Grid, laovdb::tools::BoxSampler>(); }
 TEST_F(TestGridTransformer, TransformVec3SPoint)
-    { transformGrid<openvdb::VectorGrid, openvdb::tools::PointSampler>(); }
+    { transformGrid<laovdb::VectorGrid, laovdb::tools::PointSampler>(); }
 TEST_F(TestGridTransformer, TransformVec3DBox)
-    { transformGrid<openvdb::Vec3DGrid, openvdb::tools::BoxSampler>(); }
+    { transformGrid<laovdb::Vec3DGrid, laovdb::tools::BoxSampler>(); }
 
 
 ////////////////////////////////////////
@@ -173,7 +173,7 @@ TEST_F(TestGridTransformer, TransformVec3DBox)
 
 TEST_F(TestGridTransformer, testResampleToMatch)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // Create an input grid with an identity transform.
     FloatGrid inGrid;
@@ -188,7 +188,7 @@ TEST_F(TestGridTransformer, testResampleToMatch)
         // Resample the input grid into the output grid using point sampling.
         tools::resampleToMatch<tools::PointSampler>(inGrid, outGrid);
         EXPECT_EQ(int(inGrid.activeVoxelCount()), int(outGrid.activeVoxelCount()));
-        for (openvdb::FloatTree::ValueOnCIter iter = inGrid.tree().cbeginValueOn(); iter; ++iter) {
+        for (laovdb::FloatTree::ValueOnCIter iter = inGrid.tree().cbeginValueOn(); iter; ++iter) {
             ASSERT_DOUBLES_EXACTLY_EQUAL(*iter,outGrid.tree().getValue(iter.getCoord()));
         }
         // The output grid's transform should not have changed.
@@ -227,7 +227,7 @@ TEST_F(TestGridTransformer, testResampleToMatch)
 
 TEST_F(TestGridTransformer, testDecomposition)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     using tools::local_util::decompose;
 
     {

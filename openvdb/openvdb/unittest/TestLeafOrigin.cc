@@ -16,8 +16,8 @@
 class TestLeafOrigin: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 };
 
 
@@ -26,7 +26,7 @@ public:
 
 TEST_F(TestLeafOrigin, test)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     std::set<Coord> indices;
     indices.insert(Coord( 0,   0,  0));
@@ -62,7 +62,7 @@ TEST_F(TestLeafOrigin, test)
 
 TEST_F(TestLeafOrigin, test2Values)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = createGrid<FloatGrid>(/*bg=*/1.0f);
     FloatTree& tree = grid->tree();
@@ -80,14 +80,14 @@ TEST_F(TestLeafOrigin, test2Values)
 
 TEST_F(TestLeafOrigin, testGetValue)
 {
-    const openvdb::Coord c0(0,-10,0), c1(100,13,0);
+    const laovdb::Coord c0(0,-10,0), c1(100,13,0);
     const float v0=5.0f, v1=6.0f, v2=1.0f;
-    openvdb::FloatTree::Ptr tree(new openvdb::FloatTree(v2));
+    laovdb::FloatTree::Ptr tree(new laovdb::FloatTree(v2));
 
     tree->setValue(c0, v0);
     tree->setValue(c1, v1);
 
-    openvdb::FloatTree::LeafCIter iter = tree->cbeginLeaf();
+    laovdb::FloatTree::LeafCIter iter = tree->cbeginLeaf();
     EXPECT_EQ(v0, iter->getValue(c0));
     ++iter;
     EXPECT_EQ(v1, iter->getValue(c1));

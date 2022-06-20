@@ -22,7 +22,7 @@
 #include <chrono>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace io {
@@ -303,4 +303,4 @@ Queue::writeGridVec(const GridCPtrVec& grids, const Archive& archive, const Meta
 
 } // namespace io
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

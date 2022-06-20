@@ -13,7 +13,7 @@ class TestInt32Metadata : public ::testing::Test
 
 TEST_F(TestInt32Metadata, test)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Metadata::Ptr m(new Int32Metadata(123));
     Metadata::Ptr m2 = m->copy();

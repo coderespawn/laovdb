@@ -85,7 +85,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -386,7 +386,7 @@ ParticlesToLevelSet<SdfGridT, AttributeT, InterrupterT>::finalize(bool prune)
 
     // Create the output attribute grid.
     typename AttTreeT::Ptr attTree(new AttTreeT(
-        blindTree, blindTree.background().blind(), openvdb::TopologyCopy()));
+        blindTree, blindTree.background().blind(), laovdb::TopologyCopy()));
     // Note this overwrites any existing attribute grids!
     mAttGrid = typename AttGridType::Ptr(new AttGridType(attTree));
     mAttGrid->setTransform(mBlindGrid->transform().copy());
@@ -421,21 +421,21 @@ ParticlesToLevelSet<SdfGridT, AttributeT, InterrupterT>::finalize(bool prune)
         sdfTree.reset(new SdfTreeT(blindTree, blindTree.background().visible(), TopologyCopy()));
         for (BlindLeafIterT n = blindTree.cbeginLeaf(); n; ++n) {
             const BlindLeafT& leaf = *n;
-            const openvdb::Coord xyz = leaf.origin();
+            const laovdb::Coord xyz = leaf.origin();
             // Get leafnodes that were allocated during topology construction!
             SdfLeafT* sdfLeaf = sdfTree->probeLeaf(xyz);
             AttLeafT* attLeaf = attTree->probeLeaf(xyz);
             // Use linear offset (vs coordinate) access for better performance!
             typename BlindLeafT::ValueOnCIter m=leaf.cbeginValueOn();
             if (!m) {//no active values in leaf node so copy everything
-                for (openvdb::Index k = 0; k!=BlindLeafT::SIZE; ++k) {
+                for (laovdb::Index k = 0; k!=BlindLeafT::SIZE; ++k) {
                     const BlindType& v = leaf.getValue(k);
                     sdfLeaf->setValueOnly(k, v.visible());
                     attLeaf->setValueOnly(k, v.blind());
                 }
             } else {//only copy active values (using flood fill for the inactive values)
                 for(; m; ++m) {
-                    const openvdb::Index k = m.pos();
+                    const laovdb::Index k = m.pos();
                     const BlindType& v = *m;
                     sdfLeaf->setValueOnly(k, v.visible());
                     attLeaf->setValueOnly(k, v.blind());
@@ -499,7 +499,7 @@ struct ParticlesToLevelSet<SdfGridT, AttributeT, InterrupterT>::Raster
     Raster(Raster& other, tbb::split)
         : mParent(other.mParent)
         , mParticles(other.mParticles)
-        , mGrid(new GridT(*other.mGrid, openvdb::ShallowCopy()))
+        , mGrid(new GridT(*other.mGrid, laovdb::ShallowCopy()))
         , mMap(other.mMap)
         , mMinCount(0)
         , mMaxCount(0)
@@ -944,7 +944,7 @@ particlesToSdf(const ParticleListT& plist, GridT& grid, InterrupterT* interrupt)
 
     if (grid.getGridClass() != GRID_LEVEL_SET) {
         OPENVDB_LOG_WARN("particlesToSdf requires a level set grid;"
-            " try Grid::setGridClass(openvdb::GRID_LEVEL_SET)");
+            " try Grid::setGridClass(laovdb::GRID_LEVEL_SET)");
     }
 
     ParticlesToLevelSet<GridT> p2ls(grid, interrupt);
@@ -961,7 +961,7 @@ particlesToSdf(const ParticleListT& plist, GridT& grid, Real radius, Interrupter
 
     if (grid.getGridClass() != GRID_LEVEL_SET) {
         OPENVDB_LOG_WARN("particlesToSdf requires a level set grid;"
-            " try Grid::setGridClass(openvdb::GRID_LEVEL_SET)");
+            " try Grid::setGridClass(laovdb::GRID_LEVEL_SET)");
     }
 
     ParticlesToLevelSet<GridT> p2ls(grid, interrupt);
@@ -978,7 +978,7 @@ particleTrailsToSdf(const ParticleListT& plist, GridT& grid, Real delta, Interru
 
     if (grid.getGridClass() != GRID_LEVEL_SET) {
         OPENVDB_LOG_WARN("particlesToSdf requires a level set grid;"
-            " try Grid::setGridClass(openvdb::GRID_LEVEL_SET)");
+            " try Grid::setGridClass(laovdb::GRID_LEVEL_SET)");
     }
 
     ParticlesToLevelSet<GridT> p2ls(grid, interrupt);
@@ -1021,6 +1021,6 @@ particleTrailsToMask(const ParticleListT& plist, GridT& grid, Real delta, Interr
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_PARTICLES_TO_LEVELSET_HAS_BEEN_INCLUDED

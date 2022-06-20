@@ -5,7 +5,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-using namespace openvdb::points;
+using namespace laovdb::points;
 
 class TestTernary : public unittest_util::AXTestCase
 {
@@ -33,8 +33,8 @@ TestTernary::testTernary()
     mHarness.addAttribute<int>("ternary_test5", 2);
     mHarness.addAttribute<float>("ternary_test6", 10.f);
     mHarness.addAttribute<double>("ternary_test7", 0.75);
-    mHarness.addAttribute<openvdb::Vec3i>("ternary_test8", openvdb::Vec3i(1,2,3));
-    mHarness.addAttribute<openvdb::Vec3d>("ternary_test9", openvdb::Vec3f(4.5,5.5,6.5));
+    mHarness.addAttribute<laovdb::Vec3i>("ternary_test8", laovdb::Vec3i(1,2,3));
+    mHarness.addAttribute<laovdb::Vec3d>("ternary_test9", laovdb::Vec3f(4.5,5.5,6.5));
     mHarness.addAttribute<int>("ternary_test10", 1);
     mHarness.addAttribute<int>("ternary_test11", 123);
     mHarness.addAttribute<int>("ternary_test12", 2);
@@ -42,37 +42,37 @@ TestTernary::testTernary()
     mHarness.addAttribute<int>("ternary_test14", 123);
     mHarness.addAttribute<float>("ternary_test15", 2.f);
     mHarness.addAttribute<float>("ternary_test16", 1.5f);
-    mHarness.addAttribute<openvdb::Vec3i>("ternary_test17", openvdb::Vec3i(1,2,3));
-    mHarness.addAttribute<openvdb::Vec3i>("ternary_test18", openvdb::Vec3i(4,5,6));
+    mHarness.addAttribute<laovdb::Vec3i>("ternary_test17", laovdb::Vec3i(1,2,3));
+    mHarness.addAttribute<laovdb::Vec3i>("ternary_test18", laovdb::Vec3i(4,5,6));
     mHarness.addAttribute<std::string>("ternary_test19", "foo");
     mHarness.addAttribute<std::string>("ternary_test20", "foo");
     mHarness.addAttribute<std::string>("ternary_test21", "bar");
-    mHarness.addAttribute<openvdb::Vec3f>("ternary_test22", openvdb::Vec3f(1.5f,1.5f,1.5f));
-    mHarness.addAttribute<openvdb::Vec3f>("ternary_test23", openvdb::Vec3f(1.6f,1.6f,1.6f));
-    mHarness.addAttribute<openvdb::math::Mat3<double>>("ternary_test24",
-                                                      openvdb::math::Mat3<double>(1.8,0.0,0.0,
+    mHarness.addAttribute<laovdb::Vec3f>("ternary_test22", laovdb::Vec3f(1.5f,1.5f,1.5f));
+    mHarness.addAttribute<laovdb::Vec3f>("ternary_test23", laovdb::Vec3f(1.6f,1.6f,1.6f));
+    mHarness.addAttribute<laovdb::math::Mat3<double>>("ternary_test24",
+                                                      laovdb::math::Mat3<double>(1.8,0.0,0.0,
                                                                                   0.0,1.8,0.0,
                                                                                   0.0,0.0,1.8));
-    mHarness.addAttribute<openvdb::math::Mat3<double>>("ternary_test25",
-                                                      openvdb::math::Mat3<double>(1.9,0.0,0.0,
+    mHarness.addAttribute<laovdb::math::Mat3<double>>("ternary_test25",
+                                                      laovdb::math::Mat3<double>(1.9,0.0,0.0,
                                                                                   0.0,1.9,0.0,
                                                                                   0.0,0.0,1.9));
-    mHarness.addAttribute<openvdb::math::Mat4<double>>("ternary_test26",
-                                                      openvdb::math::Mat4<double>(1.8,0.0,0.0,0.0,
+    mHarness.addAttribute<laovdb::math::Mat4<double>>("ternary_test26",
+                                                      laovdb::math::Mat4<double>(1.8,0.0,0.0,0.0,
                                                                                   0.0,1.8,0.0,0.0,
                                                                                   0.0,0.0,1.8,0.0,
                                                                                   0.0,0.0,0.0,1.8));
-    mHarness.addAttribute<openvdb::math::Mat4<double>>("ternary_test27",
-                                                      openvdb::math::Mat4<double>(1.9,0.0,0.0,0.0,
+    mHarness.addAttribute<laovdb::math::Mat4<double>>("ternary_test27",
+                                                      laovdb::math::Mat4<double>(1.9,0.0,0.0,0.0,
                                                                                   0.0,1.9,0.0,0.0,
                                                                                   0.0,0.0,1.9,0.0,
                                                                                   0.0,0.0,0.0,1.9));
-    mHarness.addAttribute<openvdb::Vec3f>("ternary_test28", openvdb::Vec3f(1.76f,1.76f,1.76f));
-    mHarness.addAttribute<openvdb::Vec3f>("ternary_test29", openvdb::Vec3f(1.76f,1.76f,1.76f));
-    mHarness.addAttribute<float>("ternary_test30", openvdb::Vec3f(1.3f,1.3f,1.3f).length());
-    mHarness.addAttribute<float>("ternary_test31", openvdb::Vec3f(1.3f,1.3f,1.3f).length());
-    mHarness.addAttribute<float>("ternary_test32", openvdb::Vec3f(1.5f,2.5f,3.5f).length());
-    mHarness.addAttribute<float>("ternary_test33", openvdb::Vec3f(1.5f,2.5f,3.5f).length());
+    mHarness.addAttribute<laovdb::Vec3f>("ternary_test28", laovdb::Vec3f(1.76f,1.76f,1.76f));
+    mHarness.addAttribute<laovdb::Vec3f>("ternary_test29", laovdb::Vec3f(1.76f,1.76f,1.76f));
+    mHarness.addAttribute<float>("ternary_test30", laovdb::Vec3f(1.3f,1.3f,1.3f).length());
+    mHarness.addAttribute<float>("ternary_test31", laovdb::Vec3f(1.3f,1.3f,1.3f).length());
+    mHarness.addAttribute<float>("ternary_test32", laovdb::Vec3f(1.5f,2.5f,3.5f).length());
+    mHarness.addAttribute<float>("ternary_test33", laovdb::Vec3f(1.5f,2.5f,3.5f).length());
 
     mHarness.executeCode("test/snippets/ternary/ternary");
 

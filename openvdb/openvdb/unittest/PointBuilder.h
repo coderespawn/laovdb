@@ -12,21 +12,21 @@
 /// @brief  Get 8 corner points from a cube with a given scale, ordered such
 ///   that if used for conversion to OpenVDB Points, that the default
 ///   iteration order remains consistent
-inline std::vector<openvdb::Vec3f>
+inline std::vector<laovdb::Vec3f>
 getBoxPoints(const float scale = 1.0f)
 {
     // This order is configured to be the same layout when
     // a vdb points grid is constructed and so matches methods
     // like setGroup or populateAttribute
-    std::vector<openvdb::Vec3f> pos = {
-        openvdb::Vec3f(-1.0f, -1.0f, -1.0f),
-        openvdb::Vec3f(-1.0f, -1.0f, 1.0f),
-        openvdb::Vec3f(-1.0f, 1.0f, -1.0f),
-        openvdb::Vec3f(-1.0f, 1.0f, 1.0f),
-        openvdb::Vec3f(1.0f, -1.0f, -1.0f),
-        openvdb::Vec3f(1.0f, -1.0f, 1.0f),
-        openvdb::Vec3f(1.0f, 1.0f, -1.0f),
-        openvdb::Vec3f(1.0f, 1.0f, 1.0f)
+    std::vector<laovdb::Vec3f> pos = {
+        laovdb::Vec3f(-1.0f, -1.0f, -1.0f),
+        laovdb::Vec3f(-1.0f, -1.0f, 1.0f),
+        laovdb::Vec3f(-1.0f, 1.0f, -1.0f),
+        laovdb::Vec3f(-1.0f, 1.0f, 1.0f),
+        laovdb::Vec3f(1.0f, -1.0f, -1.0f),
+        laovdb::Vec3f(1.0f, -1.0f, 1.0f),
+        laovdb::Vec3f(1.0f, 1.0f, -1.0f),
+        laovdb::Vec3f(1.0f, 1.0f, 1.0f)
     };
 
     for (auto& p : pos) p *= scale;
@@ -37,14 +37,14 @@ getBoxPoints(const float scale = 1.0f)
 ///   a lot of the repetitive boilerplate
 struct PointBuilder
 {
-    using PointDataTreeT = openvdb::points::PointDataTree;
-    using PointIndexTreeT = openvdb::tools::PointIndexTree;
+    using PointDataTreeT = laovdb::points::PointDataTree;
+    using PointIndexTreeT = laovdb::tools::PointIndexTree;
 
     using CallbackT1 = std::function<void(PointDataTreeT&, const PointIndexTreeT&)>;
     using CallbackT2 = std::function<void(PointDataTreeT&)>;
 
     // init the builder with a set of positions
-    PointBuilder(const std::vector<openvdb::Vec3f>& pos) : positions(pos) {}
+    PointBuilder(const std::vector<laovdb::Vec3f>& pos) : positions(pos) {}
 
     // set the desired voxel size
     PointBuilder& voxelsize(double in) { vs = in; return *this; }
@@ -54,8 +54,8 @@ struct PointBuilder
         const std::string& name = "group")
     {
         callbacks.emplace_back([in, name](PointDataTreeT& tree, const PointIndexTreeT& index) {
-            openvdb::points::appendGroup(tree, name);
-            openvdb::points::setGroup(tree, index, in, name);
+            laovdb::points::appendGroup(tree, name);
+            laovdb::points::setGroup(tree, index, in, name);
         });
         return *this;
     }
@@ -65,7 +65,7 @@ struct PointBuilder
     PointBuilder& attribute(const ValueT& in, const std::string& name)
     {
         callbacks.emplace_back([in, name](PointDataTreeT& tree, const PointIndexTreeT&) {
-            openvdb::points::appendAttribute<ValueT>(tree, name, in);
+            laovdb::points::appendAttribute<ValueT>(tree, name, in);
         });
         return *this;
     }
@@ -75,9 +75,9 @@ struct PointBuilder
     PointBuilder& attribute(const std::vector<ValueT>& in, const std::string& name)
     {
         callbacks.emplace_back([in, name](PointDataTreeT& tree, const PointIndexTreeT& index) {
-            openvdb::points::PointAttributeVector<ValueT> rwrap(in);
-            openvdb::points::appendAttribute<ValueT>(tree, name);
-            openvdb::points::populateAttribute(tree, index, name, rwrap);
+            laovdb::points::PointAttributeVector<ValueT> rwrap(in);
+            laovdb::points::appendAttribute<ValueT>(tree, name);
+            laovdb::points::populateAttribute(tree, index, name, rwrap);
         });
         return *this;
     }
@@ -96,21 +96,21 @@ struct PointBuilder
     }
 
     // build and return the points
-    openvdb::points::PointDataGrid::Ptr get()
+    laovdb::points::PointDataGrid::Ptr get()
     {
-        openvdb::math::Transform::Ptr transform =
-            openvdb::math::Transform::createLinearTransform(vs);
-        openvdb::points::PointAttributeVector<openvdb::Vec3f> wrap(positions);
-        auto index = openvdb::tools::createPointIndexGrid<openvdb::tools::PointIndexGrid>(wrap, vs);
-        auto points = openvdb::points::createPointDataGrid<openvdb::points::NullCodec,
-                openvdb::points::PointDataGrid>(*index, wrap, *transform);
+        laovdb::math::Transform::Ptr transform =
+            laovdb::math::Transform::createLinearTransform(vs);
+        laovdb::points::PointAttributeVector<laovdb::Vec3f> wrap(positions);
+        auto index = laovdb::tools::createPointIndexGrid<laovdb::tools::PointIndexGrid>(wrap, vs);
+        auto points = laovdb::points::createPointDataGrid<laovdb::points::NullCodec,
+                laovdb::points::PointDataGrid>(*index, wrap, *transform);
         for (auto c : callbacks) c(points->tree(), index->tree());
         return points;
     }
 
 private:
     double vs = 0.1;
-    std::vector<openvdb::Vec3f> positions = {};
+    std::vector<laovdb::Vec3f> positions = {};
     std::vector<CallbackT1> callbacks = {};
 };
 

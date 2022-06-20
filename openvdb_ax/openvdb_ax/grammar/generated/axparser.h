@@ -168,26 +168,26 @@ union AXSTYPE
 {
 
     /// @brief Temporary storage for comma separated expressions
-    using ExpList = std::vector<openvdb::ax::ast::Expression*>;
+    using ExpList = std::vector<laovdb::ax::ast::Expression*>;
 
     const char* string;
     uint64_t index;
     double flt;
 
-    openvdb::ax::ast::Tree* tree;
-    openvdb::ax::ast::ValueBase* value;
-    openvdb::ax::ast::Statement* statement;
-    openvdb::ax::ast::StatementList* statementlist;
-    openvdb::ax::ast::Block* block;
-    openvdb::ax::ast::Expression* expression;
-    openvdb::ax::ast::FunctionCall* function;
-    openvdb::ax::ast::ArrayPack* arraypack;
-    openvdb::ax::ast::CommaOperator* comma;
-    openvdb::ax::ast::Variable* variable;
-    openvdb::ax::ast::ExternalVariable* external;
-    openvdb::ax::ast::Attribute* attribute;
-    openvdb::ax::ast::DeclareLocal* declare_local;
-    openvdb::ax::ast::Local* local;
+    laovdb::ax::ast::Tree* tree;
+    laovdb::ax::ast::ValueBase* value;
+    laovdb::ax::ast::Statement* statement;
+    laovdb::ax::ast::StatementList* statementlist;
+    laovdb::ax::ast::Block* block;
+    laovdb::ax::ast::Expression* expression;
+    laovdb::ax::ast::FunctionCall* function;
+    laovdb::ax::ast::ArrayPack* arraypack;
+    laovdb::ax::ast::CommaOperator* comma;
+    laovdb::ax::ast::Variable* variable;
+    laovdb::ax::ast::ExternalVariable* external;
+    laovdb::ax::ast::Attribute* attribute;
+    laovdb::ax::ast::DeclareLocal* declare_local;
+    laovdb::ax::ast::Local* local;
     ExpList* explist;
 
 
@@ -215,7 +215,7 @@ struct AXLTYPE
 extern AXSTYPE axlval;
 extern AXLTYPE axlloc;
 
-int axparse (openvdb::ax::ast::Tree** tree);
+int axparse (laovdb::ax::ast::Tree** tree);
 
 
 #endif /* !YY_AX_AXPARSER_H_INCLUDED  */

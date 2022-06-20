@@ -20,16 +20,16 @@
 class TestParticlesToLevelSet: public ::testing::Test
 {
 public:
-    void SetUp() override {openvdb::initialize();}
-    void TearDown() override {openvdb::uninitialize();}
+    void SetUp() override {laovdb::initialize();}
+    void TearDown() override {laovdb::uninitialize();}
 
-    void writeGrid(openvdb::GridBase::Ptr grid, std::string fileName) const
+    void writeGrid(laovdb::GridBase::Ptr grid, std::string fileName) const
     {
         std::cout << "\nWriting \""<<fileName<<"\" to file\n";
         grid->setName("TestParticlesToLevelSet");
-        openvdb::GridPtrVec grids;
+        laovdb::GridPtrVec grids;
         grids.push_back(grid);
-        openvdb::io::File file(fileName + ".vdb");
+        laovdb::io::File file(fileName + ".vdb");
         file.write(grids);
         file.close();
     }
@@ -40,20 +40,20 @@ class MyParticleList
 {
 protected:
     struct MyParticle {
-        openvdb::Vec3R p, v;
-        openvdb::Real  r;
+        laovdb::Vec3R p, v;
+        laovdb::Real  r;
     };
-    openvdb::Real           mRadiusScale;
-    openvdb::Real           mVelocityScale;
+    laovdb::Real           mRadiusScale;
+    laovdb::Real           mVelocityScale;
     std::vector<MyParticle> mParticleList;
 public:
 
-    typedef openvdb::Vec3R  PosType;
+    typedef laovdb::Vec3R  PosType;
 
-    MyParticleList(openvdb::Real rScale=1, openvdb::Real vScale=1)
+    MyParticleList(laovdb::Real rScale=1, laovdb::Real vScale=1)
         : mRadiusScale(rScale), mVelocityScale(vScale) {}
-    void add(const openvdb::Vec3R &p, const openvdb::Real &r,
-             const openvdb::Vec3R &v=openvdb::Vec3R(0,0,0))
+    void add(const laovdb::Vec3R &p, const laovdb::Real &r,
+             const laovdb::Vec3R &v=laovdb::Vec3R(0,0,0))
     {
         MyParticle pa;
         pa.p = p;
@@ -62,27 +62,27 @@ public:
         mParticleList.push_back(pa);
     }
     /// @return coordinate bbox in the space of the specified transfrom
-    openvdb::CoordBBox getBBox(const openvdb::GridBase& grid) {
-        openvdb::CoordBBox bbox;
-        openvdb::Coord &min= bbox.min(), &max = bbox.max();
-        openvdb::Vec3R pos;
-        openvdb::Real rad, invDx = 1/grid.voxelSize()[0];
+    laovdb::CoordBBox getBBox(const laovdb::GridBase& grid) {
+        laovdb::CoordBBox bbox;
+        laovdb::Coord &min= bbox.min(), &max = bbox.max();
+        laovdb::Vec3R pos;
+        laovdb::Real rad, invDx = 1/grid.voxelSize()[0];
         for (size_t n=0, e=this->size(); n<e; ++n) {
             this->getPosRad(n, pos, rad);
-            const openvdb::Vec3d xyz = grid.worldToIndex(pos);
-            const openvdb::Real   r  = rad * invDx;
+            const laovdb::Vec3d xyz = grid.worldToIndex(pos);
+            const laovdb::Real   r  = rad * invDx;
             for (int i=0; i<3; ++i) {
-                min[i] = openvdb::math::Min(min[i], openvdb::math::Floor(xyz[i] - r));
-                max[i] = openvdb::math::Max(max[i], openvdb::math::Ceil( xyz[i] + r));
+                min[i] = laovdb::math::Min(min[i], laovdb::math::Floor(xyz[i] - r));
+                max[i] = laovdb::math::Max(max[i], laovdb::math::Ceil( xyz[i] + r));
             }
         }
         return bbox;
     }
     //typedef int AttributeType;
     // The methods below are only required for the unit-tests
-    openvdb::Vec3R pos(int n)   const {return mParticleList[n].p;}
-    openvdb::Vec3R vel(int n)   const {return mVelocityScale*mParticleList[n].v;}
-    openvdb::Real radius(int n) const {return mRadiusScale*mParticleList[n].r;}
+    laovdb::Vec3R pos(int n)   const {return mParticleList[n].p;}
+    laovdb::Vec3R vel(int n)   const {return mVelocityScale*mParticleList[n].v;}
+    laovdb::Real radius(int n) const {return mRadiusScale*mParticleList[n].r;}
 
     //////////////////////////////////////////////////////////////////////////////
     /// The methods below are the only ones required by tools::ParticleToLevelSet
@@ -96,55 +96,55 @@ public:
 
     /// Get the world space position of n'th particle.
     /// Required by ParticledToLevelSet::rasterizeSphere(*this,radius).
-    void getPos(size_t n,  openvdb::Vec3R&pos) const { pos = mParticleList[n].p; }
+    void getPos(size_t n,  laovdb::Vec3R&pos) const { pos = mParticleList[n].p; }
 
 
-    void getPosRad(size_t n,  openvdb::Vec3R& pos, openvdb::Real& rad) const {
+    void getPosRad(size_t n,  laovdb::Vec3R& pos, laovdb::Real& rad) const {
         pos = mParticleList[n].p;
         rad = mRadiusScale*mParticleList[n].r;
     }
-    void getPosRadVel(size_t n,  openvdb::Vec3R& pos, openvdb::Real& rad, openvdb::Vec3R& vel) const {
+    void getPosRadVel(size_t n,  laovdb::Vec3R& pos, laovdb::Real& rad, laovdb::Vec3R& vel) const {
         pos = mParticleList[n].p;
         rad = mRadiusScale*mParticleList[n].r;
         vel = mVelocityScale*mParticleList[n].v;
     }
     // The method below is only required for attribute transfer
-    void getAtt(size_t n, openvdb::Index32& att) const { att = openvdb::Index32(n); }
+    void getAtt(size_t n, laovdb::Index32& att) const { att = laovdb::Index32(n); }
 };
 
 
 TEST_F(TestParticlesToLevelSet, testBlindData)
 {
-    using BlindTypeIF = openvdb::tools::p2ls_internal::BlindData<openvdb::Index, float>;
+    using BlindTypeIF = laovdb::tools::p2ls_internal::BlindData<laovdb::Index, float>;
 
-    BlindTypeIF value(openvdb::Index(8), 5.2f);
-    EXPECT_EQ(openvdb::Index(8), value.visible());
+    BlindTypeIF value(laovdb::Index(8), 5.2f);
+    EXPECT_EQ(laovdb::Index(8), value.visible());
     ASSERT_DOUBLES_EXACTLY_EQUAL(5.2f, value.blind());
 
-    BlindTypeIF value2(openvdb::Index(13), 1.6f);
+    BlindTypeIF value2(laovdb::Index(13), 1.6f);
 
     { // test equality
         // only visible portion needs to be equal
-        BlindTypeIF blind(openvdb::Index(13), 6.7f);
+        BlindTypeIF blind(laovdb::Index(13), 6.7f);
         EXPECT_TRUE(value2 == blind);
     }
 
     { // test addition of two blind types
         BlindTypeIF blind = value + value2;
-        EXPECT_EQ(openvdb::Index(8+13), blind.visible());
+        EXPECT_EQ(laovdb::Index(8+13), blind.visible());
         EXPECT_EQ(0.0f, blind.blind()); // blind values are both dropped
     }
 
     { // test addition of blind type with visible type
         BlindTypeIF blind = value + 3;
-        EXPECT_EQ(openvdb::Index(8+3), blind.visible());
+        EXPECT_EQ(laovdb::Index(8+3), blind.visible());
         EXPECT_EQ(5.2f, blind.blind());
     }
 
     { // test addition of blind type with type that requires casting
         // note that this will generate conversion warnings if not handled properly
         BlindTypeIF blind = value + 3.7;
-        EXPECT_EQ(openvdb::Index(8+3), blind.visible());
+        EXPECT_EQ(laovdb::Index(8+3), blind.visible());
         EXPECT_EQ(5.2f, blind.blind());
     }
 }
@@ -154,7 +154,7 @@ TEST_F(TestParticlesToLevelSet, testMyParticleList)
 {
     MyParticleList pa;
     EXPECT_EQ(0, int(pa.size()));
-    pa.add(openvdb::Vec3R(10,10,10), 2, openvdb::Vec3R(1,0,0));
+    pa.add(laovdb::Vec3R(10,10,10), 2, laovdb::Vec3R(1,0,0));
     EXPECT_EQ(1, int(pa.size()));
     ASSERT_DOUBLES_EXACTLY_EQUAL(10, pa.pos(0)[0]);
     ASSERT_DOUBLES_EXACTLY_EQUAL(10, pa.pos(0)[1]);
@@ -163,7 +163,7 @@ TEST_F(TestParticlesToLevelSet, testMyParticleList)
     ASSERT_DOUBLES_EXACTLY_EQUAL(0 , pa.vel(0)[1]);
     ASSERT_DOUBLES_EXACTLY_EQUAL(0 , pa.vel(0)[2]);
     ASSERT_DOUBLES_EXACTLY_EQUAL(2 , pa.radius(0));
-    pa.add(openvdb::Vec3R(20,20,20), 3);
+    pa.add(laovdb::Vec3R(20,20,20), 3);
     EXPECT_EQ(2, int(pa.size()));
     ASSERT_DOUBLES_EXACTLY_EQUAL(20, pa.pos(1)[0]);
     ASSERT_DOUBLES_EXACTLY_EQUAL(20, pa.pos(1)[1]);
@@ -174,8 +174,8 @@ TEST_F(TestParticlesToLevelSet, testMyParticleList)
     ASSERT_DOUBLES_EXACTLY_EQUAL(3 , pa.radius(1));
 
     const float voxelSize = 0.5f, halfWidth = 4.0f;
-    openvdb::FloatGrid::Ptr ls = openvdb::createLevelSet<openvdb::FloatGrid>(voxelSize, halfWidth);
-    openvdb::CoordBBox bbox = pa.getBBox(*ls);
+    laovdb::FloatGrid::Ptr ls = laovdb::createLevelSet<laovdb::FloatGrid>(voxelSize, halfWidth);
+    laovdb::CoordBBox bbox = pa.getBBox(*ls);
     ASSERT_DOUBLES_EXACTLY_EQUAL((10-2)/voxelSize, bbox.min()[0]);
     ASSERT_DOUBLES_EXACTLY_EQUAL((10-2)/voxelSize, bbox.min()[1]);
     ASSERT_DOUBLES_EXACTLY_EQUAL((10-2)/voxelSize, bbox.min()[2]);
@@ -188,69 +188,69 @@ TEST_F(TestParticlesToLevelSet, testMyParticleList)
 TEST_F(TestParticlesToLevelSet, testRasterizeSpheres)
 {
     MyParticleList pa;
-    pa.add(openvdb::Vec3R(10,10,10), 2);
-    pa.add(openvdb::Vec3R(20,20,20), 2);
+    pa.add(laovdb::Vec3R(10,10,10), 2);
+    pa.add(laovdb::Vec3R(20,20,20), 2);
     // testing CSG
-    pa.add(openvdb::Vec3R(31.0,31,31), 5);
-    pa.add(openvdb::Vec3R(31.5,31,31), 5);
-    pa.add(openvdb::Vec3R(32.0,31,31), 5);
-    pa.add(openvdb::Vec3R(32.5,31,31), 5);
-    pa.add(openvdb::Vec3R(33.0,31,31), 5);
-    pa.add(openvdb::Vec3R(33.5,31,31), 5);
-    pa.add(openvdb::Vec3R(34.0,31,31), 5);
-    pa.add(openvdb::Vec3R(34.5,31,31), 5);
-    pa.add(openvdb::Vec3R(35.0,31,31), 5);
-    pa.add(openvdb::Vec3R(35.5,31,31), 5);
-    pa.add(openvdb::Vec3R(36.0,31,31), 5);
+    pa.add(laovdb::Vec3R(31.0,31,31), 5);
+    pa.add(laovdb::Vec3R(31.5,31,31), 5);
+    pa.add(laovdb::Vec3R(32.0,31,31), 5);
+    pa.add(laovdb::Vec3R(32.5,31,31), 5);
+    pa.add(laovdb::Vec3R(33.0,31,31), 5);
+    pa.add(laovdb::Vec3R(33.5,31,31), 5);
+    pa.add(laovdb::Vec3R(34.0,31,31), 5);
+    pa.add(laovdb::Vec3R(34.5,31,31), 5);
+    pa.add(laovdb::Vec3R(35.0,31,31), 5);
+    pa.add(laovdb::Vec3R(35.5,31,31), 5);
+    pa.add(laovdb::Vec3R(36.0,31,31), 5);
     EXPECT_EQ(13, int(pa.size()));
 
     const float voxelSize = 1.0f, halfWidth = 2.0f;
-    openvdb::FloatGrid::Ptr ls = openvdb::createLevelSet<openvdb::FloatGrid>(voxelSize, halfWidth);
-    openvdb::tools::ParticlesToLevelSet<openvdb::FloatGrid> raster(*ls);
+    laovdb::FloatGrid::Ptr ls = laovdb::createLevelSet<laovdb::FloatGrid>(voxelSize, halfWidth);
+    laovdb::tools::ParticlesToLevelSet<laovdb::FloatGrid> raster(*ls);
 
     raster.setGrainSize(1);//a value of zero disables threading
     raster.rasterizeSpheres(pa);
     raster.finalize();
-    //openvdb::FloatGrid::Ptr ls = raster.getSdfGrid();
+    //laovdb::FloatGrid::Ptr ls = raster.getSdfGrid();
 
     //ls->tree().print(std::cout,4);
     //this->writeGrid(ls, "testRasterizeSpheres");
 
     ASSERT_DOUBLES_EXACTLY_EQUAL(halfWidth * voxelSize,
-        ls->tree().getValue(openvdb::Coord( 0, 0, 0)));
+        ls->tree().getValue(laovdb::Coord( 0, 0, 0)));
 
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(openvdb::Coord( 6,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(openvdb::Coord( 7,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(openvdb::Coord( 8,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(openvdb::Coord( 9,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-2, ls->tree().getValue(openvdb::Coord(10,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(openvdb::Coord(11,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(openvdb::Coord(12,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(openvdb::Coord(13,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(openvdb::Coord(14,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(laovdb::Coord( 6,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(laovdb::Coord( 7,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(laovdb::Coord( 8,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(laovdb::Coord( 9,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-2, ls->tree().getValue(laovdb::Coord(10,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(laovdb::Coord(11,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(laovdb::Coord(12,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(laovdb::Coord(13,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(laovdb::Coord(14,10,10)));
 
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(openvdb::Coord(20,16,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(openvdb::Coord(20,17,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(openvdb::Coord(20,18,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(openvdb::Coord(20,19,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-2, ls->tree().getValue(openvdb::Coord(20,20,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(openvdb::Coord(20,21,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(openvdb::Coord(20,22,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(openvdb::Coord(20,23,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(openvdb::Coord(20,24,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(laovdb::Coord(20,16,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(laovdb::Coord(20,17,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(laovdb::Coord(20,18,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(laovdb::Coord(20,19,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-2, ls->tree().getValue(laovdb::Coord(20,20,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(laovdb::Coord(20,21,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(laovdb::Coord(20,22,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(laovdb::Coord(20,23,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(laovdb::Coord(20,24,20)));
     {// full but slow test of all voxels
-        openvdb::CoordBBox bbox = pa.getBBox(*ls);
+        laovdb::CoordBBox bbox = pa.getBBox(*ls);
         bbox.expand(static_cast<int>(halfWidth)+1);
-        openvdb::Index64 count=0;
+        laovdb::Index64 count=0;
         const float outside = ls->background(), inside = -outside;
-        const openvdb::Coord &min=bbox.min(), &max=bbox.max();
-        for (openvdb::Coord ijk=min; ijk[0]<max[0]; ++ijk[0]) {
+        const laovdb::Coord &min=bbox.min(), &max=bbox.max();
+        for (laovdb::Coord ijk=min; ijk[0]<max[0]; ++ijk[0]) {
             for (ijk[1]=min[1]; ijk[1]<max[1]; ++ijk[1]) {
                 for (ijk[2]=min[2]; ijk[2]<max[2]; ++ijk[2]) {
-                    const openvdb::Vec3d xyz = ls->indexToWorld(ijk.asVec3d());
+                    const laovdb::Vec3d xyz = ls->indexToWorld(ijk.asVec3d());
                     double dist = (xyz-pa.pos(0)).length()-pa.radius(0);
                     for (int i = 1, s = int(pa.size()); i < s; ++i) {
-                        dist=openvdb::math::Min(dist,(xyz-pa.pos(i)).length()-pa.radius(i));
+                        dist=laovdb::math::Min(dist,(xyz-pa.pos(i)).length()-pa.radius(i));
                     }
                     const float val = ls->tree().getValue(ijk);
                     if (dist >= outside) {
@@ -278,25 +278,25 @@ TEST_F(TestParticlesToLevelSet, testRasterizeSpheres)
 TEST_F(TestParticlesToLevelSet, testRasterizeSpheresAndId)
 {
     MyParticleList pa(0.5f);
-    pa.add(openvdb::Vec3R(10,10,10), 4);
-    pa.add(openvdb::Vec3R(20,20,20), 4);
+    pa.add(laovdb::Vec3R(10,10,10), 4);
+    pa.add(laovdb::Vec3R(20,20,20), 4);
     // testing CSG
-    pa.add(openvdb::Vec3R(31.0,31,31),10);
-    pa.add(openvdb::Vec3R(31.5,31,31),10);
-    pa.add(openvdb::Vec3R(32.0,31,31),10);
-    pa.add(openvdb::Vec3R(32.5,31,31),10);
-    pa.add(openvdb::Vec3R(33.0,31,31),10);
-    pa.add(openvdb::Vec3R(33.5,31,31),10);
-    pa.add(openvdb::Vec3R(34.0,31,31),10);
-    pa.add(openvdb::Vec3R(34.5,31,31),10);
-    pa.add(openvdb::Vec3R(35.0,31,31),10);
-    pa.add(openvdb::Vec3R(35.5,31,31),10);
-    pa.add(openvdb::Vec3R(36.0,31,31),10);
+    pa.add(laovdb::Vec3R(31.0,31,31),10);
+    pa.add(laovdb::Vec3R(31.5,31,31),10);
+    pa.add(laovdb::Vec3R(32.0,31,31),10);
+    pa.add(laovdb::Vec3R(32.5,31,31),10);
+    pa.add(laovdb::Vec3R(33.0,31,31),10);
+    pa.add(laovdb::Vec3R(33.5,31,31),10);
+    pa.add(laovdb::Vec3R(34.0,31,31),10);
+    pa.add(laovdb::Vec3R(34.5,31,31),10);
+    pa.add(laovdb::Vec3R(35.0,31,31),10);
+    pa.add(laovdb::Vec3R(35.5,31,31),10);
+    pa.add(laovdb::Vec3R(36.0,31,31),10);
     EXPECT_EQ(13, int(pa.size()));
 
-    typedef openvdb::tools::ParticlesToLevelSet<openvdb::FloatGrid, openvdb::Index32> RasterT;
+    typedef laovdb::tools::ParticlesToLevelSet<laovdb::FloatGrid, laovdb::Index32> RasterT;
     const float voxelSize = 1.0f, halfWidth = 2.0f;
-    openvdb::FloatGrid::Ptr ls = openvdb::createLevelSet<openvdb::FloatGrid>(voxelSize, halfWidth);
+    laovdb::FloatGrid::Ptr ls = laovdb::createLevelSet<laovdb::FloatGrid>(voxelSize, halfWidth);
 
     RasterT raster(*ls);
     raster.setGrainSize(1);//a value of zero disables threading
@@ -306,8 +306,8 @@ TEST_F(TestParticlesToLevelSet, testRasterizeSpheresAndId)
 
     int minVal = std::numeric_limits<int>::max(), maxVal = -minVal;
     for (RasterT::AttGridType::ValueOnCIter i=id->cbeginValueOn(); i; ++i) {
-        minVal = openvdb::math::Min(minVal, int(*i));
-        maxVal = openvdb::math::Max(maxVal, int(*i));
+        minVal = laovdb::math::Min(minVal, int(*i));
+        maxVal = laovdb::math::Max(maxVal, int(*i));
     }
     EXPECT_EQ(0 , minVal);
     EXPECT_EQ(12, maxVal);
@@ -317,58 +317,58 @@ TEST_F(TestParticlesToLevelSet, testRasterizeSpheresAndId)
     //this->writeGrid(ls, "testRasterizeSpheres");
 
     ASSERT_DOUBLES_EXACTLY_EQUAL(halfWidth * voxelSize,
-                                 ls->tree().getValue(openvdb::Coord( 0, 0, 0)));
+                                 ls->tree().getValue(laovdb::Coord( 0, 0, 0)));
 
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(openvdb::Coord( 6,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(openvdb::Coord( 7,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(openvdb::Coord( 8,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(openvdb::Coord( 9,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-2, ls->tree().getValue(openvdb::Coord(10,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(openvdb::Coord(11,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(openvdb::Coord(12,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(openvdb::Coord(13,10,10)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(openvdb::Coord(14,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(laovdb::Coord( 6,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(laovdb::Coord( 7,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(laovdb::Coord( 8,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(laovdb::Coord( 9,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-2, ls->tree().getValue(laovdb::Coord(10,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(laovdb::Coord(11,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(laovdb::Coord(12,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(laovdb::Coord(13,10,10)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(laovdb::Coord(14,10,10)));
 
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(openvdb::Coord(20,16,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(openvdb::Coord(20,17,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(openvdb::Coord(20,18,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(openvdb::Coord(20,19,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-2, ls->tree().getValue(openvdb::Coord(20,20,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(openvdb::Coord(20,21,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(openvdb::Coord(20,22,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(openvdb::Coord(20,23,20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(openvdb::Coord(20,24,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(laovdb::Coord(20,16,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(laovdb::Coord(20,17,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(laovdb::Coord(20,18,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(laovdb::Coord(20,19,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-2, ls->tree().getValue(laovdb::Coord(20,20,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(-1, ls->tree().getValue(laovdb::Coord(20,21,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 0, ls->tree().getValue(laovdb::Coord(20,22,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 1, ls->tree().getValue(laovdb::Coord(20,23,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL( 2, ls->tree().getValue(laovdb::Coord(20,24,20)));
 
     {// full but slow test of all voxels
-        openvdb::CoordBBox bbox = pa.getBBox(*ls);
+        laovdb::CoordBBox bbox = pa.getBBox(*ls);
         bbox.expand(static_cast<int>(halfWidth)+1);
-        openvdb::Index64 count = 0;
+        laovdb::Index64 count = 0;
         const float outside = ls->background(), inside = -outside;
-        const openvdb::Coord &min=bbox.min(), &max=bbox.max();
-        for (openvdb::Coord ijk=min; ijk[0]<max[0]; ++ijk[0]) {
+        const laovdb::Coord &min=bbox.min(), &max=bbox.max();
+        for (laovdb::Coord ijk=min; ijk[0]<max[0]; ++ijk[0]) {
             for (ijk[1]=min[1]; ijk[1]<max[1]; ++ijk[1]) {
                 for (ijk[2]=min[2]; ijk[2]<max[2]; ++ijk[2]) {
-                    const openvdb::Vec3d xyz = ls->indexToWorld(ijk.asVec3d());
+                    const laovdb::Vec3d xyz = ls->indexToWorld(ijk.asVec3d());
                     double dist = (xyz-pa.pos(0)).length()-pa.radius(0);
-                    openvdb::Index32 k =0;
+                    laovdb::Index32 k =0;
                     for (int i = 1, s = int(pa.size()); i < s; ++i) {
                         double d = (xyz-pa.pos(i)).length()-pa.radius(i);
                         if (d<dist) {
-                            k = openvdb::Index32(i);
+                            k = laovdb::Index32(i);
                             dist = d;
                         }
                     }//loop over particles
                     const float val = ls->tree().getValue(ijk);
-                    openvdb::Index32 m = id->tree().getValue(ijk);
+                    laovdb::Index32 m = id->tree().getValue(ijk);
                     if (dist >= outside) {
                         EXPECT_NEAR(outside, val, 0.0001);
                         EXPECT_TRUE(ls->tree().isValueOff(ijk));
-                        //EXPECT_EQ(openvdb::util::INVALID_IDX, m);
+                        //EXPECT_EQ(laovdb::util::INVALID_IDX, m);
                         EXPECT_TRUE(id->tree().isValueOff(ijk));
                     } else if( dist <= inside ) {
                         EXPECT_NEAR(inside, val, 0.0001);
                         EXPECT_TRUE(ls->tree().isValueOff(ijk));
-                        //EXPECT_EQ(openvdb::util::INVALID_IDX, m);
+                        //EXPECT_EQ(laovdb::util::INVALID_IDX, m);
                         EXPECT_TRUE(id->tree().isValueOff(ijk));
                     } else {
                         EXPECT_NEAR(  dist, val, 0.0001);
@@ -393,18 +393,18 @@ TEST_F(TestParticlesToLevelSet, testRasterizeSpheresAndId)
 TEST_F(TestParticlesToLevelSet, testRasterizeTrails)
 {
     const float voxelSize = 1.0f, halfWidth = 2.0f;
-    openvdb::FloatGrid::Ptr ls = openvdb::createLevelSet<openvdb::FloatGrid>(voxelSize, halfWidth);
+    laovdb::FloatGrid::Ptr ls = laovdb::createLevelSet<laovdb::FloatGrid>(voxelSize, halfWidth);
 
     MyParticleList pa(1,5);
 
     // This particle radius = 1 < 1.5 i.e. it's below the Nyquist frequency and hence ignored
-    pa.add(openvdb::Vec3R(  0,  0,  0), 1, openvdb::Vec3R( 0, 1, 0));
-    pa.add(openvdb::Vec3R(-10,-10,-10), 2, openvdb::Vec3R( 2, 0, 0));
-    pa.add(openvdb::Vec3R( 10, 10, 10), 3, openvdb::Vec3R( 0, 1, 0));
-    pa.add(openvdb::Vec3R(  0,  0,  0), 6, openvdb::Vec3R( 0, 0,-5));
-    pa.add(openvdb::Vec3R( 20,  0,  0), 2, openvdb::Vec3R( 0, 0, 0));
+    pa.add(laovdb::Vec3R(  0,  0,  0), 1, laovdb::Vec3R( 0, 1, 0));
+    pa.add(laovdb::Vec3R(-10,-10,-10), 2, laovdb::Vec3R( 2, 0, 0));
+    pa.add(laovdb::Vec3R( 10, 10, 10), 3, laovdb::Vec3R( 0, 1, 0));
+    pa.add(laovdb::Vec3R(  0,  0,  0), 6, laovdb::Vec3R( 0, 0,-5));
+    pa.add(laovdb::Vec3R( 20,  0,  0), 2, laovdb::Vec3R( 0, 0, 0));
 
-    openvdb::tools::ParticlesToLevelSet<openvdb::FloatGrid> raster(*ls);
+    laovdb::tools::ParticlesToLevelSet<laovdb::FloatGrid> raster(*ls);
     raster.rasterizeTrails(pa, 0.75);//scale offset between two instances
 
     //ls->tree().print(std::cout, 4);
@@ -417,14 +417,14 @@ TEST_F(TestParticlesToLevelSet, testRasterizeTrailsAndId)
     MyParticleList pa(1,5);
 
     // This particle radius = 1 < 1.5 i.e. it's below the Nyquist frequency and hence ignored
-    pa.add(openvdb::Vec3R(  0,  0,  0), 1, openvdb::Vec3R( 0, 1, 0));
-    pa.add(openvdb::Vec3R(-10,-10,-10), 2, openvdb::Vec3R( 2, 0, 0));
-    pa.add(openvdb::Vec3R( 10, 10, 10), 3, openvdb::Vec3R( 0, 1, 0));
-    pa.add(openvdb::Vec3R(  0,  0,  0), 6, openvdb::Vec3R( 0, 0,-5));
+    pa.add(laovdb::Vec3R(  0,  0,  0), 1, laovdb::Vec3R( 0, 1, 0));
+    pa.add(laovdb::Vec3R(-10,-10,-10), 2, laovdb::Vec3R( 2, 0, 0));
+    pa.add(laovdb::Vec3R( 10, 10, 10), 3, laovdb::Vec3R( 0, 1, 0));
+    pa.add(laovdb::Vec3R(  0,  0,  0), 6, laovdb::Vec3R( 0, 0,-5));
 
-    typedef openvdb::tools::ParticlesToLevelSet<openvdb::FloatGrid, openvdb::Index> RasterT;
+    typedef laovdb::tools::ParticlesToLevelSet<laovdb::FloatGrid, laovdb::Index> RasterT;
     const float voxelSize = 1.0f, halfWidth = 2.0f;
-    openvdb::FloatGrid::Ptr ls = openvdb::createLevelSet<openvdb::FloatGrid>(voxelSize, halfWidth);
+    laovdb::FloatGrid::Ptr ls = laovdb::createLevelSet<laovdb::FloatGrid>(voxelSize, halfWidth);
     RasterT raster(*ls);
     raster.rasterizeTrails(pa, 0.75);//scale offset between two instances
     raster.finalize();
@@ -435,8 +435,8 @@ TEST_F(TestParticlesToLevelSet, testRasterizeTrailsAndId)
 
     int min = std::numeric_limits<int>::max(), max = -min;
     for (RasterT::AttGridType::ValueOnCIter i=id->cbeginValueOn(); i; ++i) {
-        min = openvdb::math::Min(min, int(*i));
-        max = openvdb::math::Max(max, int(*i));
+        min = laovdb::math::Min(min, int(*i));
+        max = laovdb::math::Max(max, int(*i));
     }
     EXPECT_EQ(1, min);//first particle is ignored because of its small rdadius!
     EXPECT_EQ(3, max);
@@ -448,7 +448,7 @@ TEST_F(TestParticlesToLevelSet, testRasterizeTrailsAndId)
 
 TEST_F(TestParticlesToLevelSet, testMaskOutput)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     using SdfGridType = FloatGrid;
     using MaskGridType = MaskGrid;

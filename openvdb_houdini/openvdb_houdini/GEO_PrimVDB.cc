@@ -164,11 +164,11 @@ GEO_PrimVDB::evaluatePointRefMap(GA_Offset result_vtx,
 // linear part of the NonlinearFrustumMap. This method ensures that if the
 // grid has a frustum depth not equal to 1, then it returns an equivalent map
 // which does.
-static openvdb::math::NonlinearFrustumMap::ConstPtr
+static laovdb::math::NonlinearFrustumMap::ConstPtr
 geoStandardFrustumMapPtr(const GEO_PrimVDB &vdb)
 {
-    using namespace openvdb::math;
-    using openvdb::Vec3d;
+    using namespace laovdb::math;
+    using laovdb::Vec3d;
 
     const Transform &transform = vdb.getGrid().transform();
     UT_ASSERT(transform.baseMap()->isType<NonlinearFrustumMap>());
@@ -195,10 +195,10 @@ geoStandardFrustumMapPtr(const GEO_PrimVDB &vdb)
 GEO_PrimVolumeXform
 GEO_PrimVDB::getSpaceTransform(const UT_BoundingBoxD &bbox) const
 {
-    using namespace openvdb;
-    using namespace openvdb::math;
-    using openvdb::Vec3d;
-    using openvdb::Mat4d;
+    using namespace laovdb;
+    using namespace laovdb::math;
+    using laovdb::Vec3d;
+    using laovdb::Mat4d;
 
     MapBase::ConstPtr   base_map = getGrid().transform().baseMap();
     BBoxd               active_bbox(UTvdbConvert(bbox.minvec()),
@@ -394,7 +394,7 @@ GEO_PrimVDB::getSpaceTransform(const UT_BoundingBoxD &bbox) const
 GEO_PrimVolumeXform
 GEO_PrimVDB::getSpaceTransform() const
 {
-    const openvdb::CoordBBox bbox = getGrid().evalActiveVoxelBoundingBox();
+    const laovdb::CoordBBox bbox = getGrid().evalActiveVoxelBoundingBox();
     return getSpaceTransform(UTvdbConvert(bbox));
 }
 
@@ -404,11 +404,11 @@ GEO_PrimVDB::conditionMatrix(UT_Matrix4D &mat4)
     // This tolerance is just one factor larger than what
     // AffineMap::updateAcceleration() uses to ensure that we never trigger the
     // exception.
-    const double tol = 4.0 * openvdb::math::Tolerance<double>::value();
+    const double tol = 4.0 * laovdb::math::Tolerance<double>::value();
     const double min_diag = SYScbrt(tol);
     if (!SYSequalZero(mat4.determinant3(), tol))
     {
-        // openvdb::math::simplify uses openvdb::math::isApproxEqual to detect
+        // laovdb::math::simplify uses laovdb::math::isApproxEqual to detect
         // uniform scaling, which has a more stringent tolerance than SYSisEqual.
         // As a result we often have uniform voxel / axis aligned Volumes being
         // converted to VDBs with Maps that are simplified to ScaleTranslate
@@ -420,7 +420,7 @@ GEO_PrimVDB::conditionMatrix(UT_Matrix4D &mat4)
             SYSisEqual(mat4(0, 0), mat4(2, 2)) &&
             !(mat4(0, 0) == mat4(1,1) && mat4(0, 0) == mat4(2,2)))
         {
-            // Unify to mat(0, 0) like openvdb::math::simplify.
+            // Unify to mat(0, 0) like laovdb::math::simplify.
             mat4(1, 1) = mat4(2, 2) = mat4(0, 0);
             return true;
         }
@@ -428,7 +428,7 @@ GEO_PrimVDB::conditionMatrix(UT_Matrix4D &mat4)
             SYSalmostEqual((float)mat4(0, 0), (float)mat4(2, 2)) &&
             !(mat4(0, 0) == mat4(1,1) && mat4(0, 0) == mat4(2,2)))
         {
-            // Unify to mat(0, 0) like openvdb::math::simplify.
+            // Unify to mat(0, 0) like laovdb::math::simplify.
             mat4(1, 1) = mat4(2, 2) = mat4(0, 0);
             return true;
         }
@@ -465,19 +465,19 @@ GEO_PrimVDB::conditionMatrix(UT_Matrix4D &mat4)
 // All AffineMap creation must to through this to avoid crashes when passing
 // singular matrices into OpenVDB
 template<typename T>
-static openvdb::SharedPtr<T>
+static laovdb::SharedPtr<T>
 geoCreateAffineMap(const UT_Matrix4D& mat4)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
-    openvdb::SharedPtr<T> transform;
+    laovdb::SharedPtr<T> transform;
     UT_Matrix4D new_mat4(mat4);
     (void) GEO_PrimVDB::conditionMatrix(new_mat4);
     try
     {
         transform.reset(new AffineMap(UTvdbConvert(new_mat4)));
     }
-    catch (openvdb::ArithmeticError &)
+    catch (laovdb::ArithmeticError &)
     {
         // Fall back to trying to clear the last column first, since
         // VDB seems to not like that, instead of falling back to identity.
@@ -491,7 +491,7 @@ geoCreateAffineMap(const UT_Matrix4D& mat4)
         {
             transform.reset(new AffineMap(UTvdbConvert(new_mat4)));
         }
-        catch (openvdb::ArithmeticError &)
+        catch (laovdb::ArithmeticError &)
         {
             UT_ASSERT(!"Failed to create affine map");
             transform.reset(new AffineMap());
@@ -502,10 +502,10 @@ geoCreateAffineMap(const UT_Matrix4D& mat4)
 
 // All calls to createLinearTransform with a matrix4 must to through this to
 // avoid crashes when passing singular matrices into OpenVDB
-static openvdb::math::Transform::Ptr
+static laovdb::math::Transform::Ptr
 geoCreateLinearTransform(const UT_Matrix4D& mat4)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
     return Transform::Ptr(new Transform(geoCreateAffineMap<MapBase>(mat4)));
 }
 
@@ -515,9 +515,9 @@ GEO_PrimVDB::setSpaceTransform(
         const UT_Vector3R &resolution,
         bool force_taper)
 {
-    using namespace openvdb;
-    using namespace openvdb::math;
-    using openvdb::Vec3d;
+    using namespace laovdb;
+    using namespace laovdb::math;
+    using laovdb::Vec3d;
 
     // VDB's nonlinear frustum goes from index-space to world-space in
     // two steps:
@@ -611,10 +611,10 @@ GEO_PrimVDB::setSpaceTransform(
 GEO_PrimVolumeXform
 GEO_PrimVDB::getIndexSpaceTransform() const
 {
-    using namespace openvdb;
-    using namespace openvdb::math;
-    using openvdb::Vec3d;
-    using openvdb::Mat4d;
+    using namespace laovdb;
+    using namespace laovdb::math;
+    using laovdb::Vec3d;
+    using laovdb::Mat4d;
 
     // This taper function follows from the conversion code in
     // GEO_PrimVolume::fromVoxelSpace() until until myXform/myCenter is
@@ -766,7 +766,7 @@ GEO_PrimVDB::getIndexSpaceTransform() const
 bool
 GEO_PrimVDB::isSDF() const
 {
-    if (getGrid().getGridClass() == openvdb::GRID_LEVEL_SET)
+    if (getGrid().getGridClass() == laovdb::GRID_LEVEL_SET)
         return true;
 
     return false;
@@ -802,9 +802,9 @@ static void
 geo_calcVolume(const GridType &grid, fpreal &volume)
 {
     bool calculated = false;
-    if (grid.getGridClass() == openvdb::GRID_LEVEL_SET) {
+    if (grid.getGridClass() == laovdb::GRID_LEVEL_SET) {
         try {
-            volume = openvdb::tools::levelSetVolume(grid);
+            volume = laovdb::tools::levelSetVolume(grid);
             calculated = true;
         } catch (std::exception& /*e*/) {
             // do nothing
@@ -813,7 +813,7 @@ geo_calcVolume(const GridType &grid, fpreal &volume)
 
     // Simply account for the total number of active voxels
     if (!calculated) {
-        const openvdb::Vec3d size = grid.voxelSize();
+        const laovdb::Vec3d size = grid.voxelSize();
         volume = size[0] * size[1] * size[2] * grid.activeVoxelCount();
     }
 }
@@ -831,9 +831,9 @@ static void
 geo_calcArea(const GridType &grid, fpreal &area)
 {
     bool calculated = false;
-    if (grid.getGridClass() == openvdb::GRID_LEVEL_SET) {
+    if (grid.getGridClass() == laovdb::GRID_LEVEL_SET) {
         try {
-            area = openvdb::tools::levelSetArea(grid);
+            area = laovdb::tools::levelSetArea(grid);
             calculated = true;
         } catch (std::exception& /*e*/) {
             // do nothing
@@ -843,11 +843,11 @@ geo_calcArea(const GridType &grid, fpreal &area)
     if (!calculated) {
         using LeafIter = typename GridType::TreeType::LeafCIter;
         using VoxelIter = typename GridType::TreeType::LeafNodeType::ValueOnCIter;
-        using openvdb::Coord;
+        using laovdb::Coord;
         const Coord normals[] = {Coord(0,0,-1), Coord(0,0,1), Coord(-1,0,0),
                                  Coord(1,0,0), Coord(0,-1,0), Coord(0,1,0)};
         // NOTE: we assume rectangular prism voxels
-        openvdb::Vec3d voxel_size = grid.voxelSize();
+        laovdb::Vec3d voxel_size = grid.voxelSize();
         const fpreal areas[] = {fpreal(voxel_size.x() * voxel_size.y()),
                                 fpreal(voxel_size.x() * voxel_size.y()),
                                 fpreal(voxel_size.y() * voxel_size.z()),
@@ -957,19 +957,19 @@ GEO_PrimVDB::countBaseMemory(UT_MemoryCounter &counter) const
         // We don't know what type of Grid we have, but apart from what's
         // in GridBase, it just has a shared pointer to the tree extra,
         // so just add that in separately.
-        counter.countUnshared(sizeof(openvdb::GridBase) + sizeof(openvdb::TreeBase::Ptr));
+        counter.countUnshared(sizeof(laovdb::GridBase) + sizeof(laovdb::TreeBase::Ptr));
         // We don't know what type of MapBase the Transform uses,
         // so just guess the largest one
-        counter.countUnshared(sizeof(openvdb::math::Transform) + sizeof(openvdb::math::NonlinearFrustumMap));
+        counter.countUnshared(sizeof(laovdb::math::Transform) + sizeof(laovdb::math::NonlinearFrustumMap));
 
         // The grid's tree is shared.  In order to get the reference count,
         // we need to get our own shared pointer to it, then use one less
         // than the ref count (ours counts as one).
         exint refcount;
         exint size;
-        const openvdb::TreeBase *ptr;
+        const laovdb::TreeBase *ptr;
         {
-            openvdb::TreeBase::ConstPtr ref = getGrid().constBaseTreePtr();
+            laovdb::TreeBase::ConstPtr ref = getGrid().constBaseTreePtr();
             refcount = ref.use_count() - 1;
             size = ref->memUsage();
             ptr = ref.get();
@@ -985,8 +985,8 @@ geo_doubleToGridValue(double val)
 {
     using ValueT = typename GridType::ValueType;
     // This ugly construction avoids compiler warnings when,
-    // for example, initializing an openvdb::Vec3i with a double.
-    return ValueT(openvdb::zeroVal<ValueT>() + val);
+    // for example, initializing an laovdb::Vec3i with a double.
+    return ValueT(laovdb::zeroVal<ValueT>() + val);
 }
 
 
@@ -994,14 +994,14 @@ template <typename GridType>
 static fpreal
 geo_sampleGrid(const GridType &grid, const UT_Vector3 &pos)
 {
-    const openvdb::math::Transform &    xform = grid.transform();
-    openvdb::math::Vec3d                vpos;
+    const laovdb::math::Transform &    xform = grid.transform();
+    laovdb::math::Vec3d                vpos;
     typename GridType::ValueType        value;
 
-    vpos = openvdb::math::Vec3d(pos.x(), pos.y(), pos.z());
+    vpos = laovdb::math::Vec3d(pos.x(), pos.y(), pos.z());
     vpos = xform.worldToIndex(vpos);
 
-    openvdb::tools::BoxSampler::sample(grid.tree(), vpos, value);
+    laovdb::tools::BoxSampler::sample(grid.tree(), vpos, value);
 
     fpreal result = value;
 
@@ -1012,14 +1012,14 @@ template <typename GridType>
 static fpreal
 geo_sampleBoolGrid(const GridType &grid, const UT_Vector3 &pos)
 {
-    const openvdb::math::Transform &    xform = grid.transform();
-    openvdb::math::Vec3d                vpos;
+    const laovdb::math::Transform &    xform = grid.transform();
+    laovdb::math::Vec3d                vpos;
     typename GridType::ValueType        value;
 
-    vpos = openvdb::math::Vec3d(pos.x(), pos.y(), pos.z());
+    vpos = laovdb::math::Vec3d(pos.x(), pos.y(), pos.z());
     vpos = xform.worldToIndex(vpos);
 
-    openvdb::tools::PointSampler::sample(grid.tree(), vpos, value);
+    laovdb::tools::PointSampler::sample(grid.tree(), vpos, value);
 
     fpreal result = value;
 
@@ -1030,14 +1030,14 @@ template <typename GridType>
 static UT_Vector3D
 geo_sampleGridV3(const GridType &grid, const UT_Vector3 &pos)
 {
-    const openvdb::math::Transform &    xform = grid.transform();
-    openvdb::math::Vec3d                vpos;
+    const laovdb::math::Transform &    xform = grid.transform();
+    laovdb::math::Vec3d                vpos;
     typename GridType::ValueType        value;
 
-    vpos = openvdb::math::Vec3d(pos.x(), pos.y(), pos.z());
+    vpos = laovdb::math::Vec3d(pos.x(), pos.y(), pos.z());
     vpos = xform.worldToIndex(vpos);
 
-    openvdb::tools::BoxSampler::sample(grid.tree(), vpos, value);
+    laovdb::tools::BoxSampler::sample(grid.tree(), vpos, value);
 
     UT_Vector3D result;
     result.x() = double(value[0]);
@@ -1056,17 +1056,17 @@ geo_sampleGridMany(const GridType &grid,
 {
     typename GridType::ConstAccessor accessor = grid.getAccessor();
 
-    const openvdb::math::Transform &    xform = grid.transform();
-    openvdb::math::Vec3d                vpos;
+    const laovdb::math::Transform &    xform = grid.transform();
+    laovdb::math::Vec3d                vpos;
     typename GridType::ValueType        value;
 
 
     for (int i = 0; i < num; i++)
     {
-        vpos = openvdb::math::Vec3d(pos[i].x(), pos[i].y(), pos[i].z());
+        vpos = laovdb::math::Vec3d(pos[i].x(), pos[i].y(), pos[i].z());
         vpos = xform.worldToIndex(vpos);
 
-        openvdb::tools::BoxSampler::sample(accessor, vpos, value);
+        laovdb::tools::BoxSampler::sample(accessor, vpos, value);
 
         *f = T(value);
         f += stride;
@@ -1082,17 +1082,17 @@ geo_sampleBoolGridMany(const GridType &grid,
 {
     typename GridType::ConstAccessor accessor = grid.getAccessor();
 
-    const openvdb::math::Transform &    xform = grid.transform();
-    openvdb::math::Vec3d                vpos;
+    const laovdb::math::Transform &    xform = grid.transform();
+    laovdb::math::Vec3d                vpos;
     typename GridType::ValueType        value;
 
 
     for (int i = 0; i < num; i++)
     {
-        vpos = openvdb::math::Vec3d(pos[i].x(), pos[i].y(), pos[i].z());
+        vpos = laovdb::math::Vec3d(pos[i].x(), pos[i].y(), pos[i].z());
         vpos = xform.worldToIndex(vpos);
 
-        openvdb::tools::PointSampler::sample(accessor, vpos, value);
+        laovdb::tools::PointSampler::sample(accessor, vpos, value);
 
         *f = T(value);
         f += stride;
@@ -1108,17 +1108,17 @@ geo_sampleVecGridMany(const GridType &grid,
 {
     typename GridType::ConstAccessor accessor = grid.getAccessor();
 
-    const openvdb::math::Transform &    xform = grid.transform();
-    openvdb::math::Vec3d                vpos;
+    const laovdb::math::Transform &    xform = grid.transform();
+    laovdb::math::Vec3d                vpos;
     typename GridType::ValueType        value;
 
 
     for (int i = 0; i < num; i++)
     {
-        vpos = openvdb::math::Vec3d(pos[i].x(), pos[i].y(), pos[i].z());
+        vpos = laovdb::math::Vec3d(pos[i].x(), pos[i].y(), pos[i].z());
         vpos = xform.worldToIndex(vpos);
 
-        openvdb::tools::BoxSampler::sample(accessor, vpos, value);
+        laovdb::tools::BoxSampler::sample(accessor, vpos, value);
 
         f->x() = value[0];
         f->y() = value[1];
@@ -1293,7 +1293,7 @@ public:
     template<typename GridT>
     void operator()(const GridT &grid)
     {
-        using namespace openvdb;
+        using namespace laovdb;
         using AccessorT = typename GridT::ConstAccessor;
         using ValueT = typename GridT::ValueType;
 
@@ -1483,9 +1483,9 @@ GEO_PrimVDB::stealCEBuffers(const GA_Primitive *psrc)
 void
 GEO_PrimVDB::indexToPos(int x, int y, int z, UT_Vector3 &pos) const
 {
-    openvdb::math::Vec3d                vpos;
+    laovdb::math::Vec3d                vpos;
 
-    vpos = openvdb::math::Vec3d(x, y, z);
+    vpos = laovdb::math::Vec3d(x, y, z);
     vpos = getGrid().indexToWorld(vpos);
     pos = UT_Vector3(vpos[0], vpos[1], vpos[2]);
 }
@@ -1493,9 +1493,9 @@ GEO_PrimVDB::indexToPos(int x, int y, int z, UT_Vector3 &pos) const
 void
 GEO_PrimVDB::findexToPos(UT_Vector3 idx, UT_Vector3 &pos) const
 {
-    openvdb::math::Vec3d                vpos;
+    laovdb::math::Vec3d                vpos;
 
-    vpos = openvdb::math::Vec3d(idx.x(), idx.y(), idx.z());
+    vpos = laovdb::math::Vec3d(idx.x(), idx.y(), idx.z());
     vpos = getGrid().indexToWorld(vpos);
     pos = UT_Vector3(vpos[0], vpos[1], vpos[2]);
 }
@@ -1503,8 +1503,8 @@ GEO_PrimVDB::findexToPos(UT_Vector3 idx, UT_Vector3 &pos) const
 void
 GEO_PrimVDB::posToIndex(UT_Vector3 pos, int &x, int &y, int &z) const
 {
-    openvdb::math::Vec3d vpos(pos.data());
-    openvdb::math::Coord
+    laovdb::math::Vec3d vpos(pos.data());
+    laovdb::math::Coord
         coord = getGrid().transform().worldToIndexCellCentered(vpos);
     x = coord.x();
     y = coord.y();
@@ -1514,9 +1514,9 @@ GEO_PrimVDB::posToIndex(UT_Vector3 pos, int &x, int &y, int &z) const
 void
 GEO_PrimVDB::posToIndex(UT_Vector3 pos, UT_Vector3 &index) const
 {
-    openvdb::math::Vec3d                vpos;
+    laovdb::math::Vec3d                vpos;
 
-    vpos = openvdb::math::Vec3d(pos.x(), pos.y(), pos.z());
+    vpos = laovdb::math::Vec3d(pos.x(), pos.y(), pos.z());
     vpos = getGrid().worldToIndex(vpos);
 
     index = UTvdbConvert(vpos);
@@ -1525,9 +1525,9 @@ GEO_PrimVDB::posToIndex(UT_Vector3 pos, UT_Vector3 &index) const
 void
 GEO_PrimVDB::indexToPos(exint x, exint y, exint z, UT_Vector3D &pos) const
 {
-    openvdb::math::Vec3d                vpos;
+    laovdb::math::Vec3d                vpos;
 
-    vpos = openvdb::math::Vec3d(x, y, z);
+    vpos = laovdb::math::Vec3d(x, y, z);
     vpos = getGrid().indexToWorld(vpos);
     pos = UT_Vector3D(vpos[0], vpos[1], vpos[2]);
 }
@@ -1535,9 +1535,9 @@ GEO_PrimVDB::indexToPos(exint x, exint y, exint z, UT_Vector3D &pos) const
 void
 GEO_PrimVDB::findexToPos(UT_Vector3D idx, UT_Vector3D &pos) const
 {
-    openvdb::math::Vec3d                vpos;
+    laovdb::math::Vec3d                vpos;
 
-    vpos = openvdb::math::Vec3d(idx.x(), idx.y(), idx.z());
+    vpos = laovdb::math::Vec3d(idx.x(), idx.y(), idx.z());
     vpos = getGrid().indexToWorld(vpos);
     pos = UT_Vector3D(vpos[0], vpos[1], vpos[2]);
 }
@@ -1545,8 +1545,8 @@ GEO_PrimVDB::findexToPos(UT_Vector3D idx, UT_Vector3D &pos) const
 void
 GEO_PrimVDB::posToIndex(UT_Vector3D pos, exint &x, exint &y, exint &z) const
 {
-    openvdb::math::Vec3d vpos(pos.data());
-    openvdb::math::Coord
+    laovdb::math::Vec3d vpos(pos.data());
+    laovdb::math::Coord
         coord = getGrid().transform().worldToIndexCellCentered(vpos);
     x = coord.x();
     y = coord.y();
@@ -1556,9 +1556,9 @@ GEO_PrimVDB::posToIndex(UT_Vector3D pos, exint &x, exint &y, exint &z) const
 void
 GEO_PrimVDB::posToIndex(UT_Vector3D pos, UT_Vector3D &index) const
 {
-    openvdb::math::Vec3d                vpos;
+    laovdb::math::Vec3d                vpos;
 
-    vpos = openvdb::math::Vec3d(pos.x(), pos.y(), pos.z());
+    vpos = laovdb::math::Vec3d(pos.x(), pos.y(), pos.z());
     vpos = getGrid().worldToIndex(vpos);
 
     index = UTvdbConvert(vpos);
@@ -1568,10 +1568,10 @@ template <typename GridType>
 static fpreal
 geo_sampleIndex(const GridType &grid, int ix, int iy, int iz)
 {
-    openvdb::math::Coord                xyz;
+    laovdb::math::Coord                xyz;
     typename GridType::ValueType        value;
 
-    xyz = openvdb::math::Coord(ix, iy, iz);
+    xyz = laovdb::math::Coord(ix, iy, iz);
 
     value = grid.tree().getValue(xyz);
 
@@ -1584,10 +1584,10 @@ template <typename GridType>
 static UT_Vector3D
 geo_sampleIndexV3(const GridType &grid, int ix, int iy, int iz)
 {
-    openvdb::math::Coord                xyz;
+    laovdb::math::Coord                xyz;
     typename GridType::ValueType        value;
 
-    xyz = openvdb::math::Coord(ix, iy, iz);
+    xyz = laovdb::math::Coord(ix, iy, iz);
 
     value = grid.tree().getValue(xyz);
 
@@ -1609,12 +1609,12 @@ geo_sampleIndexMany(const GridType &grid,
 {
     typename GridType::ConstAccessor accessor = grid.getAccessor();
 
-    openvdb::math::Coord                xyz;
+    laovdb::math::Coord                xyz;
     typename GridType::ValueType        value;
 
     for (int i = 0; i < num; i++)
     {
-        xyz = openvdb::math::Coord(ix[i], iy[i], iz[i]);
+        xyz = laovdb::math::Coord(ix[i], iy[i], iz[i]);
 
         value = accessor.getValue(xyz);
 
@@ -1632,12 +1632,12 @@ geo_sampleVecIndexMany(const GridType &grid,
 {
     typename GridType::ConstAccessor accessor = grid.getAccessor();
 
-    openvdb::math::Coord                xyz;
+    laovdb::math::Coord                xyz;
     typename GridType::ValueType        value;
 
     for (int i = 0; i < num; i++)
     {
-        xyz = openvdb::math::Coord(ix[i], iy[i], iz[i]);
+        xyz = laovdb::math::Coord(ix[i], iy[i], iz[i]);
 
         value = accessor.getValue(xyz);
 
@@ -1827,11 +1827,11 @@ namespace {
 // to the voxel values of vector-valued grids
 struct gu_VecXformOp
 {
-    openvdb::Mat4d mat;
-    gu_VecXformOp(const openvdb::Mat4d& _mat): mat(_mat) {}
+    laovdb::Mat4d mat;
+    gu_VecXformOp(const laovdb::Mat4d& _mat): mat(_mat) {}
     template<typename GridT> void operator()(GridT& grid) const
     {
-        openvdb::tools::transformVectors(grid, mat);
+        laovdb::tools::transformVectors(grid, mat);
     }
 };
 
@@ -1844,8 +1844,8 @@ GEO_PrimVDB::transform(const UT_Matrix4 &mat)
     if (!hasGrid()) return;
 
     try {
-        using openvdb::GridBase;
-        using namespace openvdb::math;
+        using laovdb::GridBase;
+        using namespace laovdb::math;
 
         // Get the transform
         const GridBase&   const_grid = getConstGrid();
@@ -1888,7 +1888,7 @@ GEO_PrimVDB::transform(const UT_Matrix4 &mat)
 
         // If (and only if) the grid is vector-valued, apply the transform to
         // each voxel's value.
-        if (const_grid.getVectorType() != openvdb::VEC_INVARIANT) {
+        if (const_grid.getVectorType() != laovdb::VEC_INVARIANT) {
             gu_VecXformOp op(UTvdbConvert(UT_Matrix4D(mat)));
             GEOvdbProcessTypedGridVec3(*this, op, /*make_unique*/true);
         }
@@ -1919,7 +1919,7 @@ GEO_PrimVDB::GridAccessor::makeGridUnique()
 {
     if (myGrid) {
         UT_ASSERT(myGrid.unique());
-        openvdb::TreeBase::Ptr localTreePtr = myGrid->baseTreePtr();
+        laovdb::TreeBase::Ptr localTreePtr = myGrid->baseTreePtr();
         if (localTreePtr.use_count() > 2) { // myGrid + localTreePtr = 2
             myGrid->setTree(myGrid->constBaseTree().copy());
         }
@@ -1933,7 +1933,7 @@ GEO_PrimVDB::GridAccessor::isGridUnique() const
         // We require the grid to always be unique, it is the tree
         // that is allowed to be shared.
         UT_ASSERT(myGrid.unique());
-        openvdb::TreeBase::Ptr localTreePtr = myGrid->baseTreePtr();
+        laovdb::TreeBase::Ptr localTreePtr = myGrid->baseTreePtr();
         if (localTreePtr.use_count() > 2) { // myGrid + localTreePtr = 2
             return false;
         }
@@ -1952,14 +1952,14 @@ GEO_PrimVDB::setTransform4(const UT_Matrix4 &xform4)
 void
 GEO_PrimVDB::setTransform4(const UT_DMatrix4 &xform4)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
     myGridAccessor.setTransform(*geoCreateLinearTransform(xform4), *this);
 }
 
 void
 GEO_PrimVDB::getRes(int &rx, int &ry, int &rz) const
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const GridBase &    grid = getGrid();
     const math::Coord   dim = grid.evalActiveVoxelDim();
@@ -2016,7 +2016,7 @@ static void
 geo_calcMinVDB( GridType &grid,
                     fpreal &result)
 {
-    auto val = openvdb::tools::extrema(grid.cbeginValueOn());
+    auto val = laovdb::tools::extrema(grid.cbeginValueOn());
     result = val.min();
 }
 
@@ -2036,7 +2036,7 @@ static void
 geo_calcMaxVDB( GridType &grid,
                     fpreal &result)
 {
-    auto val = openvdb::tools::extrema(grid.cbeginValueOn());
+    auto val = laovdb::tools::extrema(grid.cbeginValueOn());
     result = val.max();
 }
 
@@ -2056,7 +2056,7 @@ static void
 geo_calcAvgVDB( GridType &grid,
                     fpreal &result)
 {
-    auto val = openvdb::tools::statistics(grid.cbeginValueOn());
+    auto val = laovdb::tools::statistics(grid.cbeginValueOn());
     result = val.avg();
 }
 
@@ -2075,10 +2075,10 @@ GEO_PrimVDB::calcAverage() const
 bool
 GEO_PrimVDB::getFrustumBounds(UT_BoundingBox &idxbox) const
 {
-    using namespace openvdb;
-    using namespace openvdb::math;
-    using openvdb::CoordBBox;
-    using openvdb::Vec3d;
+    using namespace laovdb;
+    using namespace laovdb::math;
+    using laovdb::CoordBBox;
+    using laovdb::Vec3d;
 
     idxbox.makeInvalid();
 
@@ -2106,9 +2106,9 @@ GEO_PrimVDB::getFrustumBounds(UT_BoundingBox &idxbox) const
 }
 
 static bool
-geoGetFrustumBoundsFromVDB(const GEO_PrimVDB *vdb, openvdb::CoordBBox &box)
+geoGetFrustumBoundsFromVDB(const GEO_PrimVDB *vdb, laovdb::CoordBBox &box)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     UT_BoundingBox              clip;
     bool                        doclip;
@@ -2134,14 +2134,14 @@ geoIntersect(GridTypeA& grid_a, const GridTypeB &grid_b)
     for (typename GridTypeA::ValueOnCIter
          iter = grid_a.cbeginValueOn(); iter; ++iter)
     {
-        openvdb::CoordBBox bbox = iter.getBoundingBox();
+        laovdb::CoordBBox bbox = iter.getBoundingBox();
         for (int k=bbox.min().z(); k<=bbox.max().z(); k++)
         {
             for (int j=bbox.min().y(); j<=bbox.max().y(); j++)
             {
                 for (int i=bbox.min().x(); i<=bbox.max().x(); i++)
                 {
-                    openvdb::Coord coord(i, j, k);
+                    laovdb::Coord coord(i, j, k);
                     if (!access_b.isValueOn(coord))
                     {
                         access_a.setValue(coord, grid_a.background());
@@ -2179,12 +2179,12 @@ private:
 template <typename GridType>
 static void
 geoActivateBBox(GridType& grid,
-                const openvdb::CoordBBox &bbox,
+                const laovdb::CoordBBox &bbox,
                 bool setvalue,
                 double value,
                 GEO_PrimVDB::ActivateOperation operation,
                 bool doclip,
-                const openvdb::CoordBBox &clipbox)
+                const laovdb::CoordBBox &clipbox)
 {
     typename GridType::Accessor         access = grid.getAccessor();
 
@@ -2193,7 +2193,7 @@ geoActivateBBox(GridType& grid,
         case GEO_PrimVDB::ACTIVATE_UNION: // Union
         if (doclip)
         {
-            openvdb::CoordBBox  clipped = bbox;
+            laovdb::CoordBBox  clipped = bbox;
             clipped = bbox;
             clipped.min().maxComponent(clipbox.min());
             clipped.max().minComponent(clipbox.max());
@@ -2210,18 +2210,18 @@ geoActivateBBox(GridType& grid,
         }
         else
         {
-            openvdb::MaskGrid mask(false);
+            laovdb::MaskGrid mask(false);
             mask.denseFill(bbox, true, true);
             grid.topologyUnion(mask);
         }
         break;
         case GEO_PrimVDB::ACTIVATE_INTERSECT: // Intersect
             {
-            openvdb::MaskGrid mask(false);
+            laovdb::MaskGrid mask(false);
             mask.fill(bbox, true, true);
             grid.topologyIntersection(mask);
             geoInactiveToBackground<GridType> bgop(grid);
-            openvdb::tools::foreach(grid.beginValueOff(), bgop);
+            laovdb::tools::foreach(grid.beginValueOff(), bgop);
         }
             break;
         case GEO_PrimVDB::ACTIVATE_SUBTRACT: // Difference
@@ -2244,9 +2244,9 @@ GEO_PrimVDB::activateIndexBBoxAdapter(const void* bboxPtr,
                                       bool setvalue,
                                       fpreal value)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    // bboxPtr is assumed to point to an openvdb::vX_Y_Z::CoordBBox, for some
+    // bboxPtr is assumed to point to an laovdb::vX_Y_Z::CoordBBox, for some
     // version X.Y.Z of OpenVDB that may be newer than the one with which
     // libHoudiniGEO.so was built.  This is safe provided that CoordBBox and
     // its member objects are ABI-compatible between the two OpenVDB versions.
@@ -2268,13 +2268,13 @@ GEO_PrimVDB::activateIndexBBoxAdapter(const void* bboxPtr,
 
 // Gets a conservative bounding box that maps to a coordinate
 // in index space.
-openvdb::CoordBBox
-geoMapCoord(const openvdb::CoordBBox& bbox_b,
+laovdb::CoordBBox
+geoMapCoord(const laovdb::CoordBBox& bbox_b,
             GEO_PrimVolumeXform xform_a,
             GEO_PrimVolumeXform xform_b)
 {
-    using openvdb::Coord;
-    using openvdb::CoordBBox;
+    using laovdb::Coord;
+    using laovdb::CoordBBox;
     // Get the eight corners of the voxel
     Coord x = Coord(bbox_b.extents().x(), 0, 0);
     Coord y = Coord(0, bbox_b.extents().y(), 0);
@@ -2299,12 +2299,12 @@ geoMapCoord(const openvdb::CoordBBox& bbox_b,
     return index_bbox;
 }
 
-openvdb::CoordBBox
-geoMapCoord(const openvdb::Coord& coord_b,
+laovdb::CoordBBox
+geoMapCoord(const laovdb::Coord& coord_b,
             GEO_PrimVolumeXform xform_a,
             GEO_PrimVolumeXform xform_b)
 {
-    const openvdb::CoordBBox bbox_b(coord_b, coord_b + openvdb::Coord(1,1,1));
+    const laovdb::CoordBBox bbox_b(coord_b, coord_b + laovdb::Coord(1,1,1));
     return geoMapCoord(bbox_b, xform_a, xform_b);
 }
 
@@ -2315,7 +2315,7 @@ class geoMaskTopology
 {
 public:
     typedef typename GridType::ValueOnCIter             Iterator;
-    typedef typename openvdb::MaskGrid::Accessor        Accessor;
+    typedef typename laovdb::MaskGrid::Accessor        Accessor;
 
     geoMaskTopology(const GEO_PrimVolumeXform& a, const GEO_PrimVolumeXform& b)
         : xform_a(a), xform_b(b)
@@ -2324,7 +2324,7 @@ public:
 
     inline void operator()(const Iterator& iter, Accessor& accessor) const
     {
-        openvdb::CoordBBox bbox = geoMapCoord(iter.getBoundingBox(), xform_a,
+        laovdb::CoordBBox bbox = geoMapCoord(iter.getBoundingBox(), xform_a,
                                               xform_b);
         accessor.getTree()->fill(bbox, true, true);
     }
@@ -2342,7 +2342,7 @@ class geoMaskIntersect
 public:
     typedef typename GridTypeA::ValueOnCIter            IteratorA;
     typedef typename GridTypeB::ConstAccessor           AccessorB;
-    typedef typename openvdb::MaskGrid::Accessor        Accessor;
+    typedef typename laovdb::MaskGrid::Accessor        Accessor;
 
     geoMaskIntersect(const GridTypeB& source,
                      const GEO_PrimVolumeXform& a,
@@ -2355,11 +2355,11 @@ public:
 
     inline void operator()(const IteratorA& iter, Accessor& accessor) const
     {
-        openvdb::CoordBBox bbox = iter.getBoundingBox();
+        laovdb::CoordBBox bbox = iter.getBoundingBox();
         for(int k = bbox.min().z(); k <= bbox.max().z(); k++) {
             for (int j = bbox.min().y(); j <= bbox.max().y(); j++) {
                 for (int i = bbox.min().x(); i <= bbox.max().x(); i++) {
-                    openvdb::Coord coord(i, j, k);
+                    laovdb::Coord coord(i, j, k);
                     accessor.setActiveState(coord,
                         containsActiveVoxels(geoMapCoord(coord, myXformB, myXformA)));
                 }
@@ -2374,7 +2374,7 @@ private:
 
     // Returns true if there is at least one voxel in the source grid that is active
     // within the specified bounding box.
-    inline bool containsActiveVoxels(const openvdb::CoordBBox& bbox) const
+    inline bool containsActiveVoxels(const laovdb::CoordBBox& bbox) const
     {
         for(int k = bbox.min().z(); k <= bbox.max().z(); k++)
         {
@@ -2382,7 +2382,7 @@ private:
             {
                 for(int i = bbox.min().x(); i <= bbox.max().x(); i++)
                 {
-                    if(myAccessor.isValueOn(openvdb::Coord(i, j, k)))
+                    if(myAccessor.isValueOn(laovdb::Coord(i, j, k)))
                         return true;
                 }
             }
@@ -2398,19 +2398,19 @@ geoUnalignedUnion(GridTypeA &grid_a,
                   GEO_PrimVolumeXform xform_a,
                   GEO_PrimVolumeXform xform_b,
                   bool setvalue, double value,
-                  bool doclip, const openvdb::CoordBBox &clipbox)
+                  bool doclip, const laovdb::CoordBBox &clipbox)
 {
-    openvdb::MaskGrid mask(false);
+    laovdb::MaskGrid mask(false);
     geoMaskTopology<GridTypeB> maskop(xform_a, xform_b);
-    openvdb::tools::transformValues(grid_b.cbeginValueOn(), mask, maskop);
+    laovdb::tools::transformValues(grid_b.cbeginValueOn(), mask, maskop);
     if(doclip)
         mask.clip(clipbox);
 
     if(setvalue)
     {
         typename GridTypeA::TreeType newTree(mask.tree(),
-            geo_doubleToGridValue<GridTypeA>(value), openvdb::TopologyCopy());
-        openvdb::tools::compReplace(grid_a.tree(), newTree);
+            geo_doubleToGridValue<GridTypeA>(value), laovdb::TopologyCopy());
+        laovdb::tools::compReplace(grid_a.tree(), newTree);
     }
     else
         grid_a.tree().topologyUnion(mask.tree());
@@ -2423,16 +2423,16 @@ geoUnalignedDifference(GridTypeA &grid_a,
                        GEO_PrimVolumeXform xform_a,
                        GEO_PrimVolumeXform xform_b)
 {
-    openvdb::MaskGrid mask(false);
+    laovdb::MaskGrid mask(false);
     geoMaskIntersect<GridTypeA, GridTypeB> maskop(grid_b, xform_a, xform_b);
-    openvdb::tools::transformValues(grid_a.cbeginValueOn(), mask, maskop, true,
+    laovdb::tools::transformValues(grid_a.cbeginValueOn(), mask, maskop, true,
         // DO NOT SHARE THE OPERATOR, since grid_b's accessor does caching...
         false);
 
     grid_a.tree().topologyDifference(mask.tree());
 
     geoInactiveToBackground<GridTypeA> bgop(grid_a);
-    openvdb::tools::foreach(grid_a.beginValueOff(), bgop);
+    laovdb::tools::foreach(grid_a.beginValueOff(), bgop);
 }
 
 template <typename GridTypeA, typename GridTypeB>
@@ -2442,22 +2442,22 @@ geoUnalignedIntersect(GridTypeA &grid_a,
                       GEO_PrimVolumeXform xform_a,
                       GEO_PrimVolumeXform xform_b)
 {
-    openvdb::MaskGrid mask(false);
+    laovdb::MaskGrid mask(false);
     geoMaskIntersect<GridTypeA, GridTypeB> maskop(grid_b, xform_a, xform_b);
-    openvdb::tools::transformValues(grid_a.cbeginValueOn(), mask, maskop, true,
+    laovdb::tools::transformValues(grid_a.cbeginValueOn(), mask, maskop, true,
         // DO NOT SHARE THE OPERATOR, since grid_b's accessor does caching...
         false);
 
     grid_a.tree().topologyIntersection(mask.tree());
 
     geoInactiveToBackground<GridTypeA> bgop(grid_a);
-    openvdb::tools::foreach(grid_a.beginValueOff(), bgop);
+    laovdb::tools::foreach(grid_a.beginValueOff(), bgop);
 }
 
 // The result of the union of active regions goes into grid_a
 template <typename GridTypeA, typename GridTypeB>
 static void
-geoUnion(GridTypeA& grid_a, const GridTypeB &grid_b, bool setvalue, double value, bool doclip, const openvdb::CoordBBox &clipbox)
+geoUnion(GridTypeA& grid_a, const GridTypeB &grid_b, bool setvalue, double value, bool doclip, const laovdb::CoordBBox &clipbox)
 {
     typename GridTypeA::Accessor        access_a = grid_a.getAccessor();
     typename GridTypeB::ConstAccessor   access_b = grid_b.getAccessor();
@@ -2469,7 +2469,7 @@ geoUnion(GridTypeA& grid_a, const GridTypeB &grid_b, bool setvalue, double value
 
     // For each on value in b, set a on
     for (typename GridTypeB::ValueOnCIter iter = grid_b.cbeginValueOn(); iter; ++iter) {
-        openvdb::CoordBBox bbox = iter.getBoundingBox();
+        laovdb::CoordBBox bbox = iter.getBoundingBox();
         // Intersect with our destination
         if (doclip) {
             bbox.min().maxComponent(clipbox.min());
@@ -2479,7 +2479,7 @@ geoUnion(GridTypeA& grid_a, const GridTypeB &grid_b, bool setvalue, double value
         for (int k=bbox.min().z(); k<=bbox.max().z(); k++) {
             for (int j=bbox.min().y(); j<=bbox.max().y(); j++) {
                 for (int i=bbox.min().x(); i<=bbox.max().x(); i++) {
-                    openvdb::Coord coord(i, j, k);
+                    laovdb::Coord coord(i, j, k);
                     if (setvalue) {
                         access_a.setValue(coord, geo_doubleToGridValue<GridTypeA>(value));
                     } else {
@@ -2503,14 +2503,14 @@ geoDifference(GridTypeA& grid_a, const GridTypeB &grid_b)
     for (typename GridTypeA::ValueOnCIter
          iter = grid_a.cbeginValueOn(); iter; ++iter)
     {
-        openvdb::CoordBBox bbox = iter.getBoundingBox();
+        laovdb::CoordBBox bbox = iter.getBoundingBox();
         for (int k=bbox.min().z(); k<=bbox.max().z(); k++)
         {
             for (int j=bbox.min().y(); j<=bbox.max().y(); j++)
             {
                 for (int i=bbox.min().x(); i<=bbox.max().x(); i++)
                 {
-                    openvdb::Coord coord(i, j, k);
+                    laovdb::Coord coord(i, j, k);
                     // TODO: conditional needed? Profile please.
                     if (access_b.isValueOn(coord))
                     {
@@ -2529,7 +2529,7 @@ geoDoUnion(const GridTypeB &grid_b,
     GEO_PrimVolumeXform xform_b,
     GEO_PrimVDB &vdb_a,
     bool setvalue, double value,
-    bool doclip, const openvdb::CoordBBox &clipbox,
+    bool doclip, const laovdb::CoordBBox &clipbox,
     bool ignore_transform)
 {
     // If the transforms are equal, we can do an aligned union
@@ -2601,10 +2601,10 @@ GEO_PrimVDB::activateByVDB(
     bool setvalue, fpreal value,
     bool ignore_transform)
 {
-    const openvdb::GridBase& input_grid = input_vdb->getGrid();
+    const laovdb::GridBase& input_grid = input_vdb->getGrid();
 
     bool                                doclip;
-    openvdb::CoordBBox                  clipbox;
+    laovdb::CoordBBox                  clipbox;
 
     doclip = geoGetFrustumBoundsFromVDB(this, clipbox);
 
@@ -2655,17 +2655,17 @@ GEO_PrimVDB::activateByVDB(
 UT_Matrix4D
 GEO_PrimVDB::getTransform4() const
 {
-    using namespace openvdb;
-    using namespace openvdb::math;
+    using namespace laovdb;
+    using namespace laovdb::math;
 
     UT_Matrix4D mat4;
     const Transform &gxform = getGrid().transform();
     NonlinearFrustumMap::ConstPtr fmap = gxform.map<NonlinearFrustumMap>();
     if (fmap)
     {
-        const openvdb::BBoxd &bbox = fmap->getBBox();
-        const openvdb::Vec3d center = bbox.getCenter();
-        const openvdb::Vec3d size = bbox.extents();
+        const laovdb::BBoxd &bbox = fmap->getBBox();
+        const laovdb::Vec3d center = bbox.getCenter();
+        const laovdb::Vec3d size = bbox.extents();
 
         // TODO: Use fmap->linearMap() once that actually works
         mat4.identity();
@@ -2691,8 +2691,8 @@ GEO_PrimVDB::getLocalTransform(UT_Matrix3D &result) const
 void
 GEO_PrimVDB::setLocalTransform(const UT_Matrix3D &new_mat3)
 {
-    using namespace openvdb;
-    using namespace openvdb::math;
+    using namespace laovdb;
+    using namespace laovdb::math;
 
     Transform::Ptr xform;
     UT_Matrix4D new_mat4;
@@ -2704,9 +2704,9 @@ GEO_PrimVDB::setLocalTransform(const UT_Matrix3D &new_mat3)
     if (fmap)
     {
         fmap = geoStandardFrustumMapPtr(*this);
-        const openvdb::BBoxd &bbox = fmap->getBBox();
-        const openvdb::Vec3d center = bbox.getCenter();
-        const openvdb::Vec3d size = bbox.extents();
+        const laovdb::BBoxd &bbox = fmap->getBBox();
+        const laovdb::Vec3d center = bbox.getCenter();
+        const laovdb::Vec3d size = bbox.extents();
 
         // TODO: Use fmap->linearMap() once that actually works
         UT_Matrix4D second;
@@ -2952,14 +2952,14 @@ GEO_PrimVDB::getJSON() const
 
 // This method is called by multiple places internally in Houdini.
 static void
-geoSetVDBStreamCompression(openvdb::io::Stream& vos, bool backwards_compatible)
+geoSetVDBStreamCompression(laovdb::io::Stream& vos, bool backwards_compatible)
 {
     // Always enable full compression, since it is fast and compresses level
     // sets and fog volumes well.
-    uint32_t compression = openvdb::io::COMPRESS_ACTIVE_MASK;
+    uint32_t compression = laovdb::io::COMPRESS_ACTIVE_MASK;
     // Enable blosc compression unless we want it to be backwards compatible.
     if (vos.hasBloscCompression() && !backwards_compatible) {
-        compression |= openvdb::io::COMPRESS_BLOSC;
+        compression |= laovdb::io::COMPRESS_BLOSC;
     }
     vos.setCompression(compression);
 }
@@ -2972,12 +2972,12 @@ GEO_PrimVDB::saveVDB(UT_JSONWriter &w, const GA_SaveMap &sm,
 
     try
     {
-        openvdb::GridCPtrVec grids;
+        laovdb::GridCPtrVec grids;
         grids.push_back(getConstGridPtr());
 
         if (as_shmem)
         {
-            openvdb::MetaMap meta;
+            laovdb::MetaMap meta;
 
             UT_String shmem_owner;
             sm.getOptions().importOption("geo:sharedmemowner", shmem_owner);
@@ -2987,7 +2987,7 @@ GEO_PrimVDB::saveVDB(UT_JSONWriter &w, const GA_SaveMap &sm,
             // First do a pass to collect the final size
             SYS_SharedMemoryOutputStream os_count(NULL);
             {
-                openvdb::io::Stream vos(os_count);
+                laovdb::io::Stream vos(os_count);
                 geoSetVDBStreamCompression(vos, /*backwards_compatible*/false);
                 vos.write(grids, meta);
             }
@@ -3003,7 +3003,7 @@ GEO_PrimVDB::saveVDB(UT_JSONWriter &w, const GA_SaveMap &sm,
             // Save the vdb stream to the shmem segment
             SYS_SharedMemoryOutputStream os_shm(shmem);
             {
-                openvdb::io::Stream vos(os_shm);
+                laovdb::io::Stream vos(os_shm);
                 geoSetVDBStreamCompression(vos, /*backwards_compatible*/false);
                 vos.write(grids, meta);
             }
@@ -3018,8 +3018,8 @@ GEO_PrimVDB::saveVDB(UT_JSONWriter &w, const GA_SaveMap &sm,
         {
             UT_JSONWriter::TiledStream os(w);
 
-            openvdb::io::Stream vos(os);
-            openvdb::MetaMap meta;
+            laovdb::io::Stream vos(os);
+            laovdb::MetaMap meta;
 
             geoSetVDBStreamCompression(
                 vos, UT_EnvControl::getInt(ENV_HOUDINI13_VOLUME_COMPATIBILITY));
@@ -3065,8 +3065,8 @@ GEO_PrimVDB::loadVDB(UT_JSONParser &p, bool as_shmem)
             try
             {
                 SYS_SharedMemoryInputStream     is_shm(*shmem);
-                openvdb::io::Stream             vis(is_shm, /*delayLoad*/false);
-                openvdb::GridPtrVecPtr          grids = vis.getGrids();
+                laovdb::io::Stream             vis(is_shm, /*delayLoad*/false);
+                laovdb::GridPtrVecPtr          grids = vis.getGrids();
 
                 int count = (grids ? grids->size() : 0);
                 if (count != 1)
@@ -3077,7 +3077,7 @@ GEO_PrimVDB::loadVDB(UT_JSONParser &p, bool as_shmem)
                     throw std::runtime_error(mesg.nonNullBuffer());
                 }
 
-                openvdb::GridBase::Ptr grid = (*grids)[0];
+                laovdb::GridBase::Ptr grid = (*grids)[0];
                 UT_ASSERT(grid);
                 if (grid) setGrid(*grid);
             }
@@ -3092,7 +3092,7 @@ GEO_PrimVDB::loadVDB(UT_JSONParser &p, bool as_shmem)
             // If the shared memory was set to zero, it probably died while
             // the IFD stream was in transit. Create a dummy grid so that
             // mantra doesn't flip out like a ninja.
-            openvdb::GridBase::Ptr grid = openvdb::FloatGrid::create(0);
+            laovdb::GridBase::Ptr grid = laovdb::FloatGrid::create(0);
             setGrid(*grid);
         }
 
@@ -3105,9 +3105,9 @@ GEO_PrimVDB::loadVDB(UT_JSONParser &p, bool as_shmem)
         {
             UT_JSONParser::TiledStream  is(p);
 
-            openvdb::io::Stream         vis(is, /*delayLoad*/false);
+            laovdb::io::Stream         vis(is, /*delayLoad*/false);
 
-            openvdb::GridPtrVecPtr      grids = vis.getGrids();
+            laovdb::GridPtrVecPtr      grids = vis.getGrids();
 
             int count = (grids ? grids->size() : 0);
             if (count != 1)
@@ -3118,7 +3118,7 @@ GEO_PrimVDB::loadVDB(UT_JSONParser &p, bool as_shmem)
                 throw std::runtime_error(mesg.nonNullBuffer());
             }
 
-            openvdb::GridBase::Ptr grid = (*grids)[0];
+            laovdb::GridBase::Ptr grid = (*grids)[0];
             UT_ASSERT(grid);
             if (grid)
             {
@@ -3295,11 +3295,11 @@ GEO_PrimVDB::getBBox(UT_BoundingBox *bbox) const
 {
     if (hasGrid())
     {
-        using namespace openvdb;
+        using namespace laovdb;
 
         CoordBBox vbox;
 
-        const openvdb::GridBase &grid = getGrid();
+        const laovdb::GridBase &grid = getGrid();
         // NOTE: We use evalActiveVoxelBoundingBox() so that it matches
         //       getRes() which calls evalActiveVoxelDim().
         if (!grid.baseTree().evalActiveVoxelBoundingBox(vbox))
@@ -3347,8 +3347,8 @@ GEO_PrimVDB::baryCenter() const
     if (!hasGrid())
         return UT_Vector3(0, 0, 0);
 
-    const openvdb::GridBase &grid = getGrid();
-    openvdb::CoordBBox bbox = grid.evalActiveVoxelBoundingBox();
+    const laovdb::GridBase &grid = getGrid();
+    laovdb::CoordBBox bbox = grid.evalActiveVoxelBoundingBox();
     UT_Vector3 pos;
     findexToPos(UTvdbConvert(bbox.getCenter()), pos);
     return pos;
@@ -3379,8 +3379,8 @@ GEO_PrimVDB::copyPrimitive(const GEO_Primitive *psrc)
 }
 
 static inline
-openvdb::math::Vec3d
-vdbTranslation(const openvdb::math::Transform &xform)
+laovdb::math::Vec3d
+vdbTranslation(const laovdb::math::Transform &xform)
 {
     return xform.baseMap()->getAffineMap()->getMat4().getTranslation();
 }
@@ -3389,7 +3389,7 @@ vdbTranslation(const openvdb::math::Transform &xform)
 void
 GEO_PrimVDB::GridAccessor::updateGridTranslates(const GEO_PrimVDB &prim) const
 {
-    using namespace     openvdb::math;
+    using namespace     laovdb::math;
     const GA_Detail &   geo = prim.getDetail();
 
     // It is possible our vertex offset is invalid, such as us
@@ -3418,13 +3418,13 @@ GEO_PrimVDB::GridAccessor::setVertexPositionAdapter(
         const void* xformPtr,
         GEO_PrimVDB &prim)
 {
-    // xformPtr is assumed to point to an openvdb::vX_Y_Z::math::Transform,
+    // xformPtr is assumed to point to an laovdb::vX_Y_Z::math::Transform,
     // for some version X.Y.Z of OpenVDB that may be newer than the one
     // with which libHoudiniGEO.so was built.  This is safe provided that
     // math::Transform and its member objects are ABI-compatible between
     // the two OpenVDB versions.
-    const openvdb::math::Transform& xform =
-        *static_cast<const openvdb::math::Transform*>(xformPtr);
+    const laovdb::math::Transform& xform =
+        *static_cast<const laovdb::math::Transform*>(xformPtr);
     if (myGrid && &myGrid->transform() == &xform)
         return;
     prim.incrTransformUniqueId();
@@ -3439,13 +3439,13 @@ GEO_PrimVDB::GridAccessor::setTransformAdapter(
 {
     if (!myGrid)
         return;
-    // xformPtr is assumed to point to an openvdb::vX_Y_Z::math::Transform,
+    // xformPtr is assumed to point to an laovdb::vX_Y_Z::math::Transform,
     // for some version X.Y.Z of OpenVDB that may be newer than the one
     // with which libHoudiniGEO.so was built.  This is safe provided that
     // math::Transform and its member objects are ABI-compatible between
     // the two OpenVDB versions.
-    const openvdb::math::Transform& xform =
-        *static_cast<const openvdb::math::Transform*>(xformPtr);
+    const laovdb::math::Transform& xform =
+        *static_cast<const laovdb::math::Transform*>(xformPtr);
     setVertexPosition(xform, prim);
     myGrid->setTransform(xform.copy());
 }
@@ -3457,17 +3457,17 @@ GEO_PrimVDB::GridAccessor::setGridAdapter(
     GEO_PrimVDB &prim,
     bool copyPosition)
 {
-    // gridPtr is assumed to point to an openvdb::vX_Y_Z::GridBase, for some
+    // gridPtr is assumed to point to an laovdb::vX_Y_Z::GridBase, for some
     // version X.Y.Z of OpenVDB that may be newer than the one with which
     // libHoudiniGEO.so was built.  This is safe provided that GridBase and
     // its member objects are ABI-compatible between the two OpenVDB versions.
-    const openvdb::GridBase& grid =
-        *static_cast<const openvdb::GridBase*>(gridPtr);
+    const laovdb::GridBase& grid =
+        *static_cast<const laovdb::GridBase*>(gridPtr);
     if (myGrid.get() == &grid)
         return;
     if (copyPosition)
         setVertexPosition(grid.transform(), prim);
-    myGrid = openvdb::ConstPtrCast<openvdb::GridBase>(
+    myGrid = laovdb::ConstPtrCast<laovdb::GridBase>(
         grid.copyGrid()); // always shallow-copy the source grid
     myStorageType = UTvdbGetGridType(*myGrid);
 }
@@ -3608,8 +3608,8 @@ namespace // anonymous
                                p->getGrid(), v, n)
         else if (grid_type == UT_VDB_BOOL)
         {
-            intrinsicBackgroundS<openvdb::BoolGrid>(
-                        UTvdbGridCast<openvdb::BoolGrid>(p->getGrid()), v);
+            intrinsicBackgroundS<laovdb::BoolGrid>(
+                        UTvdbGridCast<laovdb::BoolGrid>(p->getGrid()), v);
         }
         else
             n = 0;
@@ -3620,7 +3620,7 @@ namespace // anonymous
     geo_Size
     intrinsicVoxelSize(const GEO_PrimVDB *prim, fpreal64 *v, GA_Size size)
     {
-        openvdb::Vec3d voxel_size = prim->getGrid().voxelSize();
+        laovdb::Vec3d voxel_size = prim->getGrid().voxelSize();
         GA_Size n = SYSmin(3, size);
         for (GA_Size i = 0; i < n; i++)
             v[i] = voxel_size[i];
@@ -3630,7 +3630,7 @@ namespace // anonymous
     geo_Size
     intrinsicActiveVoxelDim(const GEO_PrimVDB *prim, int64 *v, GA_Size size)
     {
-        using namespace openvdb;
+        using namespace laovdb;
         Coord   dim = prim->getGrid().evalActiveVoxelDim();
         GA_Size n = SYSmin(3, size);
         for (GA_Size i = 0; i < n; i++)
@@ -3646,7 +3646,7 @@ namespace // anonymous
     geo_Size
     intrinsicTransform(const GEO_PrimVDB *prim, fpreal64 *v, GA_Size size)
     {
-        using namespace openvdb;
+        using namespace laovdb;
         const GridBase &            grid = prim->getGrid();
         const math::Transform &     xform = grid.transform();
         math::MapBase::ConstPtr     bmap = xform.baseMap();
@@ -3683,19 +3683,19 @@ namespace // anonymous
         return GEOgetVolumeVisLodToken(p->getVisLod());
     }
 
-    openvdb::Metadata::ConstPtr
+    laovdb::Metadata::ConstPtr
     intrinsicGetMeta(const GEO_PrimVDB *p, geo_Intrinsic id)
     {
-        using namespace openvdb;
+        using namespace laovdb;
         return p->getGrid()[theMetaNames.getToken(id) + 4];
     }
     void
     intrinsicSetMeta(
             GEO_PrimVDB *p,
             geo_Intrinsic id,
-            const openvdb::Metadata &meta)
+            const laovdb::Metadata &meta)
     {
-        using namespace openvdb;
+        using namespace laovdb;
 
         MetaMap &meta_map = p->getMetadata();
         const char *name = theMetaNames.getToken(id) + 4;
@@ -3709,7 +3709,7 @@ namespace // anonymous
             geo_Intrinsic id,
             UT_String &v)
     {
-        using namespace openvdb;
+        using namespace laovdb;
         Metadata::ConstPtr meta = intrinsicGetMeta(p, id);
         if (meta)
             v = meta->str();
@@ -3722,13 +3722,13 @@ namespace // anonymous
             geo_Intrinsic id,
             const char *v)
     {
-        intrinsicSetMeta(p, id, openvdb::StringMetadata(v));
+        intrinsicSetMeta(p, id, laovdb::StringMetadata(v));
     }
 
     bool
     intrinsicGetMetaBool(const GEO_PrimVDB *p, geo_Intrinsic id)
     {
-        using namespace openvdb;
+        using namespace laovdb;
         Metadata::ConstPtr meta = intrinsicGetMeta(p, id);
         if (meta)
             return meta->asBool();
@@ -3738,7 +3738,7 @@ namespace // anonymous
     void
     intrinsicSetMetaBool(GEO_PrimVDB *p, geo_Intrinsic id, int64 v)
     {
-        intrinsicSetMeta(p, id, openvdb::BoolMetadata(v != 0));
+        intrinsicSetMeta(p, id, laovdb::BoolMetadata(v != 0));
     }
 
 } // namespace anonymous

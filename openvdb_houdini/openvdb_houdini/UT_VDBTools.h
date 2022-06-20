@@ -28,11 +28,11 @@ namespace openvdb_houdini {
 /// GridPtr outGrid = inGrid.copyGridWithNewTree();
 ///
 /// // Initialize a GridTransformer with the parameters of an affine transform.
-/// openvdb::tools::GridTransformer xform(pivot, scale, rotate, ...);
+/// laovdb::tools::GridTransformer xform(pivot, scale, rotate, ...);
 ///
 /// // Resolve the input grid's type and resample it into the output grid,
 /// // using a second-order sampling kernel.
-/// GridTransformOp<openvdb::tools::QuadraticSampler> op(outGrid, xform);
+/// GridTransformOp<laovdb::tools::QuadraticSampler> op(outGrid, xform);
 /// inGrid.apply<openvdb_houdini::ScalarGridTypes>(op);
 /// @endcode
 template<typename Sampler>
@@ -45,13 +45,13 @@ public:
     /// @note GridTransformOp makes an internal copy of the @c GridTransformer
     /// and supplies the copy with a default Interrupter that replaces any
     /// existing interrupter.
-    GridTransformOp(GridPtr& outGrid, const openvdb::tools::GridTransformer& t):
+    GridTransformOp(GridPtr& outGrid, const laovdb::tools::GridTransformer& t):
         mOutGrid(outGrid), mTransformer(t) {}
 
     template<typename GridType>
     void operator()(const GridType& inGrid)
     {
-        typename GridType::Ptr outGrid = openvdb::gridPtrCast<GridType>(mOutGrid);
+        typename GridType::Ptr outGrid = laovdb::gridPtrCast<GridType>(mOutGrid);
 
         HoudiniInterrupter interrupter;
         mTransformer.setInterrupter(interrupter.interrupter());
@@ -61,7 +61,7 @@ public:
 
 private:
     GridPtr mOutGrid;
-    openvdb::tools::GridTransformer mTransformer;
+    laovdb::tools::GridTransformer mTransformer;
 };
 
 
@@ -80,8 +80,8 @@ private:
 ///     struct MyXform
 ///     {
 ///         bool isAffine() const { ... }
-///         openvdb::Vec3d transform(const openvdb::Vec3d&) const { ... }
-///         openvdb::Vec3d invTransform(const openvdb::Vec3d&) const { ... }
+///         laovdb::Vec3d transform(const laovdb::Vec3d&) const { ... }
+///         laovdb::Vec3d invTransform(const laovdb::Vec3d&) const { ... }
 ///     };
 /// }
 ///
@@ -93,7 +93,7 @@ private:
 ///
 /// // Resolve the input grid's type and resample it into the output grid,
 /// // using a trilinear sampling kernel.
-/// GridResampleOp<openvdb::tools::BoxSampler, MyXform> op(outGrid, MyXform());
+/// GridResampleOp<laovdb::tools::BoxSampler, MyXform> op(outGrid, MyXform());
 /// inGrid.apply<openvdb_houdini::ScalarGridTypes>(op);
 /// @endcode
 template<typename Sampler, typename TransformerType>
@@ -111,9 +111,9 @@ public:
     template<typename GridType>
     void operator()(const GridType& inGrid)
     {
-        typename GridType::Ptr outGrid = openvdb::gridPtrCast<GridType>(mOutGrid);
+        typename GridType::Ptr outGrid = laovdb::gridPtrCast<GridType>(mOutGrid);
 
-        openvdb::tools::GridResampler resampler;
+        laovdb::tools::GridResampler resampler;
 
         HoudiniInterrupter interrupter;
         resampler.setInterrupter(interrupter.interrupter());
@@ -146,7 +146,7 @@ private:
 ///
 /// // Resolve the input grid's type and resample it into the output grid,
 /// // using a second-order sampling kernel.
-/// GridResampleToMatchOp<openvdb::tools::QuadraticSampler> op(outGrid);
+/// GridResampleToMatchOp<laovdb::tools::QuadraticSampler> op(outGrid);
 /// inGrid.apply<openvdb_houdini::ScalarGridTypes>(op);
 /// @endcode
 template<typename Sampler>
@@ -158,9 +158,9 @@ public:
     template<typename GridType>
     void operator()(const GridType& inGrid)
     {
-        typename GridType::Ptr outGrid = openvdb::gridPtrCast<GridType>(mOutGrid);
+        typename GridType::Ptr outGrid = laovdb::gridPtrCast<GridType>(mOutGrid);
         HoudiniInterrupter interrupter;
-        openvdb::tools::resampleToMatch<Sampler>(inGrid, *outGrid, interrupter.interrupter());
+        laovdb::tools::resampleToMatch<Sampler>(inGrid, *outGrid, interrupter.interrupter());
     }
 
 private:

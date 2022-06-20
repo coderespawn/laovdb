@@ -18,6 +18,6 @@
 
 #include "UT_VDBUtils.h"
 
-namespace openvdb_houdini {
+namespace laovdb_houdini {
 // empty
 }

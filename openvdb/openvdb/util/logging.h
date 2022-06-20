@@ -22,7 +22,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace logging {
@@ -237,12 +237,12 @@ initialize(int& argc, char* argv[], bool useColor = true)
 
 } // namespace logging
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 
 #define OPENVDB_LOG(level, message) \
     do { \
-        auto _log = openvdb::logging::internal::getLogger(); \
+        auto _log = laovdb::logging::internal::getLogger(); \
         if (_log.isEnabledFor(log4cplus::level##_LOG_LEVEL)) { \
             std::ostringstream _buf; \
             _buf << message; \
@@ -280,7 +280,7 @@ initialize(int& argc, char* argv[], bool useColor = true)
 #define OPENVDB_LOG_DEBUG(mesg)
 #define OPENVDB_LOG_DEBUG_RUNTIME(mesg)
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace logging {
@@ -296,12 +296,12 @@ inline void initialize(int&, char*[], bool = true) {}
 
 } // namespace logging
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_USE_LOG4CPLUS
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace logging {
@@ -317,6 +317,6 @@ struct LevelScope
 
 } // namespace logging
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_UTIL_LOGGING_HAS_BEEN_INCLUDED

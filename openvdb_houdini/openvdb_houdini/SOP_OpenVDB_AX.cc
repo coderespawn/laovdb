@@ -54,7 +54,7 @@ namespace hvdb = openvdb_houdini;
 namespace hax =  openvdb_ax_houdini;
 namespace hutil = houdini_utils;
 
-using namespace openvdb;
+using namespace laovdb;
 
 struct CompilerCache
 {
@@ -804,7 +804,7 @@ SOP_OpenVDB_AX::Cache::cookVDBSop(OP_Context& context)
         const bool recompile =
             (hash != mHash || parmCache != mParameterCache);
 
-        openvdb::ax::AttributeBindings bindings;
+        laovdb::ax::AttributeBindings bindings;
         const int numBindings = static_cast<int>(evalInt("bindings", 0, time));
         UT_String name, binding;
         std::unordered_set<std::string> unbindable = {"P", "ix", "iy", "iz"};
@@ -852,7 +852,7 @@ SOP_OpenVDB_AX::Cache::cookVDBSop(OP_Context& context)
 
             // build the AST from the provided snippet
 
-            openvdb::ax::ast::Tree::ConstPtr tree =
+            laovdb::ax::ast::Tree::ConstPtr tree =
                 ax::ast::parse(snippet.nonNullBuffer(), *mCompilerCache.mLogger);
 
             // currently only catches single syntax error but could be updated
@@ -930,7 +930,7 @@ SOP_OpenVDB_AX::Cache::cookVDBSop(OP_Context& context)
             }
 
             // if successful, also create the attribute registry to check against
-            mCompilerCache.mAttributeRegistry = openvdb::ax::AttributeRegistry::create(*mCompilerCache.mSyntaxTree);
+            mCompilerCache.mAttributeRegistry = laovdb::ax::AttributeRegistry::create(*mCompilerCache.mSyntaxTree);
 
             // set the hash only if compilation was successful - Houdini sops tend to cook
             // multiple times, especially on fail. If we assign the hash prior to this it will
@@ -984,7 +984,7 @@ SOP_OpenVDB_AX::Cache::cookVDBSop(OP_Context& context)
                     if (binding) nameptr = binding;
                     assert(nameptr);
                     const std::string& name = *nameptr;
-                    if (desc.find(name) == openvdb::points::AttributeSet::INVALID_POS) {
+                    if (desc.find(name) == laovdb::points::AttributeSet::INVALID_POS) {
                         missingAttributes.emplace_back(name);
                     }
                 }
@@ -996,7 +996,7 @@ SOP_OpenVDB_AX::Cache::cookVDBSop(OP_Context& context)
                 mCompilerCache.mPointExecutable->execute(*points);
 
                 if (evalInt("compact", 0, time)) {
-                    openvdb::points::compactAttributes(points->tree());
+                    laovdb::points::compactAttributes(points->tree());
                 }
             }
         }
@@ -1026,7 +1026,7 @@ SOP_OpenVDB_AX::Cache::cookVDBSop(OP_Context& context)
                 // updates the VDB Grid name on de-serialization, so ensure the
                 // grid's metadata name is up-to-date
 
-                const openvdb::GridBase::Ptr grid = vdbPrim->getGridPtr();
+                const laovdb::GridBase::Ptr grid = vdbPrim->getGridPtr();
                 if (name != grid->getName()) grid->setName(name);
 
                 names.insert(name);
@@ -1061,7 +1061,7 @@ SOP_OpenVDB_AX::Cache::cookVDBSop(OP_Context& context)
             auto applyOpToWriteGrids = [&](const auto& op) {
                 for (auto& vdbPrim : guPrims) {
                     if (attribRegistry->isWritable(vdbPrim->getGridName(),
-                            openvdb::ax::ast::tokens::UNKNOWN)) {
+                            laovdb::ax::ast::tokens::UNKNOWN)) {
                         if (boss.wasInterrupted()) {
                             throw std::runtime_error("processing was interrupted");
                         }
@@ -1072,9 +1072,9 @@ SOP_OpenVDB_AX::Cache::cookVDBSop(OP_Context& context)
 
             // if not processing tiles, only run this executable on the lowest,
             // (leaf) level, otherwise process the entire tree.
-            const openvdb::Index maxLevel =
+            const laovdb::Index maxLevel =
                 evalInt("ignoretiles", 0, time) ?
-                    0 : openvdb::FloatTree::DEPTH-1; // 0=leaf
+                    0 : laovdb::FloatTree::DEPTH-1; // 0=leaf
 
             mCompilerCache.mVolumeExecutable->setTreeExecutionLevel(/*leaf=*/0, maxLevel);
 
@@ -1091,7 +1091,7 @@ SOP_OpenVDB_AX::Cache::cookVDBSop(OP_Context& context)
                 applyOpToWriteGrids(op);
             }
 
-            std::vector<openvdb::GridBase::Ptr> invalid;
+            std::vector<laovdb::GridBase::Ptr> invalid;
             for (size_t pos = size; pos < grids.size(); ++pos) {
                 auto& grid = grids[pos];
                 // Call apply with a noop as createVdbPrimitive requires a grid ptr.
@@ -1151,13 +1151,13 @@ SOP_OpenVDB_AX::Cache::evalInsertHScriptVariable(const std::string& name,
             try {
                 const fpreal32 valueFloat = static_cast<fpreal32>(std::stod(str));
                 valueFloatPtr.reset(new fpreal32(valueFloat));
-                expectedType = openvdb::typeNameAsString<float>();
+                expectedType = laovdb::typeNameAsString<float>();
             }
             catch (...) {}
 
             if (!valueFloatPtr) {
                 valueStrPtr.reset(new UT_String(valueStr));
-                expectedType = openvdb::typeNameAsString<std::string>();
+                expectedType = laovdb::typeNameAsString<std::string>();
             }
         }
     }
@@ -1179,8 +1179,8 @@ SOP_OpenVDB_AX::Cache::evalInsertHScriptVariable(const std::string& name,
         UT_ASSERT(index >= 0);
 
         expectedType = var->flag & CH_VARIABLE_STRVAL ?
-            openvdb::typeNameAsString<std::string>() :
-            openvdb::typeNameAsString<float>();
+            laovdb::typeNameAsString<std::string>() :
+            laovdb::typeNameAsString<float>();
 
         if (var->flag & CH_VARIABLE_STRVAL) {
             UT_String value;
@@ -1248,7 +1248,7 @@ SOP_OpenVDB_AX::Cache::evaluateExternalExpressions(const double time,
 {
     using VectorData = TypedMetadata<math::Vec3<float>>;
     using FloatData = TypedMetadata<float>;
-    using StringData = TypedMetadata<openvdb::ax::codegen::String>;
+    using StringData = TypedMetadata<laovdb::ax::codegen::String>;
 
     ax::CustomData& data = *(mCompilerCache.mCustomData);
 
@@ -1331,11 +1331,11 @@ SOP_OpenVDB_AX::Cache::evaluateExternalExpressions(const double time,
 
         const bool isCHRampLookup(type == "ramp");
         const bool isCHLookup(!isCHRampLookup &&
-            type == openvdb::typeNameAsString<float>());
+            type == laovdb::typeNameAsString<float>());
         const bool isCHVLookup(!isCHRampLookup && !isCHLookup &&
-            type == openvdb::typeNameAsString<openvdb::Vec3f>());
+            type == laovdb::typeNameAsString<laovdb::Vec3f>());
         const bool isCHSLookup(!isCHRampLookup && !isCHLookup && !isCHVLookup &&
-            type == openvdb::typeNameAsString<std::string>());
+            type == laovdb::typeNameAsString<std::string>());
 
         const bool lookForChannel = !isCHRampLookup;
 
@@ -1382,7 +1382,7 @@ SOP_OpenVDB_AX::Cache::evaluateExternalExpressions(const double time,
                 Vec3f value;
                 if (subIndex != -1) {
                     // parm was a channel
-                    value = openvdb::Vec3f(node->evalFloat(index, subIndex, time));
+                    value = laovdb::Vec3f(node->evalFloat(index, subIndex, time));
                 }
                 else {
                     // parm was a direct parm
@@ -1475,7 +1475,7 @@ SOP_OpenVDB_AX::Cache::evaluateExternalExpressions(const double time,
         else {
 
             if (isCHVLookup) {
-                VectorData::Ptr vecData(new VectorData(openvdb::Vec3f::zero()));
+                VectorData::Ptr vecData(new VectorData(laovdb::Vec3f::zero()));
                 data.insertData<VectorData>(nameOrPath, vecData);
             }
             else if (isCHLookup) {

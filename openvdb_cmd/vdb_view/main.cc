@@ -64,8 +64,8 @@ main(int argc, char *argv[])
     int status = EXIT_SUCCESS;
 
     try {
-        openvdb::initialize();
-        openvdb::logging::initialize(argc, argv);
+        laovdb::initialize();
+        laovdb::logging::initialize(argc, argv);
 
         bool printInfo = false, printGLInfo = false, printVersionInfo = false;
 
@@ -93,9 +93,9 @@ main(int argc, char *argv[])
 
         if (printVersionInfo) {
             std::cout << "OpenVDB library version: "
-                << openvdb::getLibraryAbiVersionString() << "\n";
+                << laovdb::getLibraryAbiVersionString() << "\n";
             std::cout << "OpenVDB file format version: "
-                << openvdb::OPENVDB_FILE_VERSION << std::endl;
+                << laovdb::OPENVDB_FILE_VERSION << std::endl;
             // If there are no files to view, don't print the OpenGL version,
             // since that would require opening a viewer window.
             if (numFiles == 0) return EXIT_SUCCESS;
@@ -127,15 +127,15 @@ main(int argc, char *argv[])
             if (numFiles == 0) return EXIT_SUCCESS;
         }
 
-        openvdb::GridCPtrVec allGrids;
+        laovdb::GridCPtrVec allGrids;
 
         // Load VDB files.
         std::string indent(numFiles == 1 ? "" : "    ");
         for (size_t n = 0; n < numFiles; ++n) {
-            openvdb::io::File file(filenames[n]);
+            laovdb::io::File file(filenames[n]);
             file.open();
 
-            openvdb::GridPtrVecPtr grids = file.getGrids();
+            laovdb::GridPtrVecPtr grids = file.getGrids();
             if (grids->empty()) {
                 OPENVDB_LOG_WARN(filenames[n] << " is empty");
                 continue;
@@ -146,7 +146,7 @@ main(int argc, char *argv[])
                 if (numFiles > 1) std::cout << filenames[n] << ":\n";
                 for (size_t i = 0; i < grids->size(); ++i) {
                     const std::string name = (*grids)[i]->getName();
-                    openvdb::Coord dim = (*grids)[i]->evalActiveVoxelDim();
+                    laovdb::Coord dim = (*grids)[i]->evalActiveVoxelDim();
                     std::cout << indent << (name.empty() ? "<unnamed>" : name)
                         << " (" << dim[0] << " x " << dim[1] << " x " << dim[2]
                         << " voxels)" << std::endl;

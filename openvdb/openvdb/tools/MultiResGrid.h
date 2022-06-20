@@ -50,7 +50,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -965,6 +965,6 @@ OPENVDB_INSTANTIATE_CLASS MultiResGrid<DoubleTree>;
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_MULTIRESGRID_HAS_BEEN_INCLUDED

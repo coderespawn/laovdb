@@ -23,21 +23,21 @@ namespace {
 std::mutex sInitMutex;
 }
 
-openvdb::ax::Logger* axlog = nullptr;
+laovdb::ax::Logger* axlog = nullptr;
 using YY_BUFFER_STATE = struct yy_buffer_state*;
-extern int axparse(openvdb::ax::ast::Tree**);
+extern int axparse(laovdb::ax::ast::Tree**);
 extern YY_BUFFER_STATE ax_scan_string(const char * str);
 extern void ax_delete_buffer(YY_BUFFER_STATE buffer);
-extern void axerror (openvdb::ax::ast::Tree**, char const *s) {
+extern void axerror (laovdb::ax::ast::Tree**, char const *s) {
     //@todo: add check for memory exhaustion
     assert(axlog);
     axlog->error(/*starts with 'syntax error, '*/s + 14,
         {axlloc.first_line, axlloc.first_column});
 }
 
-openvdb::ax::ast::Tree::ConstPtr
-openvdb::ax::ast::parse(const char* code,
-    openvdb::ax::Logger& logger)
+laovdb::ax::ast::Tree::ConstPtr
+laovdb::ax::ast::parse(const char* code,
+    laovdb::ax::Logger& logger)
 {
     std::lock_guard<std::mutex> lock(sInitMutex);
     axlog = &logger; // for lexer errs
@@ -51,11 +51,11 @@ openvdb::ax::ast::parse(const char* code,
 
     YY_BUFFER_STATE buffer = ax_scan_string(code);
 
-    openvdb::ax::ast::Tree* tree(nullptr);
+    laovdb::ax::ast::Tree* tree(nullptr);
     axparse(&tree);
     axlog = nullptr;
 
-    openvdb::ax::ast::Tree::ConstPtr ptr(const_cast<const openvdb::ax::ast::Tree*>(tree));
+    laovdb::ax::ast::Tree::ConstPtr ptr(const_cast<const laovdb::ax::ast::Tree*>(tree));
 
     ax_delete_buffer(buffer);
 
@@ -66,16 +66,16 @@ openvdb::ax::ast::parse(const char* code,
 }
 
 
-openvdb::ax::ast::Tree::Ptr
-openvdb::ax::ast::parse(const char* code)
+laovdb::ax::ast::Tree::Ptr
+laovdb::ax::ast::parse(const char* code)
 {
-    openvdb::ax::Logger logger(
+    laovdb::ax::Logger logger(
         [](const std::string& error) {
-            OPENVDB_THROW(openvdb::AXSyntaxError, error);
+            OPENVDB_THROW(laovdb::AXSyntaxError, error);
         });
 
-    openvdb::ax::ast::Tree::ConstPtr constTree = openvdb::ax::ast::parse(code, logger);
+    laovdb::ax::ast::Tree::ConstPtr constTree = laovdb::ax::ast::parse(code, logger);
 
-    return std::const_pointer_cast<openvdb::ax::ast::Tree>(constTree);
+    return std::const_pointer_cast<laovdb::ax::ast::Tree>(constTree);
 }
 

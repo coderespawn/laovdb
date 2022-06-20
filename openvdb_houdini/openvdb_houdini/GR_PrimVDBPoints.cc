@@ -63,8 +63,8 @@ bool renderHookRegistered = false;
 } // anonymous namespace
 
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 
 ////////////////////////////////////////
@@ -134,19 +134,19 @@ public:
     void renderDecoration(RE_Render*, GR_Decoration, const GR_DecorationParms&) override;
 
 protected:
-    void computeCentroid(const openvdb::points::PointDataGrid& grid);
-    void computeBbox(const openvdb::points::PointDataGrid& grid);
+    void computeCentroid(const laovdb::points::PointDataGrid& grid);
+    void computeBbox(const laovdb::points::PointDataGrid& grid);
 
     void updatePosBuffer(RE_Render* r,
-                         const openvdb::points::PointDataGrid& grid,
+                         const laovdb::points::PointDataGrid& grid,
                          const RE_CacheVersion& version);
 
     void updateWireBuffer(RE_Render* r,
-                          const openvdb::points::PointDataGrid& grid,
+                          const laovdb::points::PointDataGrid& grid,
                           const RE_CacheVersion& version);
 
     bool updateVec3Buffer(RE_Render* r,
-                          const openvdb::points::PointDataGrid& grid,
+                          const laovdb::points::PointDataGrid& grid,
                           const std::string& attributeName,
                           const std::string& bufferName,
                           const RE_CacheVersion& version);
@@ -162,8 +162,8 @@ private:
     UT_UniquePtr<RE_Geometry> myGeo;
     UT_UniquePtr<RE_Geometry> myWire;
     bool mDefaultPointColor = true;
-    openvdb::Vec3f mCentroid{0, 0, 0};
-    openvdb::BBoxd mBbox;
+    laovdb::Vec3f mCentroid{0, 0, 0};
+    laovdb::BBoxd mBbox;
 };
 
 
@@ -356,9 +356,9 @@ namespace gr_primitive_internal
 struct FillGPUBuffersLeafBoxes
 {
     FillGPUBuffersLeafBoxes(UT_Vector3H* buffer,
-                         const std::vector<openvdb::Coord>& coords,
-                         const openvdb::math::Transform& transform,
-                         const openvdb::Vec3f& positionOffset)
+                         const std::vector<laovdb::Coord>& coords,
+                         const laovdb::math::Transform& transform,
+                         const laovdb::Vec3f& positionOffset)
         : mBuffer(buffer)
         , mCoords(coords)
         , mTransform(transform)
@@ -370,30 +370,30 @@ struct FillGPUBuffersLeafBoxes
         corners.reserve(8);
 
         for (size_t n = range.begin(), N = range.end(); n != N; ++n) {
-            const openvdb::Coord& origin = mCoords[n];
+            const laovdb::Coord& origin = mCoords[n];
 
             // define 8 corners
 
             corners.clear();
 
-            const openvdb::Vec3f pos000 = mTransform.indexToWorld(origin.asVec3d() + openvdb::Vec3f(0.0, 0.0, 0.0)) - mPositionOffset;
+            const laovdb::Vec3f pos000 = mTransform.indexToWorld(origin.asVec3d() + laovdb::Vec3f(0.0, 0.0, 0.0)) - mPositionOffset;
             corners.emplace_back(pos000.x(), pos000.y(), pos000.z());
-            const openvdb::Vec3f pos001 = mTransform.indexToWorld(origin.asVec3d() + openvdb::Vec3f(0.0, 0.0, 8.0)) - mPositionOffset;
+            const laovdb::Vec3f pos001 = mTransform.indexToWorld(origin.asVec3d() + laovdb::Vec3f(0.0, 0.0, 8.0)) - mPositionOffset;
             corners.emplace_back(pos001.x(), pos001.y(), pos001.z());
-            const openvdb::Vec3f pos010 = mTransform.indexToWorld(origin.asVec3d() + openvdb::Vec3f(0.0, 8.0, 0.0)) - mPositionOffset;
+            const laovdb::Vec3f pos010 = mTransform.indexToWorld(origin.asVec3d() + laovdb::Vec3f(0.0, 8.0, 0.0)) - mPositionOffset;
             corners.emplace_back(pos010.x(), pos010.y(), pos010.z());
-            const openvdb::Vec3f pos011 = mTransform.indexToWorld(origin.asVec3d() + openvdb::Vec3f(0.0, 8.0, 8.0)) - mPositionOffset;
+            const laovdb::Vec3f pos011 = mTransform.indexToWorld(origin.asVec3d() + laovdb::Vec3f(0.0, 8.0, 8.0)) - mPositionOffset;
             corners.emplace_back(pos011.x(), pos011.y(), pos011.z());
-            const openvdb::Vec3f pos100 = mTransform.indexToWorld(origin.asVec3d() + openvdb::Vec3f(8.0, 0.0, 0.0)) - mPositionOffset;
+            const laovdb::Vec3f pos100 = mTransform.indexToWorld(origin.asVec3d() + laovdb::Vec3f(8.0, 0.0, 0.0)) - mPositionOffset;
             corners.emplace_back(pos100.x(), pos100.y(), pos100.z());
-            const openvdb::Vec3f pos101 = mTransform.indexToWorld(origin.asVec3d() + openvdb::Vec3f(8.0, 0.0, 8.0)) - mPositionOffset;
+            const laovdb::Vec3f pos101 = mTransform.indexToWorld(origin.asVec3d() + laovdb::Vec3f(8.0, 0.0, 8.0)) - mPositionOffset;
             corners.emplace_back(pos101.x(), pos101.y(), pos101.z());
-            const openvdb::Vec3f pos110 = mTransform.indexToWorld(origin.asVec3d() + openvdb::Vec3f(8.0, 8.0, 0.0)) - mPositionOffset;
+            const laovdb::Vec3f pos110 = mTransform.indexToWorld(origin.asVec3d() + laovdb::Vec3f(8.0, 8.0, 0.0)) - mPositionOffset;
             corners.emplace_back(pos110.x(), pos110.y(), pos110.z());
-            const openvdb::Vec3f pos111 = mTransform.indexToWorld(origin.asVec3d() + openvdb::Vec3f(8.0, 8.0, 8.0)) - mPositionOffset;
+            const laovdb::Vec3f pos111 = mTransform.indexToWorld(origin.asVec3d() + laovdb::Vec3f(8.0, 8.0, 8.0)) - mPositionOffset;
             corners.emplace_back(pos111.x(), pos111.y(), pos111.z());
 
-            openvdb::Index64 offset = n*8*3;
+            laovdb::Index64 offset = n*8*3;
 
             // Z axis
 
@@ -421,30 +421,30 @@ struct FillGPUBuffersLeafBoxes
     //////////
 
     UT_Vector3H*                        mBuffer;
-    const std::vector<openvdb::Coord>&  mCoords;
-    const openvdb::math::Transform&     mTransform;
-    const openvdb::Vec3f                mPositionOffset;
+    const std::vector<laovdb::Coord>&  mCoords;
+    const laovdb::math::Transform&     mTransform;
+    const laovdb::Vec3f                mPositionOffset;
 }; // class FillGPUBuffersLeafBoxes
 
 } // namespace gr_primitive_internal
 
 void
-GR_PrimVDBPoints::computeCentroid(const openvdb::points::PointDataGrid& grid)
+GR_PrimVDBPoints::computeCentroid(const laovdb::points::PointDataGrid& grid)
 {
     // compute the leaf bounding box in index space
 
-    openvdb::CoordBBox coordBBox;
+    laovdb::CoordBBox coordBBox;
     if (!grid.tree().evalLeafBoundingBox(coordBBox)) {
         mCentroid.init(0.0f, 0.0f, 0.0f);
     }
     else {
         // get the centroid and convert to world space
-        mCentroid = openvdb::Vec3f(grid.transform().indexToWorld(coordBBox.getCenter()));
+        mCentroid = laovdb::Vec3f(grid.transform().indexToWorld(coordBBox.getCenter()));
     }
 }
 
 void
-GR_PrimVDBPoints::computeBbox(const openvdb::points::PointDataGrid& grid)
+GR_PrimVDBPoints::computeBbox(const laovdb::points::PointDataGrid& grid)
 {
     // compute and store the world-space bounding box of the grid
 
@@ -464,8 +464,8 @@ struct PositionAttribute
             , mPositionOffset(attribute.mPositionOffset)
             , mStride(attribute.mStride) { }
 
-        void set(openvdb::Index offset,
-                 openvdb::Index /*stride*/,
+        void set(laovdb::Index offset,
+                 laovdb::Index /*stride*/,
                  const ValueType& value)
         {
             const ValueType transformedValue = value - mPositionOffset;
@@ -505,9 +505,9 @@ struct VectorAttribute
             : mBuffer(attribute.mBuffer) { }
 
         template <typename ValueType>
-        void set(openvdb::Index offset,
-                 openvdb::Index /*stride*/,
-                 const openvdb::math::Vec3<ValueType>& value)
+        void set(laovdb::Index offset,
+                 laovdb::Index /*stride*/,
+                 const laovdb::math::Vec3<ValueType>& value)
         {
             mBuffer[offset] = UT_Vector3H(float(value.x()), float(value.y()), float(value.z()));
         }
@@ -528,7 +528,7 @@ private:
 
 void
 GR_PrimVDBPoints::updatePosBuffer(RE_Render* r,
-             const openvdb::points::PointDataGrid& grid,
+             const laovdb::points::PointDataGrid& grid,
              const RE_CacheVersion& version)
 {
     const bool gl3 = (getRenderVersion() >= GR_RENDER_GL3);
@@ -537,9 +537,9 @@ GR_PrimVDBPoints::updatePosBuffer(RE_Render* r,
     if (!myGeo) myGeo.reset(new RE_Geometry);
     myGeo->cacheBuffers(getCacheName());
 
-    using GridType = openvdb::points::PointDataGrid;
+    using GridType = laovdb::points::PointDataGrid;
     using TreeType = GridType::TreeType;
-    using AttributeSet = openvdb::points::AttributeSet;
+    using AttributeSet = laovdb::points::AttributeSet;
 
     const TreeType& tree = grid.tree();
     auto iter = tree.cbeginLeaf();
@@ -548,8 +548,8 @@ GR_PrimVDBPoints::updatePosBuffer(RE_Render* r,
     const AttributeSet::Descriptor& descriptor = iter->attributeSet().descriptor();
 
     // check if group viewport is in use
-    const openvdb::StringMetadata::ConstPtr s =
-        grid.getMetadata<openvdb::StringMetadata>(openvdb_houdini::META_GROUP_VIEWPORT);
+    const laovdb::StringMetadata::ConstPtr s =
+        grid.getMetadata<laovdb::StringMetadata>(openvdb_houdini::META_GROUP_VIEWPORT);
 
     const std::string groupName = s ? s->value() : "";
     const bool useGroup = !groupName.empty() && descriptor.hasGroup(groupName);
@@ -629,7 +629,7 @@ GR_PrimVDBPoints::updatePosBuffer(RE_Render* r,
 
 void
 GR_PrimVDBPoints::updateWireBuffer(RE_Render *r,
-             const openvdb::points::PointDataGrid& grid,
+             const laovdb::points::PointDataGrid& grid,
              const RE_CacheVersion& version)
 {
     const bool gl3 = (getRenderVersion() >= GR_RENDER_GL3);
@@ -638,7 +638,7 @@ GR_PrimVDBPoints::updateWireBuffer(RE_Render *r,
     if (!myWire) myWire.reset(new RE_Geometry);
     myWire->cacheBuffers(getCacheName());
 
-    using GridType = openvdb::points::PointDataGrid;
+    using GridType = laovdb::points::PointDataGrid;
     using TreeType = GridType::TreeType;
     using LeafNode = TreeType::LeafNodeType;
 
@@ -671,7 +671,7 @@ GR_PrimVDBPoints::updateWireBuffer(RE_Render *r,
 
         UT_UniquePtr<UT_Vector3H[]> data(new UT_Vector3H[numPoints]);
 
-        std::vector<openvdb::Coord> coords;
+        std::vector<laovdb::Coord> coords;
 
         for (auto iter = tree.cbeginLeaf(); iter; ++iter) {
             const LeafNode& leaf = *iter;
@@ -736,11 +736,11 @@ GR_PrimVDBPoints::update(RE_Render *r,
     {
         const GT_PrimVDB& gt_primVDB = static_cast<const GT_PrimVDB&>(*primh);
 
-        const openvdb::GridBase* grid =
+        const laovdb::GridBase* grid =
             const_cast<GT_PrimVDB&>((static_cast<const GT_PrimVDB&>(gt_primVDB))).getGrid();
 
-        const openvdb::points::PointDataGrid& pointDataGrid =
-            static_cast<const openvdb::points::PointDataGrid&>(*grid);
+        const laovdb::points::PointDataGrid& pointDataGrid =
+            static_cast<const laovdb::points::PointDataGrid&>(*grid);
 
         computeCentroid(pointDataGrid);
         computeBbox(pointDataGrid);
@@ -770,7 +770,7 @@ GR_PrimVDBPoints::inViewFrustum(const UT_Matrix4D& objviewproj
 
 bool
 GR_PrimVDBPoints::updateVec3Buffer(RE_Render* r,
-                                   const openvdb::points::PointDataGrid& grid,
+                                   const laovdb::points::PointDataGrid& grid,
                                    const std::string& attributeName,
                                    const std::string& bufferName,
                                    const RE_CacheVersion& version)
@@ -778,9 +778,9 @@ GR_PrimVDBPoints::updateVec3Buffer(RE_Render* r,
     // Initialize the geometry with the proper name for the GL cache
     if (!myGeo) return false;
 
-    using GridType = openvdb::points::PointDataGrid;
+    using GridType = laovdb::points::PointDataGrid;
     using TreeType = GridType::TreeType;
-    using AttributeSet = openvdb::points::AttributeSet;
+    using AttributeSet = laovdb::points::AttributeSet;
 
     const TreeType& tree = grid.tree();
     auto iter = tree.cbeginLeaf();
@@ -804,14 +804,14 @@ GR_PrimVDBPoints::updateVec3Buffer(RE_Render* r,
     {
         UT_UniquePtr<UT_Vector3H[]> data(new UT_Vector3H[numPoints]);
 
-        const openvdb::Name& type = descriptor.type(index).first;
+        const laovdb::Name& type = descriptor.type(index).first;
 
         if (type == "vec3s") {
 
             // check if group viewport is in use
 
-            const openvdb::StringMetadata::ConstPtr s =
-                grid.getMetadata<openvdb::StringMetadata>(openvdb_houdini::META_GROUP_VIEWPORT);
+            const laovdb::StringMetadata::ConstPtr s =
+                grid.getMetadata<laovdb::StringMetadata>(openvdb_houdini::META_GROUP_VIEWPORT);
 
             const std::string groupName = s ? s->value() : "";
             const bool useGroup = !groupName.empty() && descriptor.hasGroup(groupName);
@@ -845,10 +845,10 @@ GR_PrimVDBPoints::updateVec3Buffer(RE_Render* r,
 {
     const GT_PrimVDB& gt_primVDB = static_cast<const GT_PrimVDB&>(*getCachedGTPrimitive());
 
-    const openvdb::GridBase* grid =
+    const laovdb::GridBase* grid =
         const_cast<GT_PrimVDB&>((static_cast<const GT_PrimVDB&>(gt_primVDB))).getGrid();
 
-    using PointDataGrid = openvdb::points::PointDataGrid;
+    using PointDataGrid = laovdb::points::PointDataGrid;
     const PointDataGrid& pointDataGrid = static_cast<const PointDataGrid&>(*grid);
 
     return updateVec3Buffer(r, pointDataGrid, attributeName, bufferName, version);

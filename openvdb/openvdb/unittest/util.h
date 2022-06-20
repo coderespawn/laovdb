@@ -25,21 +25,21 @@ enum SphereMode { SPHERE_DENSE, SPHERE_DENSE_NARROW_BAND, SPHERE_SPARSE_NARROW_B
 /// of the background values and tiles! This is implemented in openvdb/tools/LevelSetSphere.h
 template<class GridType>
 inline void
-makeSphere(const openvdb::Coord& dim, const openvdb::Vec3f& center, float radius,
+makeSphere(const laovdb::Coord& dim, const laovdb::Vec3f& center, float radius,
            GridType& grid, SphereMode mode)
 {
     typedef typename GridType::ValueType ValueT;
     const ValueT
-        zero = openvdb::zeroVal<ValueT>(),
+        zero = laovdb::zeroVal<ValueT>(),
         outside = grid.background(),
         inside = -outside;
 
     typename GridType::Accessor acc = grid.getAccessor();
-    openvdb::Coord xyz;
+    laovdb::Coord xyz;
     for (xyz[0]=0; xyz[0]<dim[0]; ++xyz[0]) {
         for (xyz[1]=0; xyz[1]<dim[1]; ++xyz[1]) {
             for (xyz[2]=0; xyz[2]<dim[2]; ++xyz[2]) {
-                const openvdb::Vec3R p =  grid.transform().indexToWorld(xyz);
+                const laovdb::Vec3R p =  grid.transform().indexToWorld(xyz);
                 const float dist = float((p-center).length() - radius);
                 OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
                 ValueT val = ValueT(zero + dist);
@@ -63,21 +63,21 @@ makeSphere(const openvdb::Coord& dim, const openvdb::Vec3f& center, float radius
         }
     }
     //if (mode == SPHERE_SPARSE_NARROW_BAND) grid.tree().prune();
-    if (mode == SPHERE_SPARSE_NARROW_BAND) openvdb::tools::pruneLevelSet(grid.tree());
+    if (mode == SPHERE_SPARSE_NARROW_BAND) laovdb::tools::pruneLevelSet(grid.tree());
 }
 
 // Template specialization for boolean trees (mostly a dummy implementation)
 template<>
 inline void
-makeSphere<openvdb::BoolGrid>(const openvdb::Coord& dim, const openvdb::Vec3f& center,
-                              float radius, openvdb::BoolGrid& grid, SphereMode)
+makeSphere<laovdb::BoolGrid>(const laovdb::Coord& dim, const laovdb::Vec3f& center,
+                              float radius, laovdb::BoolGrid& grid, SphereMode)
 {
-    openvdb::BoolGrid::Accessor acc = grid.getAccessor();
-    openvdb::Coord xyz;
+    laovdb::BoolGrid::Accessor acc = grid.getAccessor();
+    laovdb::Coord xyz;
     for (xyz[0]=0; xyz[0]<dim[0]; ++xyz[0]) {
         for (xyz[1]=0; xyz[1]<dim[1]; ++xyz[1]) {
             for (xyz[2]=0; xyz[2]<dim[2]; ++xyz[2]) {
-                const openvdb::Vec3R p =  grid.transform().indexToWorld(xyz);
+                const laovdb::Vec3R p =  grid.transform().indexToWorld(xyz);
                 const float dist = static_cast<float>((p-center).length() - radius);
                 if (dist <= 0) acc.setValue(xyz, true);
             }
@@ -88,25 +88,25 @@ makeSphere<openvdb::BoolGrid>(const openvdb::Coord& dim, const openvdb::Vec3f& c
 // This method will soon be replaced by the one above!!!!!
 template<class GridType>
 inline void
-makeSphere(const openvdb::Coord& dim, const openvdb::Vec3f& center, float radius,
+makeSphere(const laovdb::Coord& dim, const laovdb::Vec3f& center, float radius,
            GridType &grid, float dx, SphereMode mode)
 {
-    grid.setTransform(openvdb::math::Transform::createLinearTransform(/*voxel size=*/dx));
+    grid.setTransform(laovdb::math::Transform::createLinearTransform(/*voxel size=*/dx));
     makeSphere<GridType>(dim, center, radius, grid, mode);
 }
 
 // Generate random points by uniformly distributing points
 // on a unit-sphere.
-inline void genPoints(const int numPoints, std::vector<openvdb::Vec3R>& points)
+inline void genPoints(const int numPoints, std::vector<laovdb::Vec3R>& points)
 {
     // init
-    openvdb::math::Random01 randNumber(0);
+    laovdb::math::Random01 randNumber(0);
     const int n = int(std::sqrt(double(numPoints)));
     const double xScale = (2.0 * M_PI) / double(n);
     const double yScale = M_PI / double(n);
 
     double x, y, theta, phi;
-    openvdb::Vec3R pos;
+    laovdb::Vec3R pos;
 
     points.reserve(n*n);
 

@@ -22,7 +22,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -66,7 +66,7 @@ template <typename PointDataGridT,
 inline typename std::enable_if<std::is_same<typename MaskT::ValueType, bool>::value,
     typename MaskT::Ptr>::type
 convertPointsToMask(const PointDataGridT& grid,
-                    const openvdb::math::Transform& transform,
+                    const laovdb::math::Transform& transform,
                     const FilterT& filter = NullFilter(),
                     bool threaded = true);
 
@@ -256,8 +256,8 @@ struct PointsToTransformedScalarOp
     }
 
 private:
-    const openvdb::math::Transform& mTargetTransform;
-    const openvdb::math::Transform& mSourceTransform;
+    const laovdb::math::Transform& mTargetTransform;
+    const laovdb::math::Transform& mSourceTransform;
     const FilterT& mFilter;
     const DeformerT& mDeformer;
     CombinableT& mCombinable;
@@ -411,7 +411,7 @@ inline typename std::enable_if<std::is_same<typename MaskT::ValueType, bool>::va
     typename MaskT::Ptr>::type
 convertPointsToMask(
     const PointDataGridT& points,
-    const openvdb::math::Transform& transform,
+    const laovdb::math::Transform& transform,
     const FilterT& filter,
     bool threaded)
 {
@@ -430,6 +430,6 @@ convertPointsToMask(
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_POINT_MASK_HAS_BEEN_INCLUDED

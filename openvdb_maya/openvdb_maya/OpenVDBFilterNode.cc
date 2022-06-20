@@ -178,11 +178,11 @@ MStatus OpenVDBFilterNode::initialize()
 namespace internal {
 
 template <typename GridT>
-void filterGrid(openvdb::GridBase& grid, int operation, int radius, int iterations, float offset = 0.0)
+void filterGrid(laovdb::GridBase& grid, int operation, int radius, int iterations, float offset = 0.0)
 {
     GridT& gridRef = static_cast<GridT&>(grid);
 
-    openvdb::tools::Filter<GridT> filter(gridRef);
+    laovdb::tools::Filter<GridT> filter(gridRef);
 
     switch (operation) {
     case 0:
@@ -241,15 +241,15 @@ MStatus OpenVDBFilterNode::compute(const MPlug& plug, MDataBlock& data)
 
             for (mvdb::GridCPtrVecIter it = grids.begin(); it != grids.end(); ++it) {
 
-                const openvdb::GridBase& gridRef = **it;
+                const laovdb::GridBase& gridRef = **it;
 
-                if (gridRef.type() == openvdb::FloatGrid::gridType()) {
-                    openvdb::GridBase::Ptr grid = gridRef.deepCopyGrid(); // modifiable copy
-                    internal::filterGrid<openvdb::FloatGrid>(*grid, operation, radius, iterations, offset);
+                if (gridRef.type() == laovdb::FloatGrid::gridType()) {
+                    laovdb::GridBase::Ptr grid = gridRef.deepCopyGrid(); // modifiable copy
+                    internal::filterGrid<laovdb::FloatGrid>(*grid, operation, radius, iterations, offset);
                     outputVdb->insert(grid);
-                } else if (gridRef.type() == openvdb::DoubleGrid::gridType()) {
-                    openvdb::GridBase::Ptr grid = gridRef.deepCopyGrid(); // modifiable copy
-                    internal::filterGrid<openvdb::DoubleGrid>(*grid, operation, radius, iterations, offset);
+                } else if (gridRef.type() == laovdb::DoubleGrid::gridType()) {
+                    laovdb::GridBase::Ptr grid = gridRef.deepCopyGrid(); // modifiable copy
+                    internal::filterGrid<laovdb::DoubleGrid>(*grid, operation, radius, iterations, offset);
                     outputVdb->insert(grid);
                 } else {
                     const std::string msg = "Skipped '" + gridRef.getName() + "', unsupported type.";

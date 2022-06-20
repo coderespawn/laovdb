@@ -31,7 +31,7 @@ struct LLVMState
                  const std::string& blockName = "TestEntry")
     {
         llvm::FunctionType* type =
-            llvm::FunctionType::get(openvdb::ax::codegen::LLVMType<void>::get(this->context()),
+            llvm::FunctionType::get(laovdb::ax::codegen::LLVMType<void>::get(this->context()),
                 /**var-args*/false);
         llvm::Function* dummyFunction =
             llvm::Function::Create(type, llvm::Function::ExternalLinkage, functionName, &this->module());

@@ -13,7 +13,7 @@
 #include <openvdb/util/NodeMasks.h>
 #include <openvdb/Exceptions.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tree {
@@ -248,6 +248,6 @@ struct DenseIteratorBase: public IteratorBase<MaskIterT, NodeT>
 
 } // namespace tree
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TREE_ITERATOR_HAS_BEEN_INCLUDED

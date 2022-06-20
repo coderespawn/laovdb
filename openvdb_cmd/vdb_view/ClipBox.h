@@ -27,8 +27,8 @@ public:
     void enableClipping() const;
     void disableClipping() const;
 
-    void setBBox(const openvdb::BBoxd&);
-    void setStepSize(const openvdb::Vec3d& s) { mStepSize = s; }
+    void setBBox(const laovdb::BBoxd&);
+    void setStepSize(const laovdb::Vec3d& s) { mStepSize = s; }
 
     void render();
 
@@ -50,8 +50,8 @@ public:
 private:
     void update() const;
 
-    openvdb::Vec3d mStepSize;
-    openvdb::BBoxd mBBox;
+    laovdb::Vec3d mStepSize;
+    laovdb::BBoxd mBBox;
     bool mXIsActive, mYIsActive, mZIsActive, mShiftIsDown, mCtrlIsDown;
     GLdouble mFrontPlane[4], mBackPlane[4], mLeftPlane[4], mRightPlane[4],
         mTopPlane[4], mBottomPlane[4];

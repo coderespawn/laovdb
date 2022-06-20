@@ -12,7 +12,7 @@
 #include "../Exceptions.h"
 #include "../ast/Scanners.h"
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -488,5 +488,5 @@ llvm::Value* VolumeComputeGenerator::accessorHandleFromToken(const std::string& 
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

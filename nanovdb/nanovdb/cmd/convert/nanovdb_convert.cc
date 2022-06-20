@@ -193,15 +193,15 @@ int main(int argc, char* argv[])
         }
     }
 
-    openvdb::initialize();
+    laovdb::initialize();
 
     // Note, unlike OpenVDB, NanoVDB allows for multiple write operations into the same output file stream.
     // Hence, NanoVDB grids can be read, converted and written to file one at a time whereas all
     // the OpenVDB grids has to be written to file in a single operation.
 
-    auto openToNano = [&](const openvdb::GridBase::Ptr& base)
+    auto openToNano = [&](const laovdb::GridBase::Ptr& base)
     {
-        if (auto floatGrid = openvdb::GridBase::grid<openvdb::FloatGrid>(base)) {
+        if (auto floatGrid = laovdb::GridBase::grid<laovdb::FloatGrid>(base)) {
             switch (qMode) {
             case nanovdb::GridType::Fp4: {
                 nanovdb::OpenToNanoVDB<float, nanovdb::Fp4> s;
@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
                 }
                 if (verbose)
                     std::cout << "Opening OpenVDB file named \"" << inputFile << "\"" << std::endl;
-                openvdb::io::File file(inputFile);
+                laovdb::io::File file(inputFile);
                 file.open(false); //disable delayed loading
                 if (gridName.empty()) {// convert all grid in the file
                     auto grids = file.getGrids();
@@ -268,8 +268,8 @@ int main(int argc, char* argv[])
                 }
             } // loop over input files
         } else { // NanoVDB -> OpenVDB
-            openvdb::io::File      file(outputFile);
-            openvdb::GridPtrVecPtr grids(new openvdb::GridPtrVec());
+            laovdb::io::File      file(outputFile);
+            laovdb::GridPtrVecPtr grids(new laovdb::GridPtrVec());
             for (auto& inputFile : fileNames) {
                 if (inputFile.substr(inputFile.find_last_of(".") + 1) != "nvdb") {
                     std::cerr << "Since the last file has extension .vdb the remaining input files were expected to have extensions .nvdb\n" << std::endl;

@@ -4,7 +4,7 @@
 #include "ClipBox.h"
 
 
-namespace openvdb_viewer {
+namespace laovdb_viewer {
 
 ClipBox::ClipBox()
     : mStepSize(1.0)
@@ -36,7 +36,7 @@ ClipBox::ClipBox()
 
 
 void
-ClipBox::setBBox(const openvdb::BBoxd& bbox)
+ClipBox::setBBox(const laovdb::BBoxd& bbox)
 {
     mBBox = bbox;
     reset();
@@ -263,4 +263,4 @@ ClipBox::mousePosCallback(int /*x*/, int /*y*/)
     return false; // unhandled
 }
 
-} // namespace openvdb_viewer
+} // namespace laovdb_viewer

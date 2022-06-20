@@ -34,7 +34,7 @@
 namespace hvdb = openvdb_houdini;
 namespace hutil = houdini_utils;
 
-using namespace openvdb_houdini;
+using namespace laovdb_houdini;
 
 enum REGIONTYPE_NAMES
 {
@@ -68,7 +68,7 @@ public:
     {
         OP_ERROR cookVDBSop(OP_Context&) override;
 
-        openvdb::CoordBBox    getIndexSpaceBounds(OP_Context &context,
+        laovdb::CoordBBox    getIndexSpaceBounds(OP_Context &context,
                                                   const GEO_PrimVDB &vdb);
         UT_BoundingBox        getWorldBBox(fpreal t);
 
@@ -87,10 +87,10 @@ public:
                                  evalFloat("size", 1, t),
                                  evalFloat("size", 2, t)); }
 
-        openvdb::Coord MINPOS(fpreal t)
-            { return openvdb::Coord(evalVec3i("min", t)); }
-        openvdb::Coord MAXPOS(fpreal t)
-            { return openvdb::Coord(evalVec3i("max", t)); }
+        laovdb::Coord MINPOS(fpreal t)
+            { return laovdb::Coord(evalVec3i("min", t)); }
+        laovdb::Coord MAXPOS(fpreal t)
+            { return laovdb::Coord(evalVec3i("max", t)); }
     };
 protected:
              SOP_VDBActivate(OP_Network *net, const char *name, OP_Operator *entry);
@@ -416,22 +416,22 @@ SOP_VDBActivate::Cache::getWorldBBox(fpreal t)
 
 // Get a bounding box around the world space bbox in index space
 static
-openvdb::CoordBBox
+laovdb::CoordBBox
 sopSopToIndexBBox(UT_BoundingBoxD sop_bbox, const GEO_PrimVDB &vdb)
 {
     UT_Vector3D corners[8];
     sop_bbox.getBBoxPoints(corners);
 
-    openvdb::CoordBBox index_bbox;
+    laovdb::CoordBBox index_bbox;
     for (int i=0; i<8; i++)
     {
         int x, y, z;
         vdb.posToIndex(corners[i], x, y, z);
-        openvdb::Coord coord(x,y,z);
+        laovdb::Coord coord(x,y,z);
         if (i == 0)
-            index_bbox = openvdb::CoordBBox(coord, coord);
+            index_bbox = laovdb::CoordBBox(coord, coord);
         else
-            index_bbox.expand(openvdb::Coord(x, y, z));
+            index_bbox.expand(laovdb::Coord(x, y, z));
     }
     return index_bbox;
 }
@@ -444,11 +444,11 @@ sopDoPrune(GridType &grid, bool doprune, double tolerance)
     typedef typename GridType::ValueType ValueT;
 
     // No matter what, axe inactive voxels.
-    openvdb::tools::pruneInactive(grid.tree());
+    laovdb::tools::pruneInactive(grid.tree());
     // Optionally prune live tiles
     if (doprune) {
         OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
-        const auto value = openvdb::zeroVal<ValueT>() + tolerance;
+        const auto value = laovdb::zeroVal<ValueT>() + tolerance;
         OPENVDB_NO_TYPE_CONVERSION_WARNING_END
         grid.tree().prune(static_cast<ValueT>(value));
     }
@@ -462,9 +462,9 @@ sopDeactivate(GridType &grid, double tolerance)
     using ValueT = typename GridType::ValueType;
 
     OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
-    const auto value = openvdb::zeroVal<ValueT>() + tolerance;
+    const auto value = laovdb::zeroVal<ValueT>() + tolerance;
     OPENVDB_NO_TYPE_CONVERSION_WARNING_END
-    openvdb::tools::deactivate(grid.tree(), grid.background(), static_cast<ValueT>(value));
+    laovdb::tools::deactivate(grid.tree(), grid.background(), static_cast<ValueT>(value));
 }
 
 
@@ -485,11 +485,11 @@ sopFillSDF(GridType &grid, int dummy)
         if (boss->opInterrupt())
             break;
 
-        openvdb::CoordBBox bbox = iter.getBoundingBox();
+        laovdb::CoordBBox bbox = iter.getBoundingBox();
 
         // Assuming the SDF is at all well-formed, any crossing
         // of sign must have a crossing of inactive->active.
-        openvdb::Coord coord(bbox.min().x(), bbox.min().y(), bbox.min().z());
+        laovdb::Coord coord(bbox.min().x(), bbox.min().y(), bbox.min().z());
 
         // We do not care about the active state as it is hopefully inactive
         access.probeValue(coord, value);
@@ -504,32 +504,32 @@ sopFillSDF(GridType &grid, int dummy)
 
 template <typename GridType>
 static void
-sopDilateVoxels(GridType& grid, exint count, openvdb::tools::NearestNeighbors nn)
+sopDilateVoxels(GridType& grid, exint count, laovdb::tools::NearestNeighbors nn)
 {
-    openvdb::tools::dilateActiveValues(grid.tree(), static_cast<int>(count), nn);
+    laovdb::tools::dilateActiveValues(grid.tree(), static_cast<int>(count), nn);
 }
 
 template <typename GridType>
 static void
-sopErodeVoxels(GridType& grid, exint count, openvdb::tools::NearestNeighbors nn)
+sopErodeVoxels(GridType& grid, exint count, laovdb::tools::NearestNeighbors nn)
 {
-    openvdb::tools::erodeActiveValues(grid.tree(), static_cast<int>(count), nn);
-    if (grid.getGridClass() == openvdb::GRID_LEVEL_SET) {
-        openvdb::tools::pruneLevelSet(grid.tree());
+    laovdb::tools::erodeActiveValues(grid.tree(), static_cast<int>(count), nn);
+    if (grid.getGridClass() == laovdb::GRID_LEVEL_SET) {
+        laovdb::tools::pruneLevelSet(grid.tree());
     }
     else {
-        openvdb::tools::pruneInactive(grid.tree());
+        laovdb::tools::pruneInactive(grid.tree());
     }
 }
 
 // Based on mode the parameters imply, get an index space bounds for this vdb
-openvdb::CoordBBox
+laovdb::CoordBBox
 SOP_VDBActivate::Cache::getIndexSpaceBounds(OP_Context &context,
                                      const GEO_PrimVDB &vdb)
 {
     fpreal t = context.getTime();
 
-    using namespace openvdb;
+    using namespace laovdb;
     CoordBBox index_bbox;
     // Get the bbox
     switch(REGIONTYPE(t))
@@ -569,9 +569,9 @@ sopXlateOperation(OPERATION_NAMES operation)
 OP_ERROR
 SOP_VDBActivate::Cache::cookVDBSop(OP_Context &context)
 {
-    using namespace openvdb;
-    using namespace openvdb::math;
-    using namespace openvdb::tools;
+    using namespace laovdb;
+    using namespace laovdb::math;
+    using namespace laovdb::tools;
 
     try
     {

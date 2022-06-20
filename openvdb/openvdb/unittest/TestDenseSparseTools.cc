@@ -19,14 +19,14 @@ public:
     void TearDown() override { delete mDense; }
 
 protected:
-    openvdb::tools::Dense<float>* mDense;
-    openvdb::math::Coord          mijk;
+    laovdb::tools::Dense<float>* mDense;
+    laovdb::math::Coord          mijk;
 };
 
 
 void TestDenseSparseTools::SetUp()
 {
-    namespace vdbmath = openvdb::math;
+    namespace vdbmath = laovdb::math;
 
     // Domain for the dense grid
 
@@ -35,7 +35,7 @@ void TestDenseSparseTools::SetUp()
 
     // Create dense grid, filled with 0.f
 
-    mDense = new openvdb::tools::Dense<float>(domain, 0.f);
+    mDense = new laovdb::tools::Dense<float>(domain, 0.f);
 
     // Insert non-zero values
 
@@ -47,13 +47,13 @@ namespace {
 
     // Simple Rule for extracting data greater than a determined mMaskValue
     // and producing a tree that holds type ValueType
-    namespace vdbmath = openvdb::math;
+    namespace vdbmath = laovdb::math;
 
     class FloatRule
     {
     public:
         // Standard tree type (e.g. BoolTree or FloatTree in openvdb.h)
-        typedef openvdb::FloatTree            ResultTreeType;
+        typedef laovdb::FloatTree            ResultTreeType;
         typedef ResultTreeType::LeafNodeType  ResultLeafNodeType;
 
         typedef float                                  ResultValueType;
@@ -78,7 +78,7 @@ namespace {
     {
     public:
         // Standard tree type (e.g. BoolTree or FloatTree in openvdb.h)
-        typedef openvdb::BoolTree             ResultTreeType;
+        typedef laovdb::BoolTree             ResultTreeType;
         typedef ResultTreeType::LeafNodeType  ResultLeafNodeType;
 
         typedef bool                                   ResultValueType;
@@ -111,7 +111,7 @@ namespace {
 
 TEST_F(TestDenseSparseTools, testExtractSparseFloatTree)
 {
-    namespace vdbmath = openvdb::math;
+    namespace vdbmath = laovdb::math;
 
 
     FloatRule rule(0.5f);
@@ -119,8 +119,8 @@ TEST_F(TestDenseSparseTools, testExtractSparseFloatTree)
     const float testvalue = 1.f;
     mDense->setValue(mijk, testvalue);
     const float background(0.f);
-    openvdb::FloatTree::Ptr result
-        = openvdb::tools::extractSparseTree(*mDense, rule, background);
+    laovdb::FloatTree::Ptr result
+        = laovdb::tools::extractSparseTree(*mDense, rule, background);
 
     // The result should have only one active value.
 
@@ -148,8 +148,8 @@ TEST_F(TestDenseSparseTools, testExtractSparseBoolTree)
 
     const float cutoff(0.5);
 
-    openvdb::BoolTree::Ptr result
-        = openvdb::tools::extractSparseTree(*mDense, BoolRule(cutoff), false);
+    laovdb::BoolTree::Ptr result
+        = laovdb::tools::extractSparseTree(*mDense, BoolRule(cutoff), false);
 
     // The result should have only one active value.
 
@@ -171,18 +171,18 @@ TEST_F(TestDenseSparseTools, testExtractSparseBoolTree)
 
 TEST_F(TestDenseSparseTools, testExtractSparseAltDenseLayout)
 {
-    namespace vdbmath = openvdb::math;
+    namespace vdbmath = laovdb::math;
 
     FloatRule rule(0.5f);
     // Create a dense grid with the alternate data layout
     // but the same domain as mDense
-    openvdb::tools::Dense<float, openvdb::tools::LayoutXYZ> dense(mDense->bbox(), 0.f);
+    laovdb::tools::Dense<float, laovdb::tools::LayoutXYZ> dense(mDense->bbox(), 0.f);
 
     const float testvalue = 1.f;
     dense.setValue(mijk, testvalue);
 
     const float background(0.f);
-    openvdb::FloatTree::Ptr result = openvdb::tools::extractSparseTree(dense, rule, background);
+    laovdb::FloatTree::Ptr result = laovdb::tools::extractSparseTree(dense, rule, background);
 
     // The result should have only one active value.
 
@@ -204,7 +204,7 @@ TEST_F(TestDenseSparseTools, testExtractSparseAltDenseLayout)
 
 TEST_F(TestDenseSparseTools, testExtractSparseMaskedTree)
 {
-    namespace vdbmath = openvdb::math;
+    namespace vdbmath = laovdb::math;
 
     const float testvalue = 1.f;
     mDense->setValue(mijk, testvalue);
@@ -214,7 +214,7 @@ TEST_F(TestDenseSparseTools, testExtractSparseMaskedTree)
     // state topology of the mask and the domain of interest will define
     // the topology of the extracted result.
 
-    openvdb::FloatTree mask(0.f);
+    laovdb::FloatTree mask(0.f);
 
     // turn on a point inside the bouding domain of the dense grid
     mask.setValue(mijk, 5.f);
@@ -225,8 +225,8 @@ TEST_F(TestDenseSparseTools, testExtractSparseMaskedTree)
 
     float background = 10.f;
 
-    openvdb::FloatTree::Ptr result
-        = openvdb::tools::extractSparseTreeWithMask(*mDense, mask, background);
+    laovdb::FloatTree::Ptr result
+        = laovdb::tools::extractSparseTreeWithMask(*mDense, mask, background);
 
     // The result should have only one active value.
 
@@ -249,7 +249,7 @@ TEST_F(TestDenseSparseTools, testExtractSparseMaskedTree)
 TEST_F(TestDenseSparseTools, testDenseTransform)
 {
 
-    namespace vdbmath = openvdb::math;
+    namespace vdbmath = laovdb::math;
 
     vdbmath::CoordBBox domain(vdbmath::Coord(-4, -6, 10),
                               vdbmath::Coord( 1, 2, 15));
@@ -257,7 +257,7 @@ TEST_F(TestDenseSparseTools, testDenseTransform)
     // Create dense grid, filled with value
     const float value(2.f); const float valueSqr(value*value);
 
-    openvdb::tools::Dense<float> dense(domain, 0.f);
+    laovdb::tools::Dense<float> dense(domain, 0.f);
     dense.fill(value);
 
     SqrOp op;
@@ -266,7 +266,7 @@ TEST_F(TestDenseSparseTools, testDenseTransform)
                                  vdbmath::Coord( 0,  1, 13) );
 
     // Apply the transformation
-    openvdb::tools::transformDense<float, SqrOp>(dense, smallBBox, op, true);
+    laovdb::tools::transformDense<float, SqrOp>(dense, smallBBox, op, true);
 
     vdbmath::Coord ijk;
     // Test results.
@@ -290,68 +290,68 @@ TEST_F(TestDenseSparseTools, testDenseTransform)
 
 TEST_F(TestDenseSparseTools, testOver)
 {
-    namespace vdbmath = openvdb::math;
+    namespace vdbmath = laovdb::math;
 
     const vdbmath::CoordBBox domain(vdbmath::Coord(-10, 0, 5), vdbmath::Coord( 10, 5, 10));
-    const openvdb::Coord ijk = domain.min() + openvdb::Coord(1, 1, 1);
+    const laovdb::Coord ijk = domain.min() + laovdb::Coord(1, 1, 1);
     // Create dense grid, filled with value
     const float value(2.f);
     const float strength(1.f);
     const float beta(1.f);
 
-    openvdb::FloatTree src(0.f);
+    laovdb::FloatTree src(0.f);
     src.setValue(ijk, 1.f);
-    openvdb::FloatTree alpha(0.f);
+    laovdb::FloatTree alpha(0.f);
     alpha.setValue(ijk, 1.f);
 
 
-    const float expected = openvdb::tools::ds::OpOver<float>::apply(
+    const float expected = laovdb::tools::ds::OpOver<float>::apply(
         value, alpha.getValue(ijk), src.getValue(ijk), strength, beta, 1.f);
 
     { // testing composite function
-        openvdb::tools::Dense<float> dense(domain, 0.f);
+        laovdb::tools::Dense<float> dense(domain, 0.f);
         dense.fill(value);
 
-        openvdb::tools::compositeToDense<openvdb::tools::DS_OVER>(
+        laovdb::tools::compositeToDense<laovdb::tools::DS_OVER>(
             dense, src, alpha, beta,  strength, true /*threaded*/);
 
         // Check for over value
         EXPECT_NEAR(dense.getValue(ijk), expected, 1.e-6);
         // Check for original value
-        EXPECT_NEAR(dense.getValue(openvdb::Coord(1,1,1) + ijk), value, 1.e-6);
+        EXPECT_NEAR(dense.getValue(laovdb::Coord(1,1,1) + ijk), value, 1.e-6);
     }
 
     { // testing sparse explict sparse composite
-        openvdb::tools::Dense<float> dense(domain, 0.f);
+        laovdb::tools::Dense<float> dense(domain, 0.f);
         dense.fill(value);
 
-        typedef openvdb::tools::ds::CompositeFunctorTranslator<openvdb::tools::DS_OVER, float>
+        typedef laovdb::tools::ds::CompositeFunctorTranslator<laovdb::tools::DS_OVER, float>
             CompositeTool;
         typedef CompositeTool::OpT Method;
-        openvdb::tools::SparseToDenseCompositor<Method, openvdb::FloatTree>
+        laovdb::tools::SparseToDenseCompositor<Method, laovdb::FloatTree>
             sparseToDense(dense, src, alpha, beta, strength);
 
         sparseToDense.sparseComposite(true);
         // Check for over value
         EXPECT_NEAR(dense.getValue(ijk), expected, 1.e-6);
         // Check for original value
-        EXPECT_NEAR(dense.getValue(openvdb::Coord(1,1,1) + ijk), value, 1.e-6);
+        EXPECT_NEAR(dense.getValue(laovdb::Coord(1,1,1) + ijk), value, 1.e-6);
     }
 
     { // testing sparse explict dense composite
-        openvdb::tools::Dense<float> dense(domain, 0.f);
+        laovdb::tools::Dense<float> dense(domain, 0.f);
         dense.fill(value);
 
-        typedef openvdb::tools::ds::CompositeFunctorTranslator<openvdb::tools::DS_OVER, float>
+        typedef laovdb::tools::ds::CompositeFunctorTranslator<laovdb::tools::DS_OVER, float>
             CompositeTool;
         typedef CompositeTool::OpT Method;
-        openvdb::tools::SparseToDenseCompositor<Method, openvdb::FloatTree>
+        laovdb::tools::SparseToDenseCompositor<Method, laovdb::FloatTree>
             sparseToDense(dense, src, alpha, beta, strength);
 
         sparseToDense.denseComposite(true);
         // Check for over value
         EXPECT_NEAR(dense.getValue(ijk), expected, 1.e-6);
         // Check for original value
-        EXPECT_NEAR(dense.getValue(openvdb::Coord(1,1,1) + ijk), value, 1.e-6);
+        EXPECT_NEAR(dense.getValue(laovdb::Coord(1,1,1) + ijk), value, 1.e-6);
     }
 }

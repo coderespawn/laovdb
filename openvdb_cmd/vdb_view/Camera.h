@@ -23,10 +23,10 @@ public:
 
     void aim();
 
-    void lookAt(const openvdb::Vec3d& p, double dist = 1.0);
+    void lookAt(const laovdb::Vec3d& p, double dist = 1.0);
     void lookAtTarget();
 
-    void setTarget(const openvdb::Vec3d& p, double dist = 1.0);
+    void setTarget(const laovdb::Vec3d& p, double dist = 1.0);
 
     void setNearFarPlanes(double n, double f) { mNearPlane = n; mFarPlane = f; }
     void setFieldOfView(double degrees) { mFov = degrees; }
@@ -42,7 +42,7 @@ public:
 private:
     // Camera parameters
     double mFov, mNearPlane, mFarPlane;
-    openvdb::Vec3d mTarget, mLookAt, mUp, mForward, mRight, mEye;
+    laovdb::Vec3d mTarget, mLookAt, mUp, mForward, mRight, mEye;
     double mTumblingSpeed, mZoomSpeed, mStrafeSpeed;
     double mHead, mPitch, mTargetDistance, mDistance;
 

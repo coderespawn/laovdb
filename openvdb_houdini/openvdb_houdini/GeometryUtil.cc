@@ -26,22 +26,22 @@
 #include <vector>
 
 
-namespace openvdb_houdini {
+namespace laovdb_houdini {
 
 
 void
 drawFrustum(
-    GU_Detail& geo, const openvdb::math::Transform& transform,
+    GU_Detail& geo, const laovdb::math::Transform& transform,
     const UT_Vector3* boxColor, const UT_Vector3* tickColor,
     bool shaded, bool drawTicks)
 {
-    if (transform.mapType() != openvdb::math::NonlinearFrustumMap::mapType()) {
+    if (transform.mapType() != laovdb::math::NonlinearFrustumMap::mapType()) {
         return;
     }
 
-    const openvdb::math::NonlinearFrustumMap& frustum =
-        *transform.map<openvdb::math::NonlinearFrustumMap>();
-    const openvdb::BBoxd bbox = frustum.getBBox();
+    const laovdb::math::NonlinearFrustumMap& frustum =
+        *transform.map<laovdb::math::NonlinearFrustumMap>();
+    const laovdb::BBoxd bbox = frustum.getBBox();
 
     UT_Vector3 corners[8];
 
@@ -53,7 +53,7 @@ drawFrustum(
         }
     };
 
-    openvdb::Vec3d wp = frustum.applyMap(bbox.min());
+    laovdb::Vec3d wp = frustum.applyMap(bbox.min());
     Local::floatVecFromDoubles(corners[0], wp[0], wp[1], wp[2]);
 
     wp[0] = bbox.min()[0];
@@ -197,7 +197,7 @@ drawFrustum(
 ////////////////////////////////////////
 
 
-openvdb::math::Transform::Ptr
+laovdb::math::Transform::Ptr
 frustumTransformFromCamera(
     OP_Node& node, OP_Context& context, OBJ_Camera& cam,
     float offset, float nearPlaneDist, float farPlaneDist,
@@ -221,24 +221,24 @@ frustumTransformFromCamera(
     const fpreal zoom = camAperture / camFocal;
     const fpreal aspectRatio = camYRes / (camXRes * camAspect);
 
-    openvdb::Vec2d nearPlaneSize;
+    laovdb::Vec2d nearPlaneSize;
     nearPlaneSize.x() = nearPlaneDist * zoom;
     nearPlaneSize.y() = nearPlaneSize.x() * aspectRatio;
 
-    openvdb::Vec2d farPlaneSize;
+    laovdb::Vec2d farPlaneSize;
     farPlaneSize.x() = farPlaneDist * zoom;
     farPlaneSize.y() = farPlaneSize.x() * aspectRatio;
 
 
     // Create the linear map
-    openvdb::math::Mat4d xform(openvdb::math::Mat4d::identity());
-    xform.setToTranslation(openvdb::Vec3d(0, 0, -(nearPlaneDist - offset)));
+    laovdb::math::Mat4d xform(laovdb::math::Mat4d::identity());
+    xform.setToTranslation(laovdb::Vec3d(0, 0, -(nearPlaneDist - offset)));
 
     /// this will be used to scale the frust to the correct size, and orient the
     /// into the frustum as the negative z-direction
-    xform.preScale(openvdb::Vec3d(nearPlaneSize.x(), nearPlaneSize.x(), -nearPlaneSize.x()));
+    xform.preScale(laovdb::Vec3d(nearPlaneSize.x(), nearPlaneSize.x(), -nearPlaneSize.x()));
 
-    openvdb::math::Mat4d camxform(openvdb::math::Mat4d::identity());
+    laovdb::math::Mat4d camxform(laovdb::math::Mat4d::identity());
     {
         UT_Matrix4 M;
         OBJ_Node *meobj = node.getCreator()->castToOBJNode();
@@ -260,8 +260,8 @@ frustumTransformFromCamera(
         }
     }
 
-    openvdb::math::MapBase::Ptr linearMap(openvdb::math::simplify(
-        openvdb::math::AffineMap(xform * camxform).getAffineMap()));
+    laovdb::math::MapBase::Ptr linearMap(laovdb::math::simplify(
+        laovdb::math::AffineMap(xform * camxform).getAffineMap()));
 
 
     // Create the non linear map
@@ -269,16 +269,16 @@ frustumTransformFromCamera(
     const int voxelCountZ = int(std::ceil(depth / voxelDepthSize));
 
     // the frustum will be the image of the coordinate in this bounding box
-    openvdb::BBoxd bbox(openvdb::Vec3d(0, 0, 0),
-        openvdb::Vec3d(voxelCountX, voxelCountY, voxelCountZ));
+    laovdb::BBoxd bbox(laovdb::Vec3d(0, 0, 0),
+        laovdb::Vec3d(voxelCountX, voxelCountY, voxelCountZ));
     // define the taper
     const fpreal taper = nearPlaneSize.x() / farPlaneSize.x();
 
     // note that the depth is scaled on the nearPlaneSize.
     // the linearMap will uniformly scale the frustum to the correct size
     // and rotate to align with the camera
-    return openvdb::math::Transform::Ptr(new openvdb::math::Transform(
-        openvdb::math::MapBase::Ptr(new openvdb::math::NonlinearFrustumMap(
+    return laovdb::math::Transform::Ptr(new laovdb::math::Transform(
+        laovdb::math::MapBase::Ptr(new laovdb::math::NonlinearFrustumMap(
             bbox, taper, depth/nearPlaneSize.x(), linearMap))));
 }
 
@@ -313,7 +313,7 @@ pointInPrimGroup(GA_Offset ptnOffset, GU_Detail& geo, const GA_PrimitiveGroup& g
 
 
 std::unique_ptr<GU_Detail>
-convertGeometry(const GU_Detail& geometry, std::string& warning, openvdb::util::NullInterrupter* boss)
+convertGeometry(const GU_Detail& geometry, std::string& warning, laovdb::util::NullInterrupter* boss)
 {
     const GU_Detail* geo = &geometry;
     std::unique_ptr<GU_Detail> geoPtr;
@@ -424,8 +424,8 @@ convertGeometry(const GU_Detail& detail, std::string& warning, Interrupter* boss
 
 
 TransformOp::TransformOp(GU_Detail const * const gdp,
-    const openvdb::math::Transform& transform,
-    std::vector<openvdb::Vec3s>& pointList)
+    const laovdb::math::Transform& transform,
+    std::vector<laovdb::Vec3s>& pointList)
     : mGdp(gdp)
     , mTransform(transform)
     , mPointList(&pointList)
@@ -438,7 +438,7 @@ TransformOp::operator()(const GA_SplittableRange &r) const
 {
     GA_Offset start, end;
     UT_Vector3 pos;
-    openvdb::Vec3d ipos;
+    laovdb::Vec3d ipos;
 
     // Iterate over pages in the range
     for (GA_PageIterator pit = r.beginPages(); !pit.atEnd(); ++pit) {
@@ -448,9 +448,9 @@ TransformOp::operator()(const GA_SplittableRange &r) const
             // Element
             for (GA_Offset i = start; i < end; ++i) {
                 pos = mGdp->getPos3(i);
-                ipos = mTransform.worldToIndex(openvdb::Vec3d(pos.x(), pos.y(), pos.z()));
+                ipos = mTransform.worldToIndex(laovdb::Vec3d(pos.x(), pos.y(), pos.z()));
 
-                (*mPointList)[mGdp->pointIndex(i)] = openvdb::Vec3s(ipos);
+                (*mPointList)[mGdp->pointIndex(i)] = laovdb::Vec3s(ipos);
             }
         }
     }
@@ -460,7 +460,7 @@ TransformOp::operator()(const GA_SplittableRange &r) const
 ////////////////////////////////////////
 
 
-PrimCpyOp::PrimCpyOp(GU_Detail const * const gdp, std::vector<openvdb::Vec4I>& primList)
+PrimCpyOp::PrimCpyOp(GU_Detail const * const gdp, std::vector<laovdb::Vec4I>& primList)
     : mGdp(gdp)
     , mPrimList(&primList)
 {
@@ -470,7 +470,7 @@ PrimCpyOp::PrimCpyOp(GU_Detail const * const gdp, std::vector<openvdb::Vec4I>& p
 void
 PrimCpyOp::operator()(const GA_SplittableRange &r) const
 {
-    openvdb::Vec4I prim;
+    laovdb::Vec4I prim;
     GA_Offset start, end;
 
     // Iterate over pages in the range
@@ -486,11 +486,11 @@ PrimCpyOp::operator()(const GA_SplittableRange &r) const
                 if (primRef->getTypeId() == GEO_PRIMPOLY && (3 == vtxn || 4 == vtxn)) {
 
                     for (int vtx = 0; vtx < int(vtxn); ++vtx) {
-                        prim[vtx] = static_cast<openvdb::Vec4I::ValueType>(
+                        prim[vtx] = static_cast<laovdb::Vec4I::ValueType>(
                             primRef->getPointIndex(vtx));
                     }
 
-                    if (vtxn != 4) prim[3] = openvdb::util::INVALID_IDX;
+                    if (vtxn != 4) prim[3] = laovdb::util::INVALID_IDX;
 
                     (*mPrimList)[mGdp->primitiveIndex(i)] = prim;
                 } else {
@@ -567,9 +567,9 @@ VertexNormalOp::operator()(const GA_SplittableRange& range) const
 
 SharpenFeaturesOp::SharpenFeaturesOp(
     GU_Detail& meshGeo, const GU_Detail& refGeo, EdgeData& edgeData,
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const GA_PrimitiveGroup * surfacePrims,
-    const openvdb::BoolTree * mask)
+    const laovdb::BoolTree * mask)
     : mMeshGeo(meshGeo)
     , mRefGeo(refGeo)
     , mEdgeData(edgeData)
@@ -582,9 +582,9 @@ SharpenFeaturesOp::SharpenFeaturesOp(
 void
 SharpenFeaturesOp::operator()(const GA_SplittableRange& range) const
 {
-    openvdb::tools::MeshToVoxelEdgeData::Accessor acc = mEdgeData.getAccessor();
+    laovdb::tools::MeshToVoxelEdgeData::Accessor acc = mEdgeData.getAccessor();
 
-    using BoolAccessor = openvdb::tree::ValueAccessor<const openvdb::BoolTree>;
+    using BoolAccessor = laovdb::tree::ValueAccessor<const laovdb::BoolTree>;
     UT_UniquePtr<BoolAccessor> maskAcc;
 
     if (mMaskTree) {
@@ -596,11 +596,11 @@ SharpenFeaturesOp::operator()(const GA_SplittableRange& range) const
     UT_Vector3 tmpN, tmpP, avgP;
     UT_BoundingBoxD cell;
 
-    openvdb::Vec3d pos, normal;
-    openvdb::Coord ijk;
+    laovdb::Vec3d pos, normal;
+    laovdb::Coord ijk;
 
-    std::vector<openvdb::Vec3d> points, normals;
-    std::vector<openvdb::Index32> primitives;
+    std::vector<laovdb::Vec3d> points, normals;
+    std::vector<laovdb::Index32> primitives;
 
     points.reserve(12);
     normals.reserve(12);
@@ -657,7 +657,7 @@ SharpenFeaturesOp::operator()(const GA_SplittableRange& range) const
                 // Calculate feature point position
                 if (points.size() > 1) {
 
-                    pos = openvdb::tools::findFeaturePoint(points, normals);
+                    pos = laovdb::tools::findFeaturePoint(points, normals);
 
                     // Constrain points to stay inside their initial
                     // coordinate cell.
@@ -701,4 +701,4 @@ SharpenFeaturesOp::operator()(const GA_SplittableRange& range) const
     }
 }
 
-} // namespace openvdb_houdini
+} // namespace laovdb_houdini

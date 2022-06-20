@@ -7,7 +7,7 @@
 
 #include <stack>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -312,7 +312,7 @@ void Logger::clear()
     mTreePtr = nullptr;
 }
 
-void Logger::setSourceTree(openvdb::ax::ast::Tree::ConstPtr tree)
+void Logger::setSourceTree(laovdb::ax::ast::Tree::ConstPtr tree)
 {
     mTreePtr = tree;
 }
@@ -324,5 +324,5 @@ void Logger::addNodeLocation(const ax::ast::Node* node, const Logger::CodeLocati
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

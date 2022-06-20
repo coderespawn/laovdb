@@ -142,7 +142,7 @@ public:
     /// @param name  if non-null, set the new primitive's @c name attribute to
     ///     this string; otherwise, if @a src is non-null, use its name
     static SYS_FORCE_INLINE
-    GU_PrimVDB* buildFromGrid(GU_Detail& gdp, openvdb::GridBase::Ptr grid,
+    GU_PrimVDB* buildFromGrid(GU_Detail& gdp, laovdb::GridBase::Ptr grid,
         const GEO_PrimVDB* src = NULL, const char* name = NULL)
     {
         return GU_PrimVDB::buildFromGridAdapter(gdp, &grid, src, name);
@@ -180,7 +180,7 @@ public:
     static SYS_FORCE_INLINE
     void createGridAttrsFromMetadata(
         const GEO_PrimVDB& prim,
-        const openvdb::GridBase& grid,
+        const laovdb::GridBase& grid,
         GEO_Detail& gdp)
     {
         GU_PrimVDB::createGridAttrsFromMetadataAdapter(prim, &grid, gdp);
@@ -196,7 +196,7 @@ public:
     void createAttrsFromMetadata(
         GA_AttributeOwner owner,
         GA_Offset element,
-        const openvdb::MetaMap& meta_map,
+        const laovdb::MetaMap& meta_map,
         GEO_Detail& gdp)
     {
         GU_PrimVDB::createAttrsFromMetadataAdapter(owner, element, &meta_map, gdp);
@@ -208,7 +208,7 @@ public:
     /// @param gdp   the detail from which to retrieve primitive attributes
     static SYS_FORCE_INLINE
     void createMetadataFromGridAttrs(
-        openvdb::GridBase& grid,
+        laovdb::GridBase& grid,
         const GEO_PrimVDB& prim,
         const GEO_Detail& gdp)
     {
@@ -222,7 +222,7 @@ public:
     /// @param geo       the detail from which to retrieve primitive attributes
     static SYS_FORCE_INLINE
     void createMetadataFromAttrs(
-        openvdb::MetaMap& meta_map,
+        laovdb::MetaMap& meta_map,
         GA_AttributeOwner owner,
         GA_Offset element,
         const GEO_Detail& geo)

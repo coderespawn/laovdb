@@ -26,9 +26,9 @@
 
 
 
-using namespace openvdb;
-using namespace openvdb::points;
-using namespace openvdb::math;
+using namespace laovdb;
+using namespace laovdb::points;
+using namespace laovdb::math;
 
 namespace hvdb = openvdb_houdini;
 namespace hutil = houdini_utils;
@@ -59,7 +59,7 @@ protected:
 void
 newSopOperator(OP_OperatorTable* table)
 {
-    openvdb::initialize();
+    laovdb::initialize();
 
     if (table == nullptr) return;
 
@@ -176,7 +176,7 @@ SOP_OpenVDB_Points_Delete::Cache::cookVDBSop(OP_Context& context)
 
             {
                 PointDataGrid::ConstPtr inputGrid =
-                        openvdb::gridConstPtrCast<PointDataGrid>(vdbPrim->getConstGridPtr());
+                        laovdb::gridConstPtrCast<PointDataGrid>(vdbPrim->getConstGridPtr());
 
                 // early exit if the grid is of the wrong type
                 if (!inputGrid) continue;

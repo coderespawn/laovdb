@@ -34,14 +34,14 @@
 class TestFastSweeping: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 
-    void writeFile(const std::string &name, openvdb::FloatGrid::Ptr grid)
+    void writeFile(const std::string &name, laovdb::FloatGrid::Ptr grid)
     {
-        openvdb::io::File file(name);
-        file.setCompression(openvdb::io::COMPRESS_NONE);
-        openvdb::GridPtrVec grids;
+        laovdb::io::File file(name);
+        file.setCompression(laovdb::io::COMPRESS_NONE);
+        laovdb::GridPtrVec grids;
         grids.push_back(grid);
         file.write(grids);
     }
@@ -50,7 +50,7 @@ public:
 
 TEST_F(TestFastSweeping, dilateSignedDistance)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     // Define parameters for the level set sphere to be re-normalized
     const float radius = 60.0f;
     const Vec3f center(0.0f, 0.0f, 0.0f);
@@ -117,7 +117,7 @@ TEST_F(TestFastSweeping, dilateSignedDistance)
 
 TEST_F(TestFastSweeping, testMaskSdf)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     // Define parameters for the level set sphere to be re-normalized
     const float radius = 60.0f;
     const Vec3f center(0.0f, 0.0f, 0.0f);
@@ -249,11 +249,11 @@ TEST_F(TestFastSweeping, testMaskSdf)
      {// Use bunny as a mask
          //std::cerr << "\nUse bunny as a mask" << std::endl;
          FloatGrid::Ptr grid = tools::createLevelSetSphere<FloatGrid>(10.0f, Vec3f(-10,0,0), 0.05f, width);
-         openvdb::initialize();//required whenever I/O of OpenVDB files is performed!
+         laovdb::initialize();//required whenever I/O of OpenVDB files is performed!
          const std::string path(TestFastSweeping_DATA_PATH);
          io::File file( path + "bunny.vdb" );
          file.open(false);//disable delayed loading
-         FloatGrid::Ptr mask = openvdb::gridPtrCast<openvdb::FloatGrid>(file.getGrids()->at(0));
+         FloatGrid::Ptr mask = laovdb::gridPtrCast<laovdb::FloatGrid>(file.getGrids()->at(0));
 
          //this->writeFile("/tmp/bunny_mask_input.vdb", grid);
          tools::FastSweeping<FloatGrid> fs;
@@ -293,7 +293,7 @@ TEST_F(TestFastSweeping, testMaskSdf)
 
 TEST_F(TestFastSweeping, testSdfToFogVolume)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     // Define parameterS FOR the level set sphere to be re-normalized
     const float radius = 50.0f;
     const Vec3f center(0.0f, 0.0f, 0.0f);
@@ -341,7 +341,7 @@ TEST_F(TestFastSweeping, testSdfToFogVolume)
 #ifdef BENCHMARK_FAST_SWEEPING
 TEST_F(TestFastSweeping, testBenchmarks)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     // Define parameterS FOR the level set sphere to be re-normalized
     const float radius = 200.0f;
     const Vec3f center(0.0f, 0.0f, 0.0f);
@@ -404,7 +404,7 @@ TEST_F(TestFastSweeping, testBenchmarks)
 
 TEST_F(TestFastSweeping, testIntersection)
 {
-  using namespace openvdb;
+  using namespace laovdb;
   const Coord ijk(1,4,-9);
   FloatGrid grid(0.0f);
   auto acc = grid.getAccessor();
@@ -449,7 +449,7 @@ TEST_F(TestFastSweeping, testIntersection)
 
 TEST_F(TestFastSweeping, fogToSdfAndExt)
 {
-  using namespace openvdb;
+  using namespace laovdb;
   const float isoValue = 0.5f;
   const float radius = 50.0f;
   const float background = 0.0f;
@@ -495,7 +495,7 @@ TEST_F(TestFastSweeping, fogToSdfAndExt)
 
 TEST_F(TestFastSweeping, sdfToSdfAndExt)
 {
-  using namespace openvdb;
+  using namespace laovdb;
   const float isoValue = 0.0f;
   const float radius = 100.0f;
   const float background = 1.234f;
@@ -539,7 +539,7 @@ TEST_F(TestFastSweeping, sdfToSdfAndExt)
 
 TEST_F(TestFastSweeping, sdfToSdfAndExt_velocity)
 {
-  using namespace openvdb;
+  using namespace laovdb;
   const float isoValue = 0.0f;
   const float radius = 100.0f;
   const Vec3f background(-1.0f, 2.0f, 1.234f);
@@ -590,13 +590,13 @@ TEST_F(TestFastSweeping, sdfToSdfAndExt_velocity)
 #ifdef TestFastSweeping_DATA_PATH
 TEST_F(TestFastSweeping, velocityExtensionOfFogBunny)
 {
-  using namespace openvdb;
+  using namespace laovdb;
 
-  openvdb::initialize();//required whenever I/O of OpenVDB files is performed!
+  laovdb::initialize();//required whenever I/O of OpenVDB files is performed!
   const std::string path(TestFastSweeping_DATA_PATH);
   io::File file( path + "bunny.vdb" );
   file.open(false);//disable delayed loading
-  auto grid = openvdb::gridPtrCast<openvdb::FloatGrid>(file.getGrids()->at(0));
+  auto grid = laovdb::gridPtrCast<laovdb::FloatGrid>(file.getGrids()->at(0));
   tools::sdfToFogVolume(*grid);
   writeFile("/tmp/bunny1_fog_in.vdb", grid);
   auto bbox = grid->evalActiveVoxelBoundingBox();
@@ -616,11 +616,11 @@ TEST_F(TestFastSweeping, velocityExtensionOfFogBunny)
 
 TEST_F(TestFastSweeping, velocityExtensionOfSdfBunny)
 {
-  using namespace openvdb;
+  using namespace laovdb;
   const std::string path(TestFastSweeping_DATA_PATH);
   io::File file( path + "bunny.vdb" );
   file.open(false);//disable delayed loading
-  auto grid = openvdb::gridPtrCast<openvdb::FloatGrid>(file.getGrids()->at(0));
+  auto grid = laovdb::gridPtrCast<laovdb::FloatGrid>(file.getGrids()->at(0));
   writeFile("/tmp/bunny2_sdf_in.vdb", grid);
   auto bbox = grid->evalActiveVoxelBoundingBox();
   const double xSize = bbox.dim()[0]*grid->voxelSize()[0];

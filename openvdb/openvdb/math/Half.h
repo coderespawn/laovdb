@@ -89,7 +89,7 @@
 #include <openvdb/version.h>
 #include <iostream>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -756,6 +756,6 @@ half::setBits (unsigned short bits)
 } // namespace internal
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_MATH_HALF_HAS_BEEN_INCLUDED

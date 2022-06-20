@@ -43,8 +43,8 @@
 class TestTools: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 };
 
 
@@ -64,8 +64,8 @@ public:
     {
         std::ostringstream ostr;
         ostr << name << "_" << mVersion << "_" << mFrame << ".vdb";
-        openvdb::io::File file(ostr.str());
-        openvdb::GridPtrVec grids;
+        laovdb::io::File file(ostr.str());
+        laovdb::GridPtrVec grids;
         grids.push_back(mGrid);
         file.write(grids);
         std::cerr << "\nWrote \"" << ostr.str() << "\" with time = "
@@ -84,7 +84,7 @@ private:
 
 TEST_F(TestTools, testInteriorMask)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const CoordBBox
         extBand{Coord{-1}, Coord{100}},
@@ -116,26 +116,26 @@ TEST_F(TestTools, testInteriorMask)
 TEST_F(TestTools, testLevelSetSphere)
 {
     const float radius = 4.3f;
-    const openvdb::Vec3f center(15.8f, 13.2f, 16.7f);
+    const laovdb::Vec3f center(15.8f, 13.2f, 16.7f);
     const float voxelSize = 1.5f, width = 3.25f;
     const int dim = 32;
 
-    openvdb::FloatGrid::Ptr grid1 =
-        openvdb::tools::createLevelSetSphere<openvdb::FloatGrid>(radius, center, voxelSize, width);
+    laovdb::FloatGrid::Ptr grid1 =
+        laovdb::tools::createLevelSetSphere<laovdb::FloatGrid>(radius, center, voxelSize, width);
 
     /// Also test ultra slow makeSphere in unittest/util.h
-    openvdb::FloatGrid::Ptr grid2 = openvdb::createLevelSet<openvdb::FloatGrid>(voxelSize, width);
-    unittest_util::makeSphere<openvdb::FloatGrid>(
-        openvdb::Coord(dim), center, radius, *grid2, unittest_util::SPHERE_SPARSE_NARROW_BAND);
+    laovdb::FloatGrid::Ptr grid2 = laovdb::createLevelSet<laovdb::FloatGrid>(voxelSize, width);
+    unittest_util::makeSphere<laovdb::FloatGrid>(
+        laovdb::Coord(dim), center, radius, *grid2, unittest_util::SPHERE_SPARSE_NARROW_BAND);
 
     const float outside = grid1->background(), inside = -outside;
     for (int i=0; i<dim; ++i) {
         for (int j=0; j<dim; ++j) {
             for (int k=0; k<dim; ++k) {
-                const openvdb::Vec3f p(voxelSize*float(i), voxelSize*float(j), voxelSize*float(k));
+                const laovdb::Vec3f p(voxelSize*float(i), voxelSize*float(j), voxelSize*float(k));
                 const float dist = (p-center).length() - radius;
-                const float val1 = grid1->tree().getValue(openvdb::Coord(i,j,k));
-                const float val2 = grid2->tree().getValue(openvdb::Coord(i,j,k));
+                const float val1 = grid1->tree().getValue(laovdb::Coord(i,j,k));
+                const float val2 = grid2->tree().getValue(laovdb::Coord(i,j,k));
                 if (dist > outside) {
                     EXPECT_NEAR( outside, val1, 0.0001);
                     EXPECT_NEAR( outside, val2, 0.0001);
@@ -155,7 +155,7 @@ TEST_F(TestTools, testLevelSetSphere)
 
 TEST_F(TestTools, testLevelSetPlatonic)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const float scale = 0.5f;
     const Vec3f center(1.0f, 2.0f, 3.0f);
@@ -219,7 +219,7 @@ TEST_F(TestTools, testLevelSetPlatonic)
 TEST_F(TestTools, testLevelSetAdvect)
 {
     // Uncomment sections below to run this (time-consuming) test
-    using namespace openvdb;
+    using namespace laovdb;
 
     const int dim = 128;
     const Vec3f center(0.35f, 0.35f, 0.35f);
@@ -287,11 +287,11 @@ TEST_F(TestTools, testLevelSetAdvect)
     }
     /*
     {//test tracker
-        GridT::Ptr grid = openvdb::tools::createLevelSetSphere<GridT>(radius, center, voxelSize);
-        using TrackerT = openvdb::tools::LevelSetTracker<GridT>;
+        GridT::Ptr grid = laovdb::tools::createLevelSetSphere<GridT>(radius, center, voxelSize);
+        using TrackerT = laovdb::tools::LevelSetTracker<GridT>;
         TrackerT tracker(*grid);
-        tracker.setSpatialScheme(openvdb::math::HJWENO5_BIAS);
-        tracker.setTemporalScheme(openvdb::math::TVD_RK1);
+        tracker.setSpatialScheme(laovdb::math::HJWENO5_BIAS);
+        tracker.setTemporalScheme(laovdb::math::TVD_RK1);
 
         FrameWriter<GridT> fw(dim, grid); fw("Tracker",0, 0);
         //for (float t = 0, dt = 0.005f; !grid->empty() && t < 3.0f; t += dt) {
@@ -305,16 +305,16 @@ TEST_F(TestTools, testLevelSetAdvect)
 
     /*
     {//test EnrightField
-        GridT::Ptr grid = openvdb::tools::createLevelSetSphere<GridT>(radius, center, voxelSize);
-        using FieldT = openvdb::tools::EnrightField<float>;
+        GridT::Ptr grid = laovdb::tools::createLevelSetSphere<GridT>(radius, center, voxelSize);
+        using FieldT = laovdb::tools::EnrightField<float>;
         FieldT field;
 
-        using AdvectT = openvdb::tools::LevelSetAdvection<GridT, FieldT>;
+        using AdvectT = laovdb::tools::LevelSetAdvection<GridT, FieldT>;
         AdvectT advect(*grid, field);
-        advect.setSpatialScheme(openvdb::math::HJWENO5_BIAS);
-        advect.setTemporalScheme(openvdb::math::TVD_RK2);
-        advect.setTrackerSpatialScheme(openvdb::math::HJWENO5_BIAS);
-        advect.setTrackerTemporalScheme(openvdb::math::TVD_RK1);
+        advect.setSpatialScheme(laovdb::math::HJWENO5_BIAS);
+        advect.setTemporalScheme(laovdb::math::TVD_RK2);
+        advect.setTrackerSpatialScheme(laovdb::math::HJWENO5_BIAS);
+        advect.setTrackerTemporalScheme(laovdb::math::TVD_RK1);
 
         FrameWriter<GridT> fw(dim, grid); fw("Enright",0, 0);
         //for (float t = 0, dt = 0.005f; !grid->empty() && t < 3.0f; t += dt) {
@@ -327,14 +327,14 @@ TEST_F(TestTools, testLevelSetAdvect)
     */
     /*
     {// test DiscreteGrid - Aligned
-        GridT::Ptr grid = openvdb::tools::createLevelSetSphere<GridT>(radius, center, voxelSize);
-        VectT vect(openvdb::Vec3f(1,0,0));
-        using FieldT = openvdb::tools::DiscreteField<VectT>;
+        GridT::Ptr grid = laovdb::tools::createLevelSetSphere<GridT>(radius, center, voxelSize);
+        VectT vect(laovdb::Vec3f(1,0,0));
+        using FieldT = laovdb::tools::DiscreteField<VectT>;
         FieldT field(vect);
-        using AdvectT = openvdb::tools::LevelSetAdvection<GridT, FieldT>;
+        using AdvectT = laovdb::tools::LevelSetAdvection<GridT, FieldT>;
         AdvectT advect(*grid, field);
-        advect.setSpatialScheme(openvdb::math::HJWENO5_BIAS);
-        advect.setTemporalScheme(openvdb::math::TVD_RK2);
+        advect.setSpatialScheme(laovdb::math::HJWENO5_BIAS);
+        advect.setTemporalScheme(laovdb::math::TVD_RK2);
 
         FrameWriter<GridT> fw(dim, grid); fw("Aligned",0, 0);
         //for (float t = 0, dt = 0.005f; !grid->empty() && t < 3.0f; t += dt) {
@@ -347,20 +347,20 @@ TEST_F(TestTools, testLevelSetAdvect)
     */
     /*
     {// test DiscreteGrid - Transformed
-        GridT::Ptr grid = openvdb::tools::createLevelSetSphere<GridT>(radius, center, voxelSize);
-        VectT vect(openvdb::Vec3f(0,0,0));
+        GridT::Ptr grid = laovdb::tools::createLevelSetSphere<GridT>(radius, center, voxelSize);
+        VectT vect(laovdb::Vec3f(0,0,0));
         VectT::Accessor acc = vect.getAccessor();
-        for (openvdb::Coord ijk(0); ijk[0]<dim; ++ijk[0])
+        for (laovdb::Coord ijk(0); ijk[0]<dim; ++ijk[0])
             for (ijk[1]=0; ijk[1]<dim; ++ijk[1])
                 for (ijk[2]=0; ijk[2]<dim; ++ijk[2])
-                    acc.setValue(ijk, openvdb::Vec3f(1,0,0));
+                    acc.setValue(ijk, laovdb::Vec3f(1,0,0));
         vect.transform().scale(2.0f);
-        using FieldT = openvdb::tools::DiscreteField<VectT>;
+        using FieldT = laovdb::tools::DiscreteField<VectT>;
         FieldT field(vect);
-        using AdvectT = openvdb::tools::LevelSetAdvection<GridT, FieldT>;
+        using AdvectT = laovdb::tools::LevelSetAdvection<GridT, FieldT>;
         AdvectT advect(*grid, field);
-        advect.setSpatialScheme(openvdb::math::HJWENO5_BIAS);
-        advect.setTemporalScheme(openvdb::math::TVD_RK2);
+        advect.setSpatialScheme(laovdb::math::HJWENO5_BIAS);
+        advect.setTemporalScheme(laovdb::math::TVD_RK2);
 
         FrameWriter<GridT> fw(dim, grid); fw("Xformed",0, 0);
         //for (float t = 0, dt = 0.005f; !grid->empty() && t < 3.0f; t += dt) {
@@ -378,21 +378,21 @@ TEST_F(TestTools, testLevelSetAdvect)
 
 TEST_F(TestTools, testLevelSetMorph)
 {
-    using GridT = openvdb::FloatGrid;
+    using GridT = laovdb::FloatGrid;
     {//test morphing overlapping but aligned spheres
         const int dim = 64;
-        const openvdb::Vec3f C1(0.35f, 0.35f, 0.35f), C2(0.4f, 0.4f, 0.4f);
+        const laovdb::Vec3f C1(0.35f, 0.35f, 0.35f), C2(0.4f, 0.4f, 0.4f);
         const float radius = 0.15f, voxelSize = 1.0f/(dim-1);
 
-        GridT::Ptr source = openvdb::tools::createLevelSetSphere<GridT>(radius, C1, voxelSize);
-        GridT::Ptr target = openvdb::tools::createLevelSetSphere<GridT>(radius, C2, voxelSize);
+        GridT::Ptr source = laovdb::tools::createLevelSetSphere<GridT>(radius, C1, voxelSize);
+        GridT::Ptr target = laovdb::tools::createLevelSetSphere<GridT>(radius, C2, voxelSize);
 
-        using MorphT = openvdb::tools::LevelSetMorphing<GridT>;
+        using MorphT = laovdb::tools::LevelSetMorphing<GridT>;
         MorphT morph(*source, *target);
-        morph.setSpatialScheme(openvdb::math::HJWENO5_BIAS);
-        morph.setTemporalScheme(openvdb::math::TVD_RK3);
-        morph.setTrackerSpatialScheme(openvdb::math::HJWENO5_BIAS);
-        morph.setTrackerTemporalScheme(openvdb::math::TVD_RK2);
+        morph.setSpatialScheme(laovdb::math::HJWENO5_BIAS);
+        morph.setTemporalScheme(laovdb::math::TVD_RK3);
+        morph.setTrackerSpatialScheme(laovdb::math::HJWENO5_BIAS);
+        morph.setTrackerTemporalScheme(laovdb::math::TVD_RK2);
 
         const std::string name("SphereToSphere");
         //FrameWriter<GridT> fw(dim, source);
@@ -408,7 +408,7 @@ TEST_F(TestTools, testLevelSetMorph)
         // timer.stop();
 
         const float invDx = 1.0f/voxelSize;
-        openvdb::math::Stats s;
+        laovdb::math::Stats s;
         for (GridT::ValueOnCIter it = source->tree().cbeginValueOn(); it; ++it) {
             s.add( invDx*(*it - target->tree().getValue(it.getCoord())) );
         }
@@ -420,7 +420,7 @@ TEST_F(TestTools, testLevelSetMorph)
         EXPECT_NEAR(0.0, s.max(), 0.50);
         EXPECT_NEAR(0.0, s.avg(), 0.02);
         /*
-        openvdb::math::Histogram h(s, 30);
+        laovdb::math::Histogram h(s, 30);
         for (GridT::ValueOnCIter it = source->tree().cbeginValueOn(); it; ++it) {
             h.add( invDx*(*it - target->tree().getValue(it.getCoord())) );
         }
@@ -434,23 +434,23 @@ TEST_F(TestTools, testLevelSetMorph)
     // Uncomment sections below to run this (very time-consuming) test
     {//test morphing between the bunny and the buddha models loaded from files
         util::CpuTimer timer;
-        openvdb::initialize();//required whenever I/O of OpenVDB files is performed!
-        openvdb::io::File sourceFile("/usr/pic1/Data/OpenVDB/LevelSetModels/bunny.vdb");
+        laovdb::initialize();//required whenever I/O of OpenVDB files is performed!
+        laovdb::io::File sourceFile("/usr/pic1/Data/OpenVDB/LevelSetModels/bunny.vdb");
         sourceFile.open();
-        GridT::Ptr source = openvdb::gridPtrCast<GridT>(sourceFile.getGrids()->at(0));
+        GridT::Ptr source = laovdb::gridPtrCast<GridT>(sourceFile.getGrids()->at(0));
 
-        openvdb::io::File targetFile("/usr/pic1/Data/OpenVDB/LevelSetModels/buddha.vdb");
+        laovdb::io::File targetFile("/usr/pic1/Data/OpenVDB/LevelSetModels/buddha.vdb");
         targetFile.open();
-        GridT::Ptr target = openvdb::gridPtrCast<GridT>(targetFile.getGrids()->at(0));
+        GridT::Ptr target = laovdb::gridPtrCast<GridT>(targetFile.getGrids()->at(0));
 
-        using MorphT = openvdb::tools::LevelSetMorphing<GridT>;
+        using MorphT = laovdb::tools::LevelSetMorphing<GridT>;
         MorphT morph(*source, *target);
-        morph.setSpatialScheme(openvdb::math::FIRST_BIAS);
-        //morph.setSpatialScheme(openvdb::math::HJWENO5_BIAS);
-        morph.setTemporalScheme(openvdb::math::TVD_RK2);
-        morph.setTrackerSpatialScheme(openvdb::math::FIRST_BIAS);
-        //morph.setTrackerSpatialScheme(openvdb::math::HJWENO5_BIAS);
-        morph.setTrackerTemporalScheme(openvdb::math::TVD_RK2);
+        morph.setSpatialScheme(laovdb::math::FIRST_BIAS);
+        //morph.setSpatialScheme(laovdb::math::HJWENO5_BIAS);
+        morph.setTemporalScheme(laovdb::math::TVD_RK2);
+        morph.setTrackerSpatialScheme(laovdb::math::FIRST_BIAS);
+        //morph.setTrackerSpatialScheme(laovdb::math::HJWENO5_BIAS);
+        morph.setTrackerTemporalScheme(laovdb::math::TVD_RK2);
 
         const std::string name("Bunny2Buddha");
         FrameWriter<GridT> fw(1, source);
@@ -467,23 +467,23 @@ TEST_F(TestTools, testLevelSetMorph)
     // Uncomment sections below to run this (very time-consuming) test
     {//test morphing between the dragon and the teapot models loaded from files
         util::CpuTimer timer;
-        openvdb::initialize();//required whenever I/O of OpenVDB files is performed!
-        openvdb::io::File sourceFile("/usr/pic1/Data/OpenVDB/LevelSetModels/dragon.vdb");
+        laovdb::initialize();//required whenever I/O of OpenVDB files is performed!
+        laovdb::io::File sourceFile("/usr/pic1/Data/OpenVDB/LevelSetModels/dragon.vdb");
         sourceFile.open();
-        GridT::Ptr source = openvdb::gridPtrCast<GridT>(sourceFile.getGrids()->at(0));
+        GridT::Ptr source = laovdb::gridPtrCast<GridT>(sourceFile.getGrids()->at(0));
 
-        openvdb::io::File targetFile("/usr/pic1/Data/OpenVDB/LevelSetModels/utahteapot.vdb");
+        laovdb::io::File targetFile("/usr/pic1/Data/OpenVDB/LevelSetModels/utahteapot.vdb");
         targetFile.open();
-        GridT::Ptr target = openvdb::gridPtrCast<GridT>(targetFile.getGrids()->at(0));
+        GridT::Ptr target = laovdb::gridPtrCast<GridT>(targetFile.getGrids()->at(0));
 
-        using MorphT = openvdb::tools::LevelSetMorphing<GridT>;
+        using MorphT = laovdb::tools::LevelSetMorphing<GridT>;
         MorphT morph(*source, *target);
-        morph.setSpatialScheme(openvdb::math::FIRST_BIAS);
-        //morph.setSpatialScheme(openvdb::math::HJWENO5_BIAS);
-        morph.setTemporalScheme(openvdb::math::TVD_RK2);
-        //morph.setTrackerSpatialScheme(openvdb::math::HJWENO5_BIAS);
-        morph.setTrackerSpatialScheme(openvdb::math::FIRST_BIAS);
-        morph.setTrackerTemporalScheme(openvdb::math::TVD_RK2);
+        morph.setSpatialScheme(laovdb::math::FIRST_BIAS);
+        //morph.setSpatialScheme(laovdb::math::HJWENO5_BIAS);
+        morph.setTemporalScheme(laovdb::math::TVD_RK2);
+        //morph.setTrackerSpatialScheme(laovdb::math::HJWENO5_BIAS);
+        morph.setTrackerSpatialScheme(laovdb::math::FIRST_BIAS);
+        morph.setTrackerTemporalScheme(laovdb::math::TVD_RK2);
 
         const std::string name("Dragon2Teapot");
         FrameWriter<GridT> fw(5, source);
@@ -504,17 +504,17 @@ TEST_F(TestTools, testLevelSetMorph)
 TEST_F(TestTools, testLevelSetMeasure)
 {
     const double percentage = 0.1/100.0;//i.e. 0.1%
-    using GridT = openvdb::FloatGrid;
+    using GridT = laovdb::FloatGrid;
     const int dim = 256;
-    openvdb::Real area, volume, mean, gauss;
+    laovdb::Real area, volume, mean, gauss;
 
     // First sphere
-    openvdb::Vec3f C(0.35f, 0.35f, 0.35f);
-    openvdb::Real r = 0.15, voxelSize = 1.0/(dim-1);
-    const openvdb::Real Pi = openvdb::math::pi<openvdb::Real>();
-    GridT::Ptr sphere = openvdb::tools::createLevelSetSphere<GridT>(float(r), C, float(voxelSize));
+    laovdb::Vec3f C(0.35f, 0.35f, 0.35f);
+    laovdb::Real r = 0.15, voxelSize = 1.0/(dim-1);
+    const laovdb::Real Pi = laovdb::math::pi<laovdb::Real>();
+    GridT::Ptr sphere = laovdb::tools::createLevelSetSphere<GridT>(float(r), C, float(voxelSize));
 
-    using MeasureT = openvdb::tools::LevelSetMeasure<GridT>;
+    using MeasureT = laovdb::tools::LevelSetMeasure<GridT>;
     MeasureT m(*sphere);
 
     /// Test area and volume of sphere in world units
@@ -578,9 +578,9 @@ TEST_F(TestTools, testLevelSetMeasure)
     EXPECT_EQ(0, m.genus());
 
     // Second sphere
-    C = openvdb::Vec3f(5.4f, 6.4f, 8.4f);
+    C = laovdb::Vec3f(5.4f, 6.4f, 8.4f);
     r = 0.57;
-    sphere = openvdb::tools::createLevelSetSphere<GridT>(float(r), C, float(voxelSize));
+    sphere = laovdb::tools::createLevelSetSphere<GridT>(float(r), C, float(voxelSize));
     m.init(*sphere);
 
     // Test all measures of sphere in world units
@@ -599,9 +599,9 @@ TEST_F(TestTools, testLevelSetMeasure)
     EXPECT_NEAR(mean,   m.avgMeanCurvature(), percentage*mean);
     EXPECT_NEAR(gauss,  m.avgGaussianCurvature(), percentage*gauss);
     EXPECT_EQ(0, m.genus());
-    //EXPECT_NEAR(area,  openvdb::tools::levelSetArea(*sphere),  percentage*area);
-    //EXPECT_NEAR(volume,openvdb::tools::levelSetVolume(*sphere),percentage*volume);
-    //EXPECT_EQ(0, openvdb::tools::levelSetGenus(*sphere));
+    //EXPECT_NEAR(area,  laovdb::tools::levelSetArea(*sphere),  percentage*area);
+    //EXPECT_NEAR(volume,laovdb::tools::levelSetVolume(*sphere),percentage*volume);
+    //EXPECT_EQ(0, laovdb::tools::levelSetGenus(*sphere));
 
      // Test all measures of sphere in voxel units
     r /= voxelSize;
@@ -619,19 +619,19 @@ TEST_F(TestTools, testLevelSetMeasure)
     EXPECT_NEAR(volume, m.volume(false), percentage*volume);
     EXPECT_NEAR(mean,   m.avgMeanCurvature(false), percentage*mean);
     EXPECT_NEAR(gauss,  m.avgGaussianCurvature(false), percentage*gauss);
-    EXPECT_NEAR(area,  openvdb::tools::levelSetArea(*sphere,false),
+    EXPECT_NEAR(area,  laovdb::tools::levelSetArea(*sphere,false),
                                  percentage*area);
-    EXPECT_NEAR(volume,openvdb::tools::levelSetVolume(*sphere,false),
+    EXPECT_NEAR(volume,laovdb::tools::levelSetVolume(*sphere,false),
                                  percentage*volume);
-    EXPECT_EQ(0, openvdb::tools::levelSetGenus(*sphere));
+    EXPECT_EQ(0, laovdb::tools::levelSetGenus(*sphere));
 
     // Read level set from file
     /*
     util::CpuTimer timer;
-    openvdb::initialize();//required whenever I/O of OpenVDB files is performed!
-    openvdb::io::File sourceFile("/usr/pic1/Data/OpenVDB/LevelSetModels/venusstatue.vdb");
+    laovdb::initialize();//required whenever I/O of OpenVDB files is performed!
+    laovdb::io::File sourceFile("/usr/pic1/Data/OpenVDB/LevelSetModels/venusstatue.vdb");
     sourceFile.open();
-    GridT::Ptr model = openvdb::gridPtrCast<GridT>(sourceFile.getGrids()->at(0));
+    GridT::Ptr model = laovdb::gridPtrCast<GridT>(sourceFile.getGrids()->at(0));
     m.reinit(*model);
 
     //m.setGrainSize(1);
@@ -661,37 +661,37 @@ TEST_F(TestTools, testLevelSetMeasure)
 
    {// testing total genus of multiple disjoint level set spheres with different radius
      const float dx = 0.5f, r = 50.0f;
-     auto grid = openvdb::createLevelSet<openvdb::FloatGrid>(dx);
-     EXPECT_THROW(openvdb::tools::levelSetGenus(*grid), openvdb::RuntimeError);
+     auto grid = laovdb::createLevelSet<laovdb::FloatGrid>(dx);
+     EXPECT_THROW(laovdb::tools::levelSetGenus(*grid), laovdb::RuntimeError);
      for (int i=1; i<=3; ++i) {
-       auto sphere = openvdb::tools::createLevelSetSphere<GridT>(r+float(i)*5.0f , openvdb::Vec3f(100.0f*float(i)), dx);
-       openvdb::tools::csgUnion(*grid, *sphere);
-       const int x = openvdb::tools::levelSetEulerCharacteristic(*grid);// since they are not overlapping re-normalization is not required
+       auto sphere = laovdb::tools::createLevelSetSphere<GridT>(r+float(i)*5.0f , laovdb::Vec3f(100.0f*float(i)), dx);
+       laovdb::tools::csgUnion(*grid, *sphere);
+       const int x = laovdb::tools::levelSetEulerCharacteristic(*grid);// since they are not overlapping re-normalization is not required
        //std::cerr << "Euler characteristics of " << i << " sphere(s) = " << x << std::endl;
        EXPECT_EQ(2*i, x);
      }
    }
    {// testing total genus of multiple disjoint level set cubes of different size
      const float dx = 0.5f, size = 50.0f;
-     auto grid = openvdb::createLevelSet<openvdb::FloatGrid>(dx);
-     EXPECT_THROW(openvdb::tools::levelSetGenus(*grid), openvdb::RuntimeError);
+     auto grid = laovdb::createLevelSet<laovdb::FloatGrid>(dx);
+     EXPECT_THROW(laovdb::tools::levelSetGenus(*grid), laovdb::RuntimeError);
      for (int i=1; i<=2; ++i) {
-       auto shape = openvdb::tools::createLevelSetCube<openvdb::FloatGrid>(size, openvdb::Vec3f(100.0f*float(i)), dx);
-       openvdb::tools::csgUnion(*grid, *shape);
-       const int x = openvdb::tools::levelSetEulerCharacteristic(*grid);
+       auto shape = laovdb::tools::createLevelSetCube<laovdb::FloatGrid>(size, laovdb::Vec3f(100.0f*float(i)), dx);
+       laovdb::tools::csgUnion(*grid, *shape);
+       const int x = laovdb::tools::levelSetEulerCharacteristic(*grid);
        //std::cerr << "Euler characteristics of " << i << " cubes(s) = " << x << std::endl;
        EXPECT_EQ(2*i, x);
      }
    }
    {// testing Euler characteristic and total genus of multiple intersecting (connected) level set spheres
      const float dx = 0.5f, r = 50.0f;
-     auto grid = openvdb::createLevelSet<openvdb::FloatGrid>(dx);
-     EXPECT_THROW(openvdb::tools::levelSetGenus(*grid), openvdb::RuntimeError);
+     auto grid = laovdb::createLevelSet<laovdb::FloatGrid>(dx);
+     EXPECT_THROW(laovdb::tools::levelSetGenus(*grid), laovdb::RuntimeError);
      for (int i=1; i<=4; ++i) {
-       auto sphere = openvdb::tools::createLevelSetSphere<GridT>( r , openvdb::Vec3f(30.0f*float(i), 0.0f, 0.0f), dx);
-       openvdb::tools::csgUnion(*grid, *sphere);
-       const int genus = openvdb::tools::levelSetGenus(*grid);
-       const int x = openvdb::tools::levelSetEulerCharacteristic(*grid);
+       auto sphere = laovdb::tools::createLevelSetSphere<GridT>( r , laovdb::Vec3f(30.0f*float(i), 0.0f, 0.0f), dx);
+       laovdb::tools::csgUnion(*grid, *sphere);
+       const int genus = laovdb::tools::levelSetGenus(*grid);
+       const int x = laovdb::tools::levelSetEulerCharacteristic(*grid);
        //std::cerr << "Genus of " << i << " sphere(s) = " << genus << std::endl;
        EXPECT_EQ(0, genus);
        //std::cerr << "Euler characteristics of " << i << " sphere(s) = " << genus << std::endl;
@@ -703,7 +703,7 @@ TEST_F(TestTools, testLevelSetMeasure)
 
 TEST_F(TestTools, testMagnitude)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     {
         FloatGrid::Ptr grid = FloatGrid::create(/*background=*/5.0);
         FloatTree& tree = grid->tree();
@@ -761,7 +761,7 @@ TEST_F(TestTools, testMagnitude)
 
 TEST_F(TestTools, testMaskedMagnitude)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     {
         FloatGrid::Ptr grid = FloatGrid::create(/*background=*/5.0);
         FloatTree& tree = grid->tree();
@@ -832,38 +832,38 @@ TEST_F(TestTools, testMaskedMagnitude)
 
 TEST_F(TestTools, testNormalize)
 {
-    openvdb::FloatGrid::Ptr grid = openvdb::FloatGrid::create(5.0);
-    openvdb::FloatTree& tree = grid->tree();
+    laovdb::FloatGrid::Ptr grid = laovdb::FloatGrid::create(5.0);
+    laovdb::FloatTree& tree = grid->tree();
 
-    const openvdb::Coord dim(64,64,64);
-    const openvdb::Vec3f center(35.0f, 30.0f, 40.0f);
+    const laovdb::Coord dim(64,64,64);
+    const laovdb::Vec3f center(35.0f, 30.0f, 40.0f);
     const float radius=10.0f;
-    unittest_util::makeSphere<openvdb::FloatGrid>(
+    unittest_util::makeSphere<laovdb::FloatGrid>(
         dim,center,radius,*grid, unittest_util::SPHERE_DENSE);
 
     EXPECT_EQ(dim[0]*dim[1]*dim[2], int(tree.activeVoxelCount()));
-    openvdb::Coord xyz(10, 20, 30);
+    laovdb::Coord xyz(10, 20, 30);
 
-    openvdb::VectorGrid::Ptr grad = openvdb::tools::gradient(*grid);
+    laovdb::VectorGrid::Ptr grad = laovdb::tools::gradient(*grid);
 
-    using Vec3Type = openvdb::VectorGrid::ValueType;
+    using Vec3Type = laovdb::VectorGrid::ValueType;
 
-    using ValueIter = openvdb::VectorGrid::ValueOnIter;
+    using ValueIter = laovdb::VectorGrid::ValueOnIter;
 
     struct Local {
         static inline Vec3Type op(const Vec3Type &x) { return x * 2.0f; }
         static inline void visit(const ValueIter& it) { it.setValue(op(*it)); }
     };
 
-    openvdb::tools::foreach(grad->beginValueOn(), Local::visit, true);
+    laovdb::tools::foreach(grad->beginValueOn(), Local::visit, true);
 
-    openvdb::VectorGrid::ConstAccessor accessor = grad->getConstAccessor();
+    laovdb::VectorGrid::ConstAccessor accessor = grad->getConstAccessor();
 
-    xyz = openvdb::Coord(35,10,40);
+    xyz = laovdb::Coord(35,10,40);
     Vec3Type v = accessor.getValue(xyz);
     //std::cerr << "\nPassed testNormalize(" << xyz << ")=" << v.length() << std::endl;
     EXPECT_NEAR(2.0,v.length(),0.001);
-    openvdb::VectorGrid::Ptr norm = openvdb::tools::normalize(*grad);
+    laovdb::VectorGrid::Ptr norm = laovdb::tools::normalize(*grad);
 
     accessor = norm->getConstAccessor();
     v = accessor.getValue(xyz);
@@ -874,46 +874,46 @@ TEST_F(TestTools, testNormalize)
 
 TEST_F(TestTools, testMaskedNormalize)
 {
-    openvdb::FloatGrid::Ptr grid = openvdb::FloatGrid::create(5.0);
-    openvdb::FloatTree& tree = grid->tree();
+    laovdb::FloatGrid::Ptr grid = laovdb::FloatGrid::create(5.0);
+    laovdb::FloatTree& tree = grid->tree();
 
-    const openvdb::Coord dim(64,64,64);
-    const openvdb::Vec3f center(35.0f, 30.0f, 40.0f);
+    const laovdb::Coord dim(64,64,64);
+    const laovdb::Vec3f center(35.0f, 30.0f, 40.0f);
     const float radius=10.0f;
-    unittest_util::makeSphere<openvdb::FloatGrid>(
+    unittest_util::makeSphere<laovdb::FloatGrid>(
         dim,center,radius,*grid, unittest_util::SPHERE_DENSE);
 
     EXPECT_EQ(dim[0]*dim[1]*dim[2], int(tree.activeVoxelCount()));
-    openvdb::Coord xyz(10, 20, 30);
+    laovdb::Coord xyz(10, 20, 30);
 
-    openvdb::VectorGrid::Ptr grad = openvdb::tools::gradient(*grid);
+    laovdb::VectorGrid::Ptr grad = laovdb::tools::gradient(*grid);
 
-    using Vec3Type = openvdb::VectorGrid::ValueType;
+    using Vec3Type = laovdb::VectorGrid::ValueType;
 
-    using ValueIter = openvdb::VectorGrid::ValueOnIter;
+    using ValueIter = laovdb::VectorGrid::ValueOnIter;
 
     struct Local {
         static inline Vec3Type op(const Vec3Type &x) { return x * 2.0f; }
         static inline void visit(const ValueIter& it) { it.setValue(op(*it)); }
     };
 
-    openvdb::tools::foreach(grad->beginValueOn(), Local::visit, true);
+    laovdb::tools::foreach(grad->beginValueOn(), Local::visit, true);
 
-    openvdb::VectorGrid::ConstAccessor accessor = grad->getConstAccessor();
+    laovdb::VectorGrid::ConstAccessor accessor = grad->getConstAccessor();
 
-    xyz = openvdb::Coord(35,10,40);
+    xyz = laovdb::Coord(35,10,40);
     Vec3Type v = accessor.getValue(xyz);
 
     // create a masking grid
 
-    const openvdb::CoordBBox maskbbox(openvdb::Coord(35, 30, 30), openvdb::Coord(41, 41, 41));
-    openvdb::BoolGrid::Ptr maskGrid = openvdb::BoolGrid::create(false);
+    const laovdb::CoordBBox maskbbox(laovdb::Coord(35, 30, 30), laovdb::Coord(41, 41, 41));
+    laovdb::BoolGrid::Ptr maskGrid = laovdb::BoolGrid::create(false);
     maskGrid->fill(maskbbox, true/*value*/, true/*activate*/);
 
     EXPECT_NEAR(2.0,v.length(),0.001);
 
     // compute the normalized valued in the masked region
-    openvdb::VectorGrid::Ptr norm = openvdb::tools::normalize(*grad, *maskGrid);
+    laovdb::VectorGrid::Ptr norm = laovdb::tools::normalize(*grad, *maskGrid);
 
     accessor = norm->getConstAccessor();
     { // outside the masked region
@@ -947,16 +947,16 @@ TEST_F(TestTools, testPointAdvect)
         const size_t numPoints = 2000000;
 
         // create a uniform velocity field in SINGLE PRECISION
-        const openvdb::Vec3f velocityBackground(1, 1, 1);
-        openvdb::Vec3fGrid::Ptr velocityGrid = openvdb::Vec3fGrid::create(velocityBackground);
+        const laovdb::Vec3f velocityBackground(1, 1, 1);
+        laovdb::Vec3fGrid::Ptr velocityGrid = laovdb::Vec3fGrid::create(velocityBackground);
 
         // using all the default template arguments
-        openvdb::tools::PointAdvect<> advectionTool(*velocityGrid);
+        laovdb::tools::PointAdvect<> advectionTool(*velocityGrid);
 
         // create points
-        std::vector<openvdb::Vec3f> pointList(numPoints);  /// larger than the tbb chunk size
+        std::vector<laovdb::Vec3f> pointList(numPoints);  /// larger than the tbb chunk size
         for (size_t i = 0; i < numPoints; i++) {
-            pointList[i] = openvdb::Vec3f(float(i), float(i), float(i));
+            pointList[i] = laovdb::Vec3f(float(i), float(i), float(i));
         }
 
         for (unsigned int order = 1; order < 5; ++order) {
@@ -967,12 +967,12 @@ TEST_F(TestTools, testPointAdvect)
 
             // check locations
             for (size_t i = 0; i < numPoints; i++) {
-                openvdb::Vec3f expected(float(i + 1), float(i + 1), float(i + 1));
+                laovdb::Vec3f expected(float(i + 1), float(i + 1), float(i + 1));
                 EXPECT_EQ(expected, pointList[i]);
             }
             // reset values
             for (size_t i = 0; i < numPoints; i++) {
-                pointList[i] = openvdb::Vec3f(float(i), float(i), float(i));
+                pointList[i] = laovdb::Vec3f(float(i), float(i), float(i));
             }
         }
 
@@ -994,22 +994,22 @@ TEST_F(TestTools, testPointAdvect)
         const size_t numPoints = 4;
 
         // create a uniform velocity field in DOUBLE PRECISION
-        const openvdb::Vec3d velocityBackground(1, 1, 1);
-        openvdb::Vec3dGrid::Ptr velocityGrid = openvdb::Vec3dGrid::create(velocityBackground);
+        const laovdb::Vec3d velocityBackground(1, 1, 1);
+        laovdb::Vec3dGrid::Ptr velocityGrid = laovdb::Vec3dGrid::create(velocityBackground);
 
         // create a simple (horizontal) constraint field valid for a
         // (-10,10)x(-10,10)x(-10,10)
-        const openvdb::Vec3d cptBackground(0, 0, 0);
-        openvdb::Vec3dGrid::Ptr cptGrid = openvdb::Vec3dGrid::create(cptBackground);
-        openvdb::Vec3dTree& cptTree = cptGrid->tree();
+        const laovdb::Vec3d cptBackground(0, 0, 0);
+        laovdb::Vec3dGrid::Ptr cptGrid = laovdb::Vec3dGrid::create(cptBackground);
+        laovdb::Vec3dTree& cptTree = cptGrid->tree();
 
         // create points
-        std::vector<openvdb::Vec3d> pointList(numPoints);
-        for (unsigned int i = 0; i < numPoints; i++) pointList[i] = openvdb::Vec3d(i, i, i);
+        std::vector<laovdb::Vec3d> pointList(numPoints);
+        for (unsigned int i = 0; i < numPoints; i++) pointList[i] = laovdb::Vec3d(i, i, i);
 
         // Initialize the constraint field in a [-10,10]x[-10,10]x[-10,10] box
         // this test will only work if the points remain in the box
-        openvdb::Coord ijk(0, 0, 0);
+        laovdb::Coord ijk(0, 0, 0);
         for (int i = -10; i < 11; i++) {
             ijk.setX(i);
             for (int j = -10; j < 11; j++) {
@@ -1017,14 +1017,14 @@ TEST_F(TestTools, testPointAdvect)
                 for (int k = -10; k < 11; k++) {
                     ijk.setZ(k);
                     // set the value as projection onto the x-y plane
-                    cptTree.setValue(ijk, openvdb::Vec3d(i, j, 0));
+                    cptTree.setValue(ijk, laovdb::Vec3d(i, j, 0));
                 }
             }
         }
 
         // construct an advection tool.  By default the number of cpt iterations is zero
-        openvdb::tools::ConstrainedPointAdvect<openvdb::Vec3dGrid,
-            std::vector<openvdb::Vec3d>, true> constrainedAdvectionTool(*velocityGrid, *cptGrid, 0);
+        laovdb::tools::ConstrainedPointAdvect<laovdb::Vec3dGrid,
+            std::vector<laovdb::Vec3d>, true> constrainedAdvectionTool(*velocityGrid, *cptGrid, 0);
         constrainedAdvectionTool.setThreaded(false);
 
         // change the number of constraint interation from default 0 to 5
@@ -1040,14 +1040,14 @@ TEST_F(TestTools, testPointAdvect)
 
         // check locations
         for (unsigned int i = 0; i < numPoints; i++) {
-            openvdb::Vec3d expected(i, i, 0);  // location (i, i, i) projected on to x-y plane
+            laovdb::Vec3d expected(i, i, 0);  // location (i, i, i) projected on to x-y plane
             for (int n=0; n<3; ++n) {
                 EXPECT_NEAR(expected[n], pointList[i][n], /*tolerance=*/1e-6);
             }
         }
 
         // reset values
-        for (unsigned int i = 0; i < numPoints; i++) pointList[i] = openvdb::Vec3d(i, i, i);
+        for (unsigned int i = 0; i < numPoints; i++) pointList[i] = laovdb::Vec3d(i, i, i);
 
         // test all four time integrations schemes
         for (unsigned int order = 1; order < 5; ++order) {
@@ -1058,13 +1058,13 @@ TEST_F(TestTools, testPointAdvect)
 
             // check locations
             for (unsigned int i = 0; i < numPoints; i++) {
-                openvdb::Vec3d expected(i+1, i+1, 0); // location (i,i,i) projected onto x-y plane
+                laovdb::Vec3d expected(i+1, i+1, 0); // location (i,i,i) projected onto x-y plane
                 for (int n=0; n<3; ++n) {
                     EXPECT_NEAR(expected[n], pointList[i][n], /*tolerance=*/1e-6);
                 }
             }
             // reset values
-            for (unsigned int i = 0; i < numPoints; i++) pointList[i] = openvdb::Vec3d(i, i, i);
+            for (unsigned int i = 0; i < numPoints; i++) pointList[i] = laovdb::Vec3d(i, i, i);
         }
     }
 }
@@ -1079,17 +1079,17 @@ namespace {
     {
         struct Point { double x,y,z; };
         std::vector<Point> list;
-        openvdb::Index64 size() const { return openvdb::Index64(list.size()); }
-        void add(const openvdb::Vec3d &p) { Point q={p[0],p[1],p[2]}; list.push_back(q); }
+        laovdb::Index64 size() const { return laovdb::Index64(list.size()); }
+        void add(const laovdb::Vec3d &p) { Point q={p[0],p[1],p[2]}; list.push_back(q); }
     };
 }
 
 
 TEST_F(TestTools, testPointScatter)
 {
-    using GridType = openvdb::FloatGrid;
-    const openvdb::Coord dim(64, 64, 64);
-    const openvdb::Vec3f center(35.0f, 30.0f, 40.0f);
+    using GridType = laovdb::FloatGrid;
+    const laovdb::Coord dim(64, 64, 64);
+    const laovdb::Vec3f center(35.0f, 30.0f, 40.0f);
     const float radius = 20.0;
     using RandGen = std::mersenne_twister_engine<uint32_t, 32, 351, 175, 19,
         0xccab8ee7, 11, 0xffffffff, 7, 0x31b6ab00, 15, 0xffe50000, 17, 1812433253>; // mt11213b
@@ -1100,9 +1100,9 @@ TEST_F(TestTools, testPointScatter)
         dim, center, radius, *grid, unittest_util::SPHERE_DENSE_NARROW_BAND);
 
     {// test fixed point count scattering
-        const openvdb::Index64 pointCount = 1000;
+        const laovdb::Index64 pointCount = 1000;
         PointList points;
-        openvdb::tools::UniformPointScatter<PointList, RandGen> scatter(points, pointCount, mtRand);
+        laovdb::tools::UniformPointScatter<PointList, RandGen> scatter(points, pointCount, mtRand);
         scatter.operator()<GridType>(*grid);
         EXPECT_EQ( pointCount, scatter.getPointCount() );
         EXPECT_EQ( pointCount, points.size() );
@@ -1110,7 +1110,7 @@ TEST_F(TestTools, testPointScatter)
     {// test uniform density scattering
         const float density = 1.0f;//per volume = per voxel since voxel size = 1
         PointList points;
-        openvdb::tools::UniformPointScatter<PointList, RandGen> scatter(points, density, mtRand);
+        laovdb::tools::UniformPointScatter<PointList, RandGen> scatter(points, density, mtRand);
         scatter.operator()<GridType>(*grid);
         EXPECT_EQ( scatter.getVoxelCount(), scatter.getPointCount() );
         EXPECT_EQ( scatter.getVoxelCount(), points.size() );
@@ -1118,7 +1118,7 @@ TEST_F(TestTools, testPointScatter)
     {// test non-uniform density scattering
         const float density = 1.0f;//per volume = per voxel since voxel size = 1
         PointList points;
-        openvdb::tools::NonUniformPointScatter<PointList, RandGen> scatter(points, density, mtRand);
+        laovdb::tools::NonUniformPointScatter<PointList, RandGen> scatter(points, density, mtRand);
         scatter.operator()<GridType>(*grid);
         EXPECT_TRUE( scatter.getVoxelCount() < scatter.getPointCount() );
         EXPECT_EQ( scatter.getPointCount(), points.size() );
@@ -1126,7 +1126,7 @@ TEST_F(TestTools, testPointScatter)
      {// test dense uniform scattering
         const size_t pointsPerVoxel = 8;
         PointList points;
-        openvdb::tools::DenseUniformPointScatter<PointList, RandGen>
+        laovdb::tools::DenseUniformPointScatter<PointList, RandGen>
             scatter(points, pointsPerVoxel, mtRand);
         scatter.operator()<GridType>(*grid);
         EXPECT_EQ( scatter.getVoxelCount()*pointsPerVoxel, scatter.getPointCount() );
@@ -1138,7 +1138,7 @@ TEST_F(TestTools, testPointScatter)
 
 TEST_F(TestTools, testVolumeAdvect)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Vec3fGrid velocity(Vec3f(1.0f, 0.0f, 0.0f));
     using GridT = FloatGrid;
@@ -1211,8 +1211,8 @@ TEST_F(TestTools, testVolumeAdvect)
             //std::ostringstream ostr;
             //ostr << "densityAdvect" << "_" << i << ".vdb";
             //std::cerr << "Writing " << ostr.str() << std::endl;
-            //openvdb::io::File file(ostr.str());
-            //openvdb::GridPtrVec grids;
+            //laovdb::io::File file(ostr.str());
+            //laovdb::GridPtrVec grids;
             //grids.push_back(density1);
             //file.write(grids);
             density0 = density1;
@@ -1237,8 +1237,8 @@ TEST_F(TestTools, testVolumeAdvect)
             //std::ostringstream ostr;
             //ostr << "densityAdvect" << "_" << i << ".vdb";
             //std::cerr << "Writing " << ostr.str() << std::endl;
-            //openvdb::io::File file(ostr.str());
-            //openvdb::GridPtrVec grids;
+            //laovdb::io::File file(ostr.str());
+            //laovdb::GridPtrVec grids;
             //grids.push_back(density1);
             //file.write(grids);
             density0 = density1;
@@ -1269,8 +1269,8 @@ TEST_F(TestTools, testVolumeAdvect)
             //std::ostringstream ostr;
             //ostr << "densityAdvectMask" << "_" << i << ".vdb";
             //std::cerr << "Writing " << ostr.str() << std::endl;
-            //openvdb::io::File file(ostr.str());
-            //openvdb::GridPtrVec grids;
+            //laovdb::io::File file(ostr.str());
+            //laovdb::GridPtrVec grids;
             //grids.push_back(density1);
             //file.write(grids);
             density0 = density1;
@@ -1318,7 +1318,7 @@ TEST_F(TestTools, testVolumeAdvect)
 
 TEST_F(TestTools, testFloatApply)
 {
-    using ValueIter = openvdb::FloatTree::ValueOnIter;
+    using ValueIter = laovdb::FloatTree::ValueOnIter;
 
     struct Local {
         static inline float op(float x) { return x * 2.f; }
@@ -1326,10 +1326,10 @@ TEST_F(TestTools, testFloatApply)
     };
 
     const float background = 1.0;
-    openvdb::FloatTree tree(background);
+    laovdb::FloatTree tree(background);
 
     const int MIN = -1000, MAX = 1000, STEP = 50;
-    openvdb::Coord xyz;
+    laovdb::Coord xyz;
     for (int z = MIN; z < MAX; z += STEP) {
         xyz.setZ(z);
         for (int y = MIN; y < MAX; y += STEP) {
@@ -1342,14 +1342,14 @@ TEST_F(TestTools, testFloatApply)
     }
     /// @todo set some tile values
 
-    openvdb::tools::foreach(tree.begin<ValueIter>(), Local::visit, /*threaded=*/true);
+    laovdb::tools::foreach(tree.begin<ValueIter>(), Local::visit, /*threaded=*/true);
 
     float expected = Local::op(background);
     //EXPECT_NEAR(expected, tree.background(), /*tolerance=*/0.0);
     //expected = Local::op(-background);
     //EXPECT_NEAR(expected, -tree.background(), /*tolerance=*/0.0);
 
-    for (openvdb::FloatTree::ValueOnCIter it = tree.cbeginValueOn(); it; ++it) {
+    for (laovdb::FloatTree::ValueOnCIter it = tree.cbeginValueOn(); it; ++it) {
         xyz = it.getCoord();
         expected = Local::op(float(xyz[0] + xyz[1] + xyz[2]));
         EXPECT_NEAR(expected, it.getValue(), /*tolerance=*/0.0);
@@ -1364,9 +1364,9 @@ namespace {
 
 template<typename IterT>
 struct MatMul {
-    openvdb::math::Mat3s mat;
-    MatMul(const openvdb::math::Mat3s& _mat): mat(_mat) {}
-    openvdb::Vec3s xform(const openvdb::Vec3s& v) const { return mat.transform(v); }
+    laovdb::math::Mat3s mat;
+    MatMul(const laovdb::math::Mat3s& _mat): mat(_mat) {}
+    laovdb::Vec3s xform(const laovdb::Vec3s& v) const { return mat.transform(v); }
     void operator()(const IterT& it) const { it.setValue(xform(*it)); }
 };
 
@@ -1375,32 +1375,32 @@ struct MatMul {
 
 TEST_F(TestTools, testVectorApply)
 {
-    using ValueIter = openvdb::VectorTree::ValueOnIter;
+    using ValueIter = laovdb::VectorTree::ValueOnIter;
 
-    const openvdb::Vec3s background(1, 1, 1);
-    openvdb::VectorTree tree(background);
+    const laovdb::Vec3s background(1, 1, 1);
+    laovdb::VectorTree tree(background);
 
     const int MIN = -1000, MAX = 1000, STEP = 80;
-    openvdb::Coord xyz;
+    laovdb::Coord xyz;
     for (int z = MIN; z < MAX; z += STEP) {
         xyz.setZ(z);
         for (int y = MIN; y < MAX; y += STEP) {
             xyz.setY(y);
             for (int x = MIN; x < MAX; x += STEP) {
                 xyz.setX(x);
-                tree.setValue(xyz, openvdb::Vec3s(float(x), float(y), float(z)));
+                tree.setValue(xyz, laovdb::Vec3s(float(x), float(y), float(z)));
             }
         }
     }
     /// @todo set some tile values
 
-    MatMul<ValueIter> op(openvdb::math::Mat3s(1, 2, 3, -1, -2, -3, 3, 2, 1));
-    openvdb::tools::foreach(tree.beginValueOn(), op, /*threaded=*/true);
+    MatMul<ValueIter> op(laovdb::math::Mat3s(1, 2, 3, -1, -2, -3, 3, 2, 1));
+    laovdb::tools::foreach(tree.beginValueOn(), op, /*threaded=*/true);
 
-    openvdb::Vec3s expected;
-    for (openvdb::VectorTree::ValueOnCIter it = tree.cbeginValueOn(); it; ++it) {
+    laovdb::Vec3s expected;
+    for (laovdb::VectorTree::ValueOnCIter it = tree.cbeginValueOn(); it; ++it) {
         xyz = it.getCoord();
-        expected = op.xform(openvdb::Vec3s(float(xyz[0]), float(xyz[1]), float(xyz[2])));
+        expected = op.xform(laovdb::Vec3s(float(xyz[0]), float(xyz[1]), float(xyz[2])));
         EXPECT_EQ(expected, it.getValue());
     }
 }
@@ -1414,7 +1414,7 @@ namespace {
 struct AccumSum {
     int64_t sum; int joins;
     AccumSum(): sum(0), joins(0) {}
-    void operator()(const openvdb::Int32Tree::ValueOnCIter& it)
+    void operator()(const laovdb::Int32Tree::ValueOnCIter& it)
     {
         if (it.isVoxelValue()) sum += *it;
         else sum += (*it) * it.getVoxelCount();
@@ -1424,8 +1424,8 @@ struct AccumSum {
 
 
 struct AccumLeafVoxelCount {
-    using LeafRange = openvdb::tree::LeafManager<openvdb::Int32Tree>::LeafRange;
-    openvdb::Index64 count;
+    using LeafRange = laovdb::tree::LeafManager<laovdb::Int32Tree>::LeafRange;
+    laovdb::Index64 count;
     AccumLeafVoxelCount(): count(0) {}
     void operator()(const LeafRange::Iterator& it) { count += it->onVoxelCount(); }
     void join(AccumLeafVoxelCount& other) { count += other.count; }
@@ -1436,7 +1436,7 @@ struct AccumLeafVoxelCount {
 
 TEST_F(TestTools, testAccumulate)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const int value = 2;
     Int32Tree tree(/*background=*/0);
@@ -1472,10 +1472,10 @@ template<typename InIterT, typename OutTreeT>
 struct FloatToVec
 {
     using ValueT = typename InIterT::ValueT;
-    using Accessor = typename openvdb::tree::ValueAccessor<OutTreeT>;
+    using Accessor = typename laovdb::tree::ValueAccessor<OutTreeT>;
 
     // Transform a scalar value into a vector value.
-    static openvdb::Vec3s toVec(const ValueT& v) { return openvdb::Vec3s(v, v*2, v*3); }
+    static laovdb::Vec3s toVec(const ValueT& v) { return laovdb::Vec3s(v, v*2, v*3); }
 
     FloatToVec() : numTiles{0} {}
     FloatToVec(const FloatToVec& other) : numTiles{other.numTiles.load(std::memory_order_acquire)} {}
@@ -1486,7 +1486,7 @@ struct FloatToVec
             acc.setValue(it.getCoord(), toVec(*it));
         } else { // fill an entire tile
             numTiles.fetch_add(1);
-            openvdb::CoordBBox bbox;
+            laovdb::CoordBBox bbox;
             it.getBoundingBox(bbox);
             acc.tree().fill(bbox, toVec(*it));
         }
@@ -1500,12 +1500,12 @@ struct FloatToVec
 
 TEST_F(TestTools, testTransformValues)
 {
-    using openvdb::CoordBBox;
-    using openvdb::Coord;
-    using openvdb::Vec3s;
+    using laovdb::CoordBBox;
+    using laovdb::Coord;
+    using laovdb::Vec3s;
 
-    using Tree323f = openvdb::tree::Tree4<float, 3, 2, 3>::Type;
-    using Tree323v = openvdb::tree::Tree4<Vec3s, 3, 2, 3>::Type;
+    using Tree323f = laovdb::tree::Tree4<float, 3, 2, 3>::Type;
+    using Tree323v = laovdb::tree::Tree4<Vec3s, 3, 2, 3>::Type;
 
     const float background = 1.0;
     Tree323f ftree(background);
@@ -1530,7 +1530,7 @@ TEST_F(TestTools, testTransformValues)
     for (int shareOp = 0; shareOp <= 1; ++shareOp) {
         FloatToVec<Tree323f::ValueOnCIter, Tree323v> op;
         Tree323v vtree;
-        openvdb::tools::transformValues(ftree.cbeginValueOn(), vtree, op,
+        laovdb::tools::transformValues(ftree.cbeginValueOn(), vtree, op,
             /*threaded=*/true, shareOp);
 
         // The tile count is accurate only if the functor is shared.  Otherwise,
@@ -1556,11 +1556,11 @@ TEST_F(TestTools, testTransformValues)
 
 TEST_F(TestTools, testUtil)
 {
-    using openvdb::CoordBBox;
-    using openvdb::Coord;
-    using openvdb::Vec3s;
+    using laovdb::CoordBBox;
+    using laovdb::Coord;
+    using laovdb::Vec3s;
 
-    using CharTree = openvdb::tree::Tree4<bool, 3, 2, 3>::Type;
+    using CharTree = laovdb::tree::Tree4<bool, 3, 2, 3>::Type;
 
     // Test boolean operators
     CharTree treeA(false), treeB(false);
@@ -1576,10 +1576,10 @@ TEST_F(TestTools, testUtil)
 
     EXPECT_EQ(voxelCountA, voxelCountB);
 
-    CharTree::Ptr tree = openvdb::util::leafTopologyDifference(treeA, treeB);
+    CharTree::Ptr tree = laovdb::util::leafTopologyDifference(treeA, treeB);
     EXPECT_TRUE(tree->activeVoxelCount() == 0);
 
-    tree = openvdb::util::leafTopologyIntersection(treeA, treeB);
+    tree = laovdb::util::leafTopologyIntersection(treeA, treeB);
     EXPECT_TRUE(tree->activeVoxelCount() == voxelCountA);
 
     treeA.fill(CoordBBox(Coord(-10), Coord(22)), true);
@@ -1587,10 +1587,10 @@ TEST_F(TestTools, testUtil)
 
     const size_t voxelCount = treeA.activeVoxelCount();
 
-    tree = openvdb::util::leafTopologyDifference(treeA, treeB);
+    tree = laovdb::util::leafTopologyDifference(treeA, treeB);
     EXPECT_TRUE(tree->activeVoxelCount() == (voxelCount - voxelCountA));
 
-    tree = openvdb::util::leafTopologyIntersection(treeA, treeB);
+    tree = laovdb::util::leafTopologyIntersection(treeA, treeB);
     EXPECT_TRUE(tree->activeVoxelCount() == voxelCountA);
 }
 
@@ -1600,7 +1600,7 @@ TEST_F(TestTools, testUtil)
 
 TEST_F(TestTools, testVectorTransformer)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Mat4d xform = Mat4d::identity();
     xform.preTranslate(Vec3d(0.1, -2.5, 3));
@@ -1700,7 +1700,7 @@ TEST_F(TestTools, testPrune)
 {
     /// @todo Add more unit-tests!
 
-    using namespace openvdb;
+    using namespace laovdb;
 
     {// try prunning a tree with const values
         const float value = 5.345f;

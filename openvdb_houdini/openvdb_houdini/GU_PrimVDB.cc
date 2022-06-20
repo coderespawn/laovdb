@@ -114,12 +114,12 @@ GU_PrimVDB*
 GU_PrimVDB::buildFromGridAdapter(GU_Detail& gdp, void* gridPtr,
     const GEO_PrimVDB* src, const char* name)
 {
-    // gridPtr is assumed to point to an openvdb::vX_Y_Z::GridBase::Ptr, for
+    // gridPtr is assumed to point to an laovdb::vX_Y_Z::GridBase::Ptr, for
     // some version X.Y.Z of OpenVDB that may be newer than the one with which
     // libHoudiniGEO.so was built.  This is safe provided that GridBase and
     // its member objects are ABI-compatible between the two OpenVDB versions.
-    openvdb::GridBase::Ptr grid =
-        *static_cast<openvdb::GridBase::Ptr*>(gridPtr);
+    laovdb::GridBase::Ptr grid =
+        *static_cast<laovdb::GridBase::Ptr*>(gridPtr);
     if (!grid)
         return nullptr;
 
@@ -140,21 +140,21 @@ GU_PrimVDB::buildFromGridAdapter(GU_Detail& gdp, void* gridPtr,
         // Ensure that certain metadata exists (grid name, grid class, etc.).
         if (name != nullptr) grid->setName(name);
         grid->removeMeta("value_type");
-        grid->insertMeta("value_type", openvdb::StringMetadata(grid->valueType()));
+        grid->insertMeta("value_type", laovdb::StringMetadata(grid->valueType()));
         // For each of the following, force any existing metadata's value to be
         // one of the supported values. Note the careful 3 statement sequences
         // so that it works with type mismatches.
-        openvdb::GridClass grid_class = grid->getGridClass();
-        grid->removeMeta(openvdb::GridBase::META_GRID_CLASS);
+        laovdb::GridClass grid_class = grid->getGridClass();
+        grid->removeMeta(laovdb::GridBase::META_GRID_CLASS);
         grid->setGridClass(grid_class);
-        openvdb::VecType vec_type = grid->getVectorType();
-        grid->removeMeta(openvdb::GridBase::META_VECTOR_TYPE);
+        laovdb::VecType vec_type = grid->getVectorType();
+        grid->removeMeta(laovdb::GridBase::META_VECTOR_TYPE);
         grid->setVectorType(vec_type);
         bool is_in_world_space = grid->isInWorldSpace();
-        grid->removeMeta(openvdb::GridBase::META_IS_LOCAL_SPACE);
+        grid->removeMeta(laovdb::GridBase::META_IS_LOCAL_SPACE);
         grid->setIsInWorldSpace(is_in_world_space);
         bool save_as_half = grid->saveFloatAsHalf();
-        grid->removeMeta(openvdb::GridBase::META_SAVE_HALF_FLOAT);
+        grid->removeMeta(laovdb::GridBase::META_SAVE_HALF_FLOAT);
         grid->setSaveFloatAsHalf(save_as_half);
 
         // Transfer the grid's metadata to primitive attributes.
@@ -166,7 +166,7 @@ GU_PrimVDB::buildFromGridAdapter(GU_Detail& gdp, void* gridPtr,
         // defaults.
         if (src == nullptr)
         {
-            if (grid->getGridClass() == openvdb::GRID_LEVEL_SET)
+            if (grid->getGridClass() == laovdb::GRID_LEVEL_SET)
             {
                 vdb->setVisualization(GEO_VOLUMEVIS_ISO,
                                       vdb->getVisIso(), vdb->getVisDensity(),
@@ -266,31 +266,31 @@ public:
             bool activateInsideSDF
             )
         : myVox(vox)
-        , myGrid(openvdb::FloatGrid::create(background))
+        , myGrid(laovdb::FloatGrid::create(background))
         , myProgress(progress)
         , myActivateInsideSDF(activateInsideSDF)
     {
     }
     gu_ConvertToVDB(const gu_ConvertToVDB &other, UT_Split)
         : myVox(other.myVox)
-        , myGrid(openvdb::FloatGrid::create(other.myGrid->background()))
+        , myGrid(laovdb::FloatGrid::create(other.myGrid->background()))
         , myProgress(other.myProgress)
         , myActivateInsideSDF(other.myActivateInsideSDF)
     {
     }
 
-    openvdb::FloatGrid::Ptr run()
+    laovdb::FloatGrid::Ptr run()
     {
-        using namespace openvdb;
+        using namespace laovdb;
 
         UTparallelReduce(UT_BlockedRange<int>(0, myVox->numTiles()), *this);
 
         // Check if the VDB grid can be made empty
-        openvdb::Coord dim = myGrid->evalActiveVoxelDim();
+        laovdb::Coord dim = myGrid->evalActiveVoxelDim();
         if (dim[0] == 1 && dim[1] == 1 && dim[2] == 1) {
-            openvdb::Coord ijk = myGrid->evalActiveVoxelBoundingBox().min();
+            laovdb::Coord ijk = myGrid->evalActiveVoxelBoundingBox().min();
             float value = myGrid->tree().getValue(ijk);
-            if (openvdb::math::isApproxEqual<float>(value, myGrid->background())) {
+            if (laovdb::math::isApproxEqual<float>(value, myGrid->background())) {
                     myGrid->clear();
             }
         }
@@ -300,7 +300,7 @@ public:
 
     void operator()(const UT_BlockedRange<int> &range)
     {
-        using namespace openvdb;
+        using namespace laovdb;
 
         FloatGrid &             grid = *myGrid.get();
         const float             background = grid.background();
@@ -328,7 +328,7 @@ public:
                     grid.fill(bbox, value);
                 }
             } else {
-                openvdb::Coord ijk;
+                laovdb::Coord ijk;
                 for (ijk[2] = 0; ijk[2] < dim[2]; ++ijk[2]) {
                     for (ijk[1] = 0; ijk[1] < dim[1]; ++ijk[1]) {
                         for (ijk[0] = 0; ijk[0] < dim[0]; ++ijk[0]) {
@@ -360,7 +360,7 @@ public:
 
 private:
     const UT_VoxelArrayReadHandleF &    myVox;
-    openvdb::FloatGrid::Ptr             myGrid;
+    laovdb::FloatGrid::Ptr             myGrid;
     UT_AutoInterrupt &                  myProgress;
     bool                                myActivateInsideSDF;
 
@@ -378,7 +378,7 @@ GU_PrimVDB::buildFromPrimVolume(
         const float tolerance,
         const bool activate_inside_sdf)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     UT_AutoInterrupt            progress("Converting to VDB");
     UT_VoxelArrayReadHandleF    vox = vol.getVoxelHandle();
@@ -420,7 +420,7 @@ GU_PrimVDB::buildFromPrimVolume(
 
     if (flood_sdf && vol.isSDF()) {
         // only call signed flood fill on SDFs
-        openvdb::tools::signedFloodFill(grid->tree());
+        laovdb::tools::signedFloodFill(grid->tree());
     }
 
     GU_PrimVDB *prim_vdb = buildFromGrid(geo, grid, nullptr, name);
@@ -439,10 +439,10 @@ GU_PrimVDB::buildFromPrimVolume(
 static void
 guCopyVoxelBBox(
         const UT_VoxelArrayReadHandleF &vox,
-        openvdb::FloatGrid::Accessor &acc,
-        openvdb::Coord start, openvdb::Coord end)
+        laovdb::FloatGrid::Accessor &acc,
+        laovdb::Coord start, laovdb::Coord end)
 {
-    openvdb::Coord c;
+    laovdb::Coord c;
     for (c[0] = start[0] ; c[0] < end[0]; c[0]++) {
         for (c[1] = start[1] ; c[1] < end[1]; c[1]++) {
             for (c[2] = start[2] ; c[2] < end[2]; c[2]++) {
@@ -456,7 +456,7 @@ guCopyVoxelBBox(
 void
 GU_PrimVDB::expandBorderFromPrimVolume(const GEO_PrimVolume &vol, int pad)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     UT_AutoInterrupt                progress("Add inactive VDB border");
     const UT_VoxelArrayReadHandleF  vox(vol.getVoxelHandle());
@@ -473,8 +473,8 @@ GU_PrimVDB::expandBorderFromPrimVolume(const GEO_PrimVolume &vol, int pad)
         if (progress.wasInterrupted())
             return;
 
-        openvdb::Coord beg(-pad, -pad, -pad);
-        openvdb::Coord end = res.offsetBy(+pad);
+        laovdb::Coord beg(-pad, -pad, -pad);
+        laovdb::Coord end = res.offsetBy(+pad);
 
         beg[axis] = -pad;
         end[axis] = 0;
@@ -587,21 +587,21 @@ GU_PrimVDB::convertNew(GU_ConvertParms &parms)
 static void
 guCopyMesh(
         GEO_Detail& detail,
-        openvdb::tools::VolumeToMesh& mesher,
+        laovdb::tools::VolumeToMesh& mesher,
         bool buildpolysoup,
         bool verbose)
 {
     TIMING_DEF;
 
-    const openvdb::tools::PointList& points = mesher.pointList();
-    openvdb::tools::PolygonPoolList& polygonPoolList = mesher.polygonPoolList();
+    const laovdb::tools::PointList& points = mesher.pointList();
+    laovdb::tools::PolygonPoolList& polygonPoolList = mesher.polygonPoolList();
 
     // NOTE: Adaptive meshes consist of tringles and quads.
 
     // Construct the points
     GA_Size npoints = mesher.pointListSize();
     GA_Offset startpt = detail.appendPointBlock(npoints);
-    SYS_STATIC_ASSERT(sizeof(openvdb::tools::PointList::element_type) == sizeof(UT_Vector3));
+    SYS_STATIC_ASSERT(sizeof(laovdb::tools::PointList::element_type) == sizeof(UT_Vector3));
     GA_RWHandleV3 pthandle(detail.getP());
     pthandle.setBlock(startpt, npoints, (UT_Vector3 *)points.get());
 
@@ -613,7 +613,7 @@ guCopyMesh(
 
     GA_Size nquads = 0, ntris = 0;
     for (size_t n = 0, N = mesher.polygonPoolListSize(); n < N; ++n) {
-        const openvdb::tools::PolygonPool& polygons = polygonPoolList[n];
+        const laovdb::tools::PolygonPool& polygons = polygonPoolList[n];
         nquads += polygons.numQuads();
         ntris += polygons.numTriangles();
     }
@@ -629,11 +629,11 @@ guCopyMesh(
     GA_Size iquad = 0;
     GA_Size itri = nquads*4;
     for (size_t n = 0, N = mesher.polygonPoolListSize(); n < N; ++n) {
-        const openvdb::tools::PolygonPool& polygons = polygonPoolList[n];
+        const laovdb::tools::PolygonPool& polygons = polygonPoolList[n];
 
         // Copy quads
         for (size_t i = 0, I = polygons.numQuads(); i < I; ++i) {
-            const openvdb::Vec4I& quad = polygons.quad(i);
+            const laovdb::Vec4I& quad = polygons.quad(i);
             verts(iquad++) = quad[0];
             verts(iquad++) = quad[1];
             verts(iquad++) = quad[2];
@@ -642,7 +642,7 @@ guCopyMesh(
 
         // Copy triangles (adaptive mesh)
         for (size_t i = 0, I = polygons.numTriangles(); i < I; ++i) {
-            const openvdb::Vec3I& triangle = polygons.triangle(i);
+            const laovdb::Vec3I& triangle = polygons.triangle(i);
             verts(itri++) = triangle[0];
             verts(itri++) = triangle[1];
             verts(itri++) = triangle[2];
@@ -713,7 +713,7 @@ GU_PrimVDB::convertToPoly(
         bool polysoup,
         bool &success) const
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     UT_AutoInterrupt    progress("Convert VDB to Polygons");
     GA_Detail::OffsetMarker marker(dst_geo);
@@ -785,7 +785,7 @@ GU_PrimVDB::convertPrimVolumeToPolySoup(
         GU_Detail &dst_geo,
         const GEO_PrimVolume &src_vol)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     UT_AutoInterrupt progress("Convert to Polygons");
 
     GU_PrimVDB &vdb = *buildFromPrimVolume(
@@ -855,7 +855,7 @@ public:
     }
 
     void
-    setSize(const openvdb::Coord &dim)
+    setSize(const laovdb::Coord &dim)
     {
         for (int i = 0; i < TUPLE_SIZE; i++) {
             mHandle[i]->size(dim[0], dim[1], dim[2]);
@@ -915,13 +915,13 @@ public:
     void copyToAlignedTile(
             int tile_index,
             ConstAccessorT& src,
-            const openvdb::Coord& src_origin);
+            const laovdb::Coord& src_origin);
 
     template<typename ConstAccessorT>
     void copyToTile(
             int tile_index,
             ConstAccessorT& src,
-            const openvdb::Coord& src_origin);
+            const laovdb::Coord& src_origin);
 
 private: // methods
 
@@ -946,7 +946,7 @@ private: // methods
     // Convert a local tile coordinate to a linear offset. This is used instead
     // of UT_VoxelTile::operator()() since we always decompress the tile first.
     SYS_FORCE_INLINE static int
-    tileCoordToOffset(const VoxelTileF* tile, const openvdb::Coord& xyz)
+    tileCoordToOffset(const VoxelTileF* tile, const laovdb::Coord& xyz)
     {
         UT_ASSERT_P(xyz[0] >= 0 && xyz[0] < tile->xres());
         UT_ASSERT_P(xyz[1] >= 0 && xyz[1] < tile->yres());
@@ -958,7 +958,7 @@ private: // methods
     template <class ValueT>
     static void
     setTileVoxel(
-            const openvdb::Coord& xyz,
+            const laovdb::Coord& xyz,
             VoxelTileF* tile,
             fpreal32* rawData,
             const ValueT& v,
@@ -970,7 +970,7 @@ private: // methods
     template <class ValueT>
     static void
     setTileVoxel(
-            const openvdb::Coord& xyz,
+            const laovdb::Coord& xyz,
             VoxelTileF* tile,
             fpreal32* rawData,
             const ValueT& v,
@@ -983,7 +983,7 @@ private: // methods
     template <class ValueT>
     static bool
     compareVoxel(
-            const openvdb::Coord& xyz,
+            const laovdb::Coord& xyz,
             VoxelTileF* tile,
             fpreal32* rawData,
             const ValueT& v,
@@ -994,12 +994,12 @@ private: // methods
         UT_ASSERT_P(xyz[1] >= 0 && xyz[1] < tile->yres());
         UT_ASSERT_P(xyz[2] >= 0 && xyz[2] < tile->zres());
         float vox = (*tile)(xyz[0], xyz[1], xyz[2]);
-        return openvdb::math::isApproxEqual<float>(vox, v);
+        return laovdb::math::isApproxEqual<float>(vox, v);
     }
     template <class ValueT>
     static bool
     compareVoxel(
-            const openvdb::Coord& xyz,
+            const laovdb::Coord& xyz,
             VoxelTileF* tile,
             fpreal32* rawData,
             const ValueT& v,
@@ -1010,7 +1010,7 @@ private: // methods
         UT_ASSERT_P(xyz[1] >= 0 && xyz[1] < tile->yres());
         UT_ASSERT_P(xyz[2] >= 0 && xyz[2] < tile->zres());
         float vox = (*tile)(xyz[0], xyz[1], xyz[2]);
-        return openvdb::math::isApproxEqual<float>(vox, v[i]);
+        return laovdb::math::isApproxEqual<float>(vox, v[i]);
     }
 
     // Check if aligned VDB bbox region is constant
@@ -1018,18 +1018,18 @@ private: // methods
     static bool
     isAlignedConstantRegion_(
             ConstAccessorT& acc,
-            const openvdb::Coord& beg,
-            const openvdb::Coord& end,
+            const laovdb::Coord& beg,
+            const laovdb::Coord& end,
             const ValueType& const_value)
     {
-        using openvdb::math::isApproxEqual;
+        using laovdb::math::isApproxEqual;
 
         using LeafNodeType = typename ConstAccessorT::LeafNodeT;
-        const openvdb::Index DIM = LeafNodeType::DIM;
+        const laovdb::Index DIM = LeafNodeType::DIM;
 
         // The smallest constant tile size in vdb is DIM and the
         // vdb-leaf/hdk-tile coords are aligned.
-        openvdb::Coord ijk;
+        laovdb::Coord ijk;
         for (ijk[0] = beg[0]; ijk[0] < end[0]; ijk[0] += DIM) {
             for (ijk[1] = beg[1]; ijk[1] < end[1]; ijk[1] += DIM) {
                 for (ijk[2] = beg[2]; ijk[2] < end[2]; ijk[2] += DIM) {
@@ -1052,12 +1052,12 @@ private: // methods
     copyAlignedLeafNode_(
             VoxelTileF* tile,
             int tuple_i,
-            const openvdb::Coord& origin,
+            const laovdb::Coord& origin,
             const LeafType& leaf)
     {
         fpreal32* data = tile->rawData();
-        for (openvdb::Index i = 0; i < LeafType::NUM_VALUES; ++i) {
-            openvdb::Coord xyz = origin + LeafType::offsetToLocalCoord(i);
+        for (laovdb::Index i = 0; i < LeafType::NUM_VALUES; ++i) {
+            laovdb::Coord xyz = origin + LeafType::offsetToLocalCoord(i);
             setTileVoxel(xyz, tile, data, leaf.getValue(i), tuple_i);
         }
     }
@@ -1068,22 +1068,22 @@ private: // methods
     static bool
     isConstantRegion_(
             ConstAccessorT& acc,
-            const openvdb::Coord& beg,
-            const openvdb::Coord& end,
-            const openvdb::Coord& beg_a,
+            const laovdb::Coord& beg,
+            const laovdb::Coord& end,
+            const laovdb::Coord& beg_a,
             const ValueType& const_value)
     {
-        using openvdb::math::isApproxEqual;
+        using laovdb::math::isApproxEqual;
 
         using LeafNodeType = typename ConstAccessorT::LeafNodeT;
-        const openvdb::Index DIM = LeafNodeType::DIM;
-        const openvdb::Index LOG2DIM = LeafNodeType::LOG2DIM;
+        const laovdb::Index DIM = LeafNodeType::DIM;
+        const laovdb::Index LOG2DIM = LeafNodeType::LOG2DIM;
 
         UT_ASSERT(beg_a[0] % DIM == 0);
         UT_ASSERT(beg_a[1] % DIM == 0);
         UT_ASSERT(beg_a[2] % DIM == 0);
 
-        openvdb::Coord ijk;
+        laovdb::Coord ijk;
         for (ijk[0] = beg_a[0]; ijk[0] < end[0]; ijk[0] += DIM) {
             for (ijk[1] = beg_a[1]; ijk[1] < end[1]; ijk[1] += DIM) {
                 for (ijk[2] = beg_a[2]; ijk[2] < end[2]; ijk[2] += DIM) {
@@ -1098,8 +1098,8 @@ private: // methods
                     }
 
                     // Else, we're a leaf node, determine if region is constant
-                    openvdb::Coord leaf_beg = ijk;
-                    openvdb::Coord leaf_end = ijk + openvdb::Coord(DIM, DIM, DIM);
+                    laovdb::Coord leaf_beg = ijk;
+                    laovdb::Coord leaf_end = ijk + laovdb::Coord(DIM, DIM, DIM);
 
                     // Clamp the leaf region to the tile bbox
                     leaf_beg.maxComponent(beg);
@@ -1110,11 +1110,11 @@ private: // methods
                     leaf_end -= leaf->origin();
 
                     const ValueType* s0 = &leaf->getValue(leaf_beg[2]);
-                    for (openvdb::Int32 x = leaf_beg[0]; x < leaf_end[0]; ++x) {
+                    for (laovdb::Int32 x = leaf_beg[0]; x < leaf_end[0]; ++x) {
                         const ValueType* s1 = s0 + (x<<2*LOG2DIM);
-                        for (openvdb::Int32 y = leaf_beg[1]; y < leaf_end[1]; ++y) {
+                        for (laovdb::Int32 y = leaf_beg[1]; y < leaf_end[1]; ++y) {
                             const ValueType* s2 = s1 + (y<<LOG2DIM);
-                            for (openvdb::Int32 z = leaf_beg[2]; z < leaf_end[2]; ++z) {
+                            for (laovdb::Int32 z = leaf_beg[2]; z < leaf_end[2]; ++z) {
                                 if (!isApproxEqual(const_value, *s2))
                                     return false;
                                 s2++;
@@ -1134,12 +1134,12 @@ private: // methods
     copyLeafNode_(
             VoxelTileF* tile,
             int tuple_i,
-            const openvdb::Coord& beg,
-            const openvdb::Coord& end,
-            const openvdb::Coord& leaf_origin,
+            const laovdb::Coord& beg,
+            const laovdb::Coord& end,
+            const laovdb::Coord& leaf_origin,
             const LeafType& leaf)
     {
-        using openvdb::Coord;
+        using laovdb::Coord;
 
         fpreal32* data = tile->rawData();
 
@@ -1162,12 +1162,12 @@ private: // methods
     setConstantRegion_(
             VoxelTileF* tile,
             int tuple_i,
-            const openvdb::Coord& beg,
-            const openvdb::Coord& end,
+            const laovdb::Coord& beg,
+            const laovdb::Coord& end,
             const ValueT& value)
     {
         fpreal32* data = tile->rawData();
-        openvdb::Coord xyz;
+        laovdb::Coord xyz;
         for (xyz[2] = beg[2]; xyz[2] < end[2]; ++xyz[2]) {
             for (xyz[1] = beg[1]; xyz[1] < end[1]; ++xyz[1]) {
                 for (xyz[0] = beg[0]; xyz[0] < end[0]; ++xyz[0]) {
@@ -1180,11 +1180,11 @@ private: // methods
     void
     getTileCopyData_(
             int tile_index,
-            const openvdb::Coord& src_origin,
+            const laovdb::Coord& src_origin,
             VoxelTileF* tiles[TUPLE_SIZE],
-            openvdb::Coord& res,
-            openvdb::Coord& src_bbox_beg,
-            openvdb::Coord& src_bbox_end)
+            laovdb::Coord& res,
+            laovdb::Coord& src_bbox_beg,
+            laovdb::Coord& src_bbox_end)
     {
         for (int i = 0; i < TUPLE_SIZE; i++) {
             tiles[i] = mHandle[i]->getLinearTile(tile_index);
@@ -1198,7 +1198,7 @@ private: // methods
         // Define the inclusive coordinate range, in vdb index space.
         // ie. The source bounding box that we will copy from.
         // NOTE: All tiles are the same size, so just use the first handle.
-        openvdb::Coord dst;
+        laovdb::Coord dst;
         mHandle[0]->linearTileToXYZ(tile_index, dst.x(), dst.y(), dst.z());
         dst.x() *= TILESIZE;
         dst.y() *= TILESIZE;
@@ -1219,14 +1219,14 @@ template<int TUPLE_SIZE>
 template<typename ConstAccessorT>
 inline void
 VoxelArrayVolume<TUPLE_SIZE>::copyToAlignedTile(
-        int tile_index, ConstAccessorT &acc, const openvdb::Coord& src_origin)
+        int tile_index, ConstAccessorT &acc, const laovdb::Coord& src_origin)
 {
-    using openvdb::Coord;
-    using openvdb::CoordBBox;
+    using laovdb::Coord;
+    using laovdb::CoordBBox;
 
     using ValueType = typename ConstAccessorT::ValueType;
     using LeafNodeType = typename ConstAccessorT::LeafNodeT;
-    const openvdb::Index LEAF_DIM = LeafNodeType::DIM;
+    const laovdb::Index LEAF_DIM = LeafNodeType::DIM;
 
     VoxelTileF* tiles[TUPLE_SIZE];
     Coord tile_res;
@@ -1276,14 +1276,14 @@ template<int TUPLE_SIZE>
 template<typename ConstAccessorT>
 inline void
 VoxelArrayVolume<TUPLE_SIZE>::copyToTile(
-        int tile_index, ConstAccessorT &acc, const openvdb::Coord& src_origin)
+        int tile_index, ConstAccessorT &acc, const laovdb::Coord& src_origin)
 {
-    using openvdb::Coord;
-    using openvdb::CoordBBox;
+    using laovdb::Coord;
+    using laovdb::CoordBBox;
 
     using ValueType = typename ConstAccessorT::ValueType;
     using LeafNodeType = typename ConstAccessorT::LeafNodeT;
-    const openvdb::Index DIM = LeafNodeType::DIM;
+    const laovdb::Index DIM = LeafNodeType::DIM;
 
     VoxelTileF* tiles[TUPLE_SIZE];
     Coord tile_res;
@@ -1375,7 +1375,7 @@ public:
     gu_SparseTreeCopy(
             const TreeType& tree,
             VolumeT& volume,
-            const openvdb::Coord& src_origin,
+            const laovdb::Coord& src_origin,
             UT_AutoInterrupt& progress
         )
         : mVdbAcc(tree)
@@ -1403,9 +1403,9 @@ public:
     }
 
 private:
-    openvdb::tree::ValueAccessor<const TreeType> mVdbAcc;
+    laovdb::tree::ValueAccessor<const TreeType> mVdbAcc;
     VolumeT& mVolume;
-    const openvdb::Coord mSrcOrigin;
+    const laovdb::Coord mSrcOrigin;
     UT_AutoInterrupt& mProgress;
 };
 
@@ -1416,7 +1416,7 @@ public:
     gu_SparseTreeCopy(
             const TreeType& tree,
             VolumeT& volume,
-            const openvdb::Coord& src_origin,
+            const laovdb::Coord& src_origin,
             UT_AutoInterrupt& progress
         )
         : mVdbAcc(tree)
@@ -1444,9 +1444,9 @@ public:
     }
 
 private:
-    openvdb::tree::ValueAccessor<const TreeType> mVdbAcc;
+    laovdb::tree::ValueAccessor<const TreeType> mVdbAcc;
     VolumeT& mVolume;
-    const openvdb::Coord mSrcOrigin;
+    const laovdb::Coord mSrcOrigin;
     UT_AutoInterrupt& mProgress;
 };
 
@@ -1476,10 +1476,10 @@ public:
             vdbToDisjointVolumes(grid);
         } else {
             using LeafNodeType = typename GridT::TreeType::LeafNodeType;
-            const openvdb::Index LEAF_DIM = LeafNodeType::DIM;
+            const laovdb::Index LEAF_DIM = LeafNodeType::DIM;
 
             VolumeT volume(mDstGeo);
-            openvdb::CoordBBox bbox(grid.evalActiveVoxelBoundingBox());
+            laovdb::CoordBBox bbox(grid.evalActiveVoxelBoundingBox());
             bool aligned = (   (bbox.min()[0] % LEAF_DIM) == 0
                             && (bbox.min()[1] % LEAF_DIM) == 0
                             && (bbox.min()[2] % LEAF_DIM) == 0
@@ -1498,7 +1498,7 @@ public:
 private:
 
     template<typename GridType>
-    void vdbToVolume(const GridType& grid, const openvdb::CoordBBox& bbox,
+    void vdbToVolume(const GridType& grid, const laovdb::CoordBBox& bbox,
                      VolumeT& volume, bool aligned);
 
     template<typename GridType>
@@ -1518,7 +1518,7 @@ template<typename GridType>
 void
 gu_ConvertFromVDB<VolumeT>::vdbToVolume(
         const GridType& grid,
-        const openvdb::CoordBBox& bbox,
+        const laovdb::CoordBBox& bbox,
         VolumeT& vol,
         bool aligned)
 {
@@ -1526,9 +1526,9 @@ gu_ConvertFromVDB<VolumeT>::vdbToVolume(
 
     // Creating a Houdini volume with a zero bbox seems to break the transform.
     // (probably related to the bbox derived 'local space')
-    openvdb::CoordBBox space_bbox = bbox;
+    laovdb::CoordBBox space_bbox = bbox;
     if (space_bbox.empty())
-        space_bbox.resetToCube(openvdb::Coord(0, 0, 0), 1);
+        space_bbox.resetToCube(laovdb::Coord(0, 0, 0), 1);
     vol.setSize(space_bbox.dim());
 
     vol.setVolumeOptions(mSrcVDB.isSDF(), grid.background(),
@@ -1572,19 +1572,19 @@ gu_ConvertFromVDB<VolumeT>::vdbToDisjointVolumes(const GridType& grid)
         if (node) nodes.push_back(node);
     }
 
-    std::vector<openvdb::CoordBBox> nodeBBox(nodes.size());
+    std::vector<laovdb::CoordBBox> nodeBBox(nodes.size());
     for (size_t n = 0, N = nodes.size(); n < N; ++n) {
         nodes[n]->evalActiveBoundingBox(nodeBBox[n], false);
     }
 
-    openvdb::CoordBBox regionA, regionB;
+    laovdb::CoordBBox regionA, regionB;
 
     const int searchDist = int(GridType::TreeType::LeafNodeType::DIM) << 1;
 
     for (size_t n = 0, N = nodes.size(); n < N; ++n) {
         if (!nodes[n]) continue;
 
-        openvdb::CoordBBox& bbox = nodeBBox[n];
+        laovdb::CoordBBox& bbox = nodeBBox[n];
 
         regionA = bbox;
         regionA.max().offset(searchDist);
@@ -1628,7 +1628,7 @@ GU_PrimVDB::convertToPrimVolume(
         GU_ConvertParms &parms,
         bool split_disjoint_volumes) const
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     UT_AutoInterrupt    progress("Convert VDB to Volume");
     GA_Detail::OffsetMarker marker(dst_geo);
@@ -1826,15 +1826,15 @@ template <typename T> struct IsScalarMeta
     template <> struct IsScalarMeta<METADATA_T> \
     { HBOOST_STATIC_CONSTANT(bool, value = false); }; \
     /**/
-DECLARE_VECTOR(openvdb::Vec2IMetadata)
-DECLARE_VECTOR(openvdb::Vec2SMetadata)
-DECLARE_VECTOR(openvdb::Vec2DMetadata)
-DECLARE_VECTOR(openvdb::Vec3IMetadata)
-DECLARE_VECTOR(openvdb::Vec3SMetadata)
-DECLARE_VECTOR(openvdb::Vec3DMetadata)
-DECLARE_VECTOR(openvdb::Vec4IMetadata)
-DECLARE_VECTOR(openvdb::Vec4SMetadata)
-DECLARE_VECTOR(openvdb::Vec4DMetadata)
+DECLARE_VECTOR(laovdb::Vec2IMetadata)
+DECLARE_VECTOR(laovdb::Vec2SMetadata)
+DECLARE_VECTOR(laovdb::Vec2DMetadata)
+DECLARE_VECTOR(laovdb::Vec3IMetadata)
+DECLARE_VECTOR(laovdb::Vec3SMetadata)
+DECLARE_VECTOR(laovdb::Vec3DMetadata)
+DECLARE_VECTOR(laovdb::Vec4IMetadata)
+DECLARE_VECTOR(laovdb::Vec4SMetadata)
+DECLARE_VECTOR(laovdb::Vec4DMetadata)
 #undef DECLARE_VECTOR
 
 template<typename T, typename MetadataT, int I, typename ENABLE = void>
@@ -1855,9 +1855,9 @@ struct MetaTuple<T, MetadataT, I, typename SYS_EnableIf< IsScalarMeta<MetadataT>
 };
 
 template<int I>
-struct MetaTuple<const char*, openvdb::StringMetadata, I>
+struct MetaTuple<const char*, laovdb::StringMetadata, I>
 {
-    static const char* get(const openvdb::StringMetadata& meta) {
+    static const char* get(const laovdb::StringMetadata& meta) {
     UT_ASSERT(I == 0);
         return meta.value().c_str();
     }
@@ -1875,34 +1875,34 @@ template <typename MetadataT> struct MetaAttr;
     }; \
     /**/
 
-META_ATTR(openvdb::BoolMetadata,   GA_STORE_INT8,   int8,        1)
-META_ATTR(openvdb::FloatMetadata,  GA_STORE_REAL32, fpreal32,    1)
-META_ATTR(openvdb::DoubleMetadata, GA_STORE_REAL64, fpreal64,    1)
-META_ATTR(openvdb::Int32Metadata,  GA_STORE_INT32,  int32,       1)
-META_ATTR(openvdb::Int64Metadata,  GA_STORE_INT64,  int64,       1)
-//META_ATTR(openvdb::StringMetadata, GA_STORE_STRING, const char*, 1)
-META_ATTR(openvdb::Vec2IMetadata,  GA_STORE_INT32,  int32,       2)
-META_ATTR(openvdb::Vec2SMetadata,  GA_STORE_REAL32, fpreal32,    2)
-META_ATTR(openvdb::Vec2DMetadata,  GA_STORE_REAL64, fpreal64,    2)
-META_ATTR(openvdb::Vec3IMetadata,  GA_STORE_INT32,  int32,       3)
-META_ATTR(openvdb::Vec3SMetadata,  GA_STORE_REAL32, fpreal32,    3)
-META_ATTR(openvdb::Vec3DMetadata,  GA_STORE_REAL64, fpreal64,    3)
-META_ATTR(openvdb::Vec4IMetadata,  GA_STORE_INT32,  int32,       4)
-META_ATTR(openvdb::Vec4SMetadata,  GA_STORE_REAL32, fpreal32,    4)
-META_ATTR(openvdb::Vec4DMetadata,  GA_STORE_REAL64, fpreal64,    4)
-META_ATTR(openvdb::Mat4SMetadata,  GA_STORE_REAL32, fpreal32,    16)
-META_ATTR(openvdb::Mat4DMetadata,  GA_STORE_REAL64, fpreal64,    16)
+META_ATTR(laovdb::BoolMetadata,   GA_STORE_INT8,   int8,        1)
+META_ATTR(laovdb::FloatMetadata,  GA_STORE_REAL32, fpreal32,    1)
+META_ATTR(laovdb::DoubleMetadata, GA_STORE_REAL64, fpreal64,    1)
+META_ATTR(laovdb::Int32Metadata,  GA_STORE_INT32,  int32,       1)
+META_ATTR(laovdb::Int64Metadata,  GA_STORE_INT64,  int64,       1)
+//META_ATTR(laovdb::StringMetadata, GA_STORE_STRING, const char*, 1)
+META_ATTR(laovdb::Vec2IMetadata,  GA_STORE_INT32,  int32,       2)
+META_ATTR(laovdb::Vec2SMetadata,  GA_STORE_REAL32, fpreal32,    2)
+META_ATTR(laovdb::Vec2DMetadata,  GA_STORE_REAL64, fpreal64,    2)
+META_ATTR(laovdb::Vec3IMetadata,  GA_STORE_INT32,  int32,       3)
+META_ATTR(laovdb::Vec3SMetadata,  GA_STORE_REAL32, fpreal32,    3)
+META_ATTR(laovdb::Vec3DMetadata,  GA_STORE_REAL64, fpreal64,    3)
+META_ATTR(laovdb::Vec4IMetadata,  GA_STORE_INT32,  int32,       4)
+META_ATTR(laovdb::Vec4SMetadata,  GA_STORE_REAL32, fpreal32,    4)
+META_ATTR(laovdb::Vec4DMetadata,  GA_STORE_REAL64, fpreal64,    4)
+META_ATTR(laovdb::Mat4SMetadata,  GA_STORE_REAL32, fpreal32,    16)
+META_ATTR(laovdb::Mat4DMetadata,  GA_STORE_REAL64, fpreal64,    16)
 
 #undef META_ATTR
 
 // Functor for setAttr()
 typedef hboost::function<
-    void (GEO_Detail&, GA_AttributeOwner, GA_Offset, const char*, const openvdb::Metadata&)> AttrSettor;
+    void (GEO_Detail&, GA_AttributeOwner, GA_Offset, const char*, const laovdb::Metadata&)> AttrSettor;
 
 template <typename MetadataT>
 static void
 setAttr(GEO_Detail& geo, GA_AttributeOwner owner, GA_Offset elem,
-    const char* name, const openvdb::Metadata& meta_base)
+    const char* name, const laovdb::Metadata& meta_base)
 {
     using MetaAttrT = MetaAttr<MetadataT>;
     using RWHandleT = typename MetaAttrT::RWHandleT;
@@ -1935,7 +1935,7 @@ setAttr(GEO_Detail& geo, GA_AttributeOwner owner, GA_Offset elem,
 template <typename MetadataT>
 static void
 setStrAttr(GEO_Detail& geo, GA_AttributeOwner owner, GA_Offset elem,
-    const char* name, const openvdb::Metadata& meta_base)
+    const char* name, const laovdb::Metadata& meta_base)
 {
     GA_RWHandleS handle(&geo, owner, name);
     if (!handle.isValid())
@@ -1953,7 +1953,7 @@ setStrAttr(GEO_Detail& geo, GA_AttributeOwner owner, GA_Offset elem,
 template <typename MetadataT>
 static void
 setMatAttr(GEO_Detail& geo, GA_AttributeOwner owner, GA_Offset elem,
-    const char* name, const openvdb::Metadata& meta_base)
+    const char* name, const laovdb::Metadata& meta_base)
 {
     using MetaAttrT = MetaAttr<MetadataT>;
     using RWHandleT = typename MetaAttrT::RWHandleT;
@@ -1983,7 +1983,7 @@ class MetaToAttrMap : public std::map<std::string, AttrSettor>
 public:
     MetaToAttrMap()
     {
-        using namespace openvdb;
+        using namespace laovdb;
         // Construct a mapping from OpenVDB metadata types to functions
         // that create attributes of corresponding types.
         (*this)[BoolMetadata::staticTypeName()]   = &setAttr<BoolMetadata>;
@@ -2043,16 +2043,16 @@ GU_PrimVDB::createAttrsFromMetadataAdapter(
     const void* meta_map_ptr,
     GEO_Detail& geo)
 {
-    // meta_map_ptr is assumed to point to an openvdb::vX_Y_Z::MetaMap, for some
+    // meta_map_ptr is assumed to point to an laovdb::vX_Y_Z::MetaMap, for some
     // version X.Y.Z of OpenVDB that may be newer than the one with which
     // libHoudiniGEO.so was built.  This is safe provided that MetaMap and
     // its member objects are ABI-compatible between the two OpenVDB versions.
-    const openvdb::MetaMap& meta_map = *static_cast<const openvdb::MetaMap*>(meta_map_ptr);
+    const laovdb::MetaMap& meta_map = *static_cast<const laovdb::MetaMap*>(meta_map_ptr);
 
-    for (openvdb::MetaMap::ConstMetaIterator metaIt = meta_map.beginMeta(),
+    for (laovdb::MetaMap::ConstMetaIterator metaIt = meta_map.beginMeta(),
             metaEnd = meta_map.endMeta(); metaIt != metaEnd; ++metaIt) {
 
-        if (openvdb::Metadata::Ptr meta = metaIt->second) {
+        if (laovdb::Metadata::Ptr meta = metaIt->second) {
             std::string name = metaIt->first;
 
             UT_String str(name);
@@ -2066,7 +2066,7 @@ GU_PrimVDB::createAttrsFromMetadataAdapter(
             // If this grid's name is empty and a "name" attribute
             // doesn't already exist, don't create one.
             if (str == "name"
-                && meta->typeName() == openvdb::StringMetadata::staticTypeName()
+                && meta->typeName() == laovdb::StringMetadata::staticTypeName()
                 && meta->str().empty())
             {
                 if (!geo.findAttribute(owner, name.c_str())) continue;
@@ -2103,13 +2103,13 @@ GU_PrimVDB::createMetadataFromAttrsAdapter(
     GA_Offset element,
     const GEO_Detail& geo)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
-    // meta_map_ptr is assumed to point to an openvdb::vX_Y_Z::MetaMap, for some
+    // meta_map_ptr is assumed to point to an laovdb::vX_Y_Z::MetaMap, for some
     // version X.Y.Z of OpenVDB that may be newer than the one with which
     // libHoudiniGEO.so was built.  This is safe provided that MetaMap and
     // its member objects are ABI-compatible between the two OpenVDB versions.
-    openvdb::MetaMap& meta_map = *static_cast<openvdb::MetaMap*>(meta_map_ptr);
+    laovdb::MetaMap& meta_map = *static_cast<laovdb::MetaMap*>(meta_map_ptr);
 
     const GA_AttributeSet& attrs = geo.getAttributes();
     for (GA_AttributeDict::iterator it = attrs.begin(owner, GA_SCOPE_PUBLIC); !it.atEnd(); ++it) {

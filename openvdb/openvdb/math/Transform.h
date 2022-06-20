@@ -8,7 +8,7 @@
 #include <openvdb/Types.h>
 #include <iosfwd>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -232,7 +232,7 @@ template<typename TransformType, typename OpType>
 bool
 processTypedMap(TransformType& transform, OpType& op)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const Name mapType = transform.mapType();
     if (mapType == UniformScaleMap::mapType()) {
@@ -266,6 +266,6 @@ processTypedMap(TransformType& transform, OpType& op)
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_MATH_TRANSFORM_HAS_BEEN_INCLUDED

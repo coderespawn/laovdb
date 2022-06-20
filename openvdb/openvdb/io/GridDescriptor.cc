@@ -9,7 +9,7 @@
 #include <sstream>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace io {
@@ -193,4 +193,4 @@ GridDescriptor::stringAsUniqueName(const std::string& s)
 
 } // namespace io
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

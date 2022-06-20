@@ -10,7 +10,7 @@
 #include "openvdb_ax/codegen/Types.h"
 #include "openvdb_ax/codegen/Utils.h"
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace ax {
@@ -66,14 +66,14 @@ inline FunctionGroup::UniquePtr axtrncdecode()
     };
 
     return FunctionBuilder("__trncdecode")
-        .addSignature<void(float*, openvdb::math::half*)>(generate)
+        .addSignature<void(float*, laovdb::math::half*)>(generate)
         .addSignature<void(int32_t*, int16_t*)>(generate)
-        .addSignature<void(openvdb::math::Vec2<int32_t>*,openvdb::math::Vec2<int16_t>*)>(generate)
-        .addSignature<void(openvdb::math::Vec2<float>*,openvdb::math::Vec2<openvdb::math::half>*)>(generate)
-        .addSignature<void(openvdb::math::Vec3<int32_t>*,openvdb::math::Vec3<int16_t>*)>(generate)
-        .addSignature<void(openvdb::math::Vec3<float>*,openvdb::math::Vec3<openvdb::math::half>*)>(generate)
-        .addSignature<void(openvdb::math::Vec4<int32_t>*,openvdb::math::Vec4<int16_t>*)>(generate)
-        .addSignature<void(openvdb::math::Vec4<float>*,openvdb::math::Vec4<openvdb::math::half>*)>(generate)
+        .addSignature<void(laovdb::math::Vec2<int32_t>*,laovdb::math::Vec2<int16_t>*)>(generate)
+        .addSignature<void(laovdb::math::Vec2<float>*,laovdb::math::Vec2<laovdb::math::half>*)>(generate)
+        .addSignature<void(laovdb::math::Vec3<int32_t>*,laovdb::math::Vec3<int16_t>*)>(generate)
+        .addSignature<void(laovdb::math::Vec3<float>*,laovdb::math::Vec3<laovdb::math::half>*)>(generate)
+        .addSignature<void(laovdb::math::Vec4<int32_t>*,laovdb::math::Vec4<int16_t>*)>(generate)
+        .addSignature<void(laovdb::math::Vec4<float>*,laovdb::math::Vec4<laovdb::math::half>*)>(generate)
         .setDocumentation("")
         .get();
 }
@@ -118,14 +118,14 @@ inline FunctionGroup::UniquePtr axtrncencode()
     };
 
     return FunctionBuilder("__trncencode")
-        .addSignature<void(openvdb::math::half*, float*)>(generate)
+        .addSignature<void(laovdb::math::half*, float*)>(generate)
         .addSignature<void(int16_t*, int32_t*)>(generate)
-        .addSignature<void(openvdb::math::Vec2<int16_t>*, openvdb::math::Vec2<int32_t>*)>(generate)
-        .addSignature<void(openvdb::math::Vec2<openvdb::math::half>*, openvdb::math::Vec2<float>*)>(generate)
-        .addSignature<void(openvdb::math::Vec3<int16_t>*, openvdb::math::Vec3<int32_t>*)>(generate)
-        .addSignature<void(openvdb::math::Vec3<openvdb::math::half>*, openvdb::math::Vec3<float>*)>(generate)
-        .addSignature<void(openvdb::math::Vec4<int16_t>*, openvdb::math::Vec4<int32_t>*)>(generate)
-        .addSignature<void(openvdb::math::Vec4<openvdb::math::half>*, openvdb::math::Vec4<float>*)>(generate)
+        .addSignature<void(laovdb::math::Vec2<int16_t>*, laovdb::math::Vec2<int32_t>*)>(generate)
+        .addSignature<void(laovdb::math::Vec2<laovdb::math::half>*, laovdb::math::Vec2<float>*)>(generate)
+        .addSignature<void(laovdb::math::Vec3<int16_t>*, laovdb::math::Vec3<int32_t>*)>(generate)
+        .addSignature<void(laovdb::math::Vec3<laovdb::math::half>*, laovdb::math::Vec3<float>*)>(generate)
+        .addSignature<void(laovdb::math::Vec4<int16_t>*, laovdb::math::Vec4<int32_t>*)>(generate)
+        .addSignature<void(laovdb::math::Vec4<laovdb::math::half>*, laovdb::math::Vec4<float>*)>(generate)
         .setDocumentation("")
         .get();
 }
@@ -180,13 +180,13 @@ inline FunctionGroup::UniquePtr axfxptdecode(const bool OneByte, const bool IsPo
     if (OneByte) {
         return FunctionBuilder(IsPositionRange ? "__prfxpt8decode" : "__ufxpt8decode")
             .addSignature<void(float*, uint8_t*)>(generate)
-            .addSignature<void(openvdb::math::Vec3<float>*,openvdb::math::Vec3<uint8_t>*)>(generate)
+            .addSignature<void(laovdb::math::Vec3<float>*,laovdb::math::Vec3<uint8_t>*)>(generate)
             .get();
     }
     else {
         return FunctionBuilder(IsPositionRange ? "__prfxpt16decode" : "__ufxpt16decode")
             .addSignature<void(float*, uint16_t*)>(generate)
-            .addSignature<void(openvdb::math::Vec3<float>*,openvdb::math::Vec3<uint16_t>*)>(generate)
+            .addSignature<void(laovdb::math::Vec3<float>*,laovdb::math::Vec3<uint16_t>*)>(generate)
             .get();
     }
 }
@@ -277,13 +277,13 @@ inline FunctionGroup::UniquePtr axfxptencode(const bool OneByte, const bool IsPo
     if (OneByte) {
         return FunctionBuilder(IsPositionRange ? "__prfxpt8encode" : "__ufxpt8encode")
             .addSignature<void(uint8_t*, float*)>(generate)
-            .addSignature<void(openvdb::math::Vec3<uint8_t>*,openvdb::math::Vec3<float>*)>(generate_vec)
+            .addSignature<void(laovdb::math::Vec3<uint8_t>*,laovdb::math::Vec3<float>*)>(generate_vec)
             .get();
     }
     else {
         return FunctionBuilder(IsPositionRange ? "__prfxpt16encode" : "__ufxpt16encode")
             .addSignature<void(uint16_t*, float*)>(generate)
-            .addSignature<void(openvdb::math::Vec3<uint16_t>*,openvdb::math::Vec3<float>*)>(generate_vec)
+            .addSignature<void(laovdb::math::Vec3<uint16_t>*,laovdb::math::Vec3<float>*)>(generate_vec)
             .get();
     }
 }
@@ -392,5 +392,5 @@ const CodecNameMap* getTypeSupportedCodecs(const ast::tokens::CoreType type)
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

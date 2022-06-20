@@ -8,7 +8,7 @@
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
 
-namespace openvdb_viewer {
+namespace laovdb_viewer {
 
 const double Camera::sDeg2rad = M_PI / 180.0;
 
@@ -17,12 +17,12 @@ Camera::Camera()
     : mFov(65.0)
     , mNearPlane(0.1)
     , mFarPlane(10000.0)
-    , mTarget(openvdb::Vec3d(0.0))
+    , mTarget(laovdb::Vec3d(0.0))
     , mLookAt(mTarget)
-    , mUp(openvdb::Vec3d(0.0, 1.0, 0.0))
-    , mForward(openvdb::Vec3d(0.0, 0.0, 1.0))
-    , mRight(openvdb::Vec3d(1.0, 0.0, 0.0))
-    , mEye(openvdb::Vec3d(0.0, 0.0, -1.0))
+    , mUp(laovdb::Vec3d(0.0, 1.0, 0.0))
+    , mForward(laovdb::Vec3d(0.0, 0.0, 1.0))
+    , mRight(laovdb::Vec3d(1.0, 0.0, 0.0))
+    , mEye(laovdb::Vec3d(0.0, 0.0, -1.0))
     , mTumblingSpeed(0.5)
     , mZoomSpeed(0.2)
     , mStrafeSpeed(0.05)
@@ -43,7 +43,7 @@ Camera::Camera()
 
 
 void
-Camera::lookAt(const openvdb::Vec3d& p, double dist)
+Camera::lookAt(const laovdb::Vec3d& p, double dist)
 {
     mLookAt = p;
     mDistance = dist;
@@ -73,7 +73,7 @@ Camera::setSpeed(double zoomSpeed, double strafeSpeed, double tumblingSpeed)
 
 
 void
-Camera::setTarget(const openvdb::Vec3d& p, double dist)
+Camera::setTarget(const laovdb::Vec3d& p, double dist)
 {
     mTarget = p;
     mTargetDistance = dist;
@@ -224,4 +224,4 @@ Camera::mouseWheelCallback(int pos, int prevPos)
     mNeedsDisplay = true;
 }
 
-} // namespace openvdb_viewer
+} // namespace laovdb_viewer

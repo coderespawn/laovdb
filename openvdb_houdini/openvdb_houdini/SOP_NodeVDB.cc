@@ -95,12 +95,12 @@ getOpHidePolicy()
 } // anonymous namespace
 
 
-namespace openvdb_houdini {
+namespace laovdb_houdini {
 
 namespace node_info_text {
 
 // map of function callbacks to grid types
-using ApplyGridSpecificInfoTextMap = std::map<openvdb::Name, ApplyGridSpecificInfoText>;
+using ApplyGridSpecificInfoTextMap = std::map<laovdb::Name, ApplyGridSpecificInfoText>;
 
 struct LockedInfoTextRegistry
 {
@@ -182,13 +182,13 @@ SOP_NodeVDB::SOP_NodeVDB(OP_Network* net, const char* name, OP_Operator* op):
 {
 #ifndef SESI_OPENVDB
     // Initialize the OpenVDB library
-    openvdb::initialize();
+    laovdb::initialize();
     // Forward OpenVDB log messages to the UT_ErrorManager (for all SOPs).
     startLogForwarding(SOP_OPTYPE_ID);
 #endif
 
     // Register grid-specific info text for Point Data Grids
-    node_info_text::registerGridSpecificInfoText<openvdb::points::PointDataGrid>(
+    node_info_text::registerGridSpecificInfoText<laovdb::points::PointDataGrid>(
         &pointDataGridSpecificInfoText);
 
     // Set the flag to draw guide geometry
@@ -248,7 +248,7 @@ SOP_NodeVDB::fillInfoTreeNodeSpecific(UT_InfoTree& tree, const OP_NodeInfoTreePa
     // Add the OpenVDB library version number to this node's
     // extended operator information.
     if (UT_InfoTree* child = tree.addChildMap("OpenVDB")) {
-        child->addProperties("OpenVDB Version", openvdb::getLibraryAbiVersionString());
+        child->addProperties("OpenVDB Version", laovdb::getLibraryAbiVersionString());
     }
 
 #ifdef OPENVDB_CUSTOM_MAKO
@@ -269,12 +269,12 @@ SOP_NodeVDB::fillInfoTreeNodeSpecific(UT_InfoTree& tree, const OP_NodeInfoTreePa
             info->addColumnHeading("Point Attributes");
 
             for (VdbPrimCIterator it(tmpGdp); it; ++it) {
-                const openvdb::GridBase::ConstPtr grid = it->getConstGridPtr();
+                const laovdb::GridBase::ConstPtr grid = it->getConstGridPtr();
                 if (!grid) continue;
-                if (!grid->isType<openvdb::points::PointDataGrid>()) continue;
+                if (!grid->isType<laovdb::points::PointDataGrid>()) continue;
 
-                const openvdb::points::PointDataGrid& points =
-                    *openvdb::gridConstPtrCast<openvdb::points::PointDataGrid>(grid);
+                const laovdb::points::PointDataGrid& points =
+                    *laovdb::gridConstPtrCast<laovdb::points::PointDataGrid>(grid);
 
                 std::string countStr, groupStr, attributeStr;
                 collectPointInfo(points, countStr, groupStr, attributeStr);
@@ -315,7 +315,7 @@ SOP_NodeVDB::getNodeSpecificInfoText(OP_Context &context, OP_NodeInfoParms &parm
 
     for (VdbPrimCIterator it(tmp_gdp); it; ++it) {
 
-        const openvdb::GridBase& grid = it->getGrid();
+        const laovdb::GridBase& grid = it->getGrid();
 
         node_info_text::ApplyGridSpecificInfoText callback =
             node_info_text::getGridSpecificInfoText(grid.type());
@@ -479,7 +479,7 @@ namespace {
 void
 createEmptyGridGlyph(GU_Detail& gdp, GridCRef grid)
 {
-    openvdb::Vec3R lines[6];
+    laovdb::Vec3R lines[6];
 
     lines[0].init(-0.5, 0.0, 0.0);
     lines[1].init( 0.5, 0.0, 0.0);
@@ -488,7 +488,7 @@ createEmptyGridGlyph(GU_Detail& gdp, GridCRef grid)
     lines[4].init( 0.0, 0.0,-0.5);
     lines[5].init( 0.0, 0.0, 0.5);
 
-    const openvdb::math::Transform &xform = grid.transform();
+    const laovdb::math::Transform &xform = grid.transform();
     lines[0] = xform.indexToWorld(lines[0]);
     lines[1] = xform.indexToWorld(lines[1]);
     lines[2] = xform.indexToWorld(lines[2]);
@@ -543,43 +543,43 @@ SOP_NodeVDB::cookMyGuide1(OP_Context& context)
 ////////////////////////////////////////
 
 
-openvdb::Vec3f
+laovdb::Vec3f
 SOP_NodeVDB::evalVec3f(const char *name, fpreal time) const
 {
-    return openvdb::Vec3f(float(evalFloat(name, 0, time)),
+    return laovdb::Vec3f(float(evalFloat(name, 0, time)),
                           float(evalFloat(name, 1, time)),
                           float(evalFloat(name, 2, time)));
 }
 
-openvdb::Vec3R
+laovdb::Vec3R
 SOP_NodeVDB::evalVec3R(const char *name, fpreal time) const
 {
-    return openvdb::Vec3R(evalFloat(name, 0, time),
+    return laovdb::Vec3R(evalFloat(name, 0, time),
                           evalFloat(name, 1, time),
                           evalFloat(name, 2, time));
 }
 
-openvdb::Vec3i
+laovdb::Vec3i
 SOP_NodeVDB::evalVec3i(const char *name, fpreal time) const
 {
-    using ValueT = openvdb::Vec3i::value_type;
-    return openvdb::Vec3i(static_cast<ValueT>(evalInt(name, 0, time)),
+    using ValueT = laovdb::Vec3i::value_type;
+    return laovdb::Vec3i(static_cast<ValueT>(evalInt(name, 0, time)),
                           static_cast<ValueT>(evalInt(name, 1, time)),
                           static_cast<ValueT>(evalInt(name, 2, time)));
 }
 
-openvdb::Vec2R
+laovdb::Vec2R
 SOP_NodeVDB::evalVec2R(const char *name, fpreal time) const
 {
-    return openvdb::Vec2R(evalFloat(name, 0, time),
+    return laovdb::Vec2R(evalFloat(name, 0, time),
                           evalFloat(name, 1, time));
 }
 
-openvdb::Vec2i
+laovdb::Vec2i
 SOP_NodeVDB::evalVec2i(const char *name, fpreal time) const
 {
-    using ValueT = openvdb::Vec2i::value_type;
-    return openvdb::Vec2i(static_cast<ValueT>(evalInt(name, 0, time)),
+    using ValueT = laovdb::Vec2i::value_type;
+    return laovdb::Vec2i(static_cast<ValueT>(evalInt(name, 0, time)),
                           static_cast<ValueT>(evalInt(name, 1, time)));
 }
 
@@ -764,4 +764,4 @@ OpenVDBOpFactory::setNativeName(const std::string& name)
     return *this;
 }
 
-} // namespace openvdb_houdini
+} // namespace laovdb_houdini

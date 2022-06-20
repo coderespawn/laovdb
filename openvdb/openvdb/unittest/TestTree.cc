@@ -27,41 +27,41 @@
 
 
 using ValueType = float;
-using LeafNodeType = openvdb::tree::LeafNode<ValueType,3>;
-using InternalNodeType1 = openvdb::tree::InternalNode<LeafNodeType,4>;
-using InternalNodeType2 = openvdb::tree::InternalNode<InternalNodeType1,5>;
-using RootNodeType = openvdb::tree::RootNode<InternalNodeType2>;
+using LeafNodeType = laovdb::tree::LeafNode<ValueType,3>;
+using InternalNodeType1 = laovdb::tree::InternalNode<LeafNodeType,4>;
+using InternalNodeType2 = laovdb::tree::InternalNode<InternalNodeType1,5>;
+using RootNodeType = laovdb::tree::RootNode<InternalNodeType2>;
 
 
 class TestTree: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 
 protected:
     template<typename TreeType> void testWriteHalf();
-    template<typename TreeType> void doTestMerge(openvdb::MergePolicy);
+    template<typename TreeType> void doTestMerge(laovdb::MergePolicy);
 };
 
 
 TEST_F(TestTree, testChangeBackground)
 {
     const int dim = 128;
-    const openvdb::Vec3f center(0.35f, 0.35f, 0.35f);
+    const laovdb::Vec3f center(0.35f, 0.35f, 0.35f);
     const float
         radius = 0.15f,
         voxelSize = 1.0f / (dim-1),
         halfWidth = 4,
         gamma = halfWidth * voxelSize;
-    using GridT = openvdb::FloatGrid;
-    const openvdb::Coord inside(int(center[0]*dim), int(center[1]*dim), int(center[2]*dim));
-    const openvdb::Coord outside(dim);
+    using GridT = laovdb::FloatGrid;
+    const laovdb::Coord inside(int(center[0]*dim), int(center[1]*dim), int(center[2]*dim));
+    const laovdb::Coord outside(dim);
 
     {//changeBackground
-        GridT::Ptr grid = openvdb::tools::createLevelSetSphere<GridT>(
+        GridT::Ptr grid = laovdb::tools::createLevelSetSphere<GridT>(
             radius, center, voxelSize, halfWidth);
-        openvdb::FloatTree& tree = grid->tree();
+        laovdb::FloatTree& tree = grid->tree();
 
         EXPECT_TRUE(grid->tree().isValueOff(outside));
         ASSERT_DOUBLES_EXACTLY_EQUAL( gamma, tree.getValue(outside));
@@ -70,7 +70,7 @@ TEST_F(TestTree, testChangeBackground)
         ASSERT_DOUBLES_EXACTLY_EQUAL(-gamma, tree.getValue(inside));
 
         const float background = gamma*3.43f;
-        openvdb::tools::changeBackground(tree, background);
+        laovdb::tools::changeBackground(tree, background);
 
         EXPECT_TRUE(grid->tree().isValueOff(outside));
         ASSERT_DOUBLES_EXACTLY_EQUAL( background, tree.getValue(outside));
@@ -80,9 +80,9 @@ TEST_F(TestTree, testChangeBackground)
     }
 
     {//changeLevelSetBackground
-        GridT::Ptr grid = openvdb::tools::createLevelSetSphere<GridT>(
+        GridT::Ptr grid = laovdb::tools::createLevelSetSphere<GridT>(
             radius, center, voxelSize, halfWidth);
-        openvdb::FloatTree& tree = grid->tree();
+        laovdb::FloatTree& tree = grid->tree();
 
         EXPECT_TRUE(grid->tree().isValueOff(outside));
         ASSERT_DOUBLES_EXACTLY_EQUAL( gamma, tree.getValue(outside));
@@ -91,7 +91,7 @@ TEST_F(TestTree, testChangeBackground)
         ASSERT_DOUBLES_EXACTLY_EQUAL(-gamma, tree.getValue(inside));
 
         const float v1 = gamma*3.43f, v2 = -gamma*6.457f;
-        openvdb::tools::changeAsymmetricLevelSetBackground(tree, v1, v2);
+        laovdb::tools::changeAsymmetricLevelSetBackground(tree, v1, v2);
 
         EXPECT_TRUE(grid->tree().isValueOff(outside));
         ASSERT_DOUBLES_EXACTLY_EQUAL( v1, tree.getValue(outside));
@@ -104,17 +104,17 @@ TEST_F(TestTree, testChangeBackground)
 
 TEST_F(TestTree, testHalf)
 {
-    testWriteHalf<openvdb::FloatTree>();
-    testWriteHalf<openvdb::DoubleTree>();
-    testWriteHalf<openvdb::Vec2STree>();
-    testWriteHalf<openvdb::Vec2DTree>();
-    testWriteHalf<openvdb::Vec3STree>();
-    testWriteHalf<openvdb::Vec3DTree>();
+    testWriteHalf<laovdb::FloatTree>();
+    testWriteHalf<laovdb::DoubleTree>();
+    testWriteHalf<laovdb::Vec2STree>();
+    testWriteHalf<laovdb::Vec2DTree>();
+    testWriteHalf<laovdb::Vec3STree>();
+    testWriteHalf<laovdb::Vec3DTree>();
 
     // Verify that non-floating-point grids are saved correctly.
-    testWriteHalf<openvdb::BoolTree>();
-    testWriteHalf<openvdb::Int32Tree>();
-    testWriteHalf<openvdb::Int64Tree>();
+    testWriteHalf<laovdb::BoolTree>();
+    testWriteHalf<laovdb::Int32Tree>();
+    testWriteHalf<laovdb::Int64Tree>();
 }
 
 
@@ -122,13 +122,13 @@ template<class TreeType>
 void
 TestTree::testWriteHalf()
 {
-    using GridType = openvdb::Grid<TreeType>;
+    using GridType = laovdb::Grid<TreeType>;
     using ValueT = typename TreeType::ValueType;
     ValueT background(5);
     GridType grid(background);
 
-    unittest_util::makeSphere<GridType>(openvdb::Coord(64, 64, 64),
-                                        openvdb::Vec3f(35, 30, 40),
+    unittest_util::makeSphere<GridType>(laovdb::Coord(64, 64, 64),
+                                        laovdb::Vec3f(35, 30, 40),
                                         /*radius=*/10, grid,
                                         /*dx=*/1.0f, unittest_util::SPHERE_DENSE);
     EXPECT_TRUE(!grid.tree().empty());
@@ -148,7 +148,7 @@ TestTree::testWriteHalf()
     const size_t halfBytes = outHalf.str().size();
     if (halfBytes == 0) FAIL() << "wrote empty half float buffers";
 
-    if (openvdb::io::RealToHalf<ValueT>::isReal) {
+    if (laovdb::io::RealToHalf<ValueT>::isReal) {
         // Verify that the half float file is "significantly smaller" than the full float file.
         if (halfBytes >= size_t(0.75 * double(fullBytes))) {
             FAIL() << "half float buffers not significantly smaller than full float ("
@@ -158,7 +158,7 @@ TestTree::testWriteHalf()
         // For non-real data types, "half float" and "full float" file sizes should be the same.
         if (halfBytes != fullBytes) {
             FAIL() << "full float and half float file sizes differ for data of type "
-            + std::string(openvdb::typeNameAsString<ValueT>());
+            + std::string(laovdb::typeNameAsString<ValueT>());
         }
     }
 
@@ -166,13 +166,13 @@ TestTree::testWriteHalf()
     // then write it out again in half float format.  Verify that the resulting file
     // is identical to the original half float file.
     {
-        openvdb::Grid<TreeType> gridCopy(grid);
+        laovdb::Grid<TreeType> gridCopy(grid);
         gridCopy.setSaveFloatAsHalf(true);
         std::istringstream is(outHalf.str(), std::ios_base::binary);
 
         // Since the input stream doesn't include a VDB header with file format version info,
         // tag the input stream explicitly with the current version number.
-        openvdb::io::setCurrentVersion(is);
+        laovdb::io::setCurrentVersion(is);
 
         gridCopy.readBuffers(is);
 
@@ -192,7 +192,7 @@ TEST_F(TestTree, testValues)
     ValueType background=5.0f;
 
     {
-        const openvdb::Coord c0(5,10,20), c1(50000,20000,30000);
+        const laovdb::Coord c0(5,10,20), c1(50000,20000,30000);
         RootNodeType root_node(background);
         const float v0=0.234f, v1=4.5678f;
         EXPECT_TRUE(root_node.empty());
@@ -206,7 +206,7 @@ TEST_F(TestTree, testValues)
         for (int i =0; i<256; ++i) {
             for (int j=0; j<256; ++j) {
                 for (int k=0; k<256; ++k) {
-                    if (root_node.getValue(openvdb::Coord(i,j,k))<1.0f) ++count;
+                    if (root_node.getValue(laovdb::Coord(i,j,k))<1.0f) ++count;
                 }
             }
         }
@@ -214,8 +214,8 @@ TEST_F(TestTree, testValues)
     }
 
     {
-        const openvdb::Coord min(-30,-25,-60), max(60,80,100);
-        const openvdb::Coord c0(-5,-10,-20), c1(50,20,90), c2(59,67,89);
+        const laovdb::Coord min(-30,-25,-60), max(60,80,100);
+        const laovdb::Coord c0(-5,-10,-20), c1(50,20,90), c2(59,67,89);
         const float v0=0.234f, v1=4.5678f, v2=-5.673f;
         RootNodeType root_node(background);
         EXPECT_TRUE(root_node.empty());
@@ -232,7 +232,7 @@ TEST_F(TestTree, testValues)
         for (int i =min[0]; i<max[0]; ++i) {
             for (int j=min[1]; j<max[1]; ++j) {
                 for (int k=min[2]; k<max[2]; ++k) {
-                    if (root_node.getValue(openvdb::Coord(i,j,k))<1.0f) ++count;
+                    if (root_node.getValue(laovdb::Coord(i,j,k))<1.0f) ++count;
                 }
             }
         }
@@ -244,8 +244,8 @@ TEST_F(TestTree, testValues)
 TEST_F(TestTree, testSetValue)
 {
     const float background = 5.0f;
-    openvdb::FloatTree tree(background);
-    const openvdb::Coord c0( 5, 10, 20), c1(-5,-10,-20);
+    laovdb::FloatTree tree(background);
+    const laovdb::Coord c0( 5, 10, 20), c1(-5,-10,-20);
 
     ASSERT_DOUBLES_EXACTLY_EQUAL(background, tree.getValue(c0));
     ASSERT_DOUBLES_EXACTLY_EQUAL(background, tree.getValue(c1));
@@ -260,8 +260,8 @@ TEST_F(TestTree, testSetValue)
     ASSERT_DOUBLES_EXACTLY_EQUAL(background, tree.getValue(c1));
     EXPECT_EQ( 3, tree.getValueDepth(c0));
     EXPECT_EQ(-1, tree.getValueDepth(c1));
-    EXPECT_EQ( 3, tree.getValueDepth(openvdb::Coord(7, 10, 20)));
-    EXPECT_EQ( 2, tree.getValueDepth(openvdb::Coord(8, 10, 20)));
+    EXPECT_EQ( 3, tree.getValueDepth(laovdb::Coord(7, 10, 20)));
+    EXPECT_EQ( 2, tree.getValueDepth(laovdb::Coord(8, 10, 20)));
     EXPECT_TRUE(tree.isValueOn(c0));
     EXPECT_TRUE(tree.isValueOff(c1));
 
@@ -280,20 +280,20 @@ TEST_F(TestTree, testSetValue)
         static inline void sumOp(float& f, bool& b) { f += /*background=*/5.f; b = true; }
     };
 
-    openvdb::tools::setValueOnMin(tree, c0, 15.0);
+    laovdb::tools::setValueOnMin(tree, c0, 15.0);
     tree.modifyValueAndActiveState(c1, Local::minOp);
 
     ASSERT_DOUBLES_EXACTLY_EQUAL(10.0, tree.getValue(c0));
     ASSERT_DOUBLES_EXACTLY_EQUAL(15.0, tree.getValue(c1));
 
-    openvdb::tools::setValueOnMax(tree, c0, 12.0);
+    laovdb::tools::setValueOnMax(tree, c0, 12.0);
     tree.modifyValueAndActiveState(c1, Local::maxOp);
 
     ASSERT_DOUBLES_EXACTLY_EQUAL(12.0, tree.getValue(c0));
     ASSERT_DOUBLES_EXACTLY_EQUAL(15.0, tree.getValue(c1));
     EXPECT_EQ(2, int(tree.activeVoxelCount()));
 
-    const openvdb::math::MinMax<float> extrema = openvdb::tools::minMax(tree);
+    const laovdb::math::MinMax<float> extrema = laovdb::tools::minMax(tree);
     ASSERT_DOUBLES_EXACTLY_EQUAL(12.0, extrema.min());
     ASSERT_DOUBLES_EXACTLY_EQUAL(15.0, extrema.max());
 
@@ -303,7 +303,7 @@ TEST_F(TestTree, testSetValue)
     ASSERT_DOUBLES_EXACTLY_EQUAL(15.0, tree.getValue(c1));
     EXPECT_EQ(1, int(tree.activeVoxelCount()));
 
-    openvdb::tools::setValueOnSum(tree, c0, background);
+    laovdb::tools::setValueOnSum(tree, c0, background);
     tree.modifyValueAndActiveState(c1, Local::sumOp);
 
     ASSERT_DOUBLES_EXACTLY_EQUAL(2*background, tree.getValue(c0));
@@ -311,21 +311,21 @@ TEST_F(TestTree, testSetValue)
     EXPECT_EQ(2, int(tree.activeVoxelCount()));
 
     // Test the extremes of the coordinate range
-    ASSERT_DOUBLES_EXACTLY_EQUAL(background, tree.getValue(openvdb::Coord::min()));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(background, tree.getValue(openvdb::Coord::max()));
-    //std::cerr << "min=" << openvdb::Coord::min() << " max= " << openvdb::Coord::max() << "\n";
-    tree.setValue(openvdb::Coord::min(), 1.0f);
-    tree.setValue(openvdb::Coord::max(), 2.0f);
-    ASSERT_DOUBLES_EXACTLY_EQUAL(1.0f, tree.getValue(openvdb::Coord::min()));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(2.0f, tree.getValue(openvdb::Coord::max()));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(background, tree.getValue(laovdb::Coord::min()));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(background, tree.getValue(laovdb::Coord::max()));
+    //std::cerr << "min=" << laovdb::Coord::min() << " max= " << laovdb::Coord::max() << "\n";
+    tree.setValue(laovdb::Coord::min(), 1.0f);
+    tree.setValue(laovdb::Coord::max(), 2.0f);
+    ASSERT_DOUBLES_EXACTLY_EQUAL(1.0f, tree.getValue(laovdb::Coord::min()));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(2.0f, tree.getValue(laovdb::Coord::max()));
 }
 
 
 TEST_F(TestTree, testSetValueOnly)
 {
     const float background = 5.0f;
-    openvdb::FloatTree tree(background);
-    const openvdb::Coord c0( 5, 10, 20), c1(-5,-10,-20);
+    laovdb::FloatTree tree(background);
+    const laovdb::Coord c0( 5, 10, 20), c1(-5,-10,-20);
 
     ASSERT_DOUBLES_EXACTLY_EQUAL(background, tree.getValue(c0));
     ASSERT_DOUBLES_EXACTLY_EQUAL(background, tree.getValue(c1));
@@ -340,8 +340,8 @@ TEST_F(TestTree, testSetValueOnly)
     ASSERT_DOUBLES_EXACTLY_EQUAL(background, tree.getValue(c1));
     EXPECT_EQ( 3, tree.getValueDepth(c0));
     EXPECT_EQ(-1, tree.getValueDepth(c1));
-    EXPECT_EQ( 3, tree.getValueDepth(openvdb::Coord(7, 10, 20)));
-    EXPECT_EQ( 2, tree.getValueDepth(openvdb::Coord(8, 10, 20)));
+    EXPECT_EQ( 3, tree.getValueDepth(laovdb::Coord(7, 10, 20)));
+    EXPECT_EQ( 2, tree.getValueDepth(laovdb::Coord(8, 10, 20)));
     EXPECT_TRUE(tree.isValueOff(c0));
     EXPECT_TRUE(tree.isValueOff(c1));
 
@@ -388,7 +388,7 @@ struct FloatThrowOnCopy
     FloatThrowOnCopy() = default;
     explicit FloatThrowOnCopy(float _value): value(_value) { }
 
-    FloatThrowOnCopy(const FloatThrowOnCopy&) { throw openvdb::RuntimeError("No Copy"); }
+    FloatThrowOnCopy(const FloatThrowOnCopy&) { throw laovdb::RuntimeError("No Copy"); }
     FloatThrowOnCopy& operator=(const FloatThrowOnCopy&) = default;
 
     T operator+(const float rhs) const { return T(value + rhs); }
@@ -406,7 +406,7 @@ struct FloatThrowOnCopy
 
 } // namespace
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -424,17 +424,17 @@ inline std::string
 TypedMetadata<FloatThrowOnCopy>::typeName() const { return ""; }
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 TEST_F(TestTree, testSetValueInPlace)
 {
-    using FloatThrowOnCopyTree = openvdb::tree::Tree4<FloatThrowOnCopy, 5, 4, 3>::Type;
-    using FloatThrowOnCopyGrid = openvdb::Grid<FloatThrowOnCopyTree>;
+    using FloatThrowOnCopyTree = laovdb::tree::Tree4<FloatThrowOnCopy, 5, 4, 3>::Type;
+    using FloatThrowOnCopyGrid = laovdb::Grid<FloatThrowOnCopyTree>;
 
     FloatThrowOnCopyGrid::registerGrid();
 
     FloatThrowOnCopyTree tree;
-    const openvdb::Coord c0(5, 10, 20), c1(-5,-10,-20);
+    const laovdb::Coord c0(5, 10, 20), c1(-5,-10,-20);
 
     // tile values can legitimately be copied to assess whether a change in value
     // requires the tile to be voxelized, so activate and voxelize active tiles first
@@ -470,13 +470,13 @@ TEST_F(TestTree, testResize)
     //use this when resize is implemented
     RootNodeType root_node(background);
     EXPECT_TRUE(root_node.getLevel()==3);
-    ASSERT_DOUBLES_EXACTLY_EQUAL(background, root_node.getValue(openvdb::Coord(5,10,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(background, root_node.getValue(laovdb::Coord(5,10,20)));
     //fprintf(stdout,"Root grid  dim=(%i,%i,%i)\n",
     //    root_node.getGridDim(0), root_node.getGridDim(1), root_node.getGridDim(2));
-    root_node.setValueOn(openvdb::Coord(5,10,20),0.234f);
-    ASSERT_DOUBLES_EXACTLY_EQUAL(root_node.getValue(openvdb::Coord(5,10,20)) , 0.234f);
-    root_node.setValueOn(openvdb::Coord(500,200,300),4.5678f);
-    ASSERT_DOUBLES_EXACTLY_EQUAL(root_node.getValue(openvdb::Coord(500,200,300)) , 4.5678f);
+    root_node.setValueOn(laovdb::Coord(5,10,20),0.234f);
+    ASSERT_DOUBLES_EXACTLY_EQUAL(root_node.getValue(laovdb::Coord(5,10,20)) , 0.234f);
+    root_node.setValueOn(laovdb::Coord(500,200,300),4.5678f);
+    ASSERT_DOUBLES_EXACTLY_EQUAL(root_node.getValue(laovdb::Coord(500,200,300)) , 4.5678f);
     {
         ValueType sum=0.0f;
         for (RootNodeType::ChildOnIter root_iter = root_node.beginChildOn();
@@ -500,7 +500,7 @@ TEST_F(TestTree, testResize)
     }
 
     EXPECT_TRUE(root_node.getLevel()==3);
-    ASSERT_DOUBLES_EXACTLY_EQUAL(background, root_node.getValue(openvdb::Coord(5,11,20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(background, root_node.getValue(laovdb::Coord(5,11,20)));
     {
         ValueType sum=0.0f;
         for (RootNodeType::ChildOnIter root_iter = root_node.beginChildOn();
@@ -531,54 +531,54 @@ TEST_F(TestTree, testHasSameTopology)
     // Test using trees of the same type.
     {
         const float background1=5.0f;
-        openvdb::FloatTree tree1(background1);
+        laovdb::FloatTree tree1(background1);
 
         const float background2=6.0f;
-        openvdb::FloatTree tree2(background2);
+        laovdb::FloatTree tree2(background2);
 
         EXPECT_TRUE(tree1.hasSameTopology(tree2));
         EXPECT_TRUE(tree2.hasSameTopology(tree1));
 
-        tree1.setValue(openvdb::Coord(-10,40,845),3.456f);
+        tree1.setValue(laovdb::Coord(-10,40,845),3.456f);
         EXPECT_TRUE(!tree1.hasSameTopology(tree2));
         EXPECT_TRUE(!tree2.hasSameTopology(tree1));
 
-        tree2.setValue(openvdb::Coord(-10,40,845),-3.456f);
+        tree2.setValue(laovdb::Coord(-10,40,845),-3.456f);
         EXPECT_TRUE(tree1.hasSameTopology(tree2));
         EXPECT_TRUE(tree2.hasSameTopology(tree1));
 
-        tree1.setValue(openvdb::Coord(1,-500,-8), 1.0f);
+        tree1.setValue(laovdb::Coord(1,-500,-8), 1.0f);
         EXPECT_TRUE(!tree1.hasSameTopology(tree2));
         EXPECT_TRUE(!tree2.hasSameTopology(tree1));
 
-        tree2.setValue(openvdb::Coord(1,-500,-8),1.0f);
+        tree2.setValue(laovdb::Coord(1,-500,-8),1.0f);
         EXPECT_TRUE(tree1.hasSameTopology(tree2));
         EXPECT_TRUE(tree2.hasSameTopology(tree1));
     }
     // Test using trees of different types.
     {
         const float background1=5.0f;
-        openvdb::FloatTree tree1(background1);
+        laovdb::FloatTree tree1(background1);
 
-        const openvdb::Vec3f background2(1.0f,3.4f,6.0f);
-        openvdb::Vec3fTree tree2(background2);
+        const laovdb::Vec3f background2(1.0f,3.4f,6.0f);
+        laovdb::Vec3fTree tree2(background2);
 
         EXPECT_TRUE(tree1.hasSameTopology(tree2));
         EXPECT_TRUE(tree2.hasSameTopology(tree1));
 
-        tree1.setValue(openvdb::Coord(-10,40,845),3.456f);
+        tree1.setValue(laovdb::Coord(-10,40,845),3.456f);
         EXPECT_TRUE(!tree1.hasSameTopology(tree2));
         EXPECT_TRUE(!tree2.hasSameTopology(tree1));
 
-        tree2.setValue(openvdb::Coord(-10,40,845),openvdb::Vec3f(1.0f,2.0f,-3.0f));
+        tree2.setValue(laovdb::Coord(-10,40,845),laovdb::Vec3f(1.0f,2.0f,-3.0f));
         EXPECT_TRUE(tree1.hasSameTopology(tree2));
         EXPECT_TRUE(tree2.hasSameTopology(tree1));
 
-        tree1.setValue(openvdb::Coord(1,-500,-8), 1.0f);
+        tree1.setValue(laovdb::Coord(1,-500,-8), 1.0f);
         EXPECT_TRUE(!tree1.hasSameTopology(tree2));
         EXPECT_TRUE(!tree2.hasSameTopology(tree1));
 
-        tree2.setValue(openvdb::Coord(1,-500,-8),openvdb::Vec3f(1.0f,2.0f,-3.0f));
+        tree2.setValue(laovdb::Coord(1,-500,-8),laovdb::Vec3f(1.0f,2.0f,-3.0f));
         EXPECT_TRUE(tree1.hasSameTopology(tree2));
         EXPECT_TRUE(tree2.hasSameTopology(tree1));
     }
@@ -590,50 +590,50 @@ TEST_F(TestTree, testTopologyCopy)
     // Test using trees of the same type.
     {
         const float background1=5.0f;
-        openvdb::FloatTree tree1(background1);
-        tree1.setValue(openvdb::Coord(-10,40,845),3.456f);
-        tree1.setValue(openvdb::Coord(1,-50,-8), 1.0f);
+        laovdb::FloatTree tree1(background1);
+        tree1.setValue(laovdb::Coord(-10,40,845),3.456f);
+        tree1.setValue(laovdb::Coord(1,-50,-8), 1.0f);
 
         const float background2=6.0f, setValue2=3.0f;
-        openvdb::FloatTree tree2(tree1,background2,setValue2,openvdb::TopologyCopy());
+        laovdb::FloatTree tree2(tree1,background2,setValue2,laovdb::TopologyCopy());
 
         EXPECT_TRUE(tree1.hasSameTopology(tree2));
         EXPECT_TRUE(tree2.hasSameTopology(tree1));
 
-        ASSERT_DOUBLES_EXACTLY_EQUAL(background2, tree2.getValue(openvdb::Coord(1,2,3)));
-        ASSERT_DOUBLES_EXACTLY_EQUAL(setValue2, tree2.getValue(openvdb::Coord(-10,40,845)));
-        ASSERT_DOUBLES_EXACTLY_EQUAL(setValue2, tree2.getValue(openvdb::Coord(1,-50,-8)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(background2, tree2.getValue(laovdb::Coord(1,2,3)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(setValue2, tree2.getValue(laovdb::Coord(-10,40,845)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(setValue2, tree2.getValue(laovdb::Coord(1,-50,-8)));
 
-        tree1.setValue(openvdb::Coord(1,-500,-8), 1.0f);
+        tree1.setValue(laovdb::Coord(1,-500,-8), 1.0f);
         EXPECT_TRUE(!tree1.hasSameTopology(tree2));
         EXPECT_TRUE(!tree2.hasSameTopology(tree1));
 
-        tree2.setValue(openvdb::Coord(1,-500,-8),1.0f);
+        tree2.setValue(laovdb::Coord(1,-500,-8),1.0f);
         EXPECT_TRUE(tree1.hasSameTopology(tree2));
         EXPECT_TRUE(tree2.hasSameTopology(tree1));
     }
     // Test using trees of different types.
     {
-        const openvdb::Vec3f background1(1.0f,3.4f,6.0f);
-        openvdb::Vec3fTree tree1(background1);
-        tree1.setValue(openvdb::Coord(-10,40,845),openvdb::Vec3f(3.456f,-2.3f,5.6f));
-        tree1.setValue(openvdb::Coord(1,-50,-8), openvdb::Vec3f(1.0f,3.0f,4.5f));
+        const laovdb::Vec3f background1(1.0f,3.4f,6.0f);
+        laovdb::Vec3fTree tree1(background1);
+        tree1.setValue(laovdb::Coord(-10,40,845),laovdb::Vec3f(3.456f,-2.3f,5.6f));
+        tree1.setValue(laovdb::Coord(1,-50,-8), laovdb::Vec3f(1.0f,3.0f,4.5f));
 
         const float background2=6.0f, setValue2=3.0f;
-        openvdb::FloatTree tree2(tree1,background2,setValue2,openvdb::TopologyCopy());
+        laovdb::FloatTree tree2(tree1,background2,setValue2,laovdb::TopologyCopy());
 
         EXPECT_TRUE(tree1.hasSameTopology(tree2));
         EXPECT_TRUE(tree2.hasSameTopology(tree1));
 
-        ASSERT_DOUBLES_EXACTLY_EQUAL(background2, tree2.getValue(openvdb::Coord(1,2,3)));
-        ASSERT_DOUBLES_EXACTLY_EQUAL(setValue2, tree2.getValue(openvdb::Coord(-10,40,845)));
-        ASSERT_DOUBLES_EXACTLY_EQUAL(setValue2, tree2.getValue(openvdb::Coord(1,-50,-8)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(background2, tree2.getValue(laovdb::Coord(1,2,3)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(setValue2, tree2.getValue(laovdb::Coord(-10,40,845)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(setValue2, tree2.getValue(laovdb::Coord(1,-50,-8)));
 
-        tree1.setValue(openvdb::Coord(1,-500,-8), openvdb::Vec3f(1.0f,0.0f,-3.0f));
+        tree1.setValue(laovdb::Coord(1,-500,-8), laovdb::Vec3f(1.0f,0.0f,-3.0f));
         EXPECT_TRUE(!tree1.hasSameTopology(tree2));
         EXPECT_TRUE(!tree2.hasSameTopology(tree1));
 
-        tree2.setValue(openvdb::Coord(1,-500,-8), 1.0f);
+        tree2.setValue(laovdb::Coord(1,-500,-8), 1.0f);
         EXPECT_TRUE(tree1.hasSameTopology(tree2));
         EXPECT_TRUE(tree2.hasSameTopology(tree1));
     }
@@ -644,8 +644,8 @@ TEST_F(TestTree, testIterators)
 {
     ValueType background=5.0f;
     RootNodeType root_node(background);
-    root_node.setValueOn(openvdb::Coord(5,10,20),0.234f);
-    root_node.setValueOn(openvdb::Coord(50000,20000,30000),4.5678f);
+    root_node.setValueOn(laovdb::Coord(5,10,20),0.234f);
+    root_node.setValueOn(laovdb::Coord(50000,20000,30000),4.5678f);
     {
         ValueType sum=0.0f;
         for (RootNodeType::ChildOnIter root_iter = root_node.beginChildOn();
@@ -697,7 +697,7 @@ TEST_F(TestTree, testIterators)
     }
     {
         ValueType v_sum=0.0f;
-        openvdb::Coord xyz0, xyz1, xyz2, xyz3, xyzSum(0, 0, 0);
+        laovdb::Coord xyz0, xyz1, xyz2, xyz3, xyzSum(0, 0, 0);
         for (RootNodeType::ChildOnIter root_iter = root_node.beginChildOn();
             root_iter.test(); ++root_iter)
         {
@@ -724,7 +724,7 @@ TEST_F(TestTree, testIterators)
             }
         }
         ASSERT_DOUBLES_EXACTLY_EQUAL((0.234f + 4.5678f), v_sum);
-        EXPECT_EQ(openvdb::Coord(5 + 50000, 10 + 20000, 20 + 30000), xyzSum);
+        EXPECT_EQ(laovdb::Coord(5 + 50000, 10 + 20000, 20 + 30000), xyzSum);
     }
 }
 
@@ -732,12 +732,12 @@ TEST_F(TestTree, testIterators)
 TEST_F(TestTree, testIO)
 {
     const char* filename = "testIO.dbg";
-    openvdb::SharedPtr<const char> scopedFile(filename, ::remove);
+    laovdb::SharedPtr<const char> scopedFile(filename, ::remove);
     {
         ValueType background=5.0f;
         RootNodeType root_node(background);
-        root_node.setValueOn(openvdb::Coord(5,10,20),0.234f);
-        root_node.setValueOn(openvdb::Coord(50000,20000,30000),4.5678f);
+        root_node.setValueOn(laovdb::Coord(5,10,20),0.234f);
+        root_node.setValueOn(laovdb::Coord(50000,20000,30000),4.5678f);
 
         std::ofstream os(filename, std::ios_base::binary);
         root_node.writeTopology(os);
@@ -747,19 +747,19 @@ TEST_F(TestTree, testIO)
     {
         ValueType background=2.0f;
         RootNodeType root_node(background);
-        ASSERT_DOUBLES_EXACTLY_EQUAL(background, root_node.getValue(openvdb::Coord(5,10,20)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(background, root_node.getValue(laovdb::Coord(5,10,20)));
         {
             std::ifstream is(filename, std::ios_base::binary);
             // Since the test file doesn't include a VDB header with file format version info,
             // tag the input stream explicitly with the current version number.
-            openvdb::io::setCurrentVersion(is);
+            laovdb::io::setCurrentVersion(is);
             root_node.readTopology(is);
             root_node.readBuffers(is);
             EXPECT_TRUE(!is.fail());
         }
 
-        ASSERT_DOUBLES_EXACTLY_EQUAL(0.234f, root_node.getValue(openvdb::Coord(5,10,20)));
-        ASSERT_DOUBLES_EXACTLY_EQUAL(5.0f, root_node.getValue(openvdb::Coord(5,11,20)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(0.234f, root_node.getValue(laovdb::Coord(5,10,20)));
+        ASSERT_DOUBLES_EXACTLY_EQUAL(5.0f, root_node.getValue(laovdb::Coord(5,11,20)));
         ValueType sum=0.0f;
         for (RootNodeType::ChildOnIter root_iter = root_node.beginChildOn();
             root_iter.test(); ++root_iter)
@@ -786,38 +786,38 @@ TEST_F(TestTree, testIO)
 TEST_F(TestTree, testNegativeIndexing)
 {
     ValueType background=5.0f;
-    openvdb::FloatTree tree(background);
+    laovdb::FloatTree tree(background);
     EXPECT_TRUE(tree.empty());
-    ASSERT_DOUBLES_EXACTLY_EQUAL(tree.getValue(openvdb::Coord(5,-10,20)), background);
-    ASSERT_DOUBLES_EXACTLY_EQUAL(tree.getValue(openvdb::Coord(-5000,2000,3000)), background);
-    tree.setValue(openvdb::Coord( 5, 10, 20),0.0f);
-    tree.setValue(openvdb::Coord(-5, 10, 20),0.1f);
-    tree.setValue(openvdb::Coord( 5,-10, 20),0.2f);
-    tree.setValue(openvdb::Coord( 5, 10,-20),0.3f);
-    tree.setValue(openvdb::Coord(-5,-10, 20),0.4f);
-    tree.setValue(openvdb::Coord(-5, 10,-20),0.5f);
-    tree.setValue(openvdb::Coord( 5,-10,-20),0.6f);
-    tree.setValue(openvdb::Coord(-5,-10,-20),0.7f);
-    tree.setValue(openvdb::Coord(-5000, 2000,-3000),4.5678f);
-    tree.setValue(openvdb::Coord( 5000,-2000,-3000),4.5678f);
-    tree.setValue(openvdb::Coord(-5000,-2000, 3000),4.5678f);
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.0f, tree.getValue(openvdb::Coord( 5, 10, 20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.1f, tree.getValue(openvdb::Coord(-5, 10, 20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.2f, tree.getValue(openvdb::Coord( 5,-10, 20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.3f, tree.getValue(openvdb::Coord( 5, 10,-20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.4f, tree.getValue(openvdb::Coord(-5,-10, 20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.5f, tree.getValue(openvdb::Coord(-5, 10,-20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.6f, tree.getValue(openvdb::Coord( 5,-10,-20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(0.7f, tree.getValue(openvdb::Coord(-5,-10,-20)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(openvdb::Coord(-5000, 2000,-3000)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(openvdb::Coord( 5000,-2000,-3000)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(openvdb::Coord(-5000,-2000, 3000)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(tree.getValue(laovdb::Coord(5,-10,20)), background);
+    ASSERT_DOUBLES_EXACTLY_EQUAL(tree.getValue(laovdb::Coord(-5000,2000,3000)), background);
+    tree.setValue(laovdb::Coord( 5, 10, 20),0.0f);
+    tree.setValue(laovdb::Coord(-5, 10, 20),0.1f);
+    tree.setValue(laovdb::Coord( 5,-10, 20),0.2f);
+    tree.setValue(laovdb::Coord( 5, 10,-20),0.3f);
+    tree.setValue(laovdb::Coord(-5,-10, 20),0.4f);
+    tree.setValue(laovdb::Coord(-5, 10,-20),0.5f);
+    tree.setValue(laovdb::Coord( 5,-10,-20),0.6f);
+    tree.setValue(laovdb::Coord(-5,-10,-20),0.7f);
+    tree.setValue(laovdb::Coord(-5000, 2000,-3000),4.5678f);
+    tree.setValue(laovdb::Coord( 5000,-2000,-3000),4.5678f);
+    tree.setValue(laovdb::Coord(-5000,-2000, 3000),4.5678f);
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.0f, tree.getValue(laovdb::Coord( 5, 10, 20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.1f, tree.getValue(laovdb::Coord(-5, 10, 20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.2f, tree.getValue(laovdb::Coord( 5,-10, 20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.3f, tree.getValue(laovdb::Coord( 5, 10,-20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.4f, tree.getValue(laovdb::Coord(-5,-10, 20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.5f, tree.getValue(laovdb::Coord(-5, 10,-20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.6f, tree.getValue(laovdb::Coord( 5,-10,-20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(0.7f, tree.getValue(laovdb::Coord(-5,-10,-20)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(laovdb::Coord(-5000, 2000,-3000)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(laovdb::Coord( 5000,-2000,-3000)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(4.5678f, tree.getValue(laovdb::Coord(-5000,-2000, 3000)));
     int count=0;
     for (int i =-25; i<25; ++i) {
         for (int j=-25; j<25; ++j) {
             for (int k=-25; k<25; ++k) {
-                if (tree.getValue(openvdb::Coord(i,j,k))<1.0f) {
-                    //fprintf(stderr,"(%i,%i,%i)=%f\n",i,j,k,tree.getValue(openvdb::Coord(i,j,k)));
+                if (tree.getValue(laovdb::Coord(i,j,k))<1.0f) {
+                    //fprintf(stderr,"(%i,%i,%i)=%f\n",i,j,k,tree.getValue(laovdb::Coord(i,j,k)));
                     ++count;
                 }
             }
@@ -825,8 +825,8 @@ TEST_F(TestTree, testNegativeIndexing)
     }
     EXPECT_TRUE(count == 8);
     int count2 = 0;
-    openvdb::Coord xyz;
-    for (openvdb::FloatTree::ValueOnCIter iter = tree.cbeginValueOn(); iter; ++iter) {
+    laovdb::Coord xyz;
+    for (laovdb::FloatTree::ValueOnCIter iter = tree.cbeginValueOn(); iter; ++iter) {
         ++count2;
         xyz = iter.getCoord();
         //std::cerr << xyz << " = " << *iter << "\n";
@@ -835,7 +835,7 @@ TEST_F(TestTree, testNegativeIndexing)
     EXPECT_TRUE(tree.activeVoxelCount() == 11);
     {
         count2 = 0;
-        for (openvdb::FloatTree::ValueOnCIter iter = tree.cbeginValueOn(); iter; ++iter) {
+        for (laovdb::FloatTree::ValueOnCIter iter = tree.cbeginValueOn(); iter; ++iter) {
             ++count2;
             xyz = iter.getCoord();
             //std::cerr << xyz << " = " << *iter << "\n";
@@ -850,27 +850,27 @@ TEST_F(TestTree, testDeepCopy)
 {
     // set up a tree
     const float fillValue1=5.0f;
-    openvdb::FloatTree tree1(fillValue1);
-    tree1.setValue(openvdb::Coord(-10,40,845), 3.456f);
-    tree1.setValue(openvdb::Coord(1,-50,-8), 1.0f);
+    laovdb::FloatTree tree1(fillValue1);
+    tree1.setValue(laovdb::Coord(-10,40,845), 3.456f);
+    tree1.setValue(laovdb::Coord(1,-50,-8), 1.0f);
 
     // make a deep copy of the tree
-    openvdb::TreeBase::Ptr newTree = tree1.copy();
+    laovdb::TreeBase::Ptr newTree = tree1.copy();
 
     // cast down to the concrete type to query values
-    openvdb::FloatTree *pTree2 = dynamic_cast<openvdb::FloatTree *>(newTree.get());
+    laovdb::FloatTree *pTree2 = dynamic_cast<laovdb::FloatTree *>(newTree.get());
 
     // compare topology
     EXPECT_TRUE(tree1.hasSameTopology(*pTree2));
     EXPECT_TRUE(pTree2->hasSameTopology(tree1));
 
     // trees should be equal
-    ASSERT_DOUBLES_EXACTLY_EQUAL(fillValue1, pTree2->getValue(openvdb::Coord(1,2,3)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(3.456f, pTree2->getValue(openvdb::Coord(-10,40,845)));
-    ASSERT_DOUBLES_EXACTLY_EQUAL(1.0f, pTree2->getValue(openvdb::Coord(1,-50,-8)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(fillValue1, pTree2->getValue(laovdb::Coord(1,2,3)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(3.456f, pTree2->getValue(laovdb::Coord(-10,40,845)));
+    ASSERT_DOUBLES_EXACTLY_EQUAL(1.0f, pTree2->getValue(laovdb::Coord(1,-50,-8)));
 
     // change 1 value in tree2
-    openvdb::Coord changeCoord(1, -500, -8);
+    laovdb::Coord changeCoord(1, -500, -8);
     pTree2->setValue(changeCoord, 1.0f);
 
     // topology should no longer match
@@ -886,37 +886,37 @@ TEST_F(TestTree, testDeepCopy)
 TEST_F(TestTree, testMerge)
 {
     ValueType background=5.0f;
-    openvdb::FloatTree tree0(background), tree1(background), tree2(background);
+    laovdb::FloatTree tree0(background), tree1(background), tree2(background);
      EXPECT_TRUE(tree2.empty());
-    tree0.setValue(openvdb::Coord( 5, 10, 20),0.0f);
-    tree0.setValue(openvdb::Coord(-5, 10, 20),0.1f);
-    tree0.setValue(openvdb::Coord( 5,-10, 20),0.2f);
-    tree0.setValue(openvdb::Coord( 5, 10,-20),0.3f);
-    tree1.setValue(openvdb::Coord( 5, 10, 20),0.0f);
-    tree1.setValue(openvdb::Coord(-5, 10, 20),0.1f);
-    tree1.setValue(openvdb::Coord( 5,-10, 20),0.2f);
-    tree1.setValue(openvdb::Coord( 5, 10,-20),0.3f);
+    tree0.setValue(laovdb::Coord( 5, 10, 20),0.0f);
+    tree0.setValue(laovdb::Coord(-5, 10, 20),0.1f);
+    tree0.setValue(laovdb::Coord( 5,-10, 20),0.2f);
+    tree0.setValue(laovdb::Coord( 5, 10,-20),0.3f);
+    tree1.setValue(laovdb::Coord( 5, 10, 20),0.0f);
+    tree1.setValue(laovdb::Coord(-5, 10, 20),0.1f);
+    tree1.setValue(laovdb::Coord( 5,-10, 20),0.2f);
+    tree1.setValue(laovdb::Coord( 5, 10,-20),0.3f);
 
-    tree0.setValue(openvdb::Coord(-5,-10, 20),0.4f);
-    tree0.setValue(openvdb::Coord(-5, 10,-20),0.5f);
-    tree0.setValue(openvdb::Coord( 5,-10,-20),0.6f);
-    tree0.setValue(openvdb::Coord(-5,-10,-20),0.7f);
-    tree0.setValue(openvdb::Coord(-5000, 2000,-3000),4.5678f);
-    tree0.setValue(openvdb::Coord( 5000,-2000,-3000),4.5678f);
-    tree0.setValue(openvdb::Coord(-5000,-2000, 3000),4.5678f);
-    tree2.setValue(openvdb::Coord(-5,-10, 20),0.4f);
-    tree2.setValue(openvdb::Coord(-5, 10,-20),0.5f);
-    tree2.setValue(openvdb::Coord( 5,-10,-20),0.6f);
-    tree2.setValue(openvdb::Coord(-5,-10,-20),0.7f);
-    tree2.setValue(openvdb::Coord(-5000, 2000,-3000),4.5678f);
-    tree2.setValue(openvdb::Coord( 5000,-2000,-3000),4.5678f);
-    tree2.setValue(openvdb::Coord(-5000,-2000, 3000),4.5678f);
+    tree0.setValue(laovdb::Coord(-5,-10, 20),0.4f);
+    tree0.setValue(laovdb::Coord(-5, 10,-20),0.5f);
+    tree0.setValue(laovdb::Coord( 5,-10,-20),0.6f);
+    tree0.setValue(laovdb::Coord(-5,-10,-20),0.7f);
+    tree0.setValue(laovdb::Coord(-5000, 2000,-3000),4.5678f);
+    tree0.setValue(laovdb::Coord( 5000,-2000,-3000),4.5678f);
+    tree0.setValue(laovdb::Coord(-5000,-2000, 3000),4.5678f);
+    tree2.setValue(laovdb::Coord(-5,-10, 20),0.4f);
+    tree2.setValue(laovdb::Coord(-5, 10,-20),0.5f);
+    tree2.setValue(laovdb::Coord( 5,-10,-20),0.6f);
+    tree2.setValue(laovdb::Coord(-5,-10,-20),0.7f);
+    tree2.setValue(laovdb::Coord(-5000, 2000,-3000),4.5678f);
+    tree2.setValue(laovdb::Coord( 5000,-2000,-3000),4.5678f);
+    tree2.setValue(laovdb::Coord(-5000,-2000, 3000),4.5678f);
 
     EXPECT_TRUE(tree0.leafCount()!=tree1.leafCount());
     EXPECT_TRUE(tree0.leafCount()!=tree2.leafCount());
 
     EXPECT_TRUE(!tree2.empty());
-    tree1.merge(tree2, openvdb::MERGE_ACTIVE_STATES);
+    tree1.merge(tree2, laovdb::MERGE_ACTIVE_STATES);
     EXPECT_TRUE(tree2.empty());
     EXPECT_TRUE(tree0.leafCount()==tree1.leafCount());
     EXPECT_TRUE(tree0.nonLeafCount()==tree1.nonLeafCount());
@@ -925,13 +925,13 @@ TEST_F(TestTree, testMerge)
     EXPECT_TRUE(tree0.activeVoxelCount()==tree1.activeVoxelCount());
     EXPECT_TRUE(tree0.inactiveVoxelCount()==tree1.inactiveVoxelCount());
 
-    for (openvdb::FloatTree::ValueOnCIter iter0 = tree0.cbeginValueOn(); iter0; ++iter0) {
+    for (laovdb::FloatTree::ValueOnCIter iter0 = tree0.cbeginValueOn(); iter0; ++iter0) {
         ASSERT_DOUBLES_EXACTLY_EQUAL(*iter0,tree1.getValue(iter0.getCoord()));
     }
 
     // Test active tile support.
     {
-        using namespace openvdb;
+        using namespace laovdb;
         FloatTree treeA(/*background*/0.0), treeB(/*background*/0.0);
 
         treeA.fill(CoordBBox(Coord(16,16,16), Coord(31,31,31)), /*value*/1.0);
@@ -946,21 +946,21 @@ TEST_F(TestTree, testMerge)
         EXPECT_EQ(0, int(treeB.activeVoxelCount()));
     }
 
-    doTestMerge<openvdb::FloatTree>(openvdb::MERGE_NODES);
-    doTestMerge<openvdb::FloatTree>(openvdb::MERGE_ACTIVE_STATES);
-    doTestMerge<openvdb::FloatTree>(openvdb::MERGE_ACTIVE_STATES_AND_NODES);
+    doTestMerge<laovdb::FloatTree>(laovdb::MERGE_NODES);
+    doTestMerge<laovdb::FloatTree>(laovdb::MERGE_ACTIVE_STATES);
+    doTestMerge<laovdb::FloatTree>(laovdb::MERGE_ACTIVE_STATES_AND_NODES);
 
-    doTestMerge<openvdb::BoolTree>(openvdb::MERGE_NODES);
-    doTestMerge<openvdb::BoolTree>(openvdb::MERGE_ACTIVE_STATES);
-    doTestMerge<openvdb::BoolTree>(openvdb::MERGE_ACTIVE_STATES_AND_NODES);
+    doTestMerge<laovdb::BoolTree>(laovdb::MERGE_NODES);
+    doTestMerge<laovdb::BoolTree>(laovdb::MERGE_ACTIVE_STATES);
+    doTestMerge<laovdb::BoolTree>(laovdb::MERGE_ACTIVE_STATES_AND_NODES);
 }
 
 
 template<typename TreeType>
 void
-TestTree::doTestMerge(openvdb::MergePolicy policy)
+TestTree::doTestMerge(laovdb::MergePolicy policy)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     TreeType treeA, treeB;
 
@@ -1036,11 +1036,11 @@ TestTree::doTestMerge(openvdb::MergePolicy policy)
 
 TEST_F(TestTree, testVoxelizeActiveTiles)
 {
-    using openvdb::CoordBBox;
-    using openvdb::Coord;
+    using laovdb::CoordBBox;
+    using laovdb::Coord;
     // Use a small custom tree so we don't run out of memory when
     // tiles are converted to dense leafs :)
-    using MyTree = openvdb::tree::Tree4<float,2, 2, 2>::Type;
+    using MyTree = laovdb::tree::Tree4<float,2, 2, 2>::Type;
     float background=5.0f;
     const Coord xyz[] = {Coord(-1,-2,-3),Coord( 1, 2, 3)};
     //check two leaf nodes and two tiles at each level 1, 2 and 3
@@ -1094,18 +1094,18 @@ TEST_F(TestTree, testVoxelizeActiveTiles)
         EXPECT_EQ(3      ,tree.getValueDepth(xyz[1]));
     }
 #if 0
-    const CoordBBox bbox(openvdb::Coord(-30,-50,-30), openvdb::Coord(530,610,623));
+    const CoordBBox bbox(laovdb::Coord(-30,-50,-30), laovdb::Coord(530,610,623));
     {// benchmark serial
         MyTree tree(background);
         tree.sparseFill( bbox, 1.0f, /*state*/true);
-        openvdb::util::CpuTimer timer("\nserial voxelizeActiveTiles");
+        laovdb::util::CpuTimer timer("\nserial voxelizeActiveTiles");
         tree.voxelizeActiveTiles(/*threaded*/false);
         timer.stop();
     }
     {// benchmark parallel
         MyTree tree(background);
         tree.sparseFill( bbox, 1.0f, /*state*/true);
-        openvdb::util::CpuTimer timer("\nparallel voxelizeActiveTiles");
+        laovdb::util::CpuTimer timer("\nparallel voxelizeActiveTiles");
         tree.voxelizeActiveTiles(/*threaded*/true);
         timer.stop();
     }
@@ -1117,56 +1117,56 @@ TEST_F(TestTree, testTopologyUnion)
 {
     {//super simple test with only two active values
         const ValueType background=0.0f;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree0.setValue(openvdb::Coord( 500, 300, 200), 1.0f);
-        tree1.setValue(openvdb::Coord(   8,  11,  11), 2.0f);
-        openvdb::FloatTree tree2(tree1);
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree0.setValue(laovdb::Coord( 500, 300, 200), 1.0f);
+        tree1.setValue(laovdb::Coord(   8,  11,  11), 2.0f);
+        laovdb::FloatTree tree2(tree1);
 
         tree1.topologyUnion(tree0);
 
-        for (openvdb::FloatTree::ValueOnCIter iter = tree0.cbeginValueOn(); iter; ++iter) {
+        for (laovdb::FloatTree::ValueOnCIter iter = tree0.cbeginValueOn(); iter; ++iter) {
             EXPECT_TRUE(tree1.isValueOn(iter.getCoord()));
         }
-        for (openvdb::FloatTree::ValueOnCIter iter = tree2.cbeginValueOn(); iter; ++iter) {
+        for (laovdb::FloatTree::ValueOnCIter iter = tree2.cbeginValueOn(); iter; ++iter) {
             EXPECT_TRUE(tree1.isValueOn(iter.getCoord()));
         }
-        for (openvdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
+        for (laovdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
             ASSERT_DOUBLES_EXACTLY_EQUAL(*iter,tree2.getValue(iter.getCoord()));
         }
     }
     {// test using setValue
         ValueType background=5.0f;
-        openvdb::FloatTree tree0(background), tree1(background), tree2(background);
+        laovdb::FloatTree tree0(background), tree1(background), tree2(background);
         EXPECT_TRUE(tree2.empty());
         // tree0 = tree1.topologyUnion(tree2)
-        tree0.setValue(openvdb::Coord( 5, 10, 20),0.0f);
-        tree0.setValue(openvdb::Coord(-5, 10, 20),0.1f);
-        tree0.setValue(openvdb::Coord( 5,-10, 20),0.2f);
-        tree0.setValue(openvdb::Coord( 5, 10,-20),0.3f);
-        tree1.setValue(openvdb::Coord( 5, 10, 20),0.0f);
-        tree1.setValue(openvdb::Coord(-5, 10, 20),0.1f);
-        tree1.setValue(openvdb::Coord( 5,-10, 20),0.2f);
-        tree1.setValue(openvdb::Coord( 5, 10,-20),0.3f);
+        tree0.setValue(laovdb::Coord( 5, 10, 20),0.0f);
+        tree0.setValue(laovdb::Coord(-5, 10, 20),0.1f);
+        tree0.setValue(laovdb::Coord( 5,-10, 20),0.2f);
+        tree0.setValue(laovdb::Coord( 5, 10,-20),0.3f);
+        tree1.setValue(laovdb::Coord( 5, 10, 20),0.0f);
+        tree1.setValue(laovdb::Coord(-5, 10, 20),0.1f);
+        tree1.setValue(laovdb::Coord( 5,-10, 20),0.2f);
+        tree1.setValue(laovdb::Coord( 5, 10,-20),0.3f);
 
-        tree0.setValue(openvdb::Coord(-5,-10, 20),background);
-        tree0.setValue(openvdb::Coord(-5, 10,-20),background);
-        tree0.setValue(openvdb::Coord( 5,-10,-20),background);
-        tree0.setValue(openvdb::Coord(-5,-10,-20),background);
-        tree0.setValue(openvdb::Coord(-5000, 2000,-3000),background);
-        tree0.setValue(openvdb::Coord( 5000,-2000,-3000),background);
-        tree0.setValue(openvdb::Coord(-5000,-2000, 3000),background);
-        tree2.setValue(openvdb::Coord(-5,-10, 20),0.4f);
-        tree2.setValue(openvdb::Coord(-5, 10,-20),0.5f);
-        tree2.setValue(openvdb::Coord( 5,-10,-20),0.6f);
-        tree2.setValue(openvdb::Coord(-5,-10,-20),0.7f);
-        tree2.setValue(openvdb::Coord(-5000, 2000,-3000),4.5678f);
-        tree2.setValue(openvdb::Coord( 5000,-2000,-3000),4.5678f);
-        tree2.setValue(openvdb::Coord(-5000,-2000, 3000),4.5678f);
+        tree0.setValue(laovdb::Coord(-5,-10, 20),background);
+        tree0.setValue(laovdb::Coord(-5, 10,-20),background);
+        tree0.setValue(laovdb::Coord( 5,-10,-20),background);
+        tree0.setValue(laovdb::Coord(-5,-10,-20),background);
+        tree0.setValue(laovdb::Coord(-5000, 2000,-3000),background);
+        tree0.setValue(laovdb::Coord( 5000,-2000,-3000),background);
+        tree0.setValue(laovdb::Coord(-5000,-2000, 3000),background);
+        tree2.setValue(laovdb::Coord(-5,-10, 20),0.4f);
+        tree2.setValue(laovdb::Coord(-5, 10,-20),0.5f);
+        tree2.setValue(laovdb::Coord( 5,-10,-20),0.6f);
+        tree2.setValue(laovdb::Coord(-5,-10,-20),0.7f);
+        tree2.setValue(laovdb::Coord(-5000, 2000,-3000),4.5678f);
+        tree2.setValue(laovdb::Coord( 5000,-2000,-3000),4.5678f);
+        tree2.setValue(laovdb::Coord(-5000,-2000, 3000),4.5678f);
 
         // tree3 has the same topology as tree2 but a different value type
-        const openvdb::Vec3f background2(1.0f,3.4f,6.0f), vec_val(3.1f,5.3f,-9.5f);
-        openvdb::Vec3fTree tree3(background2);
-        for (openvdb::FloatTree::ValueOnCIter iter2 = tree2.cbeginValueOn(); iter2; ++iter2) {
+        const laovdb::Vec3f background2(1.0f,3.4f,6.0f), vec_val(3.1f,5.3f,-9.5f);
+        laovdb::Vec3fTree tree3(background2);
+        for (laovdb::FloatTree::ValueOnCIter iter2 = tree2.cbeginValueOn(); iter2; ++iter2) {
             tree3.setValue(iter2.getCoord(), vec_val);
         }
 
@@ -1176,7 +1176,7 @@ TEST_F(TestTree, testTopologyUnion)
 
         EXPECT_TRUE(!tree2.empty());
         EXPECT_TRUE(!tree3.empty());
-        openvdb::FloatTree tree1_copy(tree1);
+        laovdb::FloatTree tree1_copy(tree1);
 
         //tree1.topologyUnion(tree2);//should make tree1 = tree0
         tree1.topologyUnion(tree3);//should make tree1 = tree0
@@ -1191,109 +1191,109 @@ TEST_F(TestTree, testTopologyUnion)
         EXPECT_TRUE(tree1.hasSameTopology(tree0));
         EXPECT_TRUE(tree0.hasSameTopology(tree1));
 
-        for (openvdb::FloatTree::ValueOnCIter iter2 = tree2.cbeginValueOn(); iter2; ++iter2) {
+        for (laovdb::FloatTree::ValueOnCIter iter2 = tree2.cbeginValueOn(); iter2; ++iter2) {
             EXPECT_TRUE(tree1.isValueOn(iter2.getCoord()));
         }
-        for (openvdb::FloatTree::ValueOnCIter iter1 = tree1.cbeginValueOn(); iter1; ++iter1) {
+        for (laovdb::FloatTree::ValueOnCIter iter1 = tree1.cbeginValueOn(); iter1; ++iter1) {
             EXPECT_TRUE(tree0.isValueOn(iter1.getCoord()));
         }
-        for (openvdb::FloatTree::ValueOnCIter iter0 = tree0.cbeginValueOn(); iter0; ++iter0) {
+        for (laovdb::FloatTree::ValueOnCIter iter0 = tree0.cbeginValueOn(); iter0; ++iter0) {
             EXPECT_TRUE(tree1.isValueOn(iter0.getCoord()));
             ASSERT_DOUBLES_EXACTLY_EQUAL(*iter0,tree1.getValue(iter0.getCoord()));
         }
-        for (openvdb::FloatTree::ValueOnCIter iter = tree1_copy.cbeginValueOn(); iter; ++iter) {
+        for (laovdb::FloatTree::ValueOnCIter iter = tree1_copy.cbeginValueOn(); iter; ++iter) {
             EXPECT_TRUE(tree1.isValueOn(iter.getCoord()));
             ASSERT_DOUBLES_EXACTLY_EQUAL(*iter,tree1.getValue(iter.getCoord()));
         }
-        for (openvdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
-            const openvdb::Coord p = iter.getCoord();
+        for (laovdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
+            const laovdb::Coord p = iter.getCoord();
             EXPECT_TRUE(tree3.isValueOn(p) || tree1_copy.isValueOn(p));
         }
     }
     {
          ValueType background=5.0f;
-         openvdb::FloatTree tree0(background), tree1(background), tree2(background);
+         laovdb::FloatTree tree0(background), tree1(background), tree2(background);
          EXPECT_TRUE(tree2.empty());
          // tree0 = tree1.topologyUnion(tree2)
-         tree0.setValue(openvdb::Coord( 5, 10, 20),0.0f);
-         tree0.setValue(openvdb::Coord(-5, 10, 20),0.1f);
-         tree0.setValue(openvdb::Coord( 5,-10, 20),0.2f);
-         tree0.setValue(openvdb::Coord( 5, 10,-20),0.3f);
-         tree1.setValue(openvdb::Coord( 5, 10, 20),0.0f);
-         tree1.setValue(openvdb::Coord(-5, 10, 20),0.1f);
-         tree1.setValue(openvdb::Coord( 5,-10, 20),0.2f);
-         tree1.setValue(openvdb::Coord( 5, 10,-20),0.3f);
+         tree0.setValue(laovdb::Coord( 5, 10, 20),0.0f);
+         tree0.setValue(laovdb::Coord(-5, 10, 20),0.1f);
+         tree0.setValue(laovdb::Coord( 5,-10, 20),0.2f);
+         tree0.setValue(laovdb::Coord( 5, 10,-20),0.3f);
+         tree1.setValue(laovdb::Coord( 5, 10, 20),0.0f);
+         tree1.setValue(laovdb::Coord(-5, 10, 20),0.1f);
+         tree1.setValue(laovdb::Coord( 5,-10, 20),0.2f);
+         tree1.setValue(laovdb::Coord( 5, 10,-20),0.3f);
 
-         tree0.setValue(openvdb::Coord(-5,-10, 20),background);
-         tree0.setValue(openvdb::Coord(-5, 10,-20),background);
-         tree0.setValue(openvdb::Coord( 5,-10,-20),background);
-         tree0.setValue(openvdb::Coord(-5,-10,-20),background);
-         tree0.setValue(openvdb::Coord(-5000, 2000,-3000),background);
-         tree0.setValue(openvdb::Coord( 5000,-2000,-3000),background);
-         tree0.setValue(openvdb::Coord(-5000,-2000, 3000),background);
-         tree2.setValue(openvdb::Coord(-5,-10, 20),0.4f);
-         tree2.setValue(openvdb::Coord(-5, 10,-20),0.5f);
-         tree2.setValue(openvdb::Coord( 5,-10,-20),0.6f);
-         tree2.setValue(openvdb::Coord(-5,-10,-20),0.7f);
-         tree2.setValue(openvdb::Coord(-5000, 2000,-3000),4.5678f);
-         tree2.setValue(openvdb::Coord( 5000,-2000,-3000),4.5678f);
-         tree2.setValue(openvdb::Coord(-5000,-2000, 3000),4.5678f);
+         tree0.setValue(laovdb::Coord(-5,-10, 20),background);
+         tree0.setValue(laovdb::Coord(-5, 10,-20),background);
+         tree0.setValue(laovdb::Coord( 5,-10,-20),background);
+         tree0.setValue(laovdb::Coord(-5,-10,-20),background);
+         tree0.setValue(laovdb::Coord(-5000, 2000,-3000),background);
+         tree0.setValue(laovdb::Coord( 5000,-2000,-3000),background);
+         tree0.setValue(laovdb::Coord(-5000,-2000, 3000),background);
+         tree2.setValue(laovdb::Coord(-5,-10, 20),0.4f);
+         tree2.setValue(laovdb::Coord(-5, 10,-20),0.5f);
+         tree2.setValue(laovdb::Coord( 5,-10,-20),0.6f);
+         tree2.setValue(laovdb::Coord(-5,-10,-20),0.7f);
+         tree2.setValue(laovdb::Coord(-5000, 2000,-3000),4.5678f);
+         tree2.setValue(laovdb::Coord( 5000,-2000,-3000),4.5678f);
+         tree2.setValue(laovdb::Coord(-5000,-2000, 3000),4.5678f);
 
          // tree3 has the same topology as tree2 but a different value type
-         const openvdb::Vec3f background2(1.0f,3.4f,6.0f), vec_val(3.1f,5.3f,-9.5f);
-         openvdb::Vec3fTree tree3(background2);
+         const laovdb::Vec3f background2(1.0f,3.4f,6.0f), vec_val(3.1f,5.3f,-9.5f);
+         laovdb::Vec3fTree tree3(background2);
 
-         for (openvdb::FloatTree::ValueOnCIter iter2 = tree2.cbeginValueOn(); iter2; ++iter2) {
+         for (laovdb::FloatTree::ValueOnCIter iter2 = tree2.cbeginValueOn(); iter2; ++iter2) {
              tree3.setValue(iter2.getCoord(), vec_val);
          }
 
-         openvdb::FloatTree tree4(tree1);//tree4 = tree1
-         openvdb::FloatTree tree5(tree1);//tree5 = tree1
+         laovdb::FloatTree tree4(tree1);//tree4 = tree1
+         laovdb::FloatTree tree5(tree1);//tree5 = tree1
 
          tree1.topologyUnion(tree3);//should make tree1 = tree0
 
          EXPECT_TRUE(tree1.hasSameTopology(tree0));
 
-         for (openvdb::Vec3fTree::ValueOnCIter iter3 = tree3.cbeginValueOn(); iter3; ++iter3) {
+         for (laovdb::Vec3fTree::ValueOnCIter iter3 = tree3.cbeginValueOn(); iter3; ++iter3) {
              tree4.setValueOn(iter3.getCoord());
-             const openvdb::Coord p = iter3.getCoord();
+             const laovdb::Coord p = iter3.getCoord();
              ASSERT_DOUBLES_EXACTLY_EQUAL(tree1.getValue(p),tree5.getValue(p));
              ASSERT_DOUBLES_EXACTLY_EQUAL(tree4.getValue(p),tree5.getValue(p));
          }
 
          EXPECT_TRUE(tree4.hasSameTopology(tree0));
 
-         for (openvdb::FloatTree::ValueOnCIter iter4 = tree4.cbeginValueOn(); iter4; ++iter4) {
-             const openvdb::Coord p = iter4.getCoord();
+         for (laovdb::FloatTree::ValueOnCIter iter4 = tree4.cbeginValueOn(); iter4; ++iter4) {
+             const laovdb::Coord p = iter4.getCoord();
              ASSERT_DOUBLES_EXACTLY_EQUAL(tree0.getValue(p),tree5.getValue(p));
              ASSERT_DOUBLES_EXACTLY_EQUAL(tree1.getValue(p),tree5.getValue(p));
              ASSERT_DOUBLES_EXACTLY_EQUAL(tree4.getValue(p),tree5.getValue(p));
          }
 
-         for (openvdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
-             const openvdb::Coord p = iter.getCoord();
+         for (laovdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
+             const laovdb::Coord p = iter.getCoord();
              EXPECT_TRUE(tree3.isValueOn(p) || tree4.isValueOn(p));
          }
     }
     {// test overlapping spheres
         const float background=5.0f, R0=10.0f, R1=5.6f;
-        const openvdb::Vec3f C0(35.0f, 30.0f, 40.0f), C1(22.3f, 30.5f, 31.0f);
-        const openvdb::Coord dim(32, 32, 32);
-        openvdb::FloatGrid grid0(background);
-        openvdb::FloatGrid grid1(background);
-        unittest_util::makeSphere<openvdb::FloatGrid>(dim, C0, R0, grid0,
+        const laovdb::Vec3f C0(35.0f, 30.0f, 40.0f), C1(22.3f, 30.5f, 31.0f);
+        const laovdb::Coord dim(32, 32, 32);
+        laovdb::FloatGrid grid0(background);
+        laovdb::FloatGrid grid1(background);
+        unittest_util::makeSphere<laovdb::FloatGrid>(dim, C0, R0, grid0,
             1.0f, unittest_util::SPHERE_SPARSE_NARROW_BAND);
-        unittest_util::makeSphere<openvdb::FloatGrid>(dim, C1, R1, grid1,
+        unittest_util::makeSphere<laovdb::FloatGrid>(dim, C1, R1, grid1,
             1.0f, unittest_util::SPHERE_SPARSE_NARROW_BAND);
-        openvdb::FloatTree& tree0 = grid0.tree();
-        openvdb::FloatTree& tree1 = grid1.tree();
-        openvdb::FloatTree tree0_copy(tree0);
+        laovdb::FloatTree& tree0 = grid0.tree();
+        laovdb::FloatTree& tree1 = grid1.tree();
+        laovdb::FloatTree tree0_copy(tree0);
 
         tree0.topologyUnion(tree1);
 
-        const openvdb::Index64 n0 = tree0_copy.activeVoxelCount();
-        const openvdb::Index64 n  = tree0.activeVoxelCount();
-        const openvdb::Index64 n1 = tree1.activeVoxelCount();
+        const laovdb::Index64 n0 = tree0_copy.activeVoxelCount();
+        const laovdb::Index64 n  = tree0.activeVoxelCount();
+        const laovdb::Index64 n1 = tree1.activeVoxelCount();
 
         //fprintf(stderr,"Union of spheres: n=%i, n0=%i n1=%i n0+n1=%i\n",n,n0,n1, n0+n1);
 
@@ -1301,29 +1301,29 @@ TEST_F(TestTree, testTopologyUnion)
         EXPECT_TRUE( n > n1 );
         EXPECT_TRUE( n < n0 + n1 );
 
-        for (openvdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
-            const openvdb::Coord p = iter.getCoord();
+        for (laovdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
+            const laovdb::Coord p = iter.getCoord();
             EXPECT_TRUE(tree0.isValueOn(p));
             ASSERT_DOUBLES_EXACTLY_EQUAL(tree0.getValue(p), tree0_copy.getValue(p));
         }
-        for (openvdb::FloatTree::ValueOnCIter iter = tree0_copy.cbeginValueOn(); iter; ++iter) {
-            const openvdb::Coord p = iter.getCoord();
+        for (laovdb::FloatTree::ValueOnCIter iter = tree0_copy.cbeginValueOn(); iter; ++iter) {
+            const laovdb::Coord p = iter.getCoord();
             EXPECT_TRUE(tree0.isValueOn(p));
             ASSERT_DOUBLES_EXACTLY_EQUAL(tree0.getValue(p), *iter);
         }
     }
 
     {// test union of a leaf and a tile
-        if (openvdb::FloatTree::DEPTH > 2) {
-            const int leafLevel = openvdb::FloatTree::DEPTH - 1;
+        if (laovdb::FloatTree::DEPTH > 2) {
+            const int leafLevel = laovdb::FloatTree::DEPTH - 1;
             const int tileLevel = leafLevel - 1;
-            const openvdb::Coord xyz(0);
+            const laovdb::Coord xyz(0);
 
-            openvdb::FloatTree tree0;
+            laovdb::FloatTree tree0;
             tree0.addTile(tileLevel, xyz, /*value=*/0, /*activeState=*/true);
             EXPECT_TRUE(tree0.isValueOn(xyz));
 
-            openvdb::FloatTree tree1;
+            laovdb::FloatTree tree1;
             tree1.touchLeaf(xyz)->setValuesOn();
             EXPECT_TRUE(tree1.isValueOn(xyz));
 
@@ -1334,44 +1334,44 @@ TEST_F(TestTree, testTopologyUnion)
     }
 
     { // test preservation of source tiles
-        using LeafT = openvdb::BoolTree::LeafNodeType;
-        using InternalT1 = openvdb::BoolTree::RootNodeType::NodeChainType::Get<1>;
-        using InternalT2 = openvdb::BoolTree::RootNodeType::NodeChainType::Get<2>;
-        openvdb::BoolTree tree0, tree1;
-        const openvdb::Coord xyz(0);
+        using LeafT = laovdb::BoolTree::LeafNodeType;
+        using InternalT1 = laovdb::BoolTree::RootNodeType::NodeChainType::Get<1>;
+        using InternalT2 = laovdb::BoolTree::RootNodeType::NodeChainType::Get<2>;
+        laovdb::BoolTree tree0, tree1;
+        const laovdb::Coord xyz(0);
 
         tree0.addTile(1, xyz, true, true); // leaf level tile
         tree1.touchLeaf(xyz)->setValueOn(0); // single leaf
         tree0.topologyUnion(tree1, true); // single tile
-        EXPECT_EQ(openvdb::Index32(0), tree0.leafCount());
-        EXPECT_EQ(openvdb::Index32(3), tree0.nonLeafCount());
-        EXPECT_EQ(openvdb::Index64(1), tree0.activeTileCount());
-        EXPECT_EQ(openvdb::Index64(LeafT::NUM_VOXELS), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(0), tree0.leafCount());
+        EXPECT_EQ(laovdb::Index32(3), tree0.nonLeafCount());
+        EXPECT_EQ(laovdb::Index64(1), tree0.activeTileCount());
+        EXPECT_EQ(laovdb::Index64(LeafT::NUM_VOXELS), tree0.activeVoxelCount());
 
-        tree1.addTile(1, xyz + openvdb::Coord(8), true, true); // leaf + tile
+        tree1.addTile(1, xyz + laovdb::Coord(8), true, true); // leaf + tile
         tree0.topologyUnion(tree1, true); // two tiles
-        EXPECT_EQ(openvdb::Index32(0), tree0.leafCount());
-        EXPECT_EQ(openvdb::Index32(3), tree0.nonLeafCount());
-        EXPECT_EQ(openvdb::Index64(2), tree0.activeTileCount());
-        EXPECT_EQ(openvdb::Index64(LeafT::NUM_VOXELS*2), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(0), tree0.leafCount());
+        EXPECT_EQ(laovdb::Index32(3), tree0.nonLeafCount());
+        EXPECT_EQ(laovdb::Index64(2), tree0.activeTileCount());
+        EXPECT_EQ(laovdb::Index64(LeafT::NUM_VOXELS*2), tree0.activeVoxelCount());
 
         // internal node level
         tree0.clear();
         tree0.addTile(2, xyz, true, true);
         tree0.topologyUnion(tree1, true); // all topology in tree1 is already active. no change
-        EXPECT_EQ(openvdb::Index32(0), tree0.leafCount());
-        EXPECT_EQ(openvdb::Index32(2), tree0.nonLeafCount());
-        EXPECT_EQ(openvdb::Index64(1), tree0.activeTileCount());
-        EXPECT_EQ(openvdb::Index64(InternalT1::NUM_VOXELS), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(0), tree0.leafCount());
+        EXPECT_EQ(laovdb::Index32(2), tree0.nonLeafCount());
+        EXPECT_EQ(laovdb::Index64(1), tree0.activeTileCount());
+        EXPECT_EQ(laovdb::Index64(InternalT1::NUM_VOXELS), tree0.activeVoxelCount());
 
         // internal node level
         tree0.clear();
         tree0.addTile(3, xyz, true, true);
         tree0.topologyUnion(tree1, true);
-        EXPECT_EQ(openvdb::Index32(0), tree0.leafCount());
-        EXPECT_EQ(openvdb::Index32(1), tree0.nonLeafCount());
-        EXPECT_EQ(openvdb::Index64(1), tree0.activeTileCount());
-        EXPECT_EQ(openvdb::Index64(InternalT2::NUM_VOXELS), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(0), tree0.leafCount());
+        EXPECT_EQ(laovdb::Index32(1), tree0.nonLeafCount());
+        EXPECT_EQ(laovdb::Index64(1), tree0.activeTileCount());
+        EXPECT_EQ(laovdb::Index64(InternalT2::NUM_VOXELS), tree0.activeVoxelCount());
 
         // larger tile in tree1 still forces child topology tree0
         tree0.clear();
@@ -1379,12 +1379,12 @@ TEST_F(TestTree, testTopologyUnion)
         tree0.addTile(1, xyz, true, true);
         tree1.addTile(2, xyz, true, true);
         tree0.topologyUnion(tree1, true);
-        EXPECT_EQ(openvdb::Index32(0), tree0.leafCount());
-        EXPECT_EQ(openvdb::Index32(3), tree0.nonLeafCount());
-        openvdb::Index64 tiles = openvdb::Index64(InternalT1::DIM) / InternalT1::getChildDim();
+        EXPECT_EQ(laovdb::Index32(0), tree0.leafCount());
+        EXPECT_EQ(laovdb::Index32(3), tree0.nonLeafCount());
+        laovdb::Index64 tiles = laovdb::Index64(InternalT1::DIM) / InternalT1::getChildDim();
         tiles = tiles * tiles * tiles;
         EXPECT_EQ(tiles, tree0.activeTileCount());
-        EXPECT_EQ(openvdb::Index64(InternalT1::NUM_VOXELS), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index64(InternalT1::NUM_VOXELS), tree0.activeVoxelCount());
     }
 }// testTopologyUnion
 
@@ -1392,140 +1392,140 @@ TEST_F(TestTree, testTopologyIntersection)
 {
     {//no overlapping voxels
         const ValueType background=0.0f;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree0.setValue(openvdb::Coord( 500, 300, 200), 1.0f);
-        tree1.setValue(openvdb::Coord(   8,  11,  11), 2.0f);
-        EXPECT_EQ(openvdb::Index64(1), tree0.activeVoxelCount());
-        EXPECT_EQ(openvdb::Index64(1), tree1.activeVoxelCount());
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree0.setValue(laovdb::Coord( 500, 300, 200), 1.0f);
+        tree1.setValue(laovdb::Coord(   8,  11,  11), 2.0f);
+        EXPECT_EQ(laovdb::Index64(1), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index64(1), tree1.activeVoxelCount());
 
         tree1.topologyIntersection(tree0);
 
-        EXPECT_EQ(tree1.activeVoxelCount(), openvdb::Index64(0));
+        EXPECT_EQ(tree1.activeVoxelCount(), laovdb::Index64(0));
         EXPECT_TRUE(!tree1.empty());
-        openvdb::tools::pruneInactive(tree1);
+        laovdb::tools::pruneInactive(tree1);
         EXPECT_TRUE(tree1.empty());
     }
     {//two overlapping voxels
         const ValueType background=0.0f;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree0.setValue(openvdb::Coord( 500, 300, 200), 1.0f);
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree0.setValue(laovdb::Coord( 500, 300, 200), 1.0f);
 
-        tree1.setValue(openvdb::Coord(   8,  11,  11), 2.0f);
-        tree1.setValue(openvdb::Coord( 500, 300, 200), 1.0f);
-        EXPECT_EQ( openvdb::Index64(1), tree0.activeVoxelCount() );
-        EXPECT_EQ( openvdb::Index64(2), tree1.activeVoxelCount() );
+        tree1.setValue(laovdb::Coord(   8,  11,  11), 2.0f);
+        tree1.setValue(laovdb::Coord( 500, 300, 200), 1.0f);
+        EXPECT_EQ( laovdb::Index64(1), tree0.activeVoxelCount() );
+        EXPECT_EQ( laovdb::Index64(2), tree1.activeVoxelCount() );
 
         tree1.topologyIntersection(tree0);
 
-        EXPECT_EQ( openvdb::Index64(1), tree1.activeVoxelCount() );
+        EXPECT_EQ( laovdb::Index64(1), tree1.activeVoxelCount() );
         EXPECT_TRUE(!tree1.empty());
-        openvdb::tools::pruneInactive(tree1);
+        laovdb::tools::pruneInactive(tree1);
         EXPECT_TRUE(!tree1.empty());
     }
     {//4 overlapping voxels
         const ValueType background=0.0f;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree0.setValue(openvdb::Coord( 500, 300, 200), 1.0f);
-        tree0.setValue(openvdb::Coord( 400,  30,  20), 2.0f);
-        tree0.setValue(openvdb::Coord(   8,  11,  11), 3.0f);
-        EXPECT_EQ(openvdb::Index64(3), tree0.activeVoxelCount());
-        EXPECT_EQ(openvdb::Index32(3), tree0.leafCount() );
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree0.setValue(laovdb::Coord( 500, 300, 200), 1.0f);
+        tree0.setValue(laovdb::Coord( 400,  30,  20), 2.0f);
+        tree0.setValue(laovdb::Coord(   8,  11,  11), 3.0f);
+        EXPECT_EQ(laovdb::Index64(3), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(3), tree0.leafCount() );
 
-        tree1.setValue(openvdb::Coord( 500, 301, 200), 4.0f);
-        tree1.setValue(openvdb::Coord( 400,  30,  20), 5.0f);
-        tree1.setValue(openvdb::Coord(   8,  11,  11), 6.0f);
-        EXPECT_EQ(openvdb::Index64(3), tree1.activeVoxelCount());
-        EXPECT_EQ(openvdb::Index32(3), tree1.leafCount() );
+        tree1.setValue(laovdb::Coord( 500, 301, 200), 4.0f);
+        tree1.setValue(laovdb::Coord( 400,  30,  20), 5.0f);
+        tree1.setValue(laovdb::Coord(   8,  11,  11), 6.0f);
+        EXPECT_EQ(laovdb::Index64(3), tree1.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(3), tree1.leafCount() );
 
         tree1.topologyIntersection(tree0);
 
-        EXPECT_EQ( openvdb::Index32(3), tree1.leafCount() );
-        EXPECT_EQ( openvdb::Index64(2), tree1.activeVoxelCount() );
+        EXPECT_EQ( laovdb::Index32(3), tree1.leafCount() );
+        EXPECT_EQ( laovdb::Index64(2), tree1.activeVoxelCount() );
         EXPECT_TRUE(!tree1.empty());
-        openvdb::tools::pruneInactive(tree1);
+        laovdb::tools::pruneInactive(tree1);
         EXPECT_TRUE(!tree1.empty());
-        EXPECT_EQ( openvdb::Index32(2), tree1.leafCount() );
-        EXPECT_EQ( openvdb::Index64(2), tree1.activeVoxelCount() );
+        EXPECT_EQ( laovdb::Index32(2), tree1.leafCount() );
+        EXPECT_EQ( laovdb::Index64(2), tree1.activeVoxelCount() );
     }
     {//passive tile
         const ValueType background=0.0f;
-        const openvdb::Index64 dim = openvdb::FloatTree::RootNodeType::ChildNodeType::DIM;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree0.fill(openvdb::CoordBBox(openvdb::Coord(0),openvdb::Coord(dim-1)),2.0f, false);
-        EXPECT_EQ(openvdb::Index64(0), tree0.activeVoxelCount());
-        EXPECT_EQ(openvdb::Index32(0), tree0.leafCount() );
+        const laovdb::Index64 dim = laovdb::FloatTree::RootNodeType::ChildNodeType::DIM;
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree0.fill(laovdb::CoordBBox(laovdb::Coord(0),laovdb::Coord(dim-1)),2.0f, false);
+        EXPECT_EQ(laovdb::Index64(0), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(0), tree0.leafCount() );
 
-        tree1.setValue(openvdb::Coord( 500, 301, 200), 4.0f);
-        tree1.setValue(openvdb::Coord( 400,  30,  20), 5.0f);
-        tree1.setValue(openvdb::Coord( dim,  11,  11), 6.0f);
-        EXPECT_EQ(openvdb::Index32(3), tree1.leafCount() );
-        EXPECT_EQ(openvdb::Index64(3), tree1.activeVoxelCount());
+        tree1.setValue(laovdb::Coord( 500, 301, 200), 4.0f);
+        tree1.setValue(laovdb::Coord( 400,  30,  20), 5.0f);
+        tree1.setValue(laovdb::Coord( dim,  11,  11), 6.0f);
+        EXPECT_EQ(laovdb::Index32(3), tree1.leafCount() );
+        EXPECT_EQ(laovdb::Index64(3), tree1.activeVoxelCount());
 
         tree1.topologyIntersection(tree0);
 
-        EXPECT_EQ( openvdb::Index32(0), tree1.leafCount() );
-        EXPECT_EQ( openvdb::Index64(0), tree1.activeVoxelCount() );
+        EXPECT_EQ( laovdb::Index32(0), tree1.leafCount() );
+        EXPECT_EQ( laovdb::Index64(0), tree1.activeVoxelCount() );
         EXPECT_TRUE(tree1.empty());
     }
     {//active tile
         const ValueType background=0.0f;
-        const openvdb::Index64 dim = openvdb::FloatTree::RootNodeType::ChildNodeType::DIM;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree1.fill(openvdb::CoordBBox(openvdb::Coord(0),openvdb::Coord(dim-1)),2.0f, true);
+        const laovdb::Index64 dim = laovdb::FloatTree::RootNodeType::ChildNodeType::DIM;
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree1.fill(laovdb::CoordBBox(laovdb::Coord(0),laovdb::Coord(dim-1)),2.0f, true);
         EXPECT_EQ(dim*dim*dim, tree1.activeVoxelCount());
-        EXPECT_EQ(openvdb::Index32(0), tree1.leafCount() );
+        EXPECT_EQ(laovdb::Index32(0), tree1.leafCount() );
 
-        tree0.setValue(openvdb::Coord( 500, 301, 200), 4.0f);
-        tree0.setValue(openvdb::Coord( 400,  30,  20), 5.0f);
-        tree0.setValue(openvdb::Coord( dim,  11,  11), 6.0f);
-        EXPECT_EQ(openvdb::Index64(3), tree0.activeVoxelCount());
-        EXPECT_EQ(openvdb::Index32(3), tree0.leafCount() );
+        tree0.setValue(laovdb::Coord( 500, 301, 200), 4.0f);
+        tree0.setValue(laovdb::Coord( 400,  30,  20), 5.0f);
+        tree0.setValue(laovdb::Coord( dim,  11,  11), 6.0f);
+        EXPECT_EQ(laovdb::Index64(3), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(3), tree0.leafCount() );
 
         tree1.topologyIntersection(tree0);
 
-        EXPECT_EQ( openvdb::Index32(2), tree1.leafCount() );
-        EXPECT_EQ( openvdb::Index64(2), tree1.activeVoxelCount() );
+        EXPECT_EQ( laovdb::Index32(2), tree1.leafCount() );
+        EXPECT_EQ( laovdb::Index64(2), tree1.activeVoxelCount() );
         EXPECT_TRUE(!tree1.empty());
-        openvdb::tools::pruneInactive(tree1);
+        laovdb::tools::pruneInactive(tree1);
         EXPECT_TRUE(!tree1.empty());
     }
     {// use tree with different voxel type
         ValueType background=5.0f;
-        openvdb::FloatTree tree0(background), tree1(background), tree2(background);
+        laovdb::FloatTree tree0(background), tree1(background), tree2(background);
         EXPECT_TRUE(tree2.empty());
         // tree0 = tree1.topologyIntersection(tree2)
-        tree0.setValue(openvdb::Coord( 5, 10, 20),0.0f);
-        tree0.setValue(openvdb::Coord(-5, 10,-20),0.1f);
-        tree0.setValue(openvdb::Coord( 5,-10,-20),0.2f);
-        tree0.setValue(openvdb::Coord(-5,-10,-20),0.3f);
+        tree0.setValue(laovdb::Coord( 5, 10, 20),0.0f);
+        tree0.setValue(laovdb::Coord(-5, 10,-20),0.1f);
+        tree0.setValue(laovdb::Coord( 5,-10,-20),0.2f);
+        tree0.setValue(laovdb::Coord(-5,-10,-20),0.3f);
 
-        tree1.setValue(openvdb::Coord( 5, 10, 20),0.0f);
-        tree1.setValue(openvdb::Coord(-5, 10,-20),0.1f);
-        tree1.setValue(openvdb::Coord( 5,-10,-20),0.2f);
-        tree1.setValue(openvdb::Coord(-5,-10,-20),0.3f);
+        tree1.setValue(laovdb::Coord( 5, 10, 20),0.0f);
+        tree1.setValue(laovdb::Coord(-5, 10,-20),0.1f);
+        tree1.setValue(laovdb::Coord( 5,-10,-20),0.2f);
+        tree1.setValue(laovdb::Coord(-5,-10,-20),0.3f);
 
-        tree2.setValue(openvdb::Coord( 5, 10, 20),0.4f);
-        tree2.setValue(openvdb::Coord(-5, 10,-20),0.5f);
-        tree2.setValue(openvdb::Coord( 5,-10,-20),0.6f);
-        tree2.setValue(openvdb::Coord(-5,-10,-20),0.7f);
+        tree2.setValue(laovdb::Coord( 5, 10, 20),0.4f);
+        tree2.setValue(laovdb::Coord(-5, 10,-20),0.5f);
+        tree2.setValue(laovdb::Coord( 5,-10,-20),0.6f);
+        tree2.setValue(laovdb::Coord(-5,-10,-20),0.7f);
 
-        tree2.setValue(openvdb::Coord(-5000, 2000,-3000),4.5678f);
-        tree2.setValue(openvdb::Coord( 5000,-2000,-3000),4.5678f);
-        tree2.setValue(openvdb::Coord(-5000,-2000, 3000),4.5678f);
+        tree2.setValue(laovdb::Coord(-5000, 2000,-3000),4.5678f);
+        tree2.setValue(laovdb::Coord( 5000,-2000,-3000),4.5678f);
+        tree2.setValue(laovdb::Coord(-5000,-2000, 3000),4.5678f);
 
-        openvdb::FloatTree tree1_copy(tree1);
+        laovdb::FloatTree tree1_copy(tree1);
 
         // tree3 has the same topology as tree2 but a different value type
-        const openvdb::Vec3f background2(1.0f,3.4f,6.0f), vec_val(3.1f,5.3f,-9.5f);
-        openvdb::Vec3fTree tree3(background2);
-        for (openvdb::FloatTree::ValueOnCIter iter = tree2.cbeginValueOn(); iter; ++iter) {
+        const laovdb::Vec3f background2(1.0f,3.4f,6.0f), vec_val(3.1f,5.3f,-9.5f);
+        laovdb::Vec3fTree tree3(background2);
+        for (laovdb::FloatTree::ValueOnCIter iter = tree2.cbeginValueOn(); iter; ++iter) {
             tree3.setValue(iter.getCoord(), vec_val);
         }
 
-        EXPECT_EQ(openvdb::Index32(4), tree0.leafCount());
-        EXPECT_EQ(openvdb::Index32(4), tree1.leafCount());
-        EXPECT_EQ(openvdb::Index32(7), tree2.leafCount());
-        EXPECT_EQ(openvdb::Index32(7), tree3.leafCount());
+        EXPECT_EQ(laovdb::Index32(4), tree0.leafCount());
+        EXPECT_EQ(laovdb::Index32(4), tree1.leafCount());
+        EXPECT_EQ(laovdb::Index32(7), tree2.leafCount());
+        EXPECT_EQ(laovdb::Index32(7), tree3.leafCount());
 
 
         //tree1.topologyInterection(tree2);//should make tree1 = tree0
@@ -1540,20 +1540,20 @@ TEST_F(TestTree, testTopologyIntersection)
         EXPECT_TRUE(tree1.hasSameTopology(tree0));
         EXPECT_TRUE(tree0.hasSameTopology(tree1));
 
-        for (openvdb::FloatTree::ValueOnCIter iter = tree0.cbeginValueOn(); iter; ++iter) {
-            const openvdb::Coord p = iter.getCoord();
+        for (laovdb::FloatTree::ValueOnCIter iter = tree0.cbeginValueOn(); iter; ++iter) {
+            const laovdb::Coord p = iter.getCoord();
             EXPECT_TRUE(tree1.isValueOn(p));
             EXPECT_TRUE(tree2.isValueOn(p));
             EXPECT_TRUE(tree3.isValueOn(p));
             EXPECT_TRUE(tree1_copy.isValueOn(p));
             ASSERT_DOUBLES_EXACTLY_EQUAL(*iter,tree1.getValue(p));
         }
-        for (openvdb::FloatTree::ValueOnCIter iter = tree1_copy.cbeginValueOn(); iter; ++iter) {
+        for (laovdb::FloatTree::ValueOnCIter iter = tree1_copy.cbeginValueOn(); iter; ++iter) {
             EXPECT_TRUE(tree1.isValueOn(iter.getCoord()));
             ASSERT_DOUBLES_EXACTLY_EQUAL(*iter,tree1.getValue(iter.getCoord()));
         }
-        for (openvdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
-            const openvdb::Coord p = iter.getCoord();
+        for (laovdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
+            const laovdb::Coord p = iter.getCoord();
             EXPECT_TRUE(tree0.isValueOn(p));
             EXPECT_TRUE(tree2.isValueOn(p));
             EXPECT_TRUE(tree3.isValueOn(p));
@@ -1564,31 +1564,31 @@ TEST_F(TestTree, testTopologyIntersection)
 
     {// test overlapping spheres
         const float background=5.0f, R0=10.0f, R1=5.6f;
-        const openvdb::Vec3f C0(35.0f, 30.0f, 40.0f), C1(22.3f, 30.5f, 31.0f);
-        const openvdb::Coord dim(32, 32, 32);
-        openvdb::FloatGrid grid0(background);
-        openvdb::FloatGrid grid1(background);
-        unittest_util::makeSphere<openvdb::FloatGrid>(dim, C0, R0, grid0,
+        const laovdb::Vec3f C0(35.0f, 30.0f, 40.0f), C1(22.3f, 30.5f, 31.0f);
+        const laovdb::Coord dim(32, 32, 32);
+        laovdb::FloatGrid grid0(background);
+        laovdb::FloatGrid grid1(background);
+        unittest_util::makeSphere<laovdb::FloatGrid>(dim, C0, R0, grid0,
             1.0f, unittest_util::SPHERE_SPARSE_NARROW_BAND);
-        unittest_util::makeSphere<openvdb::FloatGrid>(dim, C1, R1, grid1,
+        unittest_util::makeSphere<laovdb::FloatGrid>(dim, C1, R1, grid1,
             1.0f, unittest_util::SPHERE_SPARSE_NARROW_BAND);
-        openvdb::FloatTree& tree0 = grid0.tree();
-        openvdb::FloatTree& tree1 = grid1.tree();
-        openvdb::FloatTree tree0_copy(tree0);
+        laovdb::FloatTree& tree0 = grid0.tree();
+        laovdb::FloatTree& tree1 = grid1.tree();
+        laovdb::FloatTree tree0_copy(tree0);
 
         tree0.topologyIntersection(tree1);
 
-        const openvdb::Index64 n0 = tree0_copy.activeVoxelCount();
-        const openvdb::Index64 n  = tree0.activeVoxelCount();
-        const openvdb::Index64 n1 = tree1.activeVoxelCount();
+        const laovdb::Index64 n0 = tree0_copy.activeVoxelCount();
+        const laovdb::Index64 n  = tree0.activeVoxelCount();
+        const laovdb::Index64 n1 = tree1.activeVoxelCount();
 
         //fprintf(stderr,"Intersection of spheres: n=%i, n0=%i n1=%i n0+n1=%i\n",n,n0,n1, n0+n1);
 
         EXPECT_TRUE( n < n0 );
         EXPECT_TRUE( n < n1 );
 
-        for (openvdb::FloatTree::ValueOnCIter iter = tree0.cbeginValueOn(); iter; ++iter) {
-            const openvdb::Coord p = iter.getCoord();
+        for (laovdb::FloatTree::ValueOnCIter iter = tree0.cbeginValueOn(); iter; ++iter) {
+            const laovdb::Coord p = iter.getCoord();
             EXPECT_TRUE(tree1.isValueOn(p));
             EXPECT_TRUE(tree0_copy.isValueOn(p));
             ASSERT_DOUBLES_EXACTLY_EQUAL(*iter, tree0_copy.getValue(p));
@@ -1596,15 +1596,15 @@ TEST_F(TestTree, testTopologyIntersection)
     }
 
     {// Test based on boolean grids
-        openvdb::CoordBBox bigRegion(openvdb::Coord(-9), openvdb::Coord(10));
-        openvdb::CoordBBox smallRegion(openvdb::Coord( 1), openvdb::Coord(10));
+        laovdb::CoordBBox bigRegion(laovdb::Coord(-9), laovdb::Coord(10));
+        laovdb::CoordBBox smallRegion(laovdb::Coord( 1), laovdb::Coord(10));
 
-        openvdb::BoolGrid::Ptr gridBig = openvdb::BoolGrid::create(false);
+        laovdb::BoolGrid::Ptr gridBig = laovdb::BoolGrid::create(false);
         gridBig->fill(bigRegion, true/*value*/, true /*make active*/);
         EXPECT_EQ(8, int(gridBig->tree().activeTileCount()));
         EXPECT_EQ((20 * 20 * 20), int(gridBig->activeVoxelCount()));
 
-        openvdb::BoolGrid::Ptr gridSmall = openvdb::BoolGrid::create(false);
+        laovdb::BoolGrid::Ptr gridSmall = laovdb::BoolGrid::create(false);
         gridSmall->fill(smallRegion, true/*value*/, true /*make active*/);
         EXPECT_EQ(0, int(gridSmall->tree().activeTileCount()));
         EXPECT_EQ((10 * 10 * 10), int(gridSmall->activeVoxelCount()));
@@ -1628,188 +1628,188 @@ TEST_F(TestTree, testTopologyDifference)
 {
     {//no overlapping voxels
         const ValueType background=0.0f;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree0.setValue(openvdb::Coord( 500, 300, 200), 1.0f);
-        tree1.setValue(openvdb::Coord(   8,  11,  11), 2.0f);
-        EXPECT_EQ(openvdb::Index64(1), tree0.activeVoxelCount());
-        EXPECT_EQ(openvdb::Index64(1), tree1.activeVoxelCount());
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree0.setValue(laovdb::Coord( 500, 300, 200), 1.0f);
+        tree1.setValue(laovdb::Coord(   8,  11,  11), 2.0f);
+        EXPECT_EQ(laovdb::Index64(1), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index64(1), tree1.activeVoxelCount());
 
         tree1.topologyDifference(tree0);
 
-        EXPECT_EQ(tree1.activeVoxelCount(), openvdb::Index64(1));
+        EXPECT_EQ(tree1.activeVoxelCount(), laovdb::Index64(1));
         EXPECT_TRUE(!tree1.empty());
-        openvdb::tools::pruneInactive(tree1);
+        laovdb::tools::pruneInactive(tree1);
         EXPECT_TRUE(!tree1.empty());
     }
     {//two overlapping voxels
         const ValueType background=0.0f;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree0.setValue(openvdb::Coord( 500, 300, 200), 1.0f);
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree0.setValue(laovdb::Coord( 500, 300, 200), 1.0f);
 
-        tree1.setValue(openvdb::Coord(   8,  11,  11), 2.0f);
-        tree1.setValue(openvdb::Coord( 500, 300, 200), 1.0f);
-        EXPECT_EQ( openvdb::Index64(1), tree0.activeVoxelCount() );
-        EXPECT_EQ( openvdb::Index64(2), tree1.activeVoxelCount() );
+        tree1.setValue(laovdb::Coord(   8,  11,  11), 2.0f);
+        tree1.setValue(laovdb::Coord( 500, 300, 200), 1.0f);
+        EXPECT_EQ( laovdb::Index64(1), tree0.activeVoxelCount() );
+        EXPECT_EQ( laovdb::Index64(2), tree1.activeVoxelCount() );
 
-        EXPECT_TRUE( tree0.isValueOn(openvdb::Coord( 500, 300, 200)));
-        EXPECT_TRUE( tree1.isValueOn(openvdb::Coord( 500, 300, 200)));
-        EXPECT_TRUE( tree1.isValueOn(openvdb::Coord(   8,  11,  11)));
+        EXPECT_TRUE( tree0.isValueOn(laovdb::Coord( 500, 300, 200)));
+        EXPECT_TRUE( tree1.isValueOn(laovdb::Coord( 500, 300, 200)));
+        EXPECT_TRUE( tree1.isValueOn(laovdb::Coord(   8,  11,  11)));
 
         tree1.topologyDifference(tree0);
 
-        EXPECT_EQ( openvdb::Index64(1), tree1.activeVoxelCount() );
-        EXPECT_TRUE( tree0.isValueOn(openvdb::Coord( 500, 300, 200)));
-        EXPECT_TRUE(!tree1.isValueOn(openvdb::Coord( 500, 300, 200)));
-        EXPECT_TRUE( tree1.isValueOn(openvdb::Coord(   8,  11,  11)));
+        EXPECT_EQ( laovdb::Index64(1), tree1.activeVoxelCount() );
+        EXPECT_TRUE( tree0.isValueOn(laovdb::Coord( 500, 300, 200)));
+        EXPECT_TRUE(!tree1.isValueOn(laovdb::Coord( 500, 300, 200)));
+        EXPECT_TRUE( tree1.isValueOn(laovdb::Coord(   8,  11,  11)));
 
         EXPECT_TRUE(!tree1.empty());
-        openvdb::tools::pruneInactive(tree1);
+        laovdb::tools::pruneInactive(tree1);
         EXPECT_TRUE(!tree1.empty());
     }
     {//4 overlapping voxels
         const ValueType background=0.0f;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree0.setValue(openvdb::Coord( 500, 300, 200), 1.0f);
-        tree0.setValue(openvdb::Coord( 400,  30,  20), 2.0f);
-        tree0.setValue(openvdb::Coord(   8,  11,  11), 3.0f);
-        EXPECT_EQ(openvdb::Index64(3), tree0.activeVoxelCount());
-        EXPECT_EQ(openvdb::Index32(3), tree0.leafCount() );
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree0.setValue(laovdb::Coord( 500, 300, 200), 1.0f);
+        tree0.setValue(laovdb::Coord( 400,  30,  20), 2.0f);
+        tree0.setValue(laovdb::Coord(   8,  11,  11), 3.0f);
+        EXPECT_EQ(laovdb::Index64(3), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(3), tree0.leafCount() );
 
-        tree1.setValue(openvdb::Coord( 500, 301, 200), 4.0f);
-        tree1.setValue(openvdb::Coord( 400,  30,  20), 5.0f);
-        tree1.setValue(openvdb::Coord(   8,  11,  11), 6.0f);
-        EXPECT_EQ(openvdb::Index64(3), tree1.activeVoxelCount());
-        EXPECT_EQ(openvdb::Index32(3), tree1.leafCount() );
+        tree1.setValue(laovdb::Coord( 500, 301, 200), 4.0f);
+        tree1.setValue(laovdb::Coord( 400,  30,  20), 5.0f);
+        tree1.setValue(laovdb::Coord(   8,  11,  11), 6.0f);
+        EXPECT_EQ(laovdb::Index64(3), tree1.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(3), tree1.leafCount() );
 
         tree1.topologyDifference(tree0);
 
-        EXPECT_EQ( openvdb::Index32(3), tree1.leafCount() );
-        EXPECT_EQ( openvdb::Index64(1), tree1.activeVoxelCount() );
+        EXPECT_EQ( laovdb::Index32(3), tree1.leafCount() );
+        EXPECT_EQ( laovdb::Index64(1), tree1.activeVoxelCount() );
         EXPECT_TRUE(!tree1.empty());
-        openvdb::tools::pruneInactive(tree1);
+        laovdb::tools::pruneInactive(tree1);
         EXPECT_TRUE(!tree1.empty());
-        EXPECT_EQ( openvdb::Index32(1), tree1.leafCount() );
-        EXPECT_EQ( openvdb::Index64(1), tree1.activeVoxelCount() );
+        EXPECT_EQ( laovdb::Index32(1), tree1.leafCount() );
+        EXPECT_EQ( laovdb::Index64(1), tree1.activeVoxelCount() );
     }
     {//passive tile
         const ValueType background=0.0f;
-        const openvdb::Index64 dim = openvdb::FloatTree::RootNodeType::ChildNodeType::DIM;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree0.fill(openvdb::CoordBBox(openvdb::Coord(0),openvdb::Coord(dim-1)),2.0f, false);
-        EXPECT_EQ(openvdb::Index64(0), tree0.activeVoxelCount());
+        const laovdb::Index64 dim = laovdb::FloatTree::RootNodeType::ChildNodeType::DIM;
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree0.fill(laovdb::CoordBBox(laovdb::Coord(0),laovdb::Coord(dim-1)),2.0f, false);
+        EXPECT_EQ(laovdb::Index64(0), tree0.activeVoxelCount());
         EXPECT_TRUE(!tree0.hasActiveTiles());
-        EXPECT_EQ(openvdb::Index64(0), tree0.root().onTileCount());
-        EXPECT_EQ(openvdb::Index32(0), tree0.leafCount() );
+        EXPECT_EQ(laovdb::Index64(0), tree0.root().onTileCount());
+        EXPECT_EQ(laovdb::Index32(0), tree0.leafCount() );
 
-        tree1.setValue(openvdb::Coord( 500, 301, 200), 4.0f);
-        tree1.setValue(openvdb::Coord( 400,  30,  20), 5.0f);
-        tree1.setValue(openvdb::Coord( dim,  11,  11), 6.0f);
-        EXPECT_EQ(openvdb::Index64(3), tree1.activeVoxelCount());
+        tree1.setValue(laovdb::Coord( 500, 301, 200), 4.0f);
+        tree1.setValue(laovdb::Coord( 400,  30,  20), 5.0f);
+        tree1.setValue(laovdb::Coord( dim,  11,  11), 6.0f);
+        EXPECT_EQ(laovdb::Index64(3), tree1.activeVoxelCount());
         EXPECT_TRUE(!tree1.hasActiveTiles());
-        EXPECT_EQ(openvdb::Index32(3), tree1.leafCount() );
+        EXPECT_EQ(laovdb::Index32(3), tree1.leafCount() );
 
         tree1.topologyDifference(tree0);
 
-        EXPECT_EQ( openvdb::Index32(3), tree1.leafCount() );
-        EXPECT_EQ( openvdb::Index64(3), tree1.activeVoxelCount() );
+        EXPECT_EQ( laovdb::Index32(3), tree1.leafCount() );
+        EXPECT_EQ( laovdb::Index64(3), tree1.activeVoxelCount() );
         EXPECT_TRUE(!tree1.empty());
-        openvdb::tools::pruneInactive(tree1);
-        EXPECT_EQ( openvdb::Index32(3), tree1.leafCount() );
-        EXPECT_EQ( openvdb::Index64(3), tree1.activeVoxelCount() );
+        laovdb::tools::pruneInactive(tree1);
+        EXPECT_EQ( laovdb::Index32(3), tree1.leafCount() );
+        EXPECT_EQ( laovdb::Index64(3), tree1.activeVoxelCount() );
         EXPECT_TRUE(!tree1.empty());
     }
     {//active tile
         const ValueType background=0.0f;
-        const openvdb::Index64 dim = openvdb::FloatTree::RootNodeType::ChildNodeType::DIM;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree1.fill(openvdb::CoordBBox(openvdb::Coord(0),openvdb::Coord(dim-1)),2.0f, true);
+        const laovdb::Index64 dim = laovdb::FloatTree::RootNodeType::ChildNodeType::DIM;
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree1.fill(laovdb::CoordBBox(laovdb::Coord(0),laovdb::Coord(dim-1)),2.0f, true);
         EXPECT_EQ(dim*dim*dim, tree1.activeVoxelCount());
         EXPECT_TRUE(tree1.hasActiveTiles());
-        EXPECT_EQ(openvdb::Index64(1), tree1.root().onTileCount());
-        EXPECT_EQ(openvdb::Index32(0), tree0.leafCount() );
+        EXPECT_EQ(laovdb::Index64(1), tree1.root().onTileCount());
+        EXPECT_EQ(laovdb::Index32(0), tree0.leafCount() );
 
-        tree0.setValue(openvdb::Coord( 500, 301, 200), 4.0f);
-        tree0.setValue(openvdb::Coord( 400,  30,  20), 5.0f);
-        tree0.setValue(openvdb::Coord( int(dim),  11,  11), 6.0f);
+        tree0.setValue(laovdb::Coord( 500, 301, 200), 4.0f);
+        tree0.setValue(laovdb::Coord( 400,  30,  20), 5.0f);
+        tree0.setValue(laovdb::Coord( int(dim),  11,  11), 6.0f);
         EXPECT_TRUE(!tree0.hasActiveTiles());
-        EXPECT_EQ(openvdb::Index64(3), tree0.activeVoxelCount());
-        EXPECT_EQ(openvdb::Index32(3), tree0.leafCount() );
-        EXPECT_TRUE( tree0.isValueOn(openvdb::Coord( int(dim),  11,  11)));
-        EXPECT_TRUE(!tree1.isValueOn(openvdb::Coord( int(dim),  11,  11)));
+        EXPECT_EQ(laovdb::Index64(3), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(3), tree0.leafCount() );
+        EXPECT_TRUE( tree0.isValueOn(laovdb::Coord( int(dim),  11,  11)));
+        EXPECT_TRUE(!tree1.isValueOn(laovdb::Coord( int(dim),  11,  11)));
 
         tree1.topologyDifference(tree0);
 
         EXPECT_TRUE(tree1.root().onTileCount() > 1);
         EXPECT_EQ( dim*dim*dim - 2, tree1.activeVoxelCount() );
         EXPECT_TRUE(!tree1.empty());
-        openvdb::tools::pruneInactive(tree1);
+        laovdb::tools::pruneInactive(tree1);
         EXPECT_EQ( dim*dim*dim - 2, tree1.activeVoxelCount() );
         EXPECT_TRUE(!tree1.empty());
     }
     {//active tile
         const ValueType background=0.0f;
-        const openvdb::Index64 dim = openvdb::FloatTree::RootNodeType::ChildNodeType::DIM;
-        openvdb::FloatTree tree0(background), tree1(background);
-        tree1.fill(openvdb::CoordBBox(openvdb::Coord(0),openvdb::Coord(dim-1)),2.0f, true);
+        const laovdb::Index64 dim = laovdb::FloatTree::RootNodeType::ChildNodeType::DIM;
+        laovdb::FloatTree tree0(background), tree1(background);
+        tree1.fill(laovdb::CoordBBox(laovdb::Coord(0),laovdb::Coord(dim-1)),2.0f, true);
         EXPECT_EQ(dim*dim*dim, tree1.activeVoxelCount());
         EXPECT_TRUE(tree1.hasActiveTiles());
-        EXPECT_EQ(openvdb::Index64(1), tree1.root().onTileCount());
-        EXPECT_EQ(openvdb::Index32(0), tree0.leafCount() );
+        EXPECT_EQ(laovdb::Index64(1), tree1.root().onTileCount());
+        EXPECT_EQ(laovdb::Index32(0), tree0.leafCount() );
 
-        tree0.setValue(openvdb::Coord( 500, 301, 200), 4.0f);
-        tree0.setValue(openvdb::Coord( 400,  30,  20), 5.0f);
-        tree0.setValue(openvdb::Coord( dim,  11,  11), 6.0f);
+        tree0.setValue(laovdb::Coord( 500, 301, 200), 4.0f);
+        tree0.setValue(laovdb::Coord( 400,  30,  20), 5.0f);
+        tree0.setValue(laovdb::Coord( dim,  11,  11), 6.0f);
         EXPECT_TRUE(!tree0.hasActiveTiles());
-        EXPECT_EQ(openvdb::Index64(3), tree0.activeVoxelCount());
-        EXPECT_EQ(openvdb::Index32(3), tree0.leafCount() );
+        EXPECT_EQ(laovdb::Index64(3), tree0.activeVoxelCount());
+        EXPECT_EQ(laovdb::Index32(3), tree0.leafCount() );
 
         tree0.topologyDifference(tree1);
 
-        EXPECT_EQ( openvdb::Index32(1), tree0.leafCount() );
-        EXPECT_EQ( openvdb::Index64(1), tree0.activeVoxelCount() );
+        EXPECT_EQ( laovdb::Index32(1), tree0.leafCount() );
+        EXPECT_EQ( laovdb::Index64(1), tree0.activeVoxelCount() );
         EXPECT_TRUE(!tree0.empty());
-        openvdb::tools::pruneInactive(tree0);
-        EXPECT_EQ( openvdb::Index32(1), tree0.leafCount() );
-        EXPECT_EQ( openvdb::Index64(1), tree0.activeVoxelCount() );
+        laovdb::tools::pruneInactive(tree0);
+        EXPECT_EQ( laovdb::Index32(1), tree0.leafCount() );
+        EXPECT_EQ( laovdb::Index64(1), tree0.activeVoxelCount() );
         EXPECT_TRUE(!tree1.empty());
     }
     {// use tree with different voxel type
         ValueType background=5.0f;
-        openvdb::FloatTree tree0(background), tree1(background), tree2(background);
+        laovdb::FloatTree tree0(background), tree1(background), tree2(background);
         EXPECT_TRUE(tree2.empty());
         // tree0 = tree1.topologyIntersection(tree2)
-        tree0.setValue(openvdb::Coord( 5, 10, 20),0.0f);
-        tree0.setValue(openvdb::Coord(-5, 10,-20),0.1f);
-        tree0.setValue(openvdb::Coord( 5,-10,-20),0.2f);
-        tree0.setValue(openvdb::Coord(-5,-10,-20),0.3f);
+        tree0.setValue(laovdb::Coord( 5, 10, 20),0.0f);
+        tree0.setValue(laovdb::Coord(-5, 10,-20),0.1f);
+        tree0.setValue(laovdb::Coord( 5,-10,-20),0.2f);
+        tree0.setValue(laovdb::Coord(-5,-10,-20),0.3f);
 
-        tree1.setValue(openvdb::Coord( 5, 10, 20),0.0f);
-        tree1.setValue(openvdb::Coord(-5, 10,-20),0.1f);
-        tree1.setValue(openvdb::Coord( 5,-10,-20),0.2f);
-        tree1.setValue(openvdb::Coord(-5,-10,-20),0.3f);
+        tree1.setValue(laovdb::Coord( 5, 10, 20),0.0f);
+        tree1.setValue(laovdb::Coord(-5, 10,-20),0.1f);
+        tree1.setValue(laovdb::Coord( 5,-10,-20),0.2f);
+        tree1.setValue(laovdb::Coord(-5,-10,-20),0.3f);
 
-        tree2.setValue(openvdb::Coord( 5, 10, 20),0.4f);
-        tree2.setValue(openvdb::Coord(-5, 10,-20),0.5f);
-        tree2.setValue(openvdb::Coord( 5,-10,-20),0.6f);
-        tree2.setValue(openvdb::Coord(-5,-10,-20),0.7f);
+        tree2.setValue(laovdb::Coord( 5, 10, 20),0.4f);
+        tree2.setValue(laovdb::Coord(-5, 10,-20),0.5f);
+        tree2.setValue(laovdb::Coord( 5,-10,-20),0.6f);
+        tree2.setValue(laovdb::Coord(-5,-10,-20),0.7f);
 
-        tree2.setValue(openvdb::Coord(-5000, 2000,-3000),4.5678f);
-        tree2.setValue(openvdb::Coord( 5000,-2000,-3000),4.5678f);
-        tree2.setValue(openvdb::Coord(-5000,-2000, 3000),4.5678f);
+        tree2.setValue(laovdb::Coord(-5000, 2000,-3000),4.5678f);
+        tree2.setValue(laovdb::Coord( 5000,-2000,-3000),4.5678f);
+        tree2.setValue(laovdb::Coord(-5000,-2000, 3000),4.5678f);
 
-        openvdb::FloatTree tree1_copy(tree1);
+        laovdb::FloatTree tree1_copy(tree1);
 
         // tree3 has the same topology as tree2 but a different value type
-        const openvdb::Vec3f background2(1.0f,3.4f,6.0f), vec_val(3.1f,5.3f,-9.5f);
-        openvdb::Vec3fTree tree3(background2);
-        for (openvdb::FloatTree::ValueOnCIter iter = tree2.cbeginValueOn(); iter; ++iter) {
+        const laovdb::Vec3f background2(1.0f,3.4f,6.0f), vec_val(3.1f,5.3f,-9.5f);
+        laovdb::Vec3fTree tree3(background2);
+        for (laovdb::FloatTree::ValueOnCIter iter = tree2.cbeginValueOn(); iter; ++iter) {
             tree3.setValue(iter.getCoord(), vec_val);
         }
 
-        EXPECT_EQ(openvdb::Index32(4), tree0.leafCount());
-        EXPECT_EQ(openvdb::Index32(4), tree1.leafCount());
-        EXPECT_EQ(openvdb::Index32(7), tree2.leafCount());
-        EXPECT_EQ(openvdb::Index32(7), tree3.leafCount());
+        EXPECT_EQ(laovdb::Index32(4), tree0.leafCount());
+        EXPECT_EQ(laovdb::Index32(4), tree1.leafCount());
+        EXPECT_EQ(laovdb::Index32(7), tree2.leafCount());
+        EXPECT_EQ(laovdb::Index32(7), tree3.leafCount());
 
 
         //tree1.topologyInterection(tree2);//should make tree1 = tree0
@@ -1824,20 +1824,20 @@ TEST_F(TestTree, testTopologyDifference)
         EXPECT_TRUE(tree1.hasSameTopology(tree0));
         EXPECT_TRUE(tree0.hasSameTopology(tree1));
 
-        for (openvdb::FloatTree::ValueOnCIter iter = tree0.cbeginValueOn(); iter; ++iter) {
-            const openvdb::Coord p = iter.getCoord();
+        for (laovdb::FloatTree::ValueOnCIter iter = tree0.cbeginValueOn(); iter; ++iter) {
+            const laovdb::Coord p = iter.getCoord();
             EXPECT_TRUE(tree1.isValueOn(p));
             EXPECT_TRUE(tree2.isValueOn(p));
             EXPECT_TRUE(tree3.isValueOn(p));
             EXPECT_TRUE(tree1_copy.isValueOn(p));
             ASSERT_DOUBLES_EXACTLY_EQUAL(*iter,tree1.getValue(p));
         }
-        for (openvdb::FloatTree::ValueOnCIter iter = tree1_copy.cbeginValueOn(); iter; ++iter) {
+        for (laovdb::FloatTree::ValueOnCIter iter = tree1_copy.cbeginValueOn(); iter; ++iter) {
             EXPECT_TRUE(tree1.isValueOn(iter.getCoord()));
             ASSERT_DOUBLES_EXACTLY_EQUAL(*iter,tree1.getValue(iter.getCoord()));
         }
-        for (openvdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
-            const openvdb::Coord p = iter.getCoord();
+        for (laovdb::FloatTree::ValueOnCIter iter = tree1.cbeginValueOn(); iter; ++iter) {
+            const laovdb::Coord p = iter.getCoord();
             EXPECT_TRUE(tree0.isValueOn(p));
             EXPECT_TRUE(tree2.isValueOn(p));
             EXPECT_TRUE(tree3.isValueOn(p));
@@ -1847,27 +1847,27 @@ TEST_F(TestTree, testTopologyDifference)
     }
     {// test overlapping spheres
         const float background=5.0f, R0=10.0f, R1=5.6f;
-        const openvdb::Vec3f C0(35.0f, 30.0f, 40.0f), C1(22.3f, 30.5f, 31.0f);
-        const openvdb::Coord dim(32, 32, 32);
-        openvdb::FloatGrid grid0(background);
-        openvdb::FloatGrid grid1(background);
-        unittest_util::makeSphere<openvdb::FloatGrid>(dim, C0, R0, grid0,
+        const laovdb::Vec3f C0(35.0f, 30.0f, 40.0f), C1(22.3f, 30.5f, 31.0f);
+        const laovdb::Coord dim(32, 32, 32);
+        laovdb::FloatGrid grid0(background);
+        laovdb::FloatGrid grid1(background);
+        unittest_util::makeSphere<laovdb::FloatGrid>(dim, C0, R0, grid0,
             1.0f, unittest_util::SPHERE_SPARSE_NARROW_BAND);
-        unittest_util::makeSphere<openvdb::FloatGrid>(dim, C1, R1, grid1,
+        unittest_util::makeSphere<laovdb::FloatGrid>(dim, C1, R1, grid1,
             1.0f, unittest_util::SPHERE_SPARSE_NARROW_BAND);
-        openvdb::FloatTree& tree0 = grid0.tree();
-        openvdb::FloatTree& tree1 = grid1.tree();
-        openvdb::FloatTree tree0_copy(tree0);
+        laovdb::FloatTree& tree0 = grid0.tree();
+        laovdb::FloatTree& tree1 = grid1.tree();
+        laovdb::FloatTree tree0_copy(tree0);
 
         tree0.topologyDifference(tree1);
 
-        const openvdb::Index64 n0 = tree0_copy.activeVoxelCount();
-        const openvdb::Index64 n  = tree0.activeVoxelCount();
+        const laovdb::Index64 n0 = tree0_copy.activeVoxelCount();
+        const laovdb::Index64 n  = tree0.activeVoxelCount();
 
         EXPECT_TRUE( n < n0 );
 
-        for (openvdb::FloatTree::ValueOnCIter iter = tree0.cbeginValueOn(); iter; ++iter) {
-            const openvdb::Coord p = iter.getCoord();
+        for (laovdb::FloatTree::ValueOnCIter iter = tree0.cbeginValueOn(); iter; ++iter) {
+            const laovdb::Coord p = iter.getCoord();
             EXPECT_TRUE(tree1.isValueOff(p));
             EXPECT_TRUE(tree0_copy.isValueOn(p));
             ASSERT_DOUBLES_EXACTLY_EQUAL(*iter, tree0_copy.getValue(p));
@@ -1882,37 +1882,37 @@ TEST_F(TestTree, testTopologyDifference)
 TEST_F(TestTree, testFill)
 {
     // Use a custom tree configuration to ensure we flood-fill at all levels!
-    using LeafT = openvdb::tree::LeafNode<float,2>;//4^3
-    using InternalT = openvdb::tree::InternalNode<LeafT,2>;//4^3
-    using RootT = openvdb::tree::RootNode<InternalT>;// child nodes are 16^3
-    using TreeT = openvdb::tree::Tree<RootT>;
+    using LeafT = laovdb::tree::LeafNode<float,2>;//4^3
+    using InternalT = laovdb::tree::InternalNode<LeafT,2>;//4^3
+    using RootT = laovdb::tree::RootNode<InternalT>;// child nodes are 16^3
+    using TreeT = laovdb::tree::Tree<RootT>;
 
     const float outside = 2.0f, inside = -outside;
-    const openvdb::CoordBBox
-        bbox{openvdb::Coord{-3, -50, 30}, openvdb::Coord{13, 11, 323}},
-        otherBBox{openvdb::Coord{400, 401, 402}, openvdb::Coord{600}};
+    const laovdb::CoordBBox
+        bbox{laovdb::Coord{-3, -50, 30}, laovdb::Coord{13, 11, 323}},
+        otherBBox{laovdb::Coord{400, 401, 402}, laovdb::Coord{600}};
 
     {// sparse fill
-         openvdb::Grid<TreeT>::Ptr grid = openvdb::Grid<TreeT>::create(outside);
+         laovdb::Grid<TreeT>::Ptr grid = laovdb::Grid<TreeT>::create(outside);
          TreeT& tree = grid->tree();
          EXPECT_TRUE(!tree.hasActiveTiles());
-         EXPECT_EQ(openvdb::Index64(0), tree.activeVoxelCount());
-         for (openvdb::CoordBBox::Iterator<true> ijk(bbox); ijk; ++ijk) {
+         EXPECT_EQ(laovdb::Index64(0), tree.activeVoxelCount());
+         for (laovdb::CoordBBox::Iterator<true> ijk(bbox); ijk; ++ijk) {
              ASSERT_DOUBLES_EXACTLY_EQUAL(outside, tree.getValue(*ijk));
          }
          tree.sparseFill(bbox, inside, /*active=*/true);
          EXPECT_TRUE(tree.hasActiveTiles());
-         EXPECT_EQ(openvdb::Index64(bbox.volume()), tree.activeVoxelCount());
-          for (openvdb::CoordBBox::Iterator<true> ijk(bbox); ijk; ++ijk) {
+         EXPECT_EQ(laovdb::Index64(bbox.volume()), tree.activeVoxelCount());
+          for (laovdb::CoordBBox::Iterator<true> ijk(bbox); ijk; ++ijk) {
              ASSERT_DOUBLES_EXACTLY_EQUAL(inside, tree.getValue(*ijk));
          }
     }
     {// dense fill
-         openvdb::Grid<TreeT>::Ptr grid = openvdb::Grid<TreeT>::create(outside);
+         laovdb::Grid<TreeT>::Ptr grid = laovdb::Grid<TreeT>::create(outside);
          TreeT& tree = grid->tree();
          EXPECT_TRUE(!tree.hasActiveTiles());
-         EXPECT_EQ(openvdb::Index64(0), tree.activeVoxelCount());
-         for (openvdb::CoordBBox::Iterator<true> ijk(bbox); ijk; ++ijk) {
+         EXPECT_EQ(laovdb::Index64(0), tree.activeVoxelCount());
+         for (laovdb::CoordBBox::Iterator<true> ijk(bbox); ijk; ++ijk) {
              ASSERT_DOUBLES_EXACTLY_EQUAL(outside, tree.getValue(*ijk));
          }
 
@@ -1928,7 +1928,7 @@ TEST_F(TestTree, testFill)
          EXPECT_TRUE(tree.hasActiveTiles()); // i.e., otherBBox
 
          EXPECT_EQ(bbox.volume() + otherBBox.volume(), tree.activeVoxelCount());
-         for (openvdb::CoordBBox::Iterator<true> ijk(bbox); ijk; ++ijk) {
+         for (laovdb::CoordBBox::Iterator<true> ijk(bbox); ijk; ++ijk) {
              ASSERT_DOUBLES_EXACTLY_EQUAL(inside, tree.getValue(*ijk));
          }
 
@@ -1943,7 +1943,7 @@ TEST_F(TestTree, testFill)
          // In OpenVDB 4.0.0 and earlier, denseFill() filled sparsely if given
          // an inactive fill value.  Verify that it now fills densely.
          const int leafDepth = int(tree.treeDepth()) - 1;
-         for (openvdb::CoordBBox::Iterator<true> ijk(bbox); ijk; ++ijk) {
+         for (laovdb::CoordBBox::Iterator<true> ijk(bbox); ijk; ++ijk) {
              EXPECT_EQ(leafDepth, tree.getValueDepth(*ijk));
              ASSERT_DOUBLES_EXACTLY_EQUAL(inside, tree.getValue(*ijk));
          }
@@ -1954,20 +1954,20 @@ TEST_F(TestTree, testFill)
 TEST_F(TestTree, testSignedFloodFill)
 {
     // Use a custom tree configuration to ensure we flood-fill at all levels!
-    using LeafT = openvdb::tree::LeafNode<float,2>;//4^3
-    using InternalT = openvdb::tree::InternalNode<LeafT,2>;//4^3
-    using RootT = openvdb::tree::RootNode<InternalT>;// child nodes are 16^3
-    using TreeT = openvdb::tree::Tree<RootT>;
+    using LeafT = laovdb::tree::LeafNode<float,2>;//4^3
+    using InternalT = laovdb::tree::InternalNode<LeafT,2>;//4^3
+    using RootT = laovdb::tree::RootNode<InternalT>;// child nodes are 16^3
+    using TreeT = laovdb::tree::Tree<RootT>;
 
     const float outside = 2.0f, inside = -outside, radius = 20.0f;
 
     {//first test flood filling of a leaf node
 
         const LeafT::ValueType fill0=5, fill1=-fill0;
-        openvdb::tools::SignedFloodFillOp<TreeT> sff(fill0, fill1);
+        laovdb::tools::SignedFloodFillOp<TreeT> sff(fill0, fill1);
 
         int D = LeafT::dim(), C=D/2;
-        openvdb::Coord origin(0,0,0), left(0,0,C-1), right(0,0,C);
+        laovdb::Coord origin(0,0,0), left(0,0,C-1), right(0,0,C);
         LeafT leaf(origin,fill0);
         for (int i=0; i<D; ++i) {
             left[0]=right[0]=i;
@@ -1977,7 +1977,7 @@ TEST_F(TestTree, testSignedFloodFill)
                 leaf.setValueOn(right,fill1);
             }
         }
-        const openvdb::Coord first(0,0,0), last(D-1,D-1,D-1);
+        const laovdb::Coord first(0,0,0), last(D-1,D-1,D-1);
         EXPECT_TRUE(!leaf.isValueOn(first));
         EXPECT_TRUE(!leaf.isValueOn(last));
         EXPECT_EQ(fill0, leaf.getValue(first));
@@ -1991,25 +1991,25 @@ TEST_F(TestTree, testSignedFloodFill)
         EXPECT_EQ(fill1, leaf.getValue(last));
     }
 
-    openvdb::Grid<TreeT>::Ptr grid = openvdb::Grid<TreeT>::create(outside);
+    laovdb::Grid<TreeT>::Ptr grid = laovdb::Grid<TreeT>::create(outside);
     TreeT& tree = grid->tree();
     const RootT& root = tree.root();
-    const openvdb::Coord dim(3*16, 3*16, 3*16);
-    const openvdb::Coord C(16+8,16+8,16+8);
+    const laovdb::Coord dim(3*16, 3*16, 3*16);
+    const laovdb::Coord C(16+8,16+8,16+8);
 
     EXPECT_TRUE(!tree.isValueOn(C));
     EXPECT_TRUE(root.getTableSize()==0);
 
     //make narrow band of sphere without setting sign for the background values!
-    openvdb::Grid<TreeT>::Accessor acc = grid->getAccessor();
-    const openvdb::Vec3f center(static_cast<float>(C[0]),
+    laovdb::Grid<TreeT>::Accessor acc = grid->getAccessor();
+    const laovdb::Vec3f center(static_cast<float>(C[0]),
                                 static_cast<float>(C[1]),
                                 static_cast<float>(C[2]));
-    openvdb::Coord xyz;
+    laovdb::Coord xyz;
     for (xyz[0]=0; xyz[0]<dim[0]; ++xyz[0]) {
         for (xyz[1]=0; xyz[1]<dim[1]; ++xyz[1]) {
             for (xyz[2]=0; xyz[2]<dim[2]; ++xyz[2]) {
-                const openvdb::Vec3R p =  grid->transform().indexToWorld(xyz);
+                const laovdb::Vec3R p =  grid->transform().indexToWorld(xyz);
                 const float dist = float((p-center).length() - radius);
                 if (fabs(dist) > outside) continue;
                 acc.setValue(xyz, dist);
@@ -2024,7 +2024,7 @@ TEST_F(TestTree, testSignedFloodFill)
     for (xyz[0]=0; xyz[0]<dim[0]; ++xyz[0]) {
         for (xyz[1]=0; xyz[1]<dim[1]; ++xyz[1]) {
             for (xyz[2]=0; xyz[2]<dim[2]; ++xyz[2]) {
-                const openvdb::Vec3R p =  grid->transform().indexToWorld(xyz);
+                const laovdb::Vec3R p =  grid->transform().indexToWorld(xyz);
                 const float dist = float((p-center).length() - radius);
                 const float val  =  acc.getValue(xyz);
                 if (dist < inside) {
@@ -2039,14 +2039,14 @@ TEST_F(TestTree, testSignedFloodFill)
     }
 
     EXPECT_TRUE(tree.getValueDepth(C) == -1);//i.e. background value
-    openvdb::tools::signedFloodFill(tree);
+    laovdb::tools::signedFloodFill(tree);
     EXPECT_TRUE(tree.getValueDepth(C) ==  0);//added inside tile to root
 
     // Check narrow band with correct background
     for (xyz[0]=0; xyz[0]<dim[0]; ++xyz[0]) {
         for (xyz[1]=0; xyz[1]<dim[1]; ++xyz[1]) {
             for (xyz[2]=0; xyz[2]<dim[2]; ++xyz[2]) {
-                const openvdb::Vec3R p =  grid->transform().indexToWorld(xyz);
+                const laovdb::Vec3R p =  grid->transform().indexToWorld(xyz);
                 const float dist = float((p-center).length() - radius);
                 const float val  =  acc.getValue(xyz);
                 if (dist < inside) {
@@ -2068,19 +2068,19 @@ TEST_F(TestTree, testSignedFloodFill)
 
 TEST_F(TestTree, testPruneInactive)
 {
-    using openvdb::Coord;
-    using openvdb::Index32;
-    using openvdb::Index64;
+    using laovdb::Coord;
+    using laovdb::Index32;
+    using laovdb::Index64;
 
     const float background = 5.0;
 
-    openvdb::FloatTree tree(background);
+    laovdb::FloatTree tree(background);
 
     // Verify that the newly-constructed tree is empty and that pruning it has no effect.
     EXPECT_TRUE(tree.empty());
-    openvdb::tools::prune(tree);
+    laovdb::tools::prune(tree);
     EXPECT_TRUE(tree.empty());
-    openvdb::tools::pruneInactive(tree);
+    laovdb::tools::pruneInactive(tree);
     EXPECT_TRUE(tree.empty());
 
     // Set some active values.
@@ -2097,11 +2097,11 @@ TEST_F(TestTree, testPruneInactive)
     EXPECT_EQ(Index32(8), tree.leafCount());
 
     // Verify that prune() has no effect, since the values are all different.
-    openvdb::tools::prune(tree);
+    laovdb::tools::prune(tree);
     EXPECT_EQ(Index64(8), tree.activeVoxelCount());
     EXPECT_EQ(Index32(8), tree.leafCount());
     // Verify that pruneInactive() has no effect, since the values are active.
-    openvdb::tools::pruneInactive(tree);
+    laovdb::tools::pruneInactive(tree);
     EXPECT_EQ(Index64(8), tree.activeVoxelCount());
     EXPECT_EQ(Index32(8), tree.leafCount());
 
@@ -2113,11 +2113,11 @@ TEST_F(TestTree, testPruneInactive)
     EXPECT_EQ(Index64(4), tree.activeVoxelCount());
     EXPECT_EQ(Index32(8), tree.leafCount());
     // Verify that prune() has no effect, since the values are still different.
-    openvdb::tools::prune(tree);
+    laovdb::tools::prune(tree);
     EXPECT_EQ(Index64(4), tree.activeVoxelCount());
     EXPECT_EQ(Index32(8), tree.leafCount());
     // Verify that pruneInactive() prunes the nodes containing only inactive voxels.
-    openvdb::tools::pruneInactive(tree);
+    laovdb::tools::pruneInactive(tree);
     EXPECT_EQ(Index64(4), tree.activeVoxelCount());
     EXPECT_EQ(Index32(4), tree.leafCount());
 
@@ -2129,27 +2129,27 @@ TEST_F(TestTree, testPruneInactive)
     EXPECT_EQ(Index64(0), tree.activeVoxelCount());
     EXPECT_EQ(Index32(4), tree.leafCount());
     // Verify that prune() has no effect, since the values are still different.
-    openvdb::tools::prune(tree);
+    laovdb::tools::prune(tree);
     EXPECT_EQ(Index64(0), tree.activeVoxelCount());
     EXPECT_EQ(Index32(4), tree.leafCount());
     // Verify that pruneInactive() prunes all of the remaining leaf nodes.
-    openvdb::tools::pruneInactive(tree);
+    laovdb::tools::pruneInactive(tree);
     EXPECT_TRUE(tree.empty());
 }
 
 TEST_F(TestTree, testPruneLevelSet)
 {
     const float background=10.0f, R=5.6f;
-    const openvdb::Vec3f C(12.3f, 15.5f, 10.0f);
-    const openvdb::Coord dim(32, 32, 32);
+    const laovdb::Vec3f C(12.3f, 15.5f, 10.0f);
+    const laovdb::Coord dim(32, 32, 32);
 
-    openvdb::FloatGrid grid(background);
-    unittest_util::makeSphere<openvdb::FloatGrid>(dim, C, R, grid,
+    laovdb::FloatGrid grid(background);
+    unittest_util::makeSphere<laovdb::FloatGrid>(dim, C, R, grid,
                                                   1.0f, unittest_util::SPHERE_SPARSE_NARROW_BAND);
-    openvdb::FloatTree& tree = grid.tree();
+    laovdb::FloatTree& tree = grid.tree();
 
-    openvdb::Index64 count = 0;
-    openvdb::Coord xyz;
+    laovdb::Index64 count = 0;
+    laovdb::Coord xyz;
     for (xyz[0]=0; xyz[0]<dim[0]; ++xyz[0]) {
         for (xyz[1]=0; xyz[1]<dim[1]; ++xyz[1]) {
             for (xyz[2]=0; xyz[2]<dim[2]; ++xyz[2]) {
@@ -2158,17 +2158,17 @@ TEST_F(TestTree, testPruneLevelSet)
         }
     }
 
-    const openvdb::Index32 leafCount = tree.leafCount();
+    const laovdb::Index32 leafCount = tree.leafCount();
     EXPECT_EQ(tree.activeVoxelCount(), count);
     EXPECT_EQ(tree.activeLeafVoxelCount(), count);
 
-    openvdb::Index64 removed = 0;
+    laovdb::Index64 removed = 0;
     const float new_width = background - 9.0f;
 
     // This version is fast since it only visits voxel and avoids
     // random access to set the voxels off.
-    using VoxelOnIter = openvdb::FloatTree::LeafNodeType::ValueOnIter;
-    for (openvdb::FloatTree::LeafIter lIter = tree.beginLeaf(); lIter; ++lIter) {
+    using VoxelOnIter = laovdb::FloatTree::LeafNodeType::ValueOnIter;
+    for (laovdb::FloatTree::LeafIter lIter = tree.beginLeaf(); lIter; ++lIter) {
         for (VoxelOnIter vIter = lIter->beginValueOn(); vIter; ++vIter) {
             if (fabs(*vIter)<new_width) continue;
             lIter->setValueOff(vIter.pos(), *vIter > 0.0f ? background : -background);
@@ -2179,7 +2179,7 @@ TEST_F(TestTree, testPruneLevelSet)
     // FloatTree::ValueOnIter that visits both tiles and voxels and
     // also uses random acceess to set the voxels off.
     /*
-      for (openvdb::FloatTree::ValueOnIter i = tree.beginValueOn(); i; ++i) {
+      for (laovdb::FloatTree::ValueOnIter i = tree.beginValueOn(); i; ++i) {
       if (fabs(*i)<new_width) continue;
       tree.setValueOff(i.getCoord(), *i > 0.0f ? background : -background);
       ++removed2;
@@ -2191,14 +2191,14 @@ TEST_F(TestTree, testPruneLevelSet)
     EXPECT_EQ(tree.activeVoxelCount(), count-removed);
     EXPECT_EQ(tree.activeLeafVoxelCount(), count-removed);
 
-    openvdb::tools::pruneLevelSet(tree);
+    laovdb::tools::pruneLevelSet(tree);
 
     EXPECT_TRUE(tree.leafCount() < leafCount);
     //std::cerr << "Leaf count=" << tree.leafCount() << std::endl;
     EXPECT_EQ(tree.activeVoxelCount(), count-removed);
     EXPECT_EQ(tree.activeLeafVoxelCount(), count-removed);
 
-    openvdb::FloatTree::ValueOnCIter i = tree.cbeginValueOn();
+    laovdb::FloatTree::ValueOnCIter i = tree.cbeginValueOn();
     for (; i; ++i) EXPECT_TRUE( *i < new_width);
 
     for (xyz[0]=0; xyz[0]<dim[0]; ++xyz[0]) {
@@ -2223,9 +2223,9 @@ TEST_F(TestTree, testPruneLevelSet)
 TEST_F(TestTree, testTouchLeaf)
 {
     const float background=10.0f;
-    const openvdb::Coord xyz(-20,30,10);
+    const laovdb::Coord xyz(-20,30,10);
     {// test tree
-        openvdb::FloatTree::Ptr tree(new openvdb::FloatTree(background));
+        laovdb::FloatTree::Ptr tree(new laovdb::FloatTree(background));
         EXPECT_EQ(-1, tree->getValueDepth(xyz));
         EXPECT_EQ( 0, int(tree->leafCount()));
         EXPECT_TRUE(tree->touchLeaf(xyz) != nullptr);
@@ -2235,8 +2235,8 @@ TEST_F(TestTree, testTouchLeaf)
         ASSERT_DOUBLES_EXACTLY_EQUAL(background, tree->getValue(xyz));
     }
     {// test accessor
-        openvdb::FloatTree::Ptr tree(new openvdb::FloatTree(background));
-        openvdb::tree::ValueAccessor<openvdb::FloatTree> acc(*tree);
+        laovdb::FloatTree::Ptr tree(new laovdb::FloatTree(background));
+        laovdb::tree::ValueAccessor<laovdb::FloatTree> acc(*tree);
         EXPECT_EQ(-1, acc.getValueDepth(xyz));
         EXPECT_EQ( 0, int(tree->leafCount()));
         EXPECT_TRUE(acc.touchLeaf(xyz) != nullptr);
@@ -2251,9 +2251,9 @@ TEST_F(TestTree, testTouchLeaf)
 TEST_F(TestTree, testProbeLeaf)
 {
     const float background=10.0f, value = 2.0f;
-    const openvdb::Coord xyz(-20,30,10);
+    const laovdb::Coord xyz(-20,30,10);
     {// test Tree::probeLeaf
-        openvdb::FloatTree::Ptr tree(new openvdb::FloatTree(background));
+        laovdb::FloatTree::Ptr tree(new laovdb::FloatTree(background));
         EXPECT_EQ(-1, tree->getValueDepth(xyz));
         EXPECT_EQ( 0, int(tree->leafCount()));
         EXPECT_TRUE(tree->probeLeaf(xyz) == nullptr);
@@ -2269,15 +2269,15 @@ TEST_F(TestTree, testProbeLeaf)
         ASSERT_DOUBLES_EXACTLY_EQUAL(value, tree->getValue(xyz));
     }
     {// test Tree::probeConstLeaf
-        const openvdb::FloatTree tree1(background);
+        const laovdb::FloatTree tree1(background);
         EXPECT_EQ(-1, tree1.getValueDepth(xyz));
         EXPECT_EQ( 0, int(tree1.leafCount()));
         EXPECT_TRUE(tree1.probeConstLeaf(xyz) == nullptr);
         EXPECT_EQ(-1, tree1.getValueDepth(xyz));
         EXPECT_EQ( 0, int(tree1.leafCount()));
-        openvdb::FloatTree tmp(tree1);
+        laovdb::FloatTree tmp(tree1);
         tmp.setValue(xyz, value);
-        const openvdb::FloatTree tree2(tmp);
+        const laovdb::FloatTree tree2(tmp);
         EXPECT_EQ( 3, tree2.getValueDepth(xyz));
         EXPECT_EQ( 1, int(tree2.leafCount()));
         EXPECT_TRUE(tree2.probeConstLeaf(xyz) != nullptr);
@@ -2287,8 +2287,8 @@ TEST_F(TestTree, testProbeLeaf)
         ASSERT_DOUBLES_EXACTLY_EQUAL(value, tree2.getValue(xyz));
     }
     {// test ValueAccessor::probeLeaf
-        openvdb::FloatTree::Ptr tree(new openvdb::FloatTree(background));
-        openvdb::tree::ValueAccessor<openvdb::FloatTree> acc(*tree);
+        laovdb::FloatTree::Ptr tree(new laovdb::FloatTree(background));
+        laovdb::tree::ValueAccessor<laovdb::FloatTree> acc(*tree);
         EXPECT_EQ(-1, acc.getValueDepth(xyz));
         EXPECT_EQ( 0, int(tree->leafCount()));
         EXPECT_TRUE(acc.probeLeaf(xyz) == nullptr);
@@ -2304,17 +2304,17 @@ TEST_F(TestTree, testProbeLeaf)
         ASSERT_DOUBLES_EXACTLY_EQUAL(value, acc.getValue(xyz));
     }
     {// test ValueAccessor::probeConstLeaf
-        const openvdb::FloatTree tree1(background);
-        openvdb::tree::ValueAccessor<const openvdb::FloatTree> acc1(tree1);
+        const laovdb::FloatTree tree1(background);
+        laovdb::tree::ValueAccessor<const laovdb::FloatTree> acc1(tree1);
         EXPECT_EQ(-1, acc1.getValueDepth(xyz));
         EXPECT_EQ( 0, int(tree1.leafCount()));
         EXPECT_TRUE(acc1.probeConstLeaf(xyz) == nullptr);
         EXPECT_EQ(-1, acc1.getValueDepth(xyz));
         EXPECT_EQ( 0, int(tree1.leafCount()));
-        openvdb::FloatTree tmp(tree1);
+        laovdb::FloatTree tmp(tree1);
         tmp.setValue(xyz, value);
-        const openvdb::FloatTree tree2(tmp);
-        openvdb::tree::ValueAccessor<const openvdb::FloatTree> acc2(tree2);
+        const laovdb::FloatTree tree2(tmp);
+        laovdb::tree::ValueAccessor<const laovdb::FloatTree> acc2(tree2);
         EXPECT_EQ( 3, acc2.getValueDepth(xyz));
         EXPECT_EQ( 1, int(tree2.leafCount()));
         EXPECT_TRUE(acc2.probeConstLeaf(xyz) != nullptr);
@@ -2328,7 +2328,7 @@ TEST_F(TestTree, testProbeLeaf)
 
 TEST_F(TestTree, testAddLeaf)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     using LeafT = FloatTree::LeafNodeType;
 
@@ -2353,7 +2353,7 @@ TEST_F(TestTree, testAddLeaf)
 
 TEST_F(TestTree, testAddTile)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const Coord ijk(100);
     FloatGrid grid;
@@ -2375,19 +2375,19 @@ TEST_F(TestTree, testAddTile)
 
 struct BBoxOp
 {
-    std::vector<openvdb::CoordBBox> bbox;
-    std::vector<openvdb::Index> level;
+    std::vector<laovdb::CoordBBox> bbox;
+    std::vector<laovdb::Index> level;
 
     // This method is required by Tree::visitActiveBBox
     // Since it will return false if LEVEL==0 it will never descent to
     // the active voxels. In other words the smallest BBoxes
     // correspond to LeafNodes or active tiles at LEVEL=1
-    template<openvdb::Index LEVEL>
+    template<laovdb::Index LEVEL>
     inline bool descent() { return LEVEL>0; }
 
     // This method is required by Tree::visitActiveBBox
-    template<openvdb::Index LEVEL>
-    inline void operator()(const openvdb::CoordBBox &_bbox) {
+    template<laovdb::Index LEVEL>
+    inline void operator()(const laovdb::CoordBBox &_bbox) {
         bbox.push_back(_bbox);
         level.push_back(LEVEL);
     }
@@ -2397,12 +2397,12 @@ TEST_F(TestTree, testProcessBBox)
 {
     OPENVDB_NO_DEPRECATION_WARNING_BEGIN
 
-    using openvdb::Coord;
-    using openvdb::CoordBBox;
+    using laovdb::Coord;
+    using laovdb::CoordBBox;
     //check two leaf nodes and two tiles at each level 1, 2 and 3
     const int size[4]={1<<3, 1<<3, 1<<(3+4), 1<<(3+4+5)};
     for (int level=0; level<=3; ++level) {
-        openvdb::FloatTree tree;
+        laovdb::FloatTree tree;
         const int n = size[level];
         const CoordBBox bbox[]={CoordBBox::createCube(Coord(-n,-n,-n), n),
                                 CoordBBox::createCube(Coord( 0, 0, 0), n)};
@@ -2430,12 +2430,12 @@ TEST_F(TestTree, testProcessBBox)
 
 TEST_F(TestTree, testGetNodes)
 {
-    //openvdb::util::CpuTimer timer;
-    using openvdb::CoordBBox;
-    using openvdb::Coord;
-    using openvdb::Vec3f;
-    using openvdb::FloatGrid;
-    using openvdb::FloatTree;
+    //laovdb::util::CpuTimer timer;
+    using laovdb::CoordBBox;
+    using laovdb::Coord;
+    using laovdb::Vec3f;
+    using laovdb::FloatGrid;
+    using laovdb::FloatTree;
 
     const Vec3f center(0.35f, 0.35f, 0.35f);
     const float radius = 0.15f;
@@ -2444,7 +2444,7 @@ TEST_F(TestTree, testGetNodes)
 
     FloatGrid::Ptr grid = FloatGrid::create(/*background=*/half_width*voxel_size);
     FloatTree& tree = grid->tree();
-    grid->setTransform(openvdb::math::Transform::createLinearTransform(/*voxel size=*/voxel_size));
+    grid->setTransform(laovdb::math::Transform::createLinearTransform(/*voxel size=*/voxel_size));
 
     unittest_util::makeSphere<FloatGrid>(
         Coord(dim), center, radius, *grid, unittest_util::SPHERE_SPARSE_NARROW_BAND);
@@ -2452,7 +2452,7 @@ TEST_F(TestTree, testGetNodes)
     const size_t voxelCount = tree.activeVoxelCount();
 
     {//testing Tree::getNodes() with std::vector<T*>
-        std::vector<openvdb::FloatTree::LeafNodeType*> array;
+        std::vector<laovdb::FloatTree::LeafNodeType*> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::vector<T*> and Tree::getNodes()");
         tree.getNodes(array);
@@ -2464,7 +2464,7 @@ TEST_F(TestTree, testGetNodes)
         EXPECT_EQ(voxelCount, sum);
     }
     {//testing Tree::getNodes() with std::vector<const T*>
-        std::vector<const openvdb::FloatTree::LeafNodeType*> array;
+        std::vector<const laovdb::FloatTree::LeafNodeType*> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::vector<const T*> and Tree::getNodes()");
         tree.getNodes(array);
@@ -2476,7 +2476,7 @@ TEST_F(TestTree, testGetNodes)
         EXPECT_EQ(voxelCount, sum);
     }
     {//testing Tree::getNodes() const with std::vector<const T*>
-        std::vector<const openvdb::FloatTree::LeafNodeType*> array;
+        std::vector<const laovdb::FloatTree::LeafNodeType*> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::vector<const T*> and Tree::getNodes() const");
         const FloatTree& tmp = tree;
@@ -2489,7 +2489,7 @@ TEST_F(TestTree, testGetNodes)
         EXPECT_EQ(voxelCount, sum);
     }
     {//testing Tree::getNodes() with std::vector<T*> and std::vector::reserve
-        std::vector<openvdb::FloatTree::LeafNodeType*> array;
+        std::vector<laovdb::FloatTree::LeafNodeType*> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::vector<T*>, std::vector::reserve and Tree::getNodes");
         array.reserve(tree.leafCount());
@@ -2502,7 +2502,7 @@ TEST_F(TestTree, testGetNodes)
         EXPECT_EQ(voxelCount, sum);
     }
     {//testing Tree::getNodes() with std::deque<T*>
-        std::deque<const openvdb::FloatTree::LeafNodeType*> array;
+        std::deque<const laovdb::FloatTree::LeafNodeType*> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::deque<T*> and Tree::getNodes");
         tree.getNodes(array);
@@ -2514,7 +2514,7 @@ TEST_F(TestTree, testGetNodes)
         EXPECT_EQ(voxelCount, sum);
     }
     {//testing Tree::getNodes() with std::deque<T*>
-        std::deque<const openvdb::FloatTree::RootNodeType::ChildNodeType*> array;
+        std::deque<const laovdb::FloatTree::RootNodeType::ChildNodeType*> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::deque<T*> and Tree::getNodes");
         tree.getNodes(array);
@@ -2523,7 +2523,7 @@ TEST_F(TestTree, testGetNodes)
         EXPECT_EQ(leafCount, size_t(tree.leafCount()));
     }
     {//testing Tree::getNodes() with std::deque<T*>
-        std::deque<const openvdb::FloatTree::RootNodeType::ChildNodeType::ChildNodeType*> array;
+        std::deque<const laovdb::FloatTree::RootNodeType::ChildNodeType::ChildNodeType*> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::deque<T*> and Tree::getNodes");
         tree.getNodes(array);
@@ -2533,12 +2533,12 @@ TEST_F(TestTree, testGetNodes)
     }
     /*
     {//testing Tree::getNodes() with std::deque<T*> where T is not part of the tree configuration
-        using NodeT = openvdb::tree::LeafNode<float, 5>;
+        using NodeT = laovdb::tree::LeafNode<float, 5>;
         std::deque<const NodeT*> array;
         tree.getNodes(array);//should NOT compile since NodeT is not part of the FloatTree configuration
     }
     {//testing Tree::getNodes() const with std::deque<T*> where T is not part of the tree configuration
-        using NodeT = openvdb::tree::LeafNode<float, 5>;
+        using NodeT = laovdb::tree::LeafNode<float, 5>;
         std::deque<const NodeT*> array;
         const FloatTree& tmp = tree;
         tmp.getNodes(array);//should NOT compile since NodeT is not part of the FloatTree configuration
@@ -2559,12 +2559,12 @@ struct SafeArray {
 
 TEST_F(TestTree, testStealNodes)
 {
-    //openvdb::util::CpuTimer timer;
-    using openvdb::CoordBBox;
-    using openvdb::Coord;
-    using openvdb::Vec3f;
-    using openvdb::FloatGrid;
-    using openvdb::FloatTree;
+    //laovdb::util::CpuTimer timer;
+    using laovdb::CoordBBox;
+    using laovdb::Coord;
+    using laovdb::Vec3f;
+    using laovdb::FloatGrid;
+    using laovdb::FloatTree;
 
     const Vec3f center(0.35f, 0.35f, 0.35f);
     const float radius = 0.15f;
@@ -2573,7 +2573,7 @@ TEST_F(TestTree, testStealNodes)
 
     FloatGrid::Ptr grid = FloatGrid::create(/*background=*/half_width*voxel_size);
     const FloatTree& tree = grid->tree();
-    grid->setTransform(openvdb::math::Transform::createLinearTransform(/*voxel size=*/voxel_size));
+    grid->setTransform(laovdb::math::Transform::createLinearTransform(/*voxel size=*/voxel_size));
 
     unittest_util::makeSphere<FloatGrid>(
         Coord(dim), center, radius, *grid, unittest_util::SPHERE_SPARSE_NARROW_BAND);
@@ -2582,7 +2582,7 @@ TEST_F(TestTree, testStealNodes)
 
     {//testing Tree::stealNodes() with std::vector<T*>
         FloatTree tree2 = tree;
-        SafeArray<openvdb::FloatTree::LeafNodeType, std::vector> array;
+        SafeArray<laovdb::FloatTree::LeafNodeType, std::vector> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::vector<T*> and Tree::stealNodes()");
         tree2.stealNodes(array);
@@ -2595,7 +2595,7 @@ TEST_F(TestTree, testStealNodes)
     }
     {//testing Tree::stealNodes() with std::vector<const T*>
         FloatTree tree2 = tree;
-        SafeArray<const openvdb::FloatTree::LeafNodeType, std::vector> array;
+        SafeArray<const laovdb::FloatTree::LeafNodeType, std::vector> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::vector<const T*> and Tree::stealNodes()");
         tree2.stealNodes(array);
@@ -2608,7 +2608,7 @@ TEST_F(TestTree, testStealNodes)
     }
     {//testing Tree::stealNodes() const with std::vector<const T*>
         FloatTree tree2 = tree;
-        SafeArray<const openvdb::FloatTree::LeafNodeType, std::vector> array;
+        SafeArray<const laovdb::FloatTree::LeafNodeType, std::vector> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::vector<const T*> and Tree::stealNodes() const");
         tree2.stealNodes(array);
@@ -2621,7 +2621,7 @@ TEST_F(TestTree, testStealNodes)
     }
     {//testing Tree::stealNodes() with std::vector<T*> and std::vector::reserve
         FloatTree tree2 = tree;
-        SafeArray<openvdb::FloatTree::LeafNodeType, std::vector> array;
+        SafeArray<laovdb::FloatTree::LeafNodeType, std::vector> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::vector<T*>, std::vector::reserve and Tree::stealNodes");
         array.reserve(tree2.leafCount());
@@ -2635,7 +2635,7 @@ TEST_F(TestTree, testStealNodes)
     }
     {//testing Tree::getNodes() with std::deque<T*>
         FloatTree tree2 = tree;
-        SafeArray<const openvdb::FloatTree::LeafNodeType, std::deque> array;
+        SafeArray<const laovdb::FloatTree::LeafNodeType, std::deque> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::deque<T*> and Tree::stealNodes");
         tree2.stealNodes(array);
@@ -2648,7 +2648,7 @@ TEST_F(TestTree, testStealNodes)
     }
     {//testing Tree::getNodes() with std::deque<T*>
         FloatTree tree2 = tree;
-        SafeArray<const openvdb::FloatTree::RootNodeType::ChildNodeType, std::deque> array;
+        SafeArray<const laovdb::FloatTree::RootNodeType::ChildNodeType, std::deque> array;
         EXPECT_EQ(size_t(0), array.size());
         //timer.start("\nstd::deque<T*> and Tree::stealNodes");
         tree2.stealNodes(array, 0.0f, true);
@@ -2657,7 +2657,7 @@ TEST_F(TestTree, testStealNodes)
         EXPECT_EQ(size_t(0), size_t(tree2.leafCount()));
     }
     {//testing Tree::getNodes() with std::deque<T*>
-        using NodeT = openvdb::FloatTree::RootNodeType::ChildNodeType::ChildNodeType;
+        using NodeT = laovdb::FloatTree::RootNodeType::ChildNodeType::ChildNodeType;
         FloatTree tree2 = tree;
         SafeArray<const NodeT, std::deque> array;
         EXPECT_EQ(size_t(0), array.size());
@@ -2670,7 +2670,7 @@ TEST_F(TestTree, testStealNodes)
     /*
     {//testing Tree::stealNodes() with std::deque<T*> where T is not part of the tree configuration
         FloatTree tree2 = tree;
-        using NodeT = openvdb::tree::LeafNode<float, 5>;
+        using NodeT = laovdb::tree::LeafNode<float, 5>;
         std::deque<const NodeT*> array;
         //should NOT compile since NodeT is not part of the FloatTree configuration
         tree2.stealNodes(array, 0.0f, true);
@@ -2680,11 +2680,11 @@ TEST_F(TestTree, testStealNodes)
 
 TEST_F(TestTree, testStealNode)
 {
-    using openvdb::Index;
-    using openvdb::FloatTree;
+    using laovdb::Index;
+    using laovdb::FloatTree;
 
     const float background=0.0f, value = 5.6f, epsilon=0.000001f;
-    const openvdb::Coord xyz(-23,42,70);
+    const laovdb::Coord xyz(-23,42,70);
 
     {// stal a LeafNode
         using NodeT = FloatTree::LeafNodeType;
@@ -2765,20 +2765,20 @@ TEST_F(TestTree, testStealNode)
 
 TEST_F(TestTree, testNodeCount)
 {
-    //openvdb::util::CpuTimer timer;// use for benchmark test
+    //laovdb::util::CpuTimer timer;// use for benchmark test
 
-    const openvdb::Vec3f center(0.0f, 0.0f, 0.0f);
+    const laovdb::Vec3f center(0.0f, 0.0f, 0.0f);
     const float radius = 1.0f;
     //const int dim = 4096, halfWidth = 3;// use for benchmark test
     const int dim = 512, halfWidth = 3;// use for unit test
     //timer.start("\nGenerate level set sphere");// use for benchmark test
-    auto  grid = openvdb::tools::createLevelSetSphere<openvdb::FloatGrid>(radius, center, radius/dim, halfWidth);
+    auto  grid = laovdb::tools::createLevelSetSphere<laovdb::FloatGrid>(radius, center, radius/dim, halfWidth);
     //timer.stop();// use for benchmark test
     auto& tree = grid->tree();
 
-    std::vector<openvdb::Index> dims;
+    std::vector<laovdb::Index> dims;
     tree.getNodeLog2Dims(dims);
-    std::vector<openvdb::Index32> nodeCount1(dims.size());
+    std::vector<laovdb::Index32> nodeCount1(dims.size());
     //timer.start("Old technique");// use for benchmark test
     for (auto it = tree.cbeginNode(); it; ++it) ++(nodeCount1[dims.size()-1-it.getDepth()]);
     //timer.restart("New technique");// use for benchmark test
@@ -2794,18 +2794,18 @@ TEST_F(TestTree, testNodeCount)
 TEST_F(TestTree, testRootNode)
 {
     using ChildType = RootNodeType::ChildNodeType;
-    const openvdb::Coord c0(0,0,0), c1(49152, 16384, 28672);
+    const laovdb::Coord c0(0,0,0), c1(49152, 16384, 28672);
 
     { // test inserting child nodes directly and indirectly
         RootNodeType root(0.0f);
         EXPECT_TRUE(root.empty());
-        EXPECT_EQ(openvdb::Index32(0), root.childCount());
+        EXPECT_EQ(laovdb::Index32(0), root.childCount());
 
         // populate the tree by inserting the two leaf nodes containing c0 and c1
         root.touchLeaf(c0);
         root.touchLeaf(c1);
-        EXPECT_EQ(openvdb::Index(2), root.getTableSize());
-        EXPECT_EQ(openvdb::Index32(2), root.childCount());
+        EXPECT_EQ(laovdb::Index(2), root.getTableSize());
+        EXPECT_EQ(laovdb::Index32(2), root.childCount());
         EXPECT_TRUE(!root.hasActiveTiles());
 
         { // verify c0 and c1 are the root node coordinates
@@ -2827,8 +2827,8 @@ TEST_F(TestTree, testRootNode)
         for (ChildType* child : children) {
             root.addChild(child);
         }
-        EXPECT_EQ(openvdb::Index(2), root.getTableSize());
-        EXPECT_EQ(openvdb::Index32(2), root.childCount());
+        EXPECT_EQ(laovdb::Index(2), root.getTableSize());
+        EXPECT_EQ(laovdb::Index32(2), root.childCount());
 
         { // verify the coordinates of the root node children
             auto rootIter = root.cbeginChildOn();
@@ -2848,8 +2848,8 @@ TEST_F(TestTree, testRootNode)
         // populate the root node by inserting tiles
         root.addTile(c0, /*value=*/1.0f, /*state=*/true);
         root.addTile(c1, /*value=*/2.0f, /*state=*/true);
-        EXPECT_EQ(openvdb::Index(2), root.getTableSize());
-        EXPECT_EQ(openvdb::Index32(0), root.childCount());
+        EXPECT_EQ(laovdb::Index(2), root.getTableSize());
+        EXPECT_EQ(laovdb::Index32(0), root.childCount());
         EXPECT_TRUE(root.hasActiveTiles());
         ASSERT_DOUBLES_EXACTLY_EQUAL(1.0f, root.getValue(c0));
         ASSERT_DOUBLES_EXACTLY_EQUAL(2.0f, root.getValue(c1));
@@ -2862,8 +2862,8 @@ TEST_F(TestTree, testRootNode)
         root.addChild(new ChildType(c0, 5.0f));
 
         // verify active tiles have been replaced by child nodes
-        EXPECT_EQ(openvdb::Index(2), root.getTableSize());
-        EXPECT_EQ(openvdb::Index32(2), root.childCount());
+        EXPECT_EQ(laovdb::Index(2), root.getTableSize());
+        EXPECT_EQ(laovdb::Index32(2), root.childCount());
         EXPECT_TRUE(!root.hasActiveTiles());
 
         { // verify the coordinates of the root node children
@@ -2878,35 +2878,35 @@ TEST_F(TestTree, testRootNode)
 #if OPENVDB_ABI_VERSION_NUMBER >= 9
     { // test transient data
         RootNodeType rootNode(0.0f);
-        EXPECT_EQ(openvdb::Index32(0), rootNode.transientData());
-        rootNode.setTransientData(openvdb::Index32(5));
-        EXPECT_EQ(openvdb::Index32(5), rootNode.transientData());
+        EXPECT_EQ(laovdb::Index32(0), rootNode.transientData());
+        rootNode.setTransientData(laovdb::Index32(5));
+        EXPECT_EQ(laovdb::Index32(5), rootNode.transientData());
         RootNodeType rootNode2(rootNode);
-        EXPECT_EQ(openvdb::Index32(5), rootNode2.transientData());
+        EXPECT_EQ(laovdb::Index32(5), rootNode2.transientData());
         RootNodeType rootNode3 = rootNode;
-        EXPECT_EQ(openvdb::Index32(5), rootNode3.transientData());
+        EXPECT_EQ(laovdb::Index32(5), rootNode3.transientData());
     }
 #endif
 }
 
 TEST_F(TestTree, testInternalNode)
 {
-    const openvdb::Coord c0(1000, 1000, 1000);
-    const openvdb::Coord c1(896, 896, 896);
+    const laovdb::Coord c0(1000, 1000, 1000);
+    const laovdb::Coord c1(896, 896, 896);
 
     using InternalNodeType = InternalNodeType1;
     using ChildType = LeafNodeType;
 
     { // test inserting child nodes directly and indirectly
-        openvdb::Coord c2 = c1.offsetBy(8,0,0);
-        openvdb::Coord c3 = c1.offsetBy(16,16,16);
+        laovdb::Coord c2 = c1.offsetBy(8,0,0);
+        laovdb::Coord c3 = c1.offsetBy(16,16,16);
 
         InternalNodeType internalNode(c1, 0.0f);
         internalNode.touchLeaf(c2);
         internalNode.touchLeaf(c3);
 
-        EXPECT_EQ(openvdb::Index(2), internalNode.leafCount());
-        EXPECT_EQ(openvdb::Index32(2), internalNode.childCount());
+        EXPECT_EQ(laovdb::Index(2), internalNode.leafCount());
+        EXPECT_EQ(laovdb::Index32(2), internalNode.childCount());
         EXPECT_TRUE(!internalNode.hasActiveTiles());
 
         { // verify c0 and c1 are the root node coordinates
@@ -2922,15 +2922,15 @@ TEST_F(TestTree, testInternalNode)
         // steal the internal node children leaving it empty again
         std::vector<ChildType*> children;
         internalNode.stealNodes(children, 0.0f, false);
-        EXPECT_EQ(openvdb::Index(0), internalNode.leafCount());
-        EXPECT_EQ(openvdb::Index32(0), internalNode.childCount());
+        EXPECT_EQ(laovdb::Index(0), internalNode.leafCount());
+        EXPECT_EQ(laovdb::Index32(0), internalNode.childCount());
 
         // insert the root node children directly
         for (ChildType* child : children) {
             internalNode.addChild(child);
         }
-        EXPECT_EQ(openvdb::Index(2), internalNode.leafCount());
-        EXPECT_EQ(openvdb::Index32(2), internalNode.childCount());
+        EXPECT_EQ(laovdb::Index(2), internalNode.leafCount());
+        EXPECT_EQ(laovdb::Index32(2), internalNode.childCount());
 
         { // verify the coordinates of the root node children
             auto childIter = internalNode.cbeginChildOn();
@@ -2943,20 +2943,20 @@ TEST_F(TestTree, testInternalNode)
     { // test inserting a tile and replacing with a child node
         InternalNodeType internalNode(c1, 0.0f);
         EXPECT_TRUE(!internalNode.hasActiveTiles());
-        EXPECT_EQ(openvdb::Index(0), internalNode.leafCount());
-        EXPECT_EQ(openvdb::Index32(0), internalNode.childCount());
+        EXPECT_EQ(laovdb::Index(0), internalNode.leafCount());
+        EXPECT_EQ(laovdb::Index32(0), internalNode.childCount());
 
         // add a tile
-        internalNode.addTile(openvdb::Index(0), /*value=*/1.0f, /*state=*/true);
+        internalNode.addTile(laovdb::Index(0), /*value=*/1.0f, /*state=*/true);
         EXPECT_TRUE(internalNode.hasActiveTiles());
-        EXPECT_EQ(openvdb::Index(0), internalNode.leafCount());
-        EXPECT_EQ(openvdb::Index32(0), internalNode.childCount());
+        EXPECT_EQ(laovdb::Index(0), internalNode.leafCount());
+        EXPECT_EQ(laovdb::Index32(0), internalNode.childCount());
 
         // replace the tile with a child node
         EXPECT_TRUE(internalNode.addChild(new ChildType(c1, 2.0f)));
         EXPECT_TRUE(!internalNode.hasActiveTiles());
-        EXPECT_EQ(openvdb::Index(1), internalNode.leafCount());
-        EXPECT_EQ(openvdb::Index32(1), internalNode.childCount());
+        EXPECT_EQ(laovdb::Index(1), internalNode.leafCount());
+        EXPECT_EQ(laovdb::Index32(1), internalNode.childCount());
         EXPECT_EQ(c1, internalNode.cbeginChildOn().getCoord());
         ASSERT_DOUBLES_EXACTLY_EQUAL(2.0f, internalNode.cbeginChildOn()->getValue(0));
 
@@ -2971,8 +2971,8 @@ TEST_F(TestTree, testInternalNode)
         // succeed if child belongs to this internal node
         EXPECT_TRUE(internalNode.addChild(new ChildType(c0.offsetBy(8,0,0))));
         EXPECT_TRUE(internalNode.probeLeaf(c0.offsetBy(8,0,0)));
-        openvdb::Index index1 = internalNode.coordToOffset(c0);
-        openvdb::Index index2 = internalNode.coordToOffset(c0.offsetBy(8,0,0));
+        laovdb::Index index1 = internalNode.coordToOffset(c0);
+        laovdb::Index index2 = internalNode.coordToOffset(c0.offsetBy(8,0,0));
         EXPECT_TRUE(!internalNode.isChildMaskOn(index1));
         EXPECT_TRUE(internalNode.isChildMaskOn(index2));
 
@@ -2985,13 +2985,13 @@ TEST_F(TestTree, testInternalNode)
 #if OPENVDB_ABI_VERSION_NUMBER >= 9
     { // test transient data
         InternalNodeType internalNode(c1, 0.0f);
-        EXPECT_EQ(openvdb::Index32(0), internalNode.transientData());
-        internalNode.setTransientData(openvdb::Index32(5));
-        EXPECT_EQ(openvdb::Index32(5), internalNode.transientData());
+        EXPECT_EQ(laovdb::Index32(0), internalNode.transientData());
+        internalNode.setTransientData(laovdb::Index32(5));
+        EXPECT_EQ(laovdb::Index32(5), internalNode.transientData());
         InternalNodeType internalNode2(internalNode);
-        EXPECT_EQ(openvdb::Index32(5), internalNode2.transientData());
+        EXPECT_EQ(laovdb::Index32(5), internalNode2.transientData());
         InternalNodeType internalNode3 = internalNode;
-        EXPECT_EQ(openvdb::Index32(5), internalNode3.transientData());
+        EXPECT_EQ(laovdb::Index32(5), internalNode3.transientData());
     }
 #endif
 }

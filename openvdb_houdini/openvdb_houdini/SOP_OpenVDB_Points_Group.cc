@@ -26,9 +26,9 @@
 
 
 
-using namespace openvdb;
-using namespace openvdb::points;
-using namespace openvdb::math;
+using namespace laovdb;
+using namespace laovdb::points;
+using namespace laovdb::math;
 
 namespace hvdb = openvdb_houdini;
 namespace hutil = houdini_utils;
@@ -57,11 +57,11 @@ struct GroupParms {
     float                         mPercent            = 0.0f;
     long                          mCount              = 0L;
     std::string                   mHashAttribute      = "";
-    size_t                        mHashAttributeIndex = openvdb::points::AttributeSet::INVALID_POS;
+    size_t                        mHashAttributeIndex = laovdb::points::AttributeSet::INVALID_POS;
     // bbox parms
-    openvdb::BBoxd                mBBox;
+    laovdb::BBoxd                mBBox;
     // level set parms
-    openvdb::FloatGrid::ConstPtr  mLevelSetGrid       = FloatGrid::create(0);
+    laovdb::FloatGrid::ConstPtr  mLevelSetGrid       = FloatGrid::create(0);
     float                         mSDFMin             = 0.0f;
     float                         mSDFMax             = 0.0f;
     // viewport parms
@@ -121,7 +121,7 @@ static PRM_Default fiveThousandDefault(5000);
 void
 newSopOperator(OP_OperatorTable* table)
 {
-    openvdb::initialize();
+    laovdb::initialize();
 
     if (table == nullptr) return;
 
@@ -425,7 +425,7 @@ SOP_OpenVDB_Points_Group::Cache::cookVDBSop(OP_Context& context)
             GU_PrimVDB* vdbPrim = *vdbIt;
 
             // only process if grid is a PointDataGrid with leaves
-            if(!openvdb::gridConstPtrCast<PointDataGrid>(vdbPrim->getConstGridPtr())) continue;
+            if(!laovdb::gridConstPtrCast<PointDataGrid>(vdbPrim->getConstGridPtr())) continue;
             auto&& pointDataGrid = UTvdbGridCast<PointDataGrid>(vdbPrim->getConstGrid());
             auto leafIter = pointDataGrid.tree().cbeginLeaf();
             if (!leafIter) continue;
@@ -624,15 +624,15 @@ SOP_OpenVDB_Points_Group::Cache::evalGroupParms(
         }
         else {
             // store bounding box
-            openvdb::BBoxd::ValueType size(
+            laovdb::BBoxd::ValueType size(
                 evalFloat("size", 0, time),
                 evalFloat("size", 1, time),
                 evalFloat("size", 2, time));
-            openvdb::BBoxd::ValueType center(
+            laovdb::BBoxd::ValueType center(
                 evalFloat("center", 0, time),
                 evalFloat("center", 1, time),
                 evalFloat("center", 2, time));
-            parms.mBBox = openvdb::BBoxd(center - size/2, center + size/2);
+            parms.mBBox = laovdb::BBoxd(center - size/2, center + size/2);
         }
     }
 
@@ -651,7 +651,7 @@ SOP_OpenVDB_Points_Group::Cache::evalGroupParms(
             evalStdString("sdfname", time).c_str(), GroupCreator(refGdp));
         for (hvdb::VdbPrimCIterator vdbRefIt(refGdp, levelSetGroup); vdbRefIt; ++vdbRefIt) {
             if (vdbRefIt->getStorageType() == UT_VDB_FLOAT &&
-                vdbRefIt->getGrid().getGridClass() == openvdb::GRID_LEVEL_SET) {
+                vdbRefIt->getGrid().getGridClass() == laovdb::GRID_LEVEL_SET) {
                 parms.mLevelSetGrid = gridConstPtrCast<FloatGrid>((*vdbRefIt)->getConstGridPtr());
                 break;
             }
@@ -841,7 +841,7 @@ SOP_OpenVDB_Points_Group::Cache::performGroupFiltering(
         return;
     }
 
-    openvdb::math::Transform& transform = outputGrid.transform();
+    laovdb::math::Transform& transform = outputGrid.transform();
     const std::string groupName = parms.mGroupName;
 
     auto targetPoints = static_cast<int>(parms.mCount);

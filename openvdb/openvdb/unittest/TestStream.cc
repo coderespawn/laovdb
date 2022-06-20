@@ -25,8 +25,8 @@ public:
     void testFileReadFromStream();
 
 protected:
-    static openvdb::GridPtrVecPtr createTestGrids(openvdb::MetaMap::Ptr&);
-    static void verifyTestGrids(openvdb::GridPtrVecPtr, openvdb::MetaMap::Ptr);
+    static laovdb::GridPtrVecPtr createTestGrids(laovdb::MetaMap::Ptr&);
+    static void verifyTestGrids(laovdb::GridPtrVecPtr, laovdb::MetaMap::Ptr);
 };
 
 
@@ -36,43 +36,43 @@ protected:
 void
 TestStream::SetUp()
 {
-    openvdb::uninitialize();
+    laovdb::uninitialize();
 
-    openvdb::Int32Grid::registerGrid();
-    openvdb::FloatGrid::registerGrid();
+    laovdb::Int32Grid::registerGrid();
+    laovdb::FloatGrid::registerGrid();
 
-    openvdb::StringMetadata::registerType();
-    openvdb::Int32Metadata::registerType();
-    openvdb::Int64Metadata::registerType();
-    openvdb::Vec3IMetadata::registerType();
-    openvdb::io::DelayedLoadMetadata::registerType();
+    laovdb::StringMetadata::registerType();
+    laovdb::Int32Metadata::registerType();
+    laovdb::Int64Metadata::registerType();
+    laovdb::Vec3IMetadata::registerType();
+    laovdb::io::DelayedLoadMetadata::registerType();
 
     // Register maps
-    openvdb::math::MapRegistry::clear();
-    openvdb::math::AffineMap::registerMap();
-    openvdb::math::ScaleMap::registerMap();
-    openvdb::math::UniformScaleMap::registerMap();
-    openvdb::math::TranslationMap::registerMap();
-    openvdb::math::ScaleTranslateMap::registerMap();
-    openvdb::math::UniformScaleTranslateMap::registerMap();
-    openvdb::math::NonlinearFrustumMap::registerMap();
+    laovdb::math::MapRegistry::clear();
+    laovdb::math::AffineMap::registerMap();
+    laovdb::math::ScaleMap::registerMap();
+    laovdb::math::UniformScaleMap::registerMap();
+    laovdb::math::TranslationMap::registerMap();
+    laovdb::math::ScaleTranslateMap::registerMap();
+    laovdb::math::UniformScaleTranslateMap::registerMap();
+    laovdb::math::NonlinearFrustumMap::registerMap();
 }
 
 
 void
 TestStream::TearDown()
 {
-    openvdb::uninitialize();
+    laovdb::uninitialize();
 }
 
 
 ////////////////////////////////////////
 
 
-openvdb::GridPtrVecPtr
-TestStream::createTestGrids(openvdb::MetaMap::Ptr& metadata)
+laovdb::GridPtrVecPtr
+TestStream::createTestGrids(laovdb::MetaMap::Ptr& metadata)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // Create trees
     Int32Tree::Ptr tree1(new Int32Tree(1));
@@ -114,9 +114,9 @@ TestStream::createTestGrids(openvdb::MetaMap::Ptr& metadata)
 
 
 void
-TestStream::verifyTestGrids(openvdb::GridPtrVecPtr grids, openvdb::MetaMap::Ptr meta)
+TestStream::verifyTestGrids(laovdb::GridPtrVecPtr grids, laovdb::MetaMap::Ptr meta)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     EXPECT_TRUE(grids.get() != nullptr);
     EXPECT_TRUE(meta.get() != nullptr);
@@ -159,7 +159,7 @@ TestStream::verifyTestGrids(openvdb::GridPtrVecPtr grids, openvdb::MetaMap::Ptr 
 
 TEST_F(TestStream, testWrite)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // Create test grids and stream them to a string.
     MetaMap::Ptr meta;
@@ -181,7 +181,7 @@ TEST_F(TestStream, testWrite)
 
 TEST_F(TestStream, testRead)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // Create test grids and write them to a file.
     MetaMap::Ptr meta;
@@ -204,7 +204,7 @@ TEST_F(TestStream, testRead)
 void
 TestStream::testFileReadFromStream()
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     MetaMap::Ptr meta;
     GridPtrVecPtr grids;

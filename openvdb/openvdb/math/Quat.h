@@ -15,7 +15,7 @@
 #include <string>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -637,6 +637,6 @@ template<> inline math::Quats zeroVal<math::Quats >() { return math::Quats::zero
 template<> inline math::Quatd zeroVal<math::Quatd >() { return math::Quatd::zero(); }
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif //OPENVDB_MATH_QUAT_H_HAS_BEEN_INCLUDED

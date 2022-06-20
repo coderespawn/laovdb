@@ -284,7 +284,7 @@ OpenVDBFromPolygonsNode::compute(const MPlug& plug, MDataBlock& data)
         status = mesh.getPoints(vertexArray, MSpace::kWorld);
         if (status != MS::kSuccess) return status;
 
-        openvdb::Vec3s pmin(std::numeric_limits<float>::max()),
+        laovdb::Vec3s pmin(std::numeric_limits<float>::max()),
             pmax(-std::numeric_limits<float>::max());
 
         for(unsigned i = 0, I = vertexArray.length(); i < I; ++i) {
@@ -349,10 +349,10 @@ OpenVDBFromPolygonsNode::compute(const MPlug& plug, MDataBlock& data)
         if (status != MS::kSuccess) return status;
         if (!(voxelSize > 0.0)) return MS::kFailure;
 
-        openvdb::math::Transform::Ptr transform;
+        laovdb::math::Transform::Ptr transform;
         try {
-            transform = openvdb::math::Transform::createLinearTransform(voxelSize);
-        } catch (openvdb::ArithmeticError) {
+            transform = laovdb::math::Transform::createLinearTransform(voxelSize);
+        } catch (laovdb::ArithmeticError) {
             MGlobal::displayError("Invalid voxel size.");
             return MS::kFailure;
         }
@@ -362,8 +362,8 @@ OpenVDBFromPolygonsNode::compute(const MPlug& plug, MDataBlock& data)
         if (status != MS::kSuccess) return status;
 
 
-        openvdb::Vec3d pos;
-        std::vector<openvdb::Vec3s> pointList(vertexArray.length());
+        laovdb::Vec3d pos;
+        std::vector<laovdb::Vec3s> pointList(vertexArray.length());
         for(unsigned i = 0, I = vertexArray.length(); i < I; ++i) {
             pos[0] = double(vertexArray[i].x);
             pos[1] = double(vertexArray[i].y);
@@ -376,7 +376,7 @@ OpenVDBFromPolygonsNode::compute(const MPlug& plug, MDataBlock& data)
             pointList[i][2] = float(pos[2]);
         }
 
-        std::vector<openvdb::Vec4I> primList;
+        std::vector<laovdb::Vec4I> primList;
 
         MIntArray vertices;
         for (MItMeshPolygon mIt(obj); !mIt.isDone(); mIt.next()) {
@@ -396,19 +396,19 @@ OpenVDBFromPolygonsNode::compute(const MPlug& plug, MDataBlock& data)
 
                 for(unsigned idx = 0; idx < triangleVerts.length(); idx+=3) {
 
-                    openvdb::Vec4I prim(
+                    laovdb::Vec4I prim(
                         triangleVerts[idx],
                         triangleVerts[idx+1],
                         triangleVerts[idx+2],
-                        openvdb::util::INVALID_IDX);
+                        laovdb::util::INVALID_IDX);
 
                     primList.push_back(prim);
                 }
 
             } else {
                 mIt.getVertices(vertices);
-                openvdb::Vec4I prim(vertices[0], vertices[1], vertices[2],
-                    (vertices.length() < 4) ? openvdb::util::INVALID_IDX : vertices[3]);
+                laovdb::Vec4I prim(vertices[0], vertices[1], vertices[2],
+                    (vertices.length() < 4) ? laovdb::util::INVALID_IDX : vertices[3]);
 
                 primList.push_back(prim);
             }
@@ -438,13 +438,13 @@ OpenVDBFromPolygonsNode::compute(const MPlug& plug, MDataBlock& data)
                 }
 
             } else {
-                conversionFlags = openvdb::tools::UNSIGNED_DISTANCE_FIELD;
+                conversionFlags = laovdb::tools::UNSIGNED_DISTANCE_FIELD;
             }
 
-            openvdb::tools::QuadAndTriangleDataAdapter<openvdb::Vec3s, openvdb::Vec4I>
+            laovdb::tools::QuadAndTriangleDataAdapter<laovdb::Vec3s, laovdb::Vec4I>
                 theMesh(pointList, primList);
 
-            openvdb::FloatGrid::Ptr grid = openvdb::tools::meshToVolume<openvdb::FloatGrid>(
+            laovdb::FloatGrid::Ptr grid = laovdb::tools::meshToVolume<laovdb::FloatGrid>(
                 theMesh, *transform, exteriorBandWidth, interiorBandWidth, conversionFlags);
 
             // export distance grid
@@ -458,7 +458,7 @@ OpenVDBFromPolygonsNode::compute(const MPlug& plug, MDataBlock& data)
             if (exportDensityGrid) {
 
                 std::string name = data.inputValue(aDensityGridName, &status).asString().asChar();
-                openvdb::FloatGrid::Ptr densityGrid;
+                laovdb::FloatGrid::Ptr densityGrid;
 
                 if (exportDistanceGrid) {
                     densityGrid = grid->deepCopy();
@@ -466,7 +466,7 @@ OpenVDBFromPolygonsNode::compute(const MPlug& plug, MDataBlock& data)
                     densityGrid = grid;
                 }
 
-                openvdb::tools::sdfToFogVolume(*densityGrid);
+                laovdb::tools::sdfToFogVolume(*densityGrid);
 
                 if (!name.empty()) densityGrid->setName(name);
                 vdb->insert(densityGrid);

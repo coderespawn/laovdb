@@ -241,7 +241,7 @@ namespace {
 template<template<typename GridT, typename MaskType, typename InterruptT> class ToolT>
 struct ToolOp
 {
-    ToolOp(bool t, openvdb::util::NullInterrupter& boss, const cvdb::BoolGrid *mask = nullptr)
+    ToolOp(bool t, laovdb::util::NullInterrupter& boss, const cvdb::BoolGrid *mask = nullptr)
         : mMaskGrid(mask)
         , mThreaded(t)
         , mBoss(boss)
@@ -256,14 +256,14 @@ struct ToolOp
             // match transform
             cvdb::BoolGrid regionMask;
             regionMask.setTransform(inGrid.transform().copy());
-            openvdb::tools::resampleToMatch<openvdb::tools::PointSampler>(
+            laovdb::tools::resampleToMatch<laovdb::tools::PointSampler>(
                 *mMaskGrid, regionMask, mBoss);
 
-            ToolT<GridType, cvdb::BoolGrid, openvdb::util::NullInterrupter> tool(inGrid, regionMask, &mBoss);
+            ToolT<GridType, cvdb::BoolGrid, laovdb::util::NullInterrupter> tool(inGrid, regionMask, &mBoss);
             mOutGrid = tool.process(mThreaded);
 
         } else {
-            ToolT<GridType, cvdb::BoolGrid, openvdb::util::NullInterrupter> tool(inGrid, &mBoss);
+            ToolT<GridType, cvdb::BoolGrid, laovdb::util::NullInterrupter> tool(inGrid, &mBoss);
             mOutGrid = tool.process(mThreaded);
         }
     }
@@ -271,7 +271,7 @@ struct ToolOp
     const cvdb::BoolGrid    *mMaskGrid;
     hvdb::GridPtr           mOutGrid;
     bool                    mThreaded;
-    openvdb::util::NullInterrupter&      mBoss;
+    laovdb::util::NullInterrupter&      mBoss;
 };
 
 

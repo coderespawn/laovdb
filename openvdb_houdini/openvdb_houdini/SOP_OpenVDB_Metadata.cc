@@ -56,10 +56,10 @@ newSopOperator(OP_OperatorTable* table)
         .setTypeExtended(PRM_TYPE_TOGGLE_JOIN));
     {
         std::vector<std::string> items;
-        for (int n = 0; n < openvdb::NUM_GRID_CLASSES; ++n) {
-            openvdb::GridClass gridclass = static_cast<openvdb::GridClass>(n);
-            items.push_back(openvdb::GridBase::gridClassToString(gridclass));
-            items.push_back(openvdb::GridBase::gridClassToMenuName(gridclass));
+        for (int n = 0; n < laovdb::NUM_GRID_CLASSES; ++n) {
+            laovdb::GridClass gridclass = static_cast<laovdb::GridClass>(n);
+            items.push_back(laovdb::GridBase::gridClassToString(gridclass));
+            items.push_back(laovdb::GridBase::gridClassToMenuName(gridclass));
         }
         parms.add(
             hutil::ParmFactory(PRM_STRING, "class", "Class")
@@ -108,12 +108,12 @@ Other:\n\
             "For vector-valued VDBs, specify an interpretation of the vectors"
             " that determines how they are affected by transforms.\n";
         std::vector<std::string> items;
-        for (int n = 0; n < openvdb::NUM_VEC_TYPES; ++n) {
-            const auto vectype = static_cast<openvdb::VecType>(n);
-            items.push_back(openvdb::GridBase::vecTypeToString(vectype));
-            items.push_back(openvdb::GridBase::vecTypeExamples(vectype));
-            help += "\n" + openvdb::GridBase::vecTypeExamples(vectype) + "\n    "
-                + openvdb::GridBase::vecTypeDescription(vectype) + ".";
+        for (int n = 0; n < laovdb::NUM_VEC_TYPES; ++n) {
+            const auto vectype = static_cast<laovdb::VecType>(n);
+            items.push_back(laovdb::GridBase::vecTypeToString(vectype));
+            items.push_back(laovdb::GridBase::vecTypeExamples(vectype));
+            help += "\n" + laovdb::GridBase::vecTypeExamples(vectype) + "\n    "
+                + laovdb::GridBase::vecTypeDescription(vectype) + ".";
         }
         parms.add(hutil::ParmFactory(PRM_STRING, "vectype", "Vector Type")
             .setChoiceListItems(PRM_CHOICELIST_SINGLE, items)
@@ -238,10 +238,10 @@ SOP_OpenVDB_Metadata::Cache::cookVDBSop(OP_Context& context)
         const bool world = (!setworld ? false : evalInt("world", 0, time));
         const std::string name = (!setname ? std::string{} : evalStdString("name", time));
         const std::string creator = (!setcreator ? std::string{} : evalStdString("creator", time));
-        const openvdb::GridClass gridclass = (!setclass ? openvdb::GRID_UNKNOWN
-            : openvdb::GridBase::stringToGridClass(evalStdString("class", time)));
-        const openvdb::VecType vectype = (!setvectype ? openvdb::VEC_INVARIANT
-            : openvdb::GridBase::stringToVecType(evalStdString("vectype", time)));
+        const laovdb::GridClass gridclass = (!setclass ? laovdb::GRID_UNKNOWN
+            : laovdb::GridBase::stringToGridClass(evalStdString("class", time)));
+        const laovdb::VecType vectype = (!setvectype ? laovdb::VEC_INVARIANT
+            : laovdb::GridBase::stringToVecType(evalStdString("vectype", time)));
 
         // Get the group of grids to be modified.
         const GA_PrimitiveGroup* group = matchGroup(*gdp, evalStdString("group", time));
@@ -268,12 +268,12 @@ SOP_OpenVDB_Metadata::Cache::cookVDBSop(OP_Context& context)
 
                 // Update viewport visualization options.
                 switch (gridclass) {
-                    case openvdb::GRID_LEVEL_SET:
-                    case openvdb::GRID_FOG_VOLUME:
+                    case laovdb::GRID_LEVEL_SET:
+                    case laovdb::GRID_FOG_VOLUME:
                     {
                         const GEO_VolumeOptions& visOps = vdb->getVisOptions();
                         vdb->setVisualization(
-                            ((gridclass == openvdb::GRID_LEVEL_SET) ?
+                            ((gridclass == laovdb::GRID_LEVEL_SET) ?
                                 GEO_VOLUMEVIS_ISO : GEO_VOLUMEVIS_SMOKE),
                             visOps.myIso, visOps.myDensity);
                         break;

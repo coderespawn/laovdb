@@ -1075,7 +1075,7 @@ SPDX-License-Identifier: MPL-2.0
     ///        -Wnull-conversion
     OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
 
-    extern openvdb::ax::Logger* axlog;
+    extern laovdb::ax::Logger* axlog;
 
     /// @note  Location tracking macro for axlloc token locations.
     ///   YY_USER_ACTION is called before any and each lexer action

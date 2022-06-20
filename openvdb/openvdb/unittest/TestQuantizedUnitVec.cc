@@ -38,8 +38,8 @@ const uint16_t
 
 TEST_F(TestQuantizedUnitVec, testQuantization)
 {
-    using namespace openvdb;
-    using namespace openvdb::math;
+    using namespace laovdb;
+    using namespace laovdb::math;
 
     //
     // Check sign bits

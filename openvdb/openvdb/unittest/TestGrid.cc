@@ -24,7 +24,7 @@ class TestGrid: public ::testing::Test
 ////////////////////////////////////////
 
 
-class ProxyTree: public openvdb::TreeBase
+class ProxyTree: public laovdb::TreeBase
 {
 public:
     using ValueType = int;
@@ -36,11 +36,11 @@ public:
     using ValueOffIter = void;
     using ValueOnCIter = void;
     using ValueOnIter = void;
-    using TreeBasePtr = openvdb::TreeBase::Ptr;
-    using Ptr = openvdb::SharedPtr<ProxyTree>;
-    using ConstPtr = openvdb::SharedPtr<const ProxyTree>;
+    using TreeBasePtr = laovdb::TreeBase::Ptr;
+    using Ptr = laovdb::SharedPtr<ProxyTree>;
+    using ConstPtr = laovdb::SharedPtr<const ProxyTree>;
 
-    static const openvdb::Index DEPTH;
+    static const laovdb::Index DEPTH;
     static const ValueType backg;
 
     ProxyTree() {}
@@ -48,9 +48,9 @@ public:
     ProxyTree(const ProxyTree&) = default;
     ~ProxyTree() override = default;
 
-    static const openvdb::Name& treeType() { static const openvdb::Name s("proxy"); return s; }
-    const openvdb::Name& type() const override { return treeType(); }
-    openvdb::Name valueType() const override { return "proxy"; }
+    static const laovdb::Name& treeType() { static const laovdb::Name s("proxy"); return s; }
+    const laovdb::Name& type() const override { return treeType(); }
+    laovdb::Name valueType() const override { return "proxy"; }
     const ValueType& background() const { return backg; }
 
     TreeBasePtr copy() const override { return TreeBasePtr(new ProxyTree(*this)); }
@@ -59,7 +59,7 @@ public:
     void writeTopology(std::ostream& os, bool = false) const override { os.seekp(0); }
 
     void readBuffers(std::istream& is,
-        const openvdb::CoordBBox&, bool /*saveFloatAsHalf*/=false) override { is.seekg(0); }
+        const laovdb::CoordBBox&, bool /*saveFloatAsHalf*/=false) override { is.seekg(0); }
     void readNonresidentBuffers() const override {}
     void readBuffers(std::istream& is, bool /*saveFloatAsHalf*/=false) override { is.seekg(0); }
     void writeBuffers(std::ostream& os, bool /*saveFloatAsHalf*/=false) const override
@@ -68,53 +68,53 @@ public:
     bool empty() const { return true; }
     void clear() {}
     void prune(const ValueType& = 0) {}
-    void clip(const openvdb::CoordBBox&) {}
+    void clip(const laovdb::CoordBBox&) {}
     void clipUnallocatedNodes() override {}
-    openvdb::Index32 unallocatedLeafCount() const override { return 0; }
+    laovdb::Index32 unallocatedLeafCount() const override { return 0; }
 
-    void getIndexRange(openvdb::CoordBBox&) const override {}
-    bool evalLeafBoundingBox(openvdb::CoordBBox& bbox) const override
-        { bbox.min() = bbox.max() = openvdb::Coord(0, 0, 0); return false; }
-    bool evalActiveVoxelBoundingBox(openvdb::CoordBBox& bbox) const override
-        { bbox.min() = bbox.max() = openvdb::Coord(0, 0, 0); return false; }
-    bool evalActiveVoxelDim(openvdb::Coord& dim) const override
-        { dim = openvdb::Coord(0, 0, 0); return false; }
-    bool evalLeafDim(openvdb::Coord& dim) const override
-        { dim = openvdb::Coord(0, 0, 0); return false; }
+    void getIndexRange(laovdb::CoordBBox&) const override {}
+    bool evalLeafBoundingBox(laovdb::CoordBBox& bbox) const override
+        { bbox.min() = bbox.max() = laovdb::Coord(0, 0, 0); return false; }
+    bool evalActiveVoxelBoundingBox(laovdb::CoordBBox& bbox) const override
+        { bbox.min() = bbox.max() = laovdb::Coord(0, 0, 0); return false; }
+    bool evalActiveVoxelDim(laovdb::Coord& dim) const override
+        { dim = laovdb::Coord(0, 0, 0); return false; }
+    bool evalLeafDim(laovdb::Coord& dim) const override
+        { dim = laovdb::Coord(0, 0, 0); return false; }
 
-    openvdb::Index treeDepth() const override { return 0; }
-    openvdb::Index leafCount() const override { return 0; }
-    std::vector<openvdb::Index32> nodeCount() const override
-        { return std::vector<openvdb::Index32>(DEPTH, 0); }
-    openvdb::Index nonLeafCount() const override { return 0; }
-    openvdb::Index64 activeVoxelCount() const override { return 0UL; }
-    openvdb::Index64 inactiveVoxelCount() const override { return 0UL; }
-    openvdb::Index64 activeLeafVoxelCount() const override { return 0UL; }
-    openvdb::Index64 inactiveLeafVoxelCount() const override { return 0UL; }
-    openvdb::Index64 activeTileCount() const override { return 0UL; }
+    laovdb::Index treeDepth() const override { return 0; }
+    laovdb::Index leafCount() const override { return 0; }
+    std::vector<laovdb::Index32> nodeCount() const override
+        { return std::vector<laovdb::Index32>(DEPTH, 0); }
+    laovdb::Index nonLeafCount() const override { return 0; }
+    laovdb::Index64 activeVoxelCount() const override { return 0UL; }
+    laovdb::Index64 inactiveVoxelCount() const override { return 0UL; }
+    laovdb::Index64 activeLeafVoxelCount() const override { return 0UL; }
+    laovdb::Index64 inactiveLeafVoxelCount() const override { return 0UL; }
+    laovdb::Index64 activeTileCount() const override { return 0UL; }
 };
 
-const openvdb::Index ProxyTree::DEPTH = 0;
+const laovdb::Index ProxyTree::DEPTH = 0;
 const ProxyTree::ValueType ProxyTree::backg = 0;
 
-using ProxyGrid = openvdb::Grid<ProxyTree>;
+using ProxyGrid = laovdb::Grid<ProxyTree>;
 
 
 ////////////////////////////////////////
 
 TEST_F(TestGrid, testGridRegistry)
 {
-    using namespace openvdb::tree;
+    using namespace laovdb::tree;
 
     using TreeType = Tree<RootNode<InternalNode<LeafNode<float, 3>, 2> > >;
-    using GridType = openvdb::Grid<TreeType>;
+    using GridType = laovdb::Grid<TreeType>;
 
-    openvdb::GridBase::clearRegistry();
+    laovdb::GridBase::clearRegistry();
 
     EXPECT_TRUE(!GridType::isRegistered());
     GridType::registerGrid();
     EXPECT_TRUE(GridType::isRegistered());
-    EXPECT_THROW(GridType::registerGrid(), openvdb::KeyError);
+    EXPECT_THROW(GridType::registerGrid(), laovdb::KeyError);
     GridType::unregisterGrid();
     EXPECT_TRUE(!GridType::isRegistered());
     EXPECT_NO_THROW(GridType::unregisterGrid());
@@ -122,13 +122,13 @@ TEST_F(TestGrid, testGridRegistry)
     EXPECT_NO_THROW(GridType::registerGrid());
     EXPECT_TRUE(GridType::isRegistered());
 
-    openvdb::GridBase::clearRegistry();
+    laovdb::GridBase::clearRegistry();
 }
 
 
 TEST_F(TestGrid, testConstPtr)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     GridBase::ConstPtr constgrid = ProxyGrid::create();
 
@@ -138,7 +138,7 @@ TEST_F(TestGrid, testConstPtr)
 
 TEST_F(TestGrid, testGetGrid)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     GridBase::Ptr grid = FloatGrid::create(/*bg=*/0.0);
     GridBase::ConstPtr constGrid = grid;
@@ -155,7 +155,7 @@ TEST_F(TestGrid, testGetGrid)
 
 TEST_F(TestGrid, testIsType)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     GridBase::Ptr grid = FloatGrid::create();
     EXPECT_TRUE(grid->isType<FloatGrid>());
@@ -165,7 +165,7 @@ TEST_F(TestGrid, testIsType)
 
 TEST_F(TestGrid, testIsTreeUnique)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = FloatGrid::create();
     EXPECT_TRUE(grid->isTreeUnique());
@@ -203,10 +203,10 @@ TEST_F(TestGrid, testTransform)
     EXPECT_TRUE(grid.transformPtr());
 
     // Verify that a null transform pointer is not allowed.
-    EXPECT_THROW(grid.setTransform(openvdb::math::Transform::Ptr()),
-        openvdb::ValueError);
+    EXPECT_THROW(grid.setTransform(laovdb::math::Transform::Ptr()),
+        laovdb::ValueError);
 
-    grid.setTransform(openvdb::math::Transform::createLinearTransform());
+    grid.setTransform(laovdb::math::Transform::createLinearTransform());
 
     EXPECT_TRUE(grid.transformPtr());
 
@@ -214,21 +214,21 @@ TEST_F(TestGrid, testTransform)
     // is the same as calling those methods on the Transform.
 
     EXPECT_TRUE(grid.transform().voxelSize().eq(grid.voxelSize()));
-    EXPECT_TRUE(grid.transform().voxelSize(openvdb::Vec3d(0.1, 0.2, 0.3)).eq(
-        grid.voxelSize(openvdb::Vec3d(0.1, 0.2, 0.3))));
+    EXPECT_TRUE(grid.transform().voxelSize(laovdb::Vec3d(0.1, 0.2, 0.3)).eq(
+        grid.voxelSize(laovdb::Vec3d(0.1, 0.2, 0.3))));
 
-    EXPECT_TRUE(grid.transform().indexToWorld(openvdb::Vec3d(0.1, 0.2, 0.3)).eq(
-        grid.indexToWorld(openvdb::Vec3d(0.1, 0.2, 0.3))));
-    EXPECT_TRUE(grid.transform().indexToWorld(openvdb::Coord(1, 2, 3)).eq(
-        grid.indexToWorld(openvdb::Coord(1, 2, 3))));
-    EXPECT_TRUE(grid.transform().worldToIndex(openvdb::Vec3d(0.1, 0.2, 0.3)).eq(
-        grid.worldToIndex(openvdb::Vec3d(0.1, 0.2, 0.3))));
+    EXPECT_TRUE(grid.transform().indexToWorld(laovdb::Vec3d(0.1, 0.2, 0.3)).eq(
+        grid.indexToWorld(laovdb::Vec3d(0.1, 0.2, 0.3))));
+    EXPECT_TRUE(grid.transform().indexToWorld(laovdb::Coord(1, 2, 3)).eq(
+        grid.indexToWorld(laovdb::Coord(1, 2, 3))));
+    EXPECT_TRUE(grid.transform().worldToIndex(laovdb::Vec3d(0.1, 0.2, 0.3)).eq(
+        grid.worldToIndex(laovdb::Vec3d(0.1, 0.2, 0.3))));
 }
 
 
 TEST_F(TestGrid, testCopyGrid)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // set up a grid
     const float fillValue1=5.0f;
@@ -287,7 +287,7 @@ TEST_F(TestGrid, testCopyGrid)
 
 TEST_F(TestGrid, testValueConversion)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const Coord c0(-10, 40, 845), c1(1, -50, -8), c2(1, 2, 3);
     const float fval0 = 3.25f, fval1 = 1.0f, fbkgd = 5.0f;
@@ -333,13 +333,13 @@ TEST_F(TestGrid, testValueConversion)
 
     // Verify that a Vec3SGrid can't be copied to an Int32Grid
     // (because an Int32 can't be constructed from a Vec3S).
-    EXPECT_THROW(Int32Grid igrid2(vgrid), openvdb::TypeError);
+    EXPECT_THROW(Int32Grid igrid2(vgrid), laovdb::TypeError);
 
     // Verify that a grid can't be converted to another type with a different
     // tree configuration.
     using DTree23 = tree::Tree3<double, 2, 3>::Type;
     using DGrid23 = Grid<DTree23>;
-    EXPECT_THROW(DGrid23 d23grid(fgrid), openvdb::TypeError);
+    EXPECT_THROW(DGrid23 d23grid(fgrid), laovdb::TypeError);
 }
 
 
@@ -350,7 +350,7 @@ template<typename GridT>
 void
 validateClippedGrid(const GridT& clipped, const typename GridT::ValueType& fg)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     using ValueT = typename GridT::ValueType;
 
@@ -385,7 +385,7 @@ validateClippedGrid(const GridT& clipped, const typename GridT::ValueType& fg)
 // See also TestTools::testClipping()
 TEST_F(TestGrid, testClipping)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const BBoxd clipBox(Vec3d(4.0, 4.0, -6.0), Vec3d(4.9, 4.9, 6.0));
 
@@ -412,20 +412,20 @@ TEST_F(TestGrid, testClipping)
     }
     /*
     {// Benchmark multi-threaded copy construction
-        openvdb::util::CpuTimer timer;
-        openvdb::initialize();
-        openvdb::io::File file("/usr/pic1/Data/OpenVDB/LevelSetModels/crawler.vdb");
+        laovdb::util::CpuTimer timer;
+        laovdb::initialize();
+        laovdb::io::File file("/usr/pic1/Data/OpenVDB/LevelSetModels/crawler.vdb");
         file.open();
-        openvdb::GridBase::Ptr baseGrid = file.readGrid("ls_crawler");
+        laovdb::GridBase::Ptr baseGrid = file.readGrid("ls_crawler");
         file.close();
-        openvdb::FloatGrid::Ptr grid = openvdb::gridPtrCast<openvdb::FloatGrid>(baseGrid);
+        laovdb::FloatGrid::Ptr grid = laovdb::gridPtrCast<laovdb::FloatGrid>(baseGrid);
         //grid->tree().print();
         timer.start("\nCopy construction");
-        openvdb::FloatTree fTree(grid->tree());
+        laovdb::FloatTree fTree(grid->tree());
         timer.stop();
 
         timer.start("\nBoolean topology copy construction");
-        openvdb::BoolTree bTree(grid->tree(), false, openvdb::TopologyCopy());
+        laovdb::BoolTree bTree(grid->tree(), false, laovdb::TopologyCopy());
         timer.stop();
 
         timer.start("\nBoolean topology union");
@@ -454,7 +454,7 @@ struct GridOp
 
 TEST_F(TestGrid, testApply)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const GridBase::Ptr
         boolGrid = BoolGrid::create(),

@@ -30,7 +30,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -429,7 +429,7 @@ struct CheckNormGrad
 {
     using ValueType = typename GridT::ValueType;
     static_assert(std::is_floating_point<ValueType>::value,
-        "openvdb::tools::CheckNormGrad requires a scalar, floating-point grid");
+        "laovdb::tools::CheckNormGrad requires a scalar, floating-point grid");
     using TileIterT = TreeIterT;
     using VoxelIterT = typename tree::IterTraits<typename TreeIterT::NodeT,
         typename TreeIterT::ValueIterT> ::template NodeConverter<
@@ -499,7 +499,7 @@ struct CheckEikonal
 {
     using ValueType = typename GridT::ValueType;
     static_assert(std::is_floating_point<ValueType>::value,
-        "openvdb::tools::CheckEikonal requires a scalar, floating-point grid");
+        "laovdb::tools::CheckEikonal requires a scalar, floating-point grid");
     using TileIterT = TreeIterT;
     using VoxelIterT = typename tree::IterTraits<typename TreeIterT::NodeT,
         typename TreeIterT::ValueIterT> ::template NodeConverter<
@@ -561,7 +561,7 @@ struct CheckDivergence
     using ValueType = typename GridT::ValueType;
     using ElementType = typename VecTraits<ValueType>::ElementType;
     static_assert(std::is_floating_point<ElementType>::value,
-        "openvdb::tools::CheckDivergence requires a floating-point vector grid");
+        "laovdb::tools::CheckDivergence requires a floating-point vector grid");
     using TileIterT = TreeIterT;
     using VoxelIterT = typename tree::IterTraits<typename TreeIterT::NodeT,
         typename TreeIterT::ValueIterT>::template NodeConverter<
@@ -769,7 +769,7 @@ private:
         }
         void join(const CheckValues& other)
         {
-            if (mMask) mMask->merge(*(other.mMask), openvdb::MERGE_ACTIVE_STATES_AND_NODES);
+            if (mMask) mMask->merge(*(other.mMask), laovdb::MERGE_ACTIVE_STATES_AND_NODES);
             mCount += other.mCount;
         }
     };//End of private class CheckValues
@@ -1361,6 +1361,6 @@ OPENVDB_VOLUME_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_DIAGNOSTICS_HAS_BEEN_INCLUDED

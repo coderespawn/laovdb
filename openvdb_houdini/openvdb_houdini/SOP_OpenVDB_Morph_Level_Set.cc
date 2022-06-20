@@ -32,10 +32,10 @@ namespace {
 struct MorphingParms {
     MorphingParms()
         : mLSGroup(nullptr)
-        , mAdvectSpatial(openvdb::math::UNKNOWN_BIAS)
-        , mRenormSpatial(openvdb::math::UNKNOWN_BIAS)
-        , mAdvectTemporal(openvdb::math::UNKNOWN_TIS)
-        , mRenormTemporal(openvdb::math::UNKNOWN_TIS)
+        , mAdvectSpatial(laovdb::math::UNKNOWN_BIAS)
+        , mRenormSpatial(laovdb::math::UNKNOWN_BIAS)
+        , mAdvectTemporal(laovdb::math::UNKNOWN_TIS)
+        , mRenormTemporal(laovdb::math::UNKNOWN_TIS)
         , mNormCount(1)
         , mTimeStep(0.0)
         , mMinMask(0)
@@ -45,10 +45,10 @@ struct MorphingParms {
     }
 
     const GA_PrimitiveGroup*  mLSGroup;
-    openvdb::FloatGrid::ConstPtr mTargetGrid;
-    openvdb::FloatGrid::ConstPtr mMaskGrid;
-    openvdb::math::BiasedGradientScheme mAdvectSpatial, mRenormSpatial;
-    openvdb::math::TemporalIntegrationScheme mAdvectTemporal, mRenormTemporal;
+    laovdb::FloatGrid::ConstPtr mTargetGrid;
+    laovdb::FloatGrid::ConstPtr mMaskGrid;
+    laovdb::math::BiasedGradientScheme mAdvectSpatial, mRenormSpatial;
+    laovdb::math::TemporalIntegrationScheme mAdvectTemporal, mRenormTemporal;
     int mNormCount;
     float mTimeStep;
     float mMinMask, mMaxMask;
@@ -58,17 +58,17 @@ struct MorphingParms {
 class MorphOp
 {
 public:
-    MorphOp(MorphingParms& parms, openvdb::util::NullInterrupter& boss)
+    MorphOp(MorphingParms& parms, laovdb::util::NullInterrupter& boss)
         : mParms(&parms)
         , mBoss(&boss)
     {
     }
 
-    void operator()(openvdb::FloatGrid& grid)
+    void operator()(laovdb::FloatGrid& grid)
     {
         if (mBoss->wasInterrupted()) return;
 
-        openvdb::tools::LevelSetMorphing<openvdb::FloatGrid>
+        laovdb::tools::LevelSetMorphing<laovdb::FloatGrid>
             morph(grid, *(mParms->mTargetGrid), &mBoss->interrupter());
 
         if (mParms->mMaskGrid) {
@@ -86,7 +86,7 @@ public:
 
 private:
     MorphingParms*     mParms;
-    openvdb::util::NullInterrupter* mBoss;
+    laovdb::util::NullInterrupter* mBoss;
 };
 
 } // namespace
@@ -111,7 +111,7 @@ public:
     protected:
         OP_ERROR cookVDBSop(OP_Context&) override;
         OP_ERROR evalMorphingParms(OP_Context&, MorphingParms&);
-        bool processGrids(MorphingParms&, openvdb::util::NullInterrupter&);
+        bool processGrids(MorphingParms&, laovdb::util::NullInterrupter&);
     };
 
 protected:
@@ -130,7 +130,7 @@ newSopOperator(OP_OperatorTable* table)
 {
     if (table == nullptr) return;
 
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     hutil::ParmList parms;
 
@@ -438,29 +438,29 @@ SOP_OpenVDB_Morph_Level_Set::Cache::evalMorphingParms(
     parms.mTimeStep = static_cast<float>(evalFloat("timestep", 0, now));
 
     parms.mAdvectSpatial =
-        openvdb::math::stringToBiasedGradientScheme(evalStdString("advectspatial", now));
-    if (parms.mAdvectSpatial == openvdb::math::UNKNOWN_BIAS) {
+        laovdb::math::stringToBiasedGradientScheme(evalStdString("advectspatial", now));
+    if (parms.mAdvectSpatial == laovdb::math::UNKNOWN_BIAS) {
         addError(SOP_MESSAGE, "Morph: Unknown biased gradient");
         return UT_ERROR_ABORT;
     }
 
     parms.mRenormSpatial =
-        openvdb::math::stringToBiasedGradientScheme(evalStdString("renormspatial", now));
-    if (parms.mRenormSpatial == openvdb::math::UNKNOWN_BIAS) {
+        laovdb::math::stringToBiasedGradientScheme(evalStdString("renormspatial", now));
+    if (parms.mRenormSpatial == laovdb::math::UNKNOWN_BIAS) {
         addError(SOP_MESSAGE, "Renorm: Unknown biased gradient");
         return UT_ERROR_ABORT;
     }
 
     parms.mAdvectTemporal =
-        openvdb::math::stringToTemporalIntegrationScheme(evalStdString("advecttemporal", now));
-    if (parms.mAdvectTemporal == openvdb::math::UNKNOWN_TIS) {
+        laovdb::math::stringToTemporalIntegrationScheme(evalStdString("advecttemporal", now));
+    if (parms.mAdvectTemporal == laovdb::math::UNKNOWN_TIS) {
         addError(SOP_MESSAGE, "Morph: Unknown temporal integration");
         return UT_ERROR_ABORT;
     }
 
     parms.mRenormTemporal =
-        openvdb::math::stringToTemporalIntegrationScheme(evalStdString("renormtemporal", now));
-    if (parms.mRenormTemporal == openvdb::math::UNKNOWN_TIS) {
+        laovdb::math::stringToTemporalIntegrationScheme(evalStdString("renormtemporal", now));
+    if (parms.mRenormTemporal == laovdb::math::UNKNOWN_TIS) {
         addError(SOP_MESSAGE, "Renorm: Unknown temporal integration");
         return UT_ERROR_ABORT;
     }
@@ -483,7 +483,7 @@ SOP_OpenVDB_Morph_Level_Set::Cache::evalMorphingParms(
             addError(SOP_MESSAGE, "Unrecognized target grid type.");
             return UT_ERROR_ABORT;
         }
-        parms.mTargetGrid = hvdb::Grid::constGrid<openvdb::FloatGrid>(it->getConstGridPtr());
+        parms.mTargetGrid = hvdb::Grid::constGrid<laovdb::FloatGrid>(it->getConstGridPtr());
     }
 
     if (!parms.mTargetGrid) {
@@ -503,7 +503,7 @@ SOP_OpenVDB_Morph_Level_Set::Cache::evalMorphingParms(
                 addError(SOP_MESSAGE, "Unrecognized alpha mask grid type.");
                 return UT_ERROR_ABORT;
             }
-            parms.mMaskGrid = hvdb::Grid::constGrid<openvdb::FloatGrid>(maskIt->getConstGridPtr());
+            parms.mMaskGrid = hvdb::Grid::constGrid<laovdb::FloatGrid>(maskIt->getConstGridPtr());
         }
 
         if (!parms.mMaskGrid) {
@@ -525,7 +525,7 @@ SOP_OpenVDB_Morph_Level_Set::Cache::evalMorphingParms(
 
 bool
 SOP_OpenVDB_Morph_Level_Set::Cache::processGrids(
-    MorphingParms& parms, openvdb::util::NullInterrupter& boss)
+    MorphingParms& parms, laovdb::util::NullInterrupter& boss)
 {
     MorphOp op(parms, boss.interrupter());
 
@@ -537,16 +537,16 @@ SOP_OpenVDB_Morph_Level_Set::Cache::processGrids(
 
         GU_PrimVDB* vdbPrim = *it;
 
-        const openvdb::GridClass gridClass = vdbPrim->getGrid().getGridClass();
-        if (gridClass != openvdb::GRID_LEVEL_SET) {
+        const laovdb::GridClass gridClass = vdbPrim->getGrid().getGridClass();
+        if (gridClass != laovdb::GRID_LEVEL_SET) {
             nonLevelSetGrids.push_back(it.getPrimitiveNameOrIndex().toStdString());
             continue;
         }
 
         if (vdbPrim->getStorageType() == UT_VDB_FLOAT) {
             vdbPrim->makeGridUnique();
-            openvdb::FloatGrid& grid = UTvdbGridCast<openvdb::FloatGrid>(vdbPrim->getGrid());
-            if ( grid.background() < float(openvdb::LEVEL_SET_HALF_WIDTH * grid.voxelSize()[0]) ) {
+            laovdb::FloatGrid& grid = UTvdbGridCast<laovdb::FloatGrid>(vdbPrim->getGrid());
+            if ( grid.background() < float(laovdb::LEVEL_SET_HALF_WIDTH * grid.voxelSize()[0]) ) {
                 narrowBands.push_back(it.getPrimitiveNameOrIndex().toStdString());
             }
             op(grid);

@@ -60,7 +60,7 @@ struct Converter
     bool worldSpaceUnits;
     std::string outputName, customName;
 
-    Converter(GU_Detail& geo, openvdb::util::NullInterrupter& boss)
+    Converter(GU_Detail& geo, laovdb::util::NullInterrupter& boss)
         : bandWidthWorld(0)
         , bandWidthVoxels(3)
         , closingWidth(1)
@@ -79,10 +79,10 @@ struct Converter
     {
         int bandWidth = bandWidthVoxels;
         if (worldSpaceUnits) {
-            bandWidth = int(openvdb::math::Round(bandWidthWorld / grid.transform().voxelSize()[0]));
+            bandWidth = int(laovdb::math::Round(bandWidthWorld / grid.transform().voxelSize()[0]));
         }
 
-        openvdb::FloatGrid::Ptr sdfGrid = openvdb::tools::topologyToLevelSet(
+        laovdb::FloatGrid::Ptr sdfGrid = laovdb::tools::topologyToLevelSet(
            grid, bandWidth, closingWidth, dilation, smoothingSteps, mBossPt);
 
         std::string name = grid.getName();
@@ -94,7 +94,7 @@ struct Converter
 
 private:
     GU_Detail         * const mGeoPt;
-    openvdb::util::NullInterrupter * const mBossPt;
+    laovdb::util::NullInterrupter * const mBossPt;
 }; // struct Converter
 
 } // unnamed namespace

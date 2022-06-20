@@ -34,7 +34,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestTypes);
 void
 TestTypes::testTypes()
 {
-    using openvdb::ax::codegen::LLVMType;
+    using laovdb::ax::codegen::LLVMType;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();
@@ -123,52 +123,52 @@ TestTypes::testTypes()
 void
 TestTypes::testVDBTypes()
 {
-    using openvdb::ax::codegen::LLVMType;
+    using laovdb::ax::codegen::LLVMType;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();
 
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getInt32Ty(C), 2)),
-        LLVMType<openvdb::math::Vec2<int32_t>>::get(C));
+        LLVMType<laovdb::math::Vec2<int32_t>>::get(C));
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getFloatTy(C), 2)),
-        LLVMType<openvdb::math::Vec2<float>>::get(C));
+        LLVMType<laovdb::math::Vec2<float>>::get(C));
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getDoubleTy(C), 2)),
-        LLVMType<openvdb::math::Vec2<double>>::get(C));
+        LLVMType<laovdb::math::Vec2<double>>::get(C));
 
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getInt32Ty(C), 3)),
-        LLVMType<openvdb::math::Vec3<int32_t>>::get(C));
+        LLVMType<laovdb::math::Vec3<int32_t>>::get(C));
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getFloatTy(C), 3)),
-        LLVMType<openvdb::math::Vec3<float>>::get(C));
+        LLVMType<laovdb::math::Vec3<float>>::get(C));
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getDoubleTy(C), 3)),
-        LLVMType<openvdb::math::Vec3<double>>::get(C));
+        LLVMType<laovdb::math::Vec3<double>>::get(C));
 
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getInt32Ty(C), 4)),
-        LLVMType<openvdb::math::Vec4<int32_t>>::get(C));
+        LLVMType<laovdb::math::Vec4<int32_t>>::get(C));
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getFloatTy(C), 4)),
-        LLVMType<openvdb::math::Vec4<float>>::get(C));
+        LLVMType<laovdb::math::Vec4<float>>::get(C));
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getDoubleTy(C), 4)),
-        LLVMType<openvdb::math::Vec4<double>>::get(C));
+        LLVMType<laovdb::math::Vec4<double>>::get(C));
 
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getFloatTy(C), 9)),
-        LLVMType<openvdb::math::Mat3<float>>::get(C));
+        LLVMType<laovdb::math::Mat3<float>>::get(C));
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getDoubleTy(C), 9)),
-        LLVMType<openvdb::math::Mat3<double>>::get(C));
+        LLVMType<laovdb::math::Mat3<double>>::get(C));
 
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getFloatTy(C), 16)),
-        LLVMType<openvdb::math::Mat4<float>>::get(C));
+        LLVMType<laovdb::math::Mat4<float>>::get(C));
     CPPUNIT_ASSERT_EQUAL(llvm::cast<llvm::Type>(llvm::ArrayType::get(llvm::Type::getDoubleTy(C), 16)),
-        LLVMType<openvdb::math::Mat4<double>>::get(C));
+        LLVMType<laovdb::math::Mat4<double>>::get(C));
 }
 
 void
 TestTypes::testString()
 {
-    using openvdb::ax::codegen::LLVMType;
+    using laovdb::ax::codegen::LLVMType;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();
 
-    llvm::Type* type = LLVMType<openvdb::ax::codegen::String>::get(C);
+    llvm::Type* type = LLVMType<laovdb::ax::codegen::String>::get(C);
     CPPUNIT_ASSERT(type->isAggregateType());
     CPPUNIT_ASSERT_EQUAL(llvm::Type::StructTyID, type->getTypeID());
     CPPUNIT_ASSERT_EQUAL(unsigned(3), type->getNumContainedTypes()); // char*, SSO, len
@@ -176,6 +176,6 @@ TestTypes::testString()
 
     // Check members
     CPPUNIT_ASSERT_EQUAL((llvm::Type*)LLVMType<char*>::get(C), type->getContainedType(0));
-    CPPUNIT_ASSERT_EQUAL(LLVMType<char[openvdb::ax::codegen::String::SSO_LENGTH]>::get(C), type->getContainedType(1));
+    CPPUNIT_ASSERT_EQUAL(LLVMType<char[laovdb::ax::codegen::String::SSO_LENGTH]>::get(C), type->getContainedType(1));
     CPPUNIT_ASSERT_EQUAL(LLVMType<int64_t>::get(C), type->getContainedType(2));
 }

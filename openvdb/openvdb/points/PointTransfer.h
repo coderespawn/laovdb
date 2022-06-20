@@ -30,7 +30,7 @@
 #include <type_traits>
 #include <tuple>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -279,7 +279,7 @@ struct VolumeTransfer<TreeT>
 
     static_assert(std::is_base_of<TreeBase, TreeType>::value,
         "One or more template arguments to VolumeTransfer "
-        "are not a valid openvdb::Tree type.");
+        "are not a valid laovdb::Tree type.");
 
     VolumeTransfer(TreeType* tree)
         : mTree(tree)
@@ -366,7 +366,7 @@ VolumeTransfer<TreeTypes...>::VolumeTransfer(TreeTypes*... trees)
         using TreeT = typename std::remove_pointer<typename std::decay<decltype(tree)>::type>::type;
         static_assert(std::is_base_of<TreeBase, TreeT>::value,
             "One or more template arguments to VolumeTransfer "
-            "are not a valid openvdb::Tree type.");
+            "are not a valid laovdb::Tree type.");
         assert(tree);
     }, std::make_integer_sequence<size_t, Size>());
 
@@ -574,6 +574,6 @@ rasterize(const PointDataTreeOrGridT& points,
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif //OPENVEB_POINTS_TRANSFER_HAS_BEEN_INCLUDED

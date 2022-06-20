@@ -9,7 +9,7 @@
 #ifndef OPENVDB_POINTS_RASTERIZE_TRILINEAR_IMPL_HAS_BEEN_INCLUDED
 #define OPENVDB_POINTS_RASTERIZE_TRILINEAR_IMPL_HAS_BEEN_INCLUDED
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -70,7 +70,7 @@ struct TrilinearTransfer : public VolumeTransfer<TreeType>
     inline void initialize(const Coord& origin, const size_t idx, const CoordBBox& bounds)
     {
         this->BaseT::initialize(origin, idx, bounds);
-        mWeights.fill(openvdb::zeroVal<WeightT>());
+        mWeights.fill(laovdb::zeroVal<WeightT>());
     }
 
     inline bool startPointLeaf(const PointDataTree::LeafNodeType& leaf)
@@ -378,6 +378,6 @@ rasterizeTrilinear(const PointDataTreeT& points,
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif //OPENVDB_POINTS_RASTERIZE_TRILINEAR_IMPL_HAS_BEEN_INCLUDED

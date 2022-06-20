@@ -16,15 +16,15 @@
 ///////////////////////////////////////////////////////////////////////////
 
 /// @brief  Dummy derived function which implemented types
-struct TestFunction : public openvdb::ax::codegen::Function
+struct TestFunction : public laovdb::ax::codegen::Function
 {
     static_assert(std::has_virtual_destructor
-        <openvdb::ax::codegen::Function>::value,
+        <laovdb::ax::codegen::Function>::value,
         "Base class destructor is not virtual");
     TestFunction(const std::vector<llvm::Type*>& types,
           llvm::Type* ret,
           const std::string& symbol)
-        : openvdb::ax::codegen::Function(types.size(), symbol)
+        : laovdb::ax::codegen::Function(types.size(), symbol)
         , mTypes(types), mRet(ret) {}
     ~TestFunction() override {}
     llvm::Type* types(std::vector<llvm::Type*>& types,
@@ -38,16 +38,16 @@ struct TestFunction : public openvdb::ax::codegen::Function
 
 /// @brief  Dummy derived IR function which implemented types and
 ///         forwards on the generator
-struct TestIRFunction : public openvdb::ax::codegen::IRFunctionBase
+struct TestIRFunction : public laovdb::ax::codegen::IRFunctionBase
 {
     static_assert(std::has_virtual_destructor
-        <openvdb::ax::codegen::IRFunctionBase>::value,
+        <laovdb::ax::codegen::IRFunctionBase>::value,
         "Base class destructor is not virtual");
     TestIRFunction(const std::vector<llvm::Type*>& types,
           llvm::Type* ret,
           const std::string& symbol,
-          const openvdb::ax::codegen::IRFunctionBase::GeneratorCb& gen)
-        : openvdb::ax::codegen::IRFunctionBase(symbol, gen, types.size())
+          const laovdb::ax::codegen::IRFunctionBase::GeneratorCb& gen)
+        : laovdb::ax::codegen::IRFunctionBase(symbol, gen, types.size())
         , mTypes(types), mRet(ret) {}
     ~TestIRFunction() override {}
     llvm::Type* types(std::vector<llvm::Type*>& types,
@@ -153,7 +153,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestFunctionTypes);
 void
 TestFunctionTypes::testLLVMTypesFromSignature()
 {
-    using openvdb::ax::codegen::llvmTypesFromSignature;
+    using laovdb::ax::codegen::llvmTypesFromSignature;
 
     unittest_util::LLVMState state;
     llvm::Type* type = nullptr;
@@ -193,7 +193,7 @@ TestFunctionTypes::testLLVMTypesFromSignature()
 void
 TestFunctionTypes::testLLVMFunctionTypeFromSignature()
 {
-    using openvdb::ax::codegen::llvmFunctionTypeFromSignature;
+    using laovdb::ax::codegen::llvmFunctionTypeFromSignature;
 
     unittest_util::LLVMState state;
     llvm::FunctionType* ftype = nullptr;
@@ -225,7 +225,7 @@ TestFunctionTypes::testLLVMFunctionTypeFromSignature()
 void
 TestFunctionTypes::testPrintSignature()
 {
-    using openvdb::ax::codegen::printSignature;
+    using laovdb::ax::codegen::printSignature;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();
@@ -285,7 +285,7 @@ TestFunctionTypes::testPrintSignature()
 void
 TestFunctionTypes::testFunctionCreate()
 {
-    using openvdb::ax::codegen::Function;
+    using laovdb::ax::codegen::Function;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();
@@ -690,8 +690,8 @@ TestFunctionTypes::testFunctionCreate()
 void
 TestFunctionTypes::testFunctionCall()
 {
-    using openvdb::ax::codegen::Function;
-    using openvdb::ax::codegen::LLVMType;
+    using laovdb::ax::codegen::Function;
+    using laovdb::ax::codegen::LLVMType;
 
     //
 
@@ -788,9 +788,9 @@ TestFunctionTypes::testFunctionCall()
     llvm::Value* d64c0 = LLVMType<double>::get(C, 0.0); // double
     llvm::Value* i32c1 = B.getInt32(1); // int
     llvm::Value* i64c1 = B.getInt64(1); // int64
-    llvm::Value* vec3i = openvdb::ax::codegen::arrayPack({i32c1,i32c1,i32c1}, B); // vec3i
-    llvm::Value* vec2d = openvdb::ax::codegen::arrayPack({d64c0,d64c0},B); // vec2d
-    llvm::Value* mat3d = openvdb::ax::codegen::arrayPack({ d64c0,d64c0,d64c0,
+    llvm::Value* vec3i = laovdb::ax::codegen::arrayPack({i32c1,i32c1,i32c1}, B); // vec3i
+    llvm::Value* vec2d = laovdb::ax::codegen::arrayPack({d64c0,d64c0},B); // vec2d
+    llvm::Value* mat3d = laovdb::ax::codegen::arrayPack({ d64c0,d64c0,d64c0,
                                                             d64c0,d64c0,d64c0,
                                                             d64c0,d64c0,d64c0
                                                            }, B); // mat3d
@@ -845,11 +845,11 @@ TestFunctionTypes::testFunctionCall()
     // Test different types of valid casting
 
     llvm::Value* i1c0 = LLVMType<bool>::get(C, true); // bool
-    llvm::Value* vec3f = openvdb::ax::codegen::arrayPack({f32c0,f32c0,f32c0}, B); // vec3f
-    llvm::Value* vec3d = openvdb::ax::codegen::arrayPack({d64c0,d64c0,d64c0}, B); // vec3d
-    llvm::Value* vec2f = openvdb::ax::codegen::arrayPack({f32c0,f32c0},B); // vec2f
-    llvm::Value* vec2i = openvdb::ax::codegen::arrayPack({i32c1,i32c1},B); // vecid
-    llvm::Value* mat3f = openvdb::ax::codegen::arrayPack({ f32c0,f32c0,f32c0,
+    llvm::Value* vec3f = laovdb::ax::codegen::arrayPack({f32c0,f32c0,f32c0}, B); // vec3f
+    llvm::Value* vec3d = laovdb::ax::codegen::arrayPack({d64c0,d64c0,d64c0}, B); // vec3d
+    llvm::Value* vec2f = laovdb::ax::codegen::arrayPack({f32c0,f32c0},B); // vec2f
+    llvm::Value* vec2i = laovdb::ax::codegen::arrayPack({i32c1,i32c1},B); // vecid
+    llvm::Value* mat3f = laovdb::ax::codegen::arrayPack({ f32c0,f32c0,f32c0,
                                                             f32c0,f32c0,f32c0,
                                                             f32c0,f32c0,f32c0
                                                            }, B); // mat3f
@@ -1002,16 +1002,16 @@ TestFunctionTypes::testFunctionCall()
     //
     // Test strings
 
-    llvm::Type* axstr = LLVMType<openvdb::ax::codegen::String*>::get(C);  // str*
+    llvm::Type* axstr = LLVMType<laovdb::ax::codegen::String*>::get(C);  // str*
     llvm::Type* chars = LLVMType<char*>::get(C);  // char*
 
     // build values
 
     llvm::Value* chararray = B.CreateGlobalStringPtr("tmp"); // char*
     // @note  non-safer initialization of strings
-    llvm::Value* strptr = B.CreateAlloca(LLVMType<openvdb::ax::codegen::String>::get(C)); // str*
+    llvm::Value* strptr = B.CreateAlloca(LLVMType<laovdb::ax::codegen::String>::get(C)); // str*
 
-    // void ax.str.test(openvdb::ax::codegen::String*, char*)
+    // void ax.str.test(laovdb::ax::codegen::String*, char*)
     test.reset(new TestFunction({axstr, chars},
         llvm::Type::getVoidTy(C),
         "ax.str.test"));
@@ -1042,7 +1042,7 @@ TestFunctionTypes::testFunctionCall()
     CPPUNIT_ASSERT(stringArgs[0] == call->getArgOperand(0));
     CPPUNIT_ASSERT(stringArgs[1] == call->getArgOperand(1));
 
-    // Test openvdb::ax::codegen::String -> char*
+    // Test laovdb::ax::codegen::String -> char*
 
     stringArgs[0] = strptr;
     stringArgs[1] = strptr;
@@ -1059,7 +1059,7 @@ TestFunctionTypes::testFunctionCall()
 
     VERIFY_MODULE_IR(&M);
 
-    // Test char* does not catch to openvdb::ax::codegen::String
+    // Test char* does not catch to laovdb::ax::codegen::String
 
     stringArgs[0] = chararray;
     stringArgs[1] = chararray;
@@ -1197,8 +1197,8 @@ TestFunctionTypes::testFunctionCall()
 void
 TestFunctionTypes::testFunctionMatch()
 {
-    using openvdb::ax::codegen::Function;
-    using openvdb::ax::codegen::LLVMType;
+    using laovdb::ax::codegen::Function;
+    using laovdb::ax::codegen::LLVMType;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();
@@ -1261,7 +1261,7 @@ TestFunctionTypes::testFunctionMatch()
     types.insert(types.end(), array4.begin(), array4.end());
     types.insert(types.end(), array9.begin(), array9.end());
     types.insert(types.end(), array16.begin(), array16.end());
-    types.insert(types.end(), LLVMType<openvdb::ax::codegen::String*>::get(C));
+    types.insert(types.end(), LLVMType<laovdb::ax::codegen::String*>::get(C));
 
     // check types are unique
     CPPUNIT_ASSERT_EQUAL(std::set<llvm::Type*>(types.begin(), types.end()).size(), types.size());
@@ -1290,7 +1290,7 @@ TestFunctionTypes::testFunctionMatch()
             llvm::ArrayType::get(llvm::Type::getInt32Ty(C), 16)->getPointerTo(),   // ix16 (not supported by ax)
             llvm::ArrayType::get(llvm::Type::getFloatTy(C), 16)->getPointerTo(),   // mat4f
             llvm::ArrayType::get(llvm::Type::getDoubleTy(C), 16)->getPointerTo(),  // mat4d
-            LLVMType<openvdb::ax::codegen::String*>::get(C) // string
+            LLVMType<laovdb::ax::codegen::String*>::get(C) // string
         },
         llvm::Type::getVoidTy(C),
         "ax.test"));
@@ -1387,15 +1387,15 @@ TestFunctionTypes::testFunctionMatch()
     test.reset(new TestFunction({LLVMType<char*>::get(C)},
         llvm::Type::getVoidTy(C), "ax.test"));
     CPPUNIT_ASSERT_EQUAL(Function::Size,
-        test->match({LLVMType<openvdb::ax::codegen::String*>::get(C)}, C));
+        test->match({LLVMType<laovdb::ax::codegen::String*>::get(C)}, C));
     CPPUNIT_ASSERT_EQUAL(Function::Explicit,
         test->match({LLVMType<char*>::get(C)}, C));
 
     test->setParamAttributes(0, {llvm::Attribute::ReadOnly});
     CPPUNIT_ASSERT_EQUAL(Function::Implicit,
-        test->match({LLVMType<openvdb::ax::codegen::String*>::get(C)}, C));
+        test->match({LLVMType<laovdb::ax::codegen::String*>::get(C)}, C));
 
-    test.reset(new TestFunction({LLVMType<openvdb::ax::codegen::String*>::get(C)},
+    test.reset(new TestFunction({LLVMType<laovdb::ax::codegen::String*>::get(C)},
         llvm::Type::getVoidTy(C), "ax.test"));
     CPPUNIT_ASSERT_EQUAL(Function::Size,
         test->match({LLVMType<char*>::get(C)}, C));
@@ -1425,7 +1425,7 @@ TestFunctionTypes::testFunctionMatch()
 void
 TestFunctionTypes::testCFunctions()
 {
-    using openvdb::ax::codegen::CFunction;
+    using laovdb::ax::codegen::CFunction;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();
@@ -1555,8 +1555,8 @@ TestFunctionTypes::testCFunctions()
 void
 TestFunctionTypes::testCFunctionCF()
 {
-    using openvdb::ax::codegen::CFunction;
-    using openvdb::ax::codegen::LLVMType;
+    using laovdb::ax::codegen::CFunction;
+    using laovdb::ax::codegen::LLVMType;
 
     static auto cftest1 = []() -> int32_t { return 10; };
     static auto cftest2 = [](float a) -> float { return a; };
@@ -1624,9 +1624,9 @@ TestFunctionTypes::testCFunctionCF()
 void
 TestFunctionTypes::testIRFunctions()
 {
-    using openvdb::ax::codegen::LLVMType;
-    using openvdb::ax::codegen::Function;
-    using openvdb::ax::codegen::IRFunctionBase;
+    using laovdb::ax::codegen::LLVMType;
+    using laovdb::ax::codegen::Function;
+    using laovdb::ax::codegen::IRFunctionBase;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();
@@ -1634,7 +1634,7 @@ TestFunctionTypes::testIRFunctions()
     // Small test to check the templated version of IRFunction::types.
     // All other checks work with the IRFunctionBase class
     {
-        using openvdb::ax::codegen::IRFunction;
+        using laovdb::ax::codegen::IRFunction;
 
         static auto generate =
             [](const std::vector<llvm::Value*>&,
@@ -1872,7 +1872,7 @@ TestFunctionTypes::testIRFunctions()
     CPPUNIT_ASSERT(!M.getFunction("ax.ir.retnull.test"));
     // will throw as the function expects a float ret, not void or null
     // NOTE: The function will still be created, but be in an invaid state
-    CPPUNIT_ASSERT_THROW(test->create(M), openvdb::AXCodeGenError);
+    CPPUNIT_ASSERT_THROW(test->create(M), laovdb::AXCodeGenError);
     function = M.getFunction("ax.ir.retnull.test");
     CPPUNIT_ASSERT(function);
 
@@ -1973,10 +1973,10 @@ TestFunctionTypes::testIRFunctions()
 void
 TestFunctionTypes::testSRETFunctions()
 {
-    using openvdb::ax::codegen::LLVMType;
-    using openvdb::ax::codegen::Function;
-    using openvdb::ax::codegen::CFunctionSRet;
-    using openvdb::ax::codegen::IRFunctionSRet;
+    using laovdb::ax::codegen::LLVMType;
+    using laovdb::ax::codegen::Function;
+    using laovdb::ax::codegen::CFunctionSRet;
+    using laovdb::ax::codegen::IRFunctionSRet;
 
     unittest_util::LLVMState state;
     llvm::LLVMContext& C = state.context();
@@ -2105,7 +2105,7 @@ TestFunctionTypes::testSRETFunctions()
 
     // test call - sret function do not return the CallInst as the value
     llvm::Value* f32c0 = LLVMType<float>::get(C, 0.0f); // float
-    llvm::Value* vec3fv = openvdb::ax::codegen::arrayPack({f32c0,f32c0,f32c0}, B); // vec3f
+    llvm::Value* vec3fv = laovdb::ax::codegen::arrayPack({f32c0,f32c0,f32c0}, B); // vec3f
     result = test->call({vec3fv}, B, /*cast*/false);
     CPPUNIT_ASSERT(result);
     CPPUNIT_ASSERT(!llvm::dyn_cast<llvm::CallInst>(result));

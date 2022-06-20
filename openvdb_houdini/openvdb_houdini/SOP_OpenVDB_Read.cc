@@ -68,11 +68,11 @@ populateGridMenu(void* data, PRM_Name* choicenames, int listsize,
     try {
         // Open the file and read the header, but don't read in any grids.
         // An exception is thrown if the file is not a valid VDB file.
-        openvdb::io::File file(file_name);
+        laovdb::io::File file(file_name);
         file.open();
 
         // Loop over the names of all of the grids in the file.
-        for (openvdb::io::File::NameIterator nameIter = file.beginName();
+        for (laovdb::io::File::NameIterator nameIter = file.beginName();
             nameIter != file.endName(); ++nameIter)
         {
             // Make sure we don't write more than the listsize,
@@ -341,10 +341,10 @@ SOP_OpenVDB_Read::cookVDBSop(OP_Context& context)
         }
 
         const bool delayedLoad = evalInt("delayload", 0, t);
-        const openvdb::Index64 copyMaxBytes =
-            openvdb::Index64(1.0e9 * evalFloat("copylimit", 0, t));
+        const laovdb::Index64 copyMaxBytes =
+            laovdb::Index64(1.0e9 * evalFloat("copylimit", 0, t));
 
-        openvdb::BBoxd clipBBox;
+        laovdb::BBoxd clipBBox;
         bool clip = evalInt("clip", 0, t);
         if (clip) {
             if (const GU_Detail* clipGeo = inputGeo(0)) {
@@ -362,8 +362,8 @@ SOP_OpenVDB_Read::cookVDBSop(OP_Context& context)
 
         UT_AutoInterrupt progress(("Reading " + filename).c_str());
 
-        openvdb::io::File file(filename);
-        openvdb::MetaMap::Ptr fileMetadata;
+        laovdb::io::File file(filename);
+        laovdb::MetaMap::Ptr fileMetadata;
         try {
             // Open the VDB file, but don't read any grids yet.
             file.setCopyMaxBytes(copyMaxBytes);
@@ -371,12 +371,12 @@ SOP_OpenVDB_Read::cookVDBSop(OP_Context& context)
 
             // Read the file-level metadata.
             fileMetadata = file.getMetadata();
-            if (!fileMetadata) fileMetadata.reset(new openvdb::MetaMap);
+            if (!fileMetadata) fileMetadata.reset(new laovdb::MetaMap);
 
-        } catch (std::exception& e) { ///< @todo consider catching only openvdb::IoError
+        } catch (std::exception& e) { ///< @todo consider catching only laovdb::IoError
             std::string mesg;
             if (const char* s = e.what()) mesg = s;
-            // Strip off the exception name from an openvdb::IoError.
+            // Strip off the exception name from an laovdb::IoError.
             if (mesg.substr(0, 9) == "IoError: ") mesg = mesg.substr(9);
 
             if (missingFrameIsError) {
@@ -394,7 +394,7 @@ SOP_OpenVDB_Read::cookVDBSop(OP_Context& context)
         }
 
         // Loop over all grids in the file.
-        for (openvdb::io::File::NameIterator nameIter = file.beginName();
+        for (laovdb::io::File::NameIterator nameIter = file.beginName();
             nameIter != file.endName(); ++nameIter)
         {
             if (progress.wasInterrupted()) throw std::runtime_error("Was Interrupted");
@@ -414,12 +414,12 @@ SOP_OpenVDB_Read::cookVDBSop(OP_Context& context)
             if (grid) {
                 // Copy file-level metadata into the grid, then create (if necessary)
                 // and set a primitive attribute for each metadata item.
-                for (openvdb::MetaMap::ConstMetaIterator fileMetaIt = fileMetadata->beginMeta(),
+                for (laovdb::MetaMap::ConstMetaIterator fileMetaIt = fileMetadata->beginMeta(),
                     end = fileMetadata->endMeta(); fileMetaIt != end; ++fileMetaIt)
                 {
                     // Resolve file- and grid-level metadata name conflicts
                     // in favor of the grid-level metadata.
-                    if (openvdb::Metadata::Ptr meta = fileMetaIt->second) {
+                    if (laovdb::Metadata::Ptr meta = fileMetaIt->second) {
                         const std::string name = fileMetaIt->first;
                         if (!(*grid)[name]) {
                             grid->insertMeta(name, *meta);

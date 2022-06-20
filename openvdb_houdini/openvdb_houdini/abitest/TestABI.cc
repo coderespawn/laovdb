@@ -46,66 +46,66 @@ const char* getNamespace()
 
 void* createFloatGrid()
 {
-    openvdb::initialize();
+    laovdb::initialize();
 
-    openvdb::FloatGrid::Ptr grid =
-        openvdb::tools::createLevelSetSphere<openvdb::FloatGrid>(
-            /*radius=*/1.0f, /*center=*/openvdb::Vec3f(0.0f), /*voxelSize=*/0.1f);
+    laovdb::FloatGrid::Ptr grid =
+        laovdb::tools::createLevelSetSphere<laovdb::FloatGrid>(
+            /*radius=*/1.0f, /*center=*/laovdb::Vec3f(0.0f), /*voxelSize=*/0.1f);
 
-    return new openvdb::FloatGrid(*grid);
+    return new laovdb::FloatGrid(*grid);
 }
 
 void* createPointsGrid()
 {
-    openvdb::initialize();
+    laovdb::initialize();
 
-    const std::vector<openvdb::Vec3R> pos {
-        openvdb::Vec3R(0,0,0),
-        openvdb::Vec3R(10,10,10),
-        openvdb::Vec3R(10,-10,10),
-        openvdb::Vec3R(10,10,-10),
-        openvdb::Vec3R(10,-10,-10),
-        openvdb::Vec3R(-10,10,-10),
-        openvdb::Vec3R(-10,10,10),
-        openvdb::Vec3R(-10,-10,10),
-        openvdb::Vec3R(-10,-10,-10)
+    const std::vector<laovdb::Vec3R> pos {
+        laovdb::Vec3R(0,0,0),
+        laovdb::Vec3R(10,10,10),
+        laovdb::Vec3R(10,-10,10),
+        laovdb::Vec3R(10,10,-10),
+        laovdb::Vec3R(10,-10,-10),
+        laovdb::Vec3R(-10,10,-10),
+        laovdb::Vec3R(-10,10,10),
+        laovdb::Vec3R(-10,-10,10),
+        laovdb::Vec3R(-10,-10,-10)
     };
 
-    auto transform = openvdb::math::Transform::createLinearTransform(0.1);
+    auto transform = laovdb::math::Transform::createLinearTransform(0.1);
 
-    openvdb::points::PointDataGrid::Ptr grid =
-        openvdb::points::createPointDataGrid<openvdb::points::NullCodec,
-            openvdb::points::PointDataGrid, openvdb::Vec3R>(pos, *transform);
+    laovdb::points::PointDataGrid::Ptr grid =
+        laovdb::points::createPointDataGrid<laovdb::points::NullCodec,
+            laovdb::points::PointDataGrid, laovdb::Vec3R>(pos, *transform);
 
-    return new openvdb::points::PointDataGrid(*grid);
+    return new laovdb::points::PointDataGrid(*grid);
 }
 
 void cleanupFloatGrid(void* gridPtr)
 {
-    openvdb::uninitialize();
+    laovdb::uninitialize();
 
-    openvdb::FloatGrid* grid =
-        static_cast<openvdb::FloatGrid*>(gridPtr);
+    laovdb::FloatGrid* grid =
+        static_cast<laovdb::FloatGrid*>(gridPtr);
     delete grid;
 }
 
 void cleanupPointsGrid(void* gridPtr)
 {
-    openvdb::uninitialize();
+    laovdb::uninitialize();
 
-    openvdb::points::PointDataGrid* grid =
-        static_cast<openvdb::points::PointDataGrid*>(gridPtr);
+    laovdb::points::PointDataGrid* grid =
+        static_cast<laovdb::points::PointDataGrid*>(gridPtr);
     delete grid;
 }
 
 int validateFloatGrid(void* gridPtr)
 {
-    openvdb::FloatGrid* grid =
-        static_cast<openvdb::FloatGrid*>(gridPtr);
+    laovdb::FloatGrid* grid =
+        static_cast<laovdb::FloatGrid*>(gridPtr);
 
     VDB_ASSERT(grid);
-    VDB_ASSERT(grid->tree().activeVoxelCount() > openvdb::Index64(0));
-    VDB_ASSERT(grid->tree().leafCount() > openvdb::Index64(0));
+    VDB_ASSERT(grid->tree().activeVoxelCount() > laovdb::Index64(0));
+    VDB_ASSERT(grid->tree().leafCount() > laovdb::Index64(0));
 
     std::stringstream ss;
     grid->tree().print(ss);
@@ -113,19 +113,19 @@ int validateFloatGrid(void* gridPtr)
 
     auto iter = grid->tree().cbeginLeaf();
     VDB_ASSERT(iter);
-    VDB_ASSERT(iter->memUsage() > openvdb::Index64(0));
+    VDB_ASSERT(iter->memUsage() > laovdb::Index64(0));
 
     return 0;
 }
 
 int validatePointsGrid(void* gridPtr)
 {
-    openvdb::points::PointDataGrid* grid =
-        static_cast<openvdb::points::PointDataGrid*>(gridPtr);
+    laovdb::points::PointDataGrid* grid =
+        static_cast<laovdb::points::PointDataGrid*>(gridPtr);
 
     VDB_ASSERT(grid);
-    VDB_ASSERT(grid->tree().activeVoxelCount() > openvdb::Index64(0));
-    VDB_ASSERT(grid->tree().leafCount() > openvdb::Index64(0));
+    VDB_ASSERT(grid->tree().activeVoxelCount() > laovdb::Index64(0));
+    VDB_ASSERT(grid->tree().leafCount() > laovdb::Index64(0));
 
     std::stringstream ss;
     grid->tree().print(ss);
@@ -133,10 +133,10 @@ int validatePointsGrid(void* gridPtr)
 
     auto iter = grid->tree().cbeginLeaf();
     VDB_ASSERT(iter);
-    VDB_ASSERT(iter->memUsage() > openvdb::Index64(0));
+    VDB_ASSERT(iter->memUsage() > laovdb::Index64(0));
 
-    auto handle = openvdb::points::AttributeHandle<openvdb::Vec3f>::create(iter->constAttributeArray("P"));
-    VDB_ASSERT(handle->get(0) == openvdb::Vec3f(0));
+    auto handle = laovdb::points::AttributeHandle<laovdb::Vec3f>::create(iter->constAttributeArray("P"));
+    VDB_ASSERT(handle->get(0) == laovdb::Vec3f(0));
 
     return 0;
 }

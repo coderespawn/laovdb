@@ -188,10 +188,10 @@ struct IndexToOffsetOp {
 struct PackedMaskConstructor
 {
     PackedMaskConstructor(const std::vector<const GA_Primitive*>& prims,
-        const openvdb::math::Transform& xform)
+        const laovdb::math::Transform& xform)
         : mPrims(prims.empty() ? nullptr : &prims.front())
         , mXForm(xform)
-        , mMaskGrid(new openvdb::MaskGrid(false))
+        , mMaskGrid(new laovdb::MaskGrid(false))
     {
         mMaskGrid->setTransform(mXForm.copy());
     }
@@ -199,12 +199,12 @@ struct PackedMaskConstructor
     PackedMaskConstructor(PackedMaskConstructor& rhs, tbb::split)
         : mPrims(rhs.mPrims)
         , mXForm(rhs.mXForm)
-        , mMaskGrid(new openvdb::MaskGrid(false))
+        , mMaskGrid(new laovdb::MaskGrid(false))
     {
         mMaskGrid->setTransform(mXForm.copy());
     }
 
-    openvdb::MaskGrid::Ptr getMaskGrid() { return mMaskGrid; }
+    laovdb::MaskGrid::Ptr getMaskGrid() { return mMaskGrid; }
 
     void join(PackedMaskConstructor& rhs) { mMaskGrid->tree().topologyUnion(rhs.mMaskGrid->tree()); }
 
@@ -232,16 +232,16 @@ struct PackedMaskConstructor
                 detailtouse = &tmpdetail;
             }
 
-            GU_VDBPointList<openvdb::Vec3R>  points(*detailtouse);
-            openvdb::MaskGrid::Ptr grid = openvdb::tools::createPointMask(points, mXForm);
+            GU_VDBPointList<laovdb::Vec3R>  points(*detailtouse);
+            laovdb::MaskGrid::Ptr grid = laovdb::tools::createPointMask(points, mXForm);
             mMaskGrid->tree().topologyUnion(grid->tree());
         }
     }
 
 private:
     GA_Primitive const * const * const  mPrims;
-    openvdb::math::Transform            mXForm;
-    openvdb::MaskGrid::Ptr              mMaskGrid;
+    laovdb::math::Transform            mXForm;
+    laovdb::MaskGrid::Ptr              mMaskGrid;
 }; // struct PackedMaskConstructor
 
 
@@ -279,10 +279,10 @@ getPackedPrimitiveOffsets(const GU_Detail& detail, std::vector<const GA_Primitiv
 
 /// @brief    Utility method to construct a GU_VDBPointList.
 /// @details  The GU_VDBPointList is compatible with the PointIndexGrid and ParticleAtals structures.
-inline GU_VDBPointList<openvdb::Vec3s>::Ptr
+inline GU_VDBPointList<laovdb::Vec3s>::Ptr
 GUvdbCreatePointList(const GU_Detail& detail, const GA_PointGroup* pointGroup = nullptr)
 {
-    return GU_VDBPointList<openvdb::Vec3s>::create(detail, pointGroup);
+    return GU_VDBPointList<laovdb::Vec3s>::create(detail, pointGroup);
 }
 
 
@@ -294,41 +294,41 @@ template<typename PointIndexTreeType, typename PointArrayType>
 inline void
 GUvdbConvertIndexToOffset(PointIndexTreeType& tree, const PointArrayType& points)
 {
-    openvdb::tree::LeafManager<PointIndexTreeType> leafnodes(tree);
+    laovdb::tree::LeafManager<PointIndexTreeType> leafnodes(tree);
     leafnodes.foreach(GU_VDBPointToolsInternal::IndexToOffsetOp<PointArrayType>(points));
 }
 
 
 /// @brief    Utility method to construct a PointIndexGrid.
 /// @details  The PointIndexGrid supports fast spatial queries for points.
-inline openvdb::tools::PointIndexGrid::Ptr
+inline laovdb::tools::PointIndexGrid::Ptr
 GUvdbCreatePointIndexGrid(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const GU_Detail& detail,
     const GA_PointGroup* pointGroup = nullptr)
 {
-    GU_VDBPointList<openvdb::Vec3s> points(detail, pointGroup);
-    return openvdb::tools::createPointIndexGrid<openvdb::tools::PointIndexGrid>(points, xform);
+    GU_VDBPointList<laovdb::Vec3s> points(detail, pointGroup);
+    return laovdb::tools::createPointIndexGrid<laovdb::tools::PointIndexGrid>(points, xform);
 }
 
 
 /// @brief    Utility method to construct a PointIndexGrid.
 /// @details  The PointIndexGrid supports fast spatial queries for points.
 template<typename PointArrayType>
-inline openvdb::tools::PointIndexGrid::Ptr
-GUvdbCreatePointIndexGrid(const openvdb::math::Transform& xform, const PointArrayType& points)
+inline laovdb::tools::PointIndexGrid::Ptr
+GUvdbCreatePointIndexGrid(const laovdb::math::Transform& xform, const PointArrayType& points)
 {
-    return openvdb::tools::createPointIndexGrid<openvdb::tools::PointIndexGrid>(points, xform);
+    return laovdb::tools::createPointIndexGrid<laovdb::tools::PointIndexGrid>(points, xform);
 }
 
 
 /// @brief    Utility method to construct a ParticleAtals.
 /// @details  The ParticleAtals supports fast spatial queries for particles.
 template<typename ParticleArrayType>
-inline openvdb::tools::ParticleIndexAtlas::Ptr
+inline laovdb::tools::ParticleIndexAtlas::Ptr
 GUvdbCreateParticleAtlas(const double minVoxelSize, const ParticleArrayType& particles)
 {
-    using ParticleIndexAtlas = openvdb::tools::ParticleIndexAtlas;
+    using ParticleIndexAtlas = laovdb::tools::ParticleIndexAtlas;
     ParticleIndexAtlas::Ptr atlas(new ParticleIndexAtlas());
 
     if (particles.hasRadius()) {
@@ -341,9 +341,9 @@ GUvdbCreateParticleAtlas(const double minVoxelSize, const ParticleArrayType& par
 
 /// @brief    Utility method to construct a boolean PointMaskGrid
 /// @details  This method supports packed points.
-inline openvdb::MaskGrid::Ptr
+inline laovdb::MaskGrid::Ptr
 GUvdbCreatePointMaskGrid(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const GU_Detail& detail,
     const GA_PointGroup* pointGroup = nullptr)
 {
@@ -356,8 +356,8 @@ GUvdbCreatePointMaskGrid(
         return op.getMaskGrid();
     }
 
-    GU_VDBPointList<openvdb::Vec3R> points(detail, pointGroup);
-    return openvdb::tools::createPointMask(points, xform);
+    GU_VDBPointList<laovdb::Vec3R> points(detail, pointGroup);
+    return laovdb::tools::createPointMask(points, xform);
 }
 
 
@@ -367,16 +367,16 @@ GUvdbCreatePointMaskGrid(
 /// @note  PointIndexGrid's that store Houdini geometry offsets are not
 ///        safe to write to disk, offsets are not guaranteed to be immutable
 ///        under defragmentation operations or I/O.
-inline openvdb::tools::PointIndexGrid::Ptr
+inline laovdb::tools::PointIndexGrid::Ptr
 GUvdbCreatePointOffsetGrid(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     const GU_Detail& detail,
     const GA_PointGroup* pointGroup = nullptr)
 {
-    GU_VDBPointList<openvdb::Vec3s> points(detail, pointGroup);
+    GU_VDBPointList<laovdb::Vec3s> points(detail, pointGroup);
 
-    openvdb::tools::PointIndexGrid::Ptr grid =
-        openvdb::tools::createPointIndexGrid<openvdb::tools::PointIndexGrid>(points, xform);
+    laovdb::tools::PointIndexGrid::Ptr grid =
+        laovdb::tools::createPointIndexGrid<laovdb::tools::PointIndexGrid>(points, xform);
 
     GUvdbConvertIndexToOffset(grid->tree(), points);
 

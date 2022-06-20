@@ -30,19 +30,19 @@ namespace unittest_util
 
 std::string loadText(const std::string& codeFileName);
 
-bool wrapExecution(openvdb::points::PointDataGrid& grid,
+bool wrapExecution(laovdb::points::PointDataGrid& grid,
                    const std::string& codeFileName,
                    const std::string * const group,
-                   openvdb::ax::Logger& logger,
-                   const openvdb::ax::CustomData::Ptr& data,
-                   const openvdb::ax::CompilerOptions& opts,
+                   laovdb::ax::Logger& logger,
+                   const laovdb::ax::CustomData::Ptr& data,
+                   const laovdb::ax::CompilerOptions& opts,
                    const bool createMissing);
 
-bool wrapExecution(openvdb::GridPtrVec& grids,
+bool wrapExecution(laovdb::GridPtrVec& grids,
                    const std::string& codeFileName,
-                   openvdb::ax::Logger& logger,
-                   const openvdb::ax::CustomData::Ptr& data,
-                   const openvdb::ax::CompilerOptions& opts,
+                   laovdb::ax::Logger& logger,
+                   const laovdb::ax::CustomData::Ptr& data,
+                   const laovdb::ax::CompilerOptions& opts,
                    const bool createMissing);
 
 /// @brief Structure for wrapping up most of the existing integration
@@ -63,11 +63,11 @@ struct AXTestHarness
         , mUsePoints(true)
         , mVolumeBounds({0,0,0},{7,7,7})
         , mSparseVolumeConfig({
-            {1, { openvdb::Coord(-7), openvdb::Coord(-15)}}, // 2 leaf level tiles
-            {2, { openvdb::Coord(0)  }} // 1 leaf parent tiles (4k leaf level tiles)
+            {1, { laovdb::Coord(-7), laovdb::Coord(-15)}}, // 2 leaf level tiles
+            {2, { laovdb::Coord(0)  }} // 1 leaf parent tiles (4k leaf level tiles)
       })
-      , mOpts(openvdb::ax::CompilerOptions())
-      , mCustomData(openvdb::ax::CustomData::create())
+      , mOpts(laovdb::ax::CompilerOptions())
+      , mCustomData(laovdb::ax::CustomData::create())
       , mErrors()
       , mLogger([this](const std::string& msg) { this->mErrors += msg; } )
     {
@@ -120,7 +120,7 @@ struct AXTestHarness
     void addAttributes(const std::vector<std::string>& names,
                        const std::vector<T>& expectedValues)
     {
-       std::vector<T> zeroVals(expectedValues.size(), openvdb::zeroVal<T>());
+       std::vector<T> zeroVals(expectedValues.size(), laovdb::zeroVal<T>());
        addAttributes(names, zeroVals, expectedValues);
     }
 
@@ -133,7 +133,7 @@ struct AXTestHarness
     template <typename T>
     void addAttribute(const std::string& name, const T& expVal)
     {
-        addAttribute<T>(name, openvdb::zeroVal<T>(), expVal);
+        addAttribute<T>(name, laovdb::zeroVal<T>(), expVal);
     }
 
     template <typename T>
@@ -155,7 +155,7 @@ struct AXTestHarness
     /// @note  The bounds is also used to fill the volume data of numerical vdb volumes when
     ///        calls to addAttribute functions are made, where as points have their positions
     ///        generated here
-    void reset(const openvdb::Index64, const openvdb::CoordBBox&);
+    void reset(const laovdb::Index64, const laovdb::CoordBBox&);
 
     /// @brief reset all grids without changing the harness data. This has the effect of zeroing
     ///        out all volume voxel data and point data attributes (except for position) without
@@ -193,25 +193,25 @@ struct AXTestHarness
     template <typename T>
     void addExpectedVolumes(const std::vector<std::string>& names, const std::vector<T>& values);
 
-    std::vector<openvdb::points::PointDataGrid::Ptr> mInputPointGrids;
-    std::vector<openvdb::points::PointDataGrid::Ptr> mOutputPointGrids;
+    std::vector<laovdb::points::PointDataGrid::Ptr> mInputPointGrids;
+    std::vector<laovdb::points::PointDataGrid::Ptr> mOutputPointGrids;
 
-    openvdb::GridPtrVec mInputSparseVolumeGrids;
-    openvdb::GridPtrVec mInputDenseVolumeGrids;
-    openvdb::GridPtrVec mOutputSparseVolumeGrids;
-    openvdb::GridPtrVec mOutputDenseVolumeGrids;
+    laovdb::GridPtrVec mInputSparseVolumeGrids;
+    laovdb::GridPtrVec mInputDenseVolumeGrids;
+    laovdb::GridPtrVec mOutputSparseVolumeGrids;
+    laovdb::GridPtrVec mOutputDenseVolumeGrids;
 
     bool mUseVolumes;
     bool mUseSparseVolumes;
     bool mUseDenseVolumes;
     bool mUsePoints;
-    openvdb::CoordBBox mVolumeBounds;
-    std::map<openvdb::Index, std::vector<openvdb::Coord>> mSparseVolumeConfig;
+    laovdb::CoordBBox mVolumeBounds;
+    std::map<laovdb::Index, std::vector<laovdb::Coord>> mSparseVolumeConfig;
 
-    openvdb::ax::CompilerOptions mOpts;
-    openvdb::ax::CustomData::Ptr mCustomData;
+    laovdb::ax::CompilerOptions mOpts;
+    laovdb::ax::CustomData::Ptr mCustomData;
     std::string              mErrors;
-    openvdb::ax::Logger      mLogger;
+    laovdb::ax::Logger      mLogger;
 };
 
 class AXTestCase : public CppUnit::TestCase

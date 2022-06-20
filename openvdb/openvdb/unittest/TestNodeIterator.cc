@@ -12,7 +12,7 @@ class TestNodeIterator: public ::testing::Test
 
 
 namespace {
-typedef openvdb::tree::Tree4<float, 3, 2, 3>::Type Tree323f;
+typedef laovdb::tree::Tree4<float, 3, 2, 3>::Type Tree323f;
 }
 
 
@@ -27,7 +27,7 @@ TEST_F(TestNodeIterator, testEmpty)
         EXPECT_TRUE(!iter.next());
     }
     {
-        tree.setValue(openvdb::Coord(8, 16, 24), 10.f);
+        tree.setValue(laovdb::Coord(8, 16, 24), 10.f);
         Tree323f::NodeIter iter(tree); // non-const
         EXPECT_TRUE(iter);
 
@@ -50,7 +50,7 @@ TEST_F(TestNodeIterator, testSinglePositive)
     {
         Tree323f tree(/*fillValue=*/256.0f);
 
-        tree.setValue(openvdb::Coord(8, 16, 24), 10.f);
+        tree.setValue(laovdb::Coord(8, 16, 24), 10.f);
 
         Tree323f::NodeCIter iter(tree);
 
@@ -59,7 +59,7 @@ TEST_F(TestNodeIterator, testSinglePositive)
         EXPECT_TRUE(iter);
         EXPECT_EQ(0U, iter.getDepth());
         EXPECT_EQ(tree.treeDepth(), 1 + iter.getLevel());
-        openvdb::CoordBBox range, bbox;
+        laovdb::CoordBBox range, bbox;
         tree.getIndexRange(range);
         iter.getBoundingBox(bbox);
         EXPECT_EQ(bbox.min(), range.min());
@@ -71,8 +71,8 @@ TEST_F(TestNodeIterator, testSinglePositive)
         EXPECT_TRUE(iter);
         EXPECT_EQ(1U, iter.getDepth());
         iter.getBoundingBox(bbox);
-        EXPECT_EQ(openvdb::Coord(0), bbox.min());
-        EXPECT_EQ(openvdb::Coord((1 << (3 + 2 + 3)) - 1), bbox.max());
+        EXPECT_EQ(laovdb::Coord(0), bbox.min());
+        EXPECT_EQ(laovdb::Coord((1 << (3 + 2 + 3)) - 1), bbox.max());
 
         // Descend to the depth-2 internal node with bounding box
         // (0, 0, 0) -> (31, 31, 31) containing voxel (8, 16, 24).
@@ -80,8 +80,8 @@ TEST_F(TestNodeIterator, testSinglePositive)
         EXPECT_TRUE(iter);
         EXPECT_EQ(2U, iter.getDepth());
         iter.getBoundingBox(bbox);
-        EXPECT_EQ(openvdb::Coord(0), bbox.min());
-        EXPECT_EQ(openvdb::Coord((1 << (2 + 3)) - 1), bbox.max());
+        EXPECT_EQ(laovdb::Coord(0), bbox.min());
+        EXPECT_EQ(laovdb::Coord((1 << (2 + 3)) - 1), bbox.max());
 
         // Descend to the leaf node with bounding box (8, 16, 24) -> (15, 23, 31)
         // containing voxel (8, 16, 24).
@@ -100,7 +100,7 @@ TEST_F(TestNodeIterator, testSinglePositive)
     {
         Tree323f tree(/*fillValue=*/256.0f);
 
-        tree.setValue(openvdb::Coord(129), 10.f);
+        tree.setValue(laovdb::Coord(129), 10.f);
 
         Tree323f::NodeCIter iter(tree);
 
@@ -109,7 +109,7 @@ TEST_F(TestNodeIterator, testSinglePositive)
         EXPECT_TRUE(iter);
         EXPECT_EQ(0U, iter.getDepth());
         EXPECT_EQ(tree.treeDepth(), 1 + iter.getLevel());
-        openvdb::CoordBBox range, bbox;
+        laovdb::CoordBBox range, bbox;
         tree.getIndexRange(range);
         iter.getBoundingBox(bbox);
         EXPECT_EQ(bbox.min(), range.min());
@@ -121,8 +121,8 @@ TEST_F(TestNodeIterator, testSinglePositive)
         EXPECT_TRUE(iter);
         EXPECT_EQ(1U, iter.getDepth());
         iter.getBoundingBox(bbox);
-        EXPECT_EQ(openvdb::Coord(0), bbox.min());
-        EXPECT_EQ(openvdb::Coord((1 << (3 + 2 + 3)) - 1), bbox.max());
+        EXPECT_EQ(laovdb::Coord(0), bbox.min());
+        EXPECT_EQ(laovdb::Coord((1 << (3 + 2 + 3)) - 1), bbox.max());
 
         // Descend to the depth-2 internal node with bounding box
         // (128, 128, 128) -> (159, 159, 159) containing voxel (129, 129, 129).
@@ -155,7 +155,7 @@ TEST_F(TestNodeIterator, testSingleNegative)
 {
     Tree323f tree(/*fillValue=*/256.0f);
 
-    tree.setValue(openvdb::Coord(-1), 10.f);
+    tree.setValue(laovdb::Coord(-1), 10.f);
 
     Tree323f::NodeCIter iter(tree);
 
@@ -164,7 +164,7 @@ TEST_F(TestNodeIterator, testSingleNegative)
     EXPECT_TRUE(iter);
     EXPECT_EQ(0U, iter.getDepth());
     EXPECT_EQ(tree.treeDepth(), 1 + iter.getLevel());
-    openvdb::CoordBBox range, bbox;
+    laovdb::CoordBBox range, bbox;
     tree.getIndexRange(range);
     iter.getBoundingBox(bbox);
     EXPECT_EQ(bbox.min(), range.min());
@@ -176,8 +176,8 @@ TEST_F(TestNodeIterator, testSingleNegative)
     EXPECT_TRUE(iter);
     EXPECT_EQ(1U, iter.getDepth());
     iter.getBoundingBox(bbox);
-    EXPECT_EQ(openvdb::Coord(-(1 << (3 + 2 + 3))), bbox.min());
-    EXPECT_EQ(openvdb::Coord(-1), bbox.max());
+    EXPECT_EQ(laovdb::Coord(-(1 << (3 + 2 + 3))), bbox.min());
+    EXPECT_EQ(laovdb::Coord(-1), bbox.max());
 
     // Descend to the depth-2 internal node with bounding box
     // (-32, -32, -32) -> (-1, -1, -1) containing voxel (-1, -1, -1).
@@ -185,8 +185,8 @@ TEST_F(TestNodeIterator, testSingleNegative)
     EXPECT_TRUE(iter);
     EXPECT_EQ(2U, iter.getDepth());
     iter.getBoundingBox(bbox);
-    EXPECT_EQ(openvdb::Coord(-(1 << (2 + 3))), bbox.min());
-    EXPECT_EQ(openvdb::Coord(-1), bbox.max());
+    EXPECT_EQ(laovdb::Coord(-(1 << (2 + 3))), bbox.min());
+    EXPECT_EQ(laovdb::Coord(-1), bbox.max());
 
     // Descend to the leaf node with bounding box (-8, -8, -8) -> (-1, -1, -1)
     // containing voxel (-1, -1, -1).
@@ -208,8 +208,8 @@ TEST_F(TestNodeIterator, testMultipleBlocks)
 {
     Tree323f tree(/*fillValue=*/256.0f);
 
-    tree.setValue(openvdb::Coord(-1), 10.f);
-    tree.setValue(openvdb::Coord(129), 10.f);
+    tree.setValue(laovdb::Coord(-1), 10.f);
+    tree.setValue(laovdb::Coord(129), 10.f);
 
     Tree323f::NodeCIter iter(tree);
 
@@ -236,9 +236,9 @@ TEST_F(TestNodeIterator, testMultipleBlocks)
     iter.next();
     EXPECT_TRUE(iter);
     EXPECT_EQ(0U, iter.getLevel());
-    openvdb::Coord expectedMin, expectedMax(-1, -1, -1);
+    laovdb::Coord expectedMin, expectedMax(-1, -1, -1);
     expectedMin = expectedMax.offsetBy(-((1 << 3) - 1)); // add leaf node size
-    openvdb::CoordBBox bbox;
+    laovdb::CoordBBox bbox;
     iter.getBoundingBox(bbox);
     EXPECT_EQ(expectedMin, bbox.min());
     EXPECT_EQ(expectedMax, bbox.max());
@@ -275,8 +275,8 @@ TEST_F(TestNodeIterator, testDepthBounds)
 {
     Tree323f tree(/*fillValue=*/256.0f);
 
-    tree.setValue(openvdb::Coord(-1), 10.f);
-    tree.setValue(openvdb::Coord(129), 10.f);
+    tree.setValue(laovdb::Coord(-1), 10.f);
+    tree.setValue(laovdb::Coord(129), 10.f);
 
     {
         // Iterate over internal nodes only.

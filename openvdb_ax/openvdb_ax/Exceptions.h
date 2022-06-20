@@ -17,7 +17,7 @@
 #include <sstream>
 #include <string>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -40,7 +40,7 @@ OPENVDB_AX_EXCEPTION(AXExecutionError);
 #undef OPENVDB_AX_EXCEPTION
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_EXCEPTIONS_HAS_BEEN_INCLUDED
 

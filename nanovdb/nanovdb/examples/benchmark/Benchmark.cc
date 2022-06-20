@@ -102,16 +102,16 @@ protected:
     }
 
 #if defined(NANOVDB_USE_OPENVDB)
-    openvdb::FloatGrid::Ptr getSrcGrid(int verbose = 1)
+    laovdb::FloatGrid::Ptr getSrcGrid(int verbose = 1)
     {
-        openvdb::FloatGrid::Ptr grid;
+        laovdb::FloatGrid::Ptr grid;
         const std::string       path = this->getEnvVar("VDB_DATA_PATH");
         if (path.empty()) { // create a narrow-band level set sphere
             std::cout << "\tSet the environment variable \"VDB_DATA_PATH\" to a directory\n"
                       << "\tcontaining OpenVDB level sets files. They can be downloaded\n"
                       << "\there: https://www.openvdb.org/download/" << std::endl;
             const float          radius = 50.0f;
-            const openvdb::Vec3f center(0.0f, 0.0f, 0.0f);
+            const laovdb::Vec3f center(0.0f, 0.0f, 0.0f);
             const float          voxelSize = 0.1f, width = 3.0f;
             if (verbose > 0) {
                 std::stringstream ss;
@@ -119,22 +119,22 @@ protected:
                 mTimer.start(ss.str());
             }
 #if 1 // choose between a sphere or one of five platonic solids
-            grid = openvdb::tools::createLevelSetSphere<openvdb::FloatGrid>(radius, center, voxelSize, width);
+            grid = laovdb::tools::createLevelSetSphere<laovdb::FloatGrid>(radius, center, voxelSize, width);
             grid->setName("ls_sphere");
 #else
             const int faces[5] = {4, 6, 8, 12, 20};
-            grid = openvdb::tools::createLevelSetPlatonic<openvdb::FloatGrid>(faces[4], radius, center, voxelSize, width);
+            grid = laovdb::tools::createLevelSetPlatonic<laovdb::FloatGrid>(faces[4], radius, center, voxelSize, width);
             grid->setName("ls_platonic");
 #endif
         } else {
-            openvdb::initialize();
+            laovdb::initialize();
             const std::vector<std::string> models = {"armadillo.vdb", "buddha.vdb", "bunny.vdb", "crawler.vdb", "dragon.vdb", "iss.vdb", "space.vdb", "torus_knot_helix.vdb", "utahteapot.vdb", "bunny_cloud.vdb", "wdas_cloud.vdb"};
             const std::string              fileName = path + "/" + models[4]; //
             if (verbose > 0)
                 mTimer.start("Reading grid from the file \"" + fileName + "\"");
-            openvdb::io::File file(fileName);
+            laovdb::io::File file(fileName);
             file.open(false); //disable delayed loading
-            grid = openvdb::gridPtrCast<openvdb::FloatGrid>(file.readGrid(file.beginName().gridName()));
+            grid = laovdb::gridPtrCast<laovdb::FloatGrid>(file.readGrid(file.beginName().gridName()));
         }
         if (verbose > 0)
             mTimer.stop();
@@ -414,12 +414,12 @@ TEST_F(Benchmark, DenseGrid)
 #if defined(NANOVDB_USE_OPENVDB)
 TEST_F(Benchmark, OpenVDB_CPU)
 {
-    using GridT = openvdb::FloatGrid;
-    using CoordT = openvdb::Coord;
+    using GridT = laovdb::FloatGrid;
+    using CoordT = laovdb::Coord;
     using ColorRGB = nanovdb::Image::ColorRGB;
     using RealT = float;
-    using Vec3T = openvdb::math::Vec3<RealT>;
-    using RayT = openvdb::math::Ray<RealT>;
+    using Vec3T = laovdb::math::Vec3<RealT>;
+    using RayT = laovdb::math::Ray<RealT>;
 
     const std::string image_path = this->getEnvVar("VDB_SCRATCH_PATH", ".");
 
@@ -447,7 +447,7 @@ TEST_F(Benchmark, OpenVDB_CPU)
     const int            width = 1280, height = 720;
     const RealT          vfov = 25.0f, aspect = RealT(width) / height, radius = 300.0f;
     const auto           bbox = srcGrid->evalActiveVoxelBoundingBox();
-    const openvdb::Vec3d center(0.5 * (bbox.max()[0] + bbox.min()[0]),
+    const laovdb::Vec3d center(0.5 * (bbox.max()[0] + bbox.min()[0]),
                                 0.5 * (bbox.max()[1] + bbox.min()[1]),
                                 0.5 * (bbox.max()[2] + bbox.min()[2]));
     const Vec3T          lookat = srcGrid->indexToWorld(center), up(0, -1, 0);
@@ -462,7 +462,7 @@ TEST_F(Benchmark, OpenVDB_CPU)
     auto*                  img = imgHandle.image();
 
     auto kernel2D = [&](const tbb::blocked_range2d<int>& r) {
-        openvdb::tools::LevelSetRayIntersector<GridT, openvdb::tools::LinearSearchImpl<GridT, 0, RealT>, GridT::TreeType::RootNodeType::ChildNodeType::LEVEL, RayT> tester(*srcGrid);
+        laovdb::tools::LevelSetRayIntersector<GridT, laovdb::tools::LinearSearchImpl<GridT, 0, RealT>, GridT::TreeType::RootNodeType::ChildNodeType::LEVEL, RayT> tester(*srcGrid);
         const RealT                                                                                                                                                 wScale = 1.0f / width, hScale = 1.0f / height;
         auto                                                                                                                                                        acc = srcGrid->getAccessor();
         CoordT                                                                                                                                                      ijk;
@@ -473,7 +473,7 @@ TEST_F(Benchmark, OpenVDB_CPU)
                 const RayT wRay = camera.getRay(w * wScale, h * hScale);
                 RayT       iRay = wRay.applyInverseMap(*srcGrid->transform().baseMap());
                 if (tester.intersectsIS(iRay, xyz)) {
-                    ijk = openvdb::Coord::floor(xyz);
+                    ijk = laovdb::Coord::floor(xyz);
                     v = acc.getValue(ijk);
                     Vec3T grad(-v);
                     ijk[0] += 1;

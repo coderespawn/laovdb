@@ -22,7 +22,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -1495,6 +1495,6 @@ OPENVDB_INSTANTIATE_STRUCT CsgDifferenceOp<DoubleTree>;
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_MERGE_HAS_BEEN_INCLUDED

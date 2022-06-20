@@ -31,11 +31,11 @@ class UT_String;
 
 namespace openvdb_houdini {
 
-using Grid = openvdb::GridBase;
-using GridPtr = openvdb::GridBase::Ptr;
-using GridCPtr = openvdb::GridBase::ConstPtr;
-using GridRef = openvdb::GridBase&;
-using GridCRef = const openvdb::GridBase&;
+using Grid = laovdb::GridBase;
+using GridPtr = laovdb::GridBase::Ptr;
+using GridCPtr = laovdb::GridBase::ConstPtr;
+using GridRef = laovdb::GridBase&;
+using GridCRef = const laovdb::GridBase&;
 
 
 /// @brief Iterator over const VDB primitives on a geometry detail
@@ -171,7 +171,7 @@ public:
 /// @brief Wrapper class that adapts a Houdini @c UT_Interrupt object
 /// for use with OpenVDB library routines
 /// @sa openvdb/util/NullInterrupter.h
-class HoudiniInterrupter final: public openvdb::util::NullInterrupter
+class HoudiniInterrupter final: public laovdb::util::NullInterrupter
 {
 public:
     explicit HoudiniInterrupter(const char* title = nullptr):
@@ -203,7 +203,7 @@ private:
 
 
 /// @brief Deprecated wrapper class with the same interface as HoudiniInterrupter,
-/// however it does not derive from openvdb::util::NullInterrupter.
+/// however it does not derive from laovdb::util::NullInterrupter.
 /// Intended for backwards-compatibility only.
 class Interrupter
 {
@@ -224,7 +224,7 @@ public:
     bool wasInterrupted(int percent=-1) { return mInterrupt.wasInterrupted(percent); }
 
     /// @brief Return a reference to the base class of the stored interrupter
-    openvdb::util::NullInterrupter& interrupter() { return mInterrupt.interrupter(); }
+    laovdb::util::NullInterrupter& interrupter() { return mInterrupt.interrupter(); }
 
 private:
     HoudiniInterrupter mInterrupt;
@@ -270,7 +270,7 @@ bool evalGridBBox(GridCRef grid, UT_Vector3 corners[8], bool expandHalfVoxel = f
 
 /// Construct an index-space CoordBBox from a UT_BoundingBox.
 OPENVDB_HOUDINI_API
-openvdb::CoordBBox makeCoordBBox(const UT_BoundingBox&, const openvdb::math::Transform&);
+laovdb::CoordBBox makeCoordBBox(const UT_BoundingBox&, const laovdb::math::Transform&);
 
 
 /// @{
@@ -312,32 +312,32 @@ bool isLogForwarding(OP_OpTypeId);
 
 
 // Grid type lists, for use with GEO_PrimVDB::apply(), GEOvdbApply(),
-// or openvdb::GridBase::apply()
+// or laovdb::GridBase::apply()
 
-using ScalarGridTypes = openvdb::TypeList<
-    openvdb::BoolGrid,
-    openvdb::FloatGrid,
-    openvdb::DoubleGrid,
-    openvdb::Int32Grid,
-    openvdb::Int64Grid>;
+using ScalarGridTypes = laovdb::TypeList<
+    laovdb::BoolGrid,
+    laovdb::FloatGrid,
+    laovdb::DoubleGrid,
+    laovdb::Int32Grid,
+    laovdb::Int64Grid>;
 
-using NumericGridTypes = openvdb::TypeList<
-    openvdb::FloatGrid,
-    openvdb::DoubleGrid,
-    openvdb::Int32Grid,
-    openvdb::Int64Grid>;
+using NumericGridTypes = laovdb::TypeList<
+    laovdb::FloatGrid,
+    laovdb::DoubleGrid,
+    laovdb::Int32Grid,
+    laovdb::Int64Grid>;
 
-using RealGridTypes = openvdb::TypeList<
-    openvdb::FloatGrid,
-    openvdb::DoubleGrid>;
+using RealGridTypes = laovdb::TypeList<
+    laovdb::FloatGrid,
+    laovdb::DoubleGrid>;
 
-using Vec3GridTypes = openvdb::TypeList<
-    openvdb::Vec3SGrid,
-    openvdb::Vec3DGrid,
-    openvdb::Vec3IGrid>;
+using Vec3GridTypes = laovdb::TypeList<
+    laovdb::Vec3SGrid,
+    laovdb::Vec3DGrid,
+    laovdb::Vec3IGrid>;
 
-using PointGridTypes = openvdb::TypeList<
-    openvdb::points::PointDataGrid>;
+using PointGridTypes = laovdb::TypeList<
+    laovdb::points::PointDataGrid>;
 
 using VolumeGridTypes = ScalarGridTypes::Append<Vec3GridTypes>;
 

@@ -9,14 +9,14 @@
 
 #include <vector>
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestPointAttribute: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointAttribute
 
 
@@ -181,7 +181,7 @@ TEST_F(TestPointAttribute, testAppendDrop)
     { // attempt (and fail) to drop position
         std::vector<size_t> indices{0};
 
-        EXPECT_THROW(dropAttributes(tree, indices), openvdb::KeyError);
+        EXPECT_THROW(dropAttributes(tree, indices), laovdb::KeyError);
 
         EXPECT_EQ(attributeSet.descriptor().size(), size_t(1));
         EXPECT_TRUE(attributeSet.descriptor().find("P") != AttributeSet::INVALID_POS);
@@ -199,7 +199,7 @@ TEST_F(TestPointAttribute, testAppendDrop)
     { // attempt (and fail) to drop non-existing attribute
         std::vector<Name> names{"test1000"};
 
-        EXPECT_THROW(dropAttributes(tree, names), openvdb::KeyError);
+        EXPECT_THROW(dropAttributes(tree, names), laovdb::KeyError);
 
         EXPECT_EQ(attributeSet.descriptor().size(), size_t(5));
     }
@@ -221,7 +221,7 @@ TEST_F(TestPointAttribute, testAppendDrop)
     { // attempt (and fail) to drop position
         std::vector<Name> names{"P"};
 
-        EXPECT_THROW(dropAttributes(tree, names), openvdb::KeyError);
+        EXPECT_THROW(dropAttributes(tree, names), laovdb::KeyError);
 
         EXPECT_EQ(attributeSet.descriptor().size(), size_t(3));
         EXPECT_TRUE(attributeSet.descriptor().find("P") != AttributeSet::INVALID_POS);
@@ -244,13 +244,13 @@ TEST_F(TestPointAttribute, testAppendDrop)
 
     { // attempt to add an attribute with a name that already exists
         appendAttribute<float>(tree, "test3");
-        EXPECT_THROW(appendAttribute<float>(tree, "test3"), openvdb::KeyError);
+        EXPECT_THROW(appendAttribute<float>(tree, "test3"), laovdb::KeyError);
 
         EXPECT_EQ(attributeSet.descriptor().size(), size_t(2));
     }
 
     { // attempt to add an attribute with an unregistered type (Vec2R)
-        EXPECT_THROW(appendAttribute<Vec2R>(tree, "unregistered"), openvdb::KeyError);
+        EXPECT_THROW(appendAttribute<Vec2R>(tree, "unregistered"), laovdb::KeyError);
     }
 
     { // append attributes marked as hidden, transient, group and string
@@ -282,8 +282,8 @@ TEST_F(TestPointAttribute, testAppendDrop)
     }
 
     { // collapsing non-existing attribute throws exception
-        EXPECT_THROW(collapseAttribute<int>(tree, "unknown", 0), openvdb::KeyError);
-        EXPECT_THROW(collapseAttribute<Name>(tree, "unknown", "unknown"), openvdb::KeyError);
+        EXPECT_THROW(collapseAttribute<int>(tree, "unknown", 0), laovdb::KeyError);
+        EXPECT_THROW(collapseAttribute<Name>(tree, "unknown", "unknown"), laovdb::KeyError);
     }
 }
 
@@ -300,7 +300,7 @@ TEST_F(TestPointAttribute, testRename)
     // check one leaf per point
     EXPECT_EQ(tree.leafCount(), Index32(4));
 
-    const openvdb::TypedMetadata<float> defaultValue(5.0f);
+    const laovdb::TypedMetadata<float> defaultValue(5.0f);
 
     appendAttribute<float>(tree, "test1", 0,
         /*stride=*/1, /*constantStride=*/true, &defaultValue);
@@ -329,16 +329,16 @@ TEST_F(TestPointAttribute, testRename)
     }
 
     { // rename non-existing, matching and existing attributes
-        EXPECT_THROW(renameAttribute(tree, "nonexist", "newname"), openvdb::KeyError);
-        EXPECT_THROW(renameAttribute(tree, "test1", "test1"), openvdb::KeyError);
-        EXPECT_THROW(renameAttribute(tree, "test2", "test1"), openvdb::KeyError);
+        EXPECT_THROW(renameAttribute(tree, "nonexist", "newname"), laovdb::KeyError);
+        EXPECT_THROW(renameAttribute(tree, "test1", "test1"), laovdb::KeyError);
+        EXPECT_THROW(renameAttribute(tree, "test2", "test1"), laovdb::KeyError);
     }
 
     { // rename multiple attributes
         std::vector<Name> oldNames{"test1", "test2"};
         std::vector<Name> newNames{"test1renamed"};
 
-        EXPECT_THROW(renameAttributes(tree, oldNames, newNames), openvdb::ValueError);
+        EXPECT_THROW(renameAttributes(tree, oldNames, newNames), laovdb::ValueError);
 
         newNames.push_back("test2renamed");
         renameAttributes(tree, oldNames, newNames);

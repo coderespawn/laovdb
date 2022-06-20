@@ -15,13 +15,13 @@
 #include <windows.h>
 #endif
 
-using namespace openvdb::points;
+using namespace laovdb::points;
 
 class TestPointDelete: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointDelete
 
 
@@ -29,12 +29,12 @@ public:
 
 TEST_F(TestPointDelete, testDeleteFromGroups)
 {
-    using openvdb::math::Vec3s;
-    using openvdb::tools::PointIndexGrid;
-    using openvdb::Index64;
+    using laovdb::math::Vec3s;
+    using laovdb::tools::PointIndexGrid;
+    using laovdb::Index64;
 
     const float voxelSize(1.0);
-    openvdb::math::Transform::Ptr transform(openvdb::math::Transform::createLinearTransform(voxelSize));
+    laovdb::math::Transform::Ptr transform(laovdb::math::Transform::createLinearTransform(voxelSize));
 
     const std::vector<Vec3s> positions6Points =  {
                                                 {1, 1, 1},
@@ -51,7 +51,7 @@ TEST_F(TestPointDelete, testDeleteFromGroups)
         // expected
 
         PointIndexGrid::Ptr pointIndexGrid =
-            openvdb::tools::createPointIndexGrid<PointIndexGrid>(pointList6Points, *transform);
+            laovdb::tools::createPointIndexGrid<PointIndexGrid>(pointList6Points, *transform);
 
         PointDataGrid::Ptr grid =
             createPointDataGrid<NullCodec, PointDataGrid>(*pointIndexGrid, pointList6Points,
@@ -109,7 +109,7 @@ TEST_F(TestPointDelete, testDeleteFromGroups)
         const PointAttributeVector<Vec3s> pointList4Points(positions4Points);
 
         PointIndexGrid::Ptr pointIndexGrid =
-            openvdb::tools::createPointIndexGrid<PointIndexGrid>(pointList4Points, *transform);
+            laovdb::tools::createPointIndexGrid<PointIndexGrid>(pointList4Points, *transform);
 
         PointDataGrid::Ptr grid =
             createPointDataGrid<NullCodec, PointDataGrid>(*pointIndexGrid,
@@ -153,7 +153,7 @@ TEST_F(TestPointDelete, testDeleteFromGroups)
         // test the invert flag using data similar to that used in the first test
 
         PointIndexGrid::Ptr pointIndexGrid =
-            openvdb::tools::createPointIndexGrid<PointIndexGrid>(pointList6Points, *transform);
+            laovdb::tools::createPointIndexGrid<PointIndexGrid>(pointList6Points, *transform);
         PointDataGrid::Ptr grid =
             createPointDataGrid<NullCodec, PointDataGrid>(*pointIndexGrid, pointList6Points,
                 *transform);
@@ -195,7 +195,7 @@ TEST_F(TestPointDelete, testDeleteFromGroups)
         // similar to first test, but don't drop groups
 
         PointIndexGrid::Ptr pointIndexGrid =
-            openvdb::tools::createPointIndexGrid<PointIndexGrid>(pointList6Points, *transform);
+            laovdb::tools::createPointIndexGrid<PointIndexGrid>(pointList6Points, *transform);
 
         PointDataGrid::Ptr grid =
             createPointDataGrid<NullCodec, PointDataGrid>(*pointIndexGrid, pointList6Points,

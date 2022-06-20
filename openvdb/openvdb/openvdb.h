@@ -16,7 +16,7 @@
 #include "io/File.h"
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -24,19 +24,19 @@ namespace OPENVDB_VERSION_NAME {
 ///   attribute types. Also initializes blosc (if enabled).
 /// @details  Calling this methods registers factory callbacks for the set of
 ///   native grid, transform, metadata and point attribute types that OpenVDB
-///   supports by default. For most types, calling openvdb::initialize is only
-///   required for serialization support. However, openvdb::initialize must be
+///   supports by default. For most types, calling laovdb::initialize is only
+///   required for serialization support. However, laovdb::initialize must be
 ///   called for PointDataGrid attribute usage as these callbacks are used in
 ///   various tools.
 /// @note  This method is thread safe - it can be concurrently called multiple
 ///   times, early exiting if it has already been called so long as
-///   openvdb::uninitialize() has not been called.
+///   laovdb::uninitialize() has not been called.
 OPENVDB_API void initialize();
 
 /// @brief  Global deregistration of native Grid, Transform, Metadata and Point
 ///   attribute types.
 /// @details  Clears all registered factory callbacks. This includes everything
-///   registered by openvdb::initialize() but will also include any manually
+///   registered by laovdb::initialize() but will also include any manually
 ///   registered types.
 /// @note  This method is thread safe - it can be concurrently called multiple
 ///   times.
@@ -233,6 +233,6 @@ using StringGrid OPENVDB_DEPRECATED_MESSAGE("Support for std::string Grids "
     = Grid<tree::Tree4<std::string, 5, 4, 3>::Type>;
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_OPENVDB_HAS_BEEN_INCLUDED

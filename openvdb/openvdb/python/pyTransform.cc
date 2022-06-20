@@ -6,7 +6,7 @@
 #include "pyutil.h"
 
 namespace py = boost::python;
-using namespace openvdb::OPENVDB_VERSION_NAME;
+using namespace laovdb::OPENVDB_VERSION_NAME;
 
 namespace pyTransform {
 
@@ -159,7 +159,7 @@ struct PickleSuite: public py::pickle_suite
             }
         }
 
-        openvdb::VersionId libVersion;
+        laovdb::VersionId libVersion;
         uint32_t formatVersion = 0;
         if (!badState) {
             // Extract the serialization format version numbers.

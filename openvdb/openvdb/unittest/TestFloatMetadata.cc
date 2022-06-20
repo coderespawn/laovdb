@@ -13,7 +13,7 @@ class TestFloatMetadata : public ::testing::Test
 
 TEST_F(TestFloatMetadata, test)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Metadata::Ptr m(new FloatMetadata(1.0));
     Metadata::Ptr m2 = m->copy();

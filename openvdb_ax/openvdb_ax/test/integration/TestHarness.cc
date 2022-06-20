@@ -26,15 +26,15 @@ std::string loadText(const std::string& codeFileName)
     return sstream.str();
 }
 
-bool wrapExecution(openvdb::points::PointDataGrid& grid,
+bool wrapExecution(laovdb::points::PointDataGrid& grid,
                    const std::string& codeFileName,
                    const std::string * const group,
-                   openvdb::ax::Logger& logger,
-                   const openvdb::ax::CustomData::Ptr& data,
-                   const openvdb::ax::CompilerOptions& opts,
+                   laovdb::ax::Logger& logger,
+                   const laovdb::ax::CustomData::Ptr& data,
+                   const laovdb::ax::CompilerOptions& opts,
                    const bool createMissing)
 {
-    using namespace openvdb::ax;
+    using namespace laovdb::ax;
 
     Compiler compiler(opts);
     const std::string code = loadText(codeFileName);
@@ -48,14 +48,14 @@ bool wrapExecution(openvdb::points::PointDataGrid& grid,
     return true;
 }
 
-bool wrapExecution(openvdb::GridPtrVec& grids,
+bool wrapExecution(laovdb::GridPtrVec& grids,
                    const std::string& codeFileName,
-                   openvdb::ax::Logger& logger,
-                   const openvdb::ax::CustomData::Ptr& data,
-                   const openvdb::ax::CompilerOptions& opts,
+                   laovdb::ax::Logger& logger,
+                   const laovdb::ax::CustomData::Ptr& data,
+                   const laovdb::ax::CompilerOptions& opts,
                    const bool createMissing)
 {
-    using namespace openvdb::ax;
+    using namespace laovdb::ax;
 
     Compiler compiler(opts);
     const std::string code = loadText(codeFileName);
@@ -75,8 +75,8 @@ void AXTestHarness::addInputGroups(const std::vector<std::string> &names,
 {
     for (size_t i = 0; i < names.size(); i++) {
         for (auto& grid : mInputPointGrids) {
-            openvdb::points::appendGroup(grid->tree(), names[i]);
-            openvdb::points::setGroup(grid->tree(), names[i], defaults[i]);
+            laovdb::points::appendGroup(grid->tree(), names[i]);
+            laovdb::points::setGroup(grid->tree(), names[i], defaults[i]);
         }
     }
 }
@@ -86,8 +86,8 @@ void AXTestHarness::addExpectedGroups(const std::vector<std::string> &names,
 {
     for (size_t i = 0; i < names.size(); i++) {
         for (auto& grid : mOutputPointGrids) {
-            openvdb::points::appendGroup(grid->tree(), names[i]);
-            openvdb::points::setGroup(grid->tree(), names[i], defaults[i]);
+            laovdb::points::appendGroup(grid->tree(), names[i]);
+            laovdb::points::setGroup(grid->tree(), names[i], defaults[i]);
         }
     }
 }
@@ -126,7 +126,7 @@ void AXTestHarness::addInputPtAttributes(const std::vector<std::string>& names,
 {
     for (size_t i = 0; i < names.size(); i++) {
         for (auto& grid : mInputPointGrids) {
-            openvdb::points::appendAttribute<T>(grid->tree(), names[i], values[i]);
+            laovdb::points::appendAttribute<T>(grid->tree(), names[i], values[i]);
        }
     }
 }
@@ -135,7 +135,7 @@ template <typename T>
 void AXTestHarness::addInputVolumes(const std::vector<std::string>& names,
                      const std::vector<T>& values)
 {
-    using GridType = typename openvdb::BoolGrid::ValueConverter<T>::Type;
+    using GridType = typename laovdb::BoolGrid::ValueConverter<T>::Type;
 
     for (size_t i = 0; i < names.size(); i++) {
         typename GridType::Ptr grid = GridType::create();
@@ -162,7 +162,7 @@ void AXTestHarness::addExpectedPtAttributes(const std::vector<std::string>& name
 {
     for (size_t i = 0; i < names.size(); i++) {
         for (auto& grid : mOutputPointGrids) {
-            openvdb::points::appendAttribute<T>(grid->tree(), names[i], values[i]);
+            laovdb::points::appendAttribute<T>(grid->tree(), names[i], values[i]);
        }
     }
 }
@@ -171,7 +171,7 @@ template <typename T>
 void AXTestHarness::addExpectedVolumes(const std::vector<std::string>& names,
                         const std::vector<T>& values)
 {
-    using GridType = typename openvdb::BoolGrid::ValueConverter<T>::Type;
+    using GridType = typename laovdb::BoolGrid::ValueConverter<T>::Type;
 
     for (size_t i = 0; i < names.size(); i++) {
         typename GridType::Ptr grid = GridType::create();
@@ -260,10 +260,10 @@ void AXTestHarness::testPoints(const bool enable)
     mUsePoints = enable;
 }
 
-void AXTestHarness::reset(const openvdb::Index64 ppv, const openvdb::CoordBBox& bounds)
+void AXTestHarness::reset(const laovdb::Index64 ppv, const laovdb::CoordBBox& bounds)
 {
-    using openvdb::points::PointDataGrid;
-    using openvdb::points::NullCodec;
+    using laovdb::points::PointDataGrid;
+    using laovdb::points::NullCodec;
 
     mInputPointGrids.clear();
     mOutputPointGrids.clear();
@@ -272,13 +272,13 @@ void AXTestHarness::reset(const openvdb::Index64 ppv, const openvdb::CoordBBox& 
     mOutputSparseVolumeGrids.clear();
     mOutputDenseVolumeGrids.clear();
 
-    openvdb::math::Transform::Ptr transform =
-        openvdb::math::Transform::createLinearTransform(1.0);
-    openvdb::MaskGrid::Ptr mask = openvdb::MaskGrid::create();
+    laovdb::math::Transform::Ptr transform =
+        laovdb::math::Transform::createLinearTransform(1.0);
+    laovdb::MaskGrid::Ptr mask = laovdb::MaskGrid::create();
     mask->setTransform(transform);
     mask->sparseFill(bounds, true, true);
-    openvdb::points::PointDataGrid::Ptr points =
-        openvdb::points::denseUniformPointScatter(*mask, static_cast<float>(ppv));
+    laovdb::points::PointDataGrid::Ptr points =
+        laovdb::points::denseUniformPointScatter(*mask, static_cast<float>(ppv));
     mask.reset();
 
     mInputPointGrids.emplace_back(points);
@@ -292,8 +292,8 @@ void AXTestHarness::reset(const openvdb::Index64 ppv, const openvdb::CoordBBox& 
 
 void AXTestHarness::reset()
 {
-    using openvdb::points::PointDataGrid;
-    using openvdb::points::NullCodec;
+    using laovdb::points::PointDataGrid;
+    using laovdb::points::NullCodec;
 
     mInputPointGrids.clear();
     mOutputPointGrids.clear();
@@ -302,29 +302,29 @@ void AXTestHarness::reset()
     mOutputSparseVolumeGrids.clear();
     mOutputDenseVolumeGrids.clear();
 
-    std::vector<openvdb::Vec3d> coordinates =
-        {openvdb::Vec3d(0.0, 0.0, 0.0),
-         openvdb::Vec3d(0.0, 0.0, 0.05),
-         openvdb::Vec3d(0.0, 1.0, 0.0),
-         openvdb::Vec3d(1.0, 1.0, 0.0)};
+    std::vector<laovdb::Vec3d> coordinates =
+        {laovdb::Vec3d(0.0, 0.0, 0.0),
+         laovdb::Vec3d(0.0, 0.0, 0.05),
+         laovdb::Vec3d(0.0, 1.0, 0.0),
+         laovdb::Vec3d(1.0, 1.0, 0.0)};
 
-    openvdb::math::Transform::Ptr transform1 =
-        openvdb::math::Transform::createLinearTransform(1.0);
+    laovdb::math::Transform::Ptr transform1 =
+        laovdb::math::Transform::createLinearTransform(1.0);
 
-    openvdb::points::PointDataGrid::Ptr onePointGrid =
-        openvdb::points::createPointDataGrid<NullCodec, PointDataGrid>
-            (std::vector<openvdb::Vec3d>{coordinates[0]}, *transform1);
+    laovdb::points::PointDataGrid::Ptr onePointGrid =
+        laovdb::points::createPointDataGrid<NullCodec, PointDataGrid>
+            (std::vector<laovdb::Vec3d>{coordinates[0]}, *transform1);
 
     onePointGrid->setName("1_point");
     mInputPointGrids.emplace_back(onePointGrid);
     mOutputPointGrids.emplace_back(onePointGrid->deepCopy());
     mOutputPointGrids.back()->setName("1_point_expected");
 
-    openvdb::math::Transform::Ptr transform2 =
-        openvdb::math::Transform::createLinearTransform(0.1);
+    laovdb::math::Transform::Ptr transform2 =
+        laovdb::math::Transform::createLinearTransform(0.1);
 
-    openvdb::points::PointDataGrid::Ptr fourPointGrid =
-        openvdb::points::createPointDataGrid<NullCodec, PointDataGrid>
+    laovdb::points::PointDataGrid::Ptr fourPointGrid =
+        laovdb::points::createPointDataGrid<NullCodec, PointDataGrid>
             (coordinates, *transform2);
 
     fourPointGrid->setName("4_points");
@@ -332,19 +332,19 @@ void AXTestHarness::reset()
     mOutputPointGrids.emplace_back(fourPointGrid->deepCopy());
     mOutputPointGrids.back()->setName("4_points_expected");
 
-    mVolumeBounds = openvdb::CoordBBox({0,0,0}, {0,0,0});
+    mVolumeBounds = laovdb::CoordBBox({0,0,0}, {0,0,0});
 
     this->clear();
 }
 
 template <typename ValueT>
-using ConverterT = typename openvdb::BoolGrid::ValueConverter<ValueT>::Type;
+using ConverterT = typename laovdb::BoolGrid::ValueConverter<ValueT>::Type;
 
 void AXTestHarness::resetInputsToZero()
 {
     for (auto& grid : mInputPointGrids) {
-        openvdb::tree::LeafManager<openvdb::points::PointDataTree> manager(grid->tree());
-        manager.foreach([](openvdb::points::PointDataTree::LeafNodeType& leaf, size_t) {
+        laovdb::tree::LeafManager<laovdb::points::PointDataTree> manager(grid->tree());
+        manager.foreach([](laovdb::points::PointDataTree::LeafNodeType& leaf, size_t) {
             const size_t attrs = leaf.attributeSet().size();
             const size_t pidx = leaf.attributeSet().descriptor().find("P");
             for (size_t idx = 0; idx < attrs; ++idx) {
@@ -356,33 +356,33 @@ void AXTestHarness::resetInputsToZero()
 
     /// @todo: share with volume executable when the move to header files is made
     ///        for customization of grid types.
-    using SupportedTypeList = openvdb::TypeList<
+    using SupportedTypeList = laovdb::TypeList<
         ConverterT<double>,
         ConverterT<float>,
         ConverterT<int64_t>,
         ConverterT<int32_t>,
         ConverterT<int16_t>,
         ConverterT<bool>,
-        ConverterT<openvdb::math::Vec2<double>>,
-        ConverterT<openvdb::math::Vec2<float>>,
-        ConverterT<openvdb::math::Vec2<int32_t>>,
-        ConverterT<openvdb::math::Vec3<double>>,
-        ConverterT<openvdb::math::Vec3<float>>,
-        ConverterT<openvdb::math::Vec3<int32_t>>,
-        ConverterT<openvdb::math::Vec4<double>>,
-        ConverterT<openvdb::math::Vec4<float>>,
-        ConverterT<openvdb::math::Vec4<int32_t>>,
-        ConverterT<openvdb::math::Mat3<double>>,
-        ConverterT<openvdb::math::Mat3<float>>,
-        ConverterT<openvdb::math::Mat4<double>>,
-        ConverterT<openvdb::math::Mat4<float>>,
+        ConverterT<laovdb::math::Vec2<double>>,
+        ConverterT<laovdb::math::Vec2<float>>,
+        ConverterT<laovdb::math::Vec2<int32_t>>,
+        ConverterT<laovdb::math::Vec3<double>>,
+        ConverterT<laovdb::math::Vec3<float>>,
+        ConverterT<laovdb::math::Vec3<int32_t>>,
+        ConverterT<laovdb::math::Vec4<double>>,
+        ConverterT<laovdb::math::Vec4<float>>,
+        ConverterT<laovdb::math::Vec4<int32_t>>,
+        ConverterT<laovdb::math::Mat3<double>>,
+        ConverterT<laovdb::math::Mat3<float>>,
+        ConverterT<laovdb::math::Mat4<double>>,
+        ConverterT<laovdb::math::Mat4<float>>,
         ConverterT<std::string>>;
 
     for (auto& grid : mInputSparseVolumeGrids) {
         const bool success = grid->apply<SupportedTypeList>([](auto& typed) {
             using GridType = typename std::decay<decltype(typed)>::type;
-            openvdb::tools::foreach(typed.beginValueAll(), [](auto it) {
-                it.setValue(openvdb::zeroVal<typename GridType::ValueType>());
+            laovdb::tools::foreach(typed.beginValueAll(), [](auto it) {
+                it.setValue(laovdb::zeroVal<typename GridType::ValueType>());
             });
         });
         if (!success) {
@@ -393,8 +393,8 @@ void AXTestHarness::resetInputsToZero()
     for (auto& grid : mInputDenseVolumeGrids) {
         const bool success = grid->apply<SupportedTypeList>([](auto& typed) {
             using GridType = typename std::decay<decltype(typed)>::type;
-            openvdb::tools::foreach(typed.beginValueAll(), [](auto it) {
-                it.setValue(openvdb::zeroVal<typename GridType::ValueType>());
+            laovdb::tools::foreach(typed.beginValueAll(), [](auto it) {
+                it.setValue(laovdb::zeroVal<typename GridType::ValueType>());
             });
         });
         if (!success) {
@@ -416,19 +416,19 @@ REGISTER_HARNESS_METHODS(int64_t)
 REGISTER_HARNESS_METHODS(int32_t)
 REGISTER_HARNESS_METHODS(int16_t)
 REGISTER_HARNESS_METHODS(bool)
-REGISTER_HARNESS_METHODS(openvdb::math::Vec2<double>)
-REGISTER_HARNESS_METHODS(openvdb::math::Vec2<float>)
-REGISTER_HARNESS_METHODS(openvdb::math::Vec2<int32_t>)
-REGISTER_HARNESS_METHODS(openvdb::math::Vec3<double>)
-REGISTER_HARNESS_METHODS(openvdb::math::Vec3<float>)
-REGISTER_HARNESS_METHODS(openvdb::math::Vec3<int32_t>)
-REGISTER_HARNESS_METHODS(openvdb::math::Vec4<double>)
-REGISTER_HARNESS_METHODS(openvdb::math::Vec4<float>)
-REGISTER_HARNESS_METHODS(openvdb::math::Vec4<int32_t>)
-REGISTER_HARNESS_METHODS(openvdb::math::Mat3<double>)
-REGISTER_HARNESS_METHODS(openvdb::math::Mat3<float>)
-REGISTER_HARNESS_METHODS(openvdb::math::Mat4<double>)
-REGISTER_HARNESS_METHODS(openvdb::math::Mat4<float>)
+REGISTER_HARNESS_METHODS(laovdb::math::Vec2<double>)
+REGISTER_HARNESS_METHODS(laovdb::math::Vec2<float>)
+REGISTER_HARNESS_METHODS(laovdb::math::Vec2<int32_t>)
+REGISTER_HARNESS_METHODS(laovdb::math::Vec3<double>)
+REGISTER_HARNESS_METHODS(laovdb::math::Vec3<float>)
+REGISTER_HARNESS_METHODS(laovdb::math::Vec3<int32_t>)
+REGISTER_HARNESS_METHODS(laovdb::math::Vec4<double>)
+REGISTER_HARNESS_METHODS(laovdb::math::Vec4<float>)
+REGISTER_HARNESS_METHODS(laovdb::math::Vec4<int32_t>)
+REGISTER_HARNESS_METHODS(laovdb::math::Mat3<double>)
+REGISTER_HARNESS_METHODS(laovdb::math::Mat3<float>)
+REGISTER_HARNESS_METHODS(laovdb::math::Mat4<double>)
+REGISTER_HARNESS_METHODS(laovdb::math::Mat4<float>)
 REGISTER_HARNESS_METHODS(std::string)
 
 }

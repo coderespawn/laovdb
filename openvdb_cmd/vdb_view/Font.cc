@@ -6,7 +6,7 @@
 #include <openvdb/Types.h> // for OPENVDB_START_THREADSAFE_STATIC_WRITE
 
 
-namespace openvdb_viewer {
+namespace laovdb_viewer {
 
 GLuint BitmapFont13::sOffset = 0;
 
@@ -166,4 +166,4 @@ BitmapFont13::print(GLint px, GLint py, const std::string& str)
     glPopAttrib();
 }
 
-} // namespace openvdb_viewer
+} // namespace laovdb_viewer

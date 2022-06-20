@@ -149,7 +149,7 @@ public:
         using VecT = typename VecGridT::ValueType;
         using ScalarTreeT = typename VecGridT::TreeType::template
             ValueConverter<typename VecT::value_type>::Type;
-        using ScalarGridT = typename openvdb::Grid<ScalarTreeT>;
+        using ScalarGridT = typename laovdb::Grid<ScalarTreeT>;
         using ScalarGridPtr = typename ScalarGridT::Ptr;
 
         const VecT bkgd = vecGrid.background();
@@ -163,7 +163,7 @@ public:
         mXGrid = xGrid; mYGrid = yGrid; mZGrid = zGrid;
 
         // The output scalar grids share the input vector grid's transform.
-        if (openvdb::math::Transform::Ptr xform = vecGrid.transform().copy()) {
+        if (laovdb::math::Transform::Ptr xform = vecGrid.transform().copy()) {
             xGrid->setTransform(xform);
             yGrid->setTransform(xform);
             zGrid->setTransform(xform);
@@ -177,7 +177,7 @@ public:
 
         // For each tile or voxel value in the input vector tree,
         // set a corresponding value in each of the output scalar trees.
-        openvdb::CoordBBox bbox;
+        laovdb::CoordBBox bbox;
         if (mCopyInactiveValues) {
             for (typename VecGridT::ValueAllCIter it = vecGrid.cbeginValueAll(); it; ++it) {
                 if (!it.getBoundingBox(bbox)) continue;

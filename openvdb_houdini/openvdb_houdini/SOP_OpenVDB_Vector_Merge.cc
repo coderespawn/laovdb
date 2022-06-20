@@ -123,9 +123,9 @@ newSopOperator(OP_OperatorTable* table)
     {
         // Output grid's vector type (invariant, covariant, etc.)
         std::vector<std::string> items;
-        for (int i = 0; i < openvdb::NUM_VEC_TYPES ; ++i) {
-            items.push_back(openvdb::GridBase::vecTypeToString(openvdb::VecType(i)));
-            items.push_back(openvdb::GridBase::vecTypeExamples(openvdb::VecType(i)));
+        for (int i = 0; i < laovdb::NUM_VEC_TYPES ; ++i) {
+            items.push_back(laovdb::GridBase::vecTypeToString(laovdb::VecType(i)));
+            items.push_back(laovdb::GridBase::vecTypeExamples(laovdb::VecType(i)));
         }
         parms.add(hutil::ParmFactory(PRM_ORD, "vectype", "Vector Type")
             .setDefault(PRMzeroDefaults)
@@ -308,7 +308,7 @@ class MergeActiveOp
 public:
     using VectorValueT = typename VectorTreeT::ValueType;
     using ScalarValueT = typename ScalarTreeT::ValueType;
-    using ScalarAccessor = typename openvdb::tree::ValueAccessor<const ScalarTreeT>;
+    using ScalarAccessor = typename laovdb::tree::ValueAccessor<const ScalarTreeT>;
 
     MergeActiveOp(const ScalarTreeT* xTree, const ScalarTreeT* yTree, const ScalarTreeT* zTree,
         UT_Interrupt* interrupt)
@@ -340,7 +340,7 @@ public:
     // the values of corresponding tiles or voxels in the scalar trees.
     void operator()(const typename VectorTreeT::ValueOnIter& it) const
     {
-        const openvdb::Coord xyz = it.getCoord();
+        const laovdb::Coord xyz = it.getCoord();
         ScalarValueT
             xval = mXAcc.getValue(xyz),
             yval = mYAcc.getValue(xyz),
@@ -363,8 +363,8 @@ struct MergeInactiveOp
     using VectorValueT = typename VectorTreeT::ValueType;
     using VectorElemT = typename VectorValueT::value_type;
     using ScalarValueT = typename ScalarTreeT::ValueType;
-    using VectorAccessor = typename openvdb::tree::ValueAccessor<VectorTreeT>;
-    using ScalarAccessor = typename openvdb::tree::ValueAccessor<const ScalarTreeT>;
+    using VectorAccessor = typename laovdb::tree::ValueAccessor<VectorTreeT>;
+    using ScalarAccessor = typename laovdb::tree::ValueAccessor<const ScalarTreeT>;
 
     MergeInactiveOp(const ScalarTreeT* xTree, const ScalarTreeT* yTree, const ScalarTreeT* zTree,
         VectorTreeT& vecTree, UT_Interrupt* interrupt)
@@ -400,16 +400,16 @@ struct MergeInactiveOp
     {
         // Skip background tiles and voxels, since the output vector tree
         // is assumed to be initialized with the correct background.
-        if (openvdb::math::isExactlyEqual(it.getValue(), it.getTree()->background())) return;
+        if (laovdb::math::isExactlyEqual(it.getValue(), it.getTree()->background())) return;
 
-        const openvdb::Coord& xyz = it.getCoord();
+        const laovdb::Coord& xyz = it.getCoord();
         if (it.isVoxelValue()) {
             mVecAcc.setActiveState(xyz, true);
         } else {
             // Because the vector tree was constructed with the same node configuration
             // as the scalar trees, tiles can be transferred directly between the two.
             mVecAcc.addTile(it.getLevel(), xyz,
-                openvdb::zeroVal<VectorValueT>(), /*active=*/true);
+                laovdb::zeroVal<VectorValueT>(), /*active=*/true);
         }
     }
 
@@ -417,7 +417,7 @@ struct MergeInactiveOp
     // the values of corresponding tiles or voxels in the scalar trees.
     void operator()(const typename VectorTreeT::ValueOnIter& it) const
     {
-        const openvdb::Coord xyz = it.getCoord();
+        const laovdb::Coord xyz = it.getCoord();
         ScalarValueT
             xval = mXAcc.getValue(xyz),
             yval = mYAcc.getValue(xyz),
@@ -481,16 +481,16 @@ public:
         // 2. VecT is Vec3<ScalarT>, provided that there is a registered Tree with that
         //    value type.  If not, use the closest match (e.g., vec3i when ScalarT = bool).
         using MappedVecT = VecValueTypeMap<ScalarT>;
-        using VecT = openvdb::math::Vec3<typename MappedVecT::Type>;
+        using VecT = laovdb::math::Vec3<typename MappedVecT::Type>;
         // 3. VecTreeT is the type of a tree with the same height and node dimensions
         //    as the input scalar tree, but with value type VecT instead of ScalarT.
         using VecTreeT = typename ScalarTreeT::template ValueConverter<VecT>::Type;
-        using VecGridT = typename openvdb::Grid<VecTreeT>;
+        using VecGridT = typename laovdb::Grid<VecTreeT>;
 
         if (MappedVecT::Changed && mWarn) {
             std::ostringstream ostr;
-            ostr << "grids of type vec3<" << openvdb::typeNameAsString<ScalarT>()
-                << "> are not supported; using " << openvdb::typeNameAsString<VecT>()
+            ostr << "grids of type vec3<" << laovdb::typeNameAsString<ScalarT>()
+                << "> are not supported; using " << laovdb::typeNameAsString<VecT>()
                 << " instead";
             if (!mOutGridName.empty()) ostr << " for " << mOutGridName;
             mWarn(ostr.str().c_str());
@@ -498,12 +498,12 @@ public:
 
         // Determine the background value and the transform.
         VecT bkgd(0, 0, 0);
-        const openvdb::math::Transform* xform = nullptr;
+        const laovdb::math::Transform* xform = nullptr;
         for (int i = 0; i < 3; ++i) {
             if (inTree[i]) bkgd[i] = inTree[i]->background();
             if (mInGrid[i] && !xform) xform = &(mInGrid[i]->transform());
         }
-        openvdb::math::Transform::Ptr outXform;
+        laovdb::math::Transform::Ptr outXform;
         if (xform) outXform = xform->copy();
 
         // Construct the output vector grid, with a background value whose
@@ -518,7 +518,7 @@ public:
             bool xformMismatch = false;
             for (int i = 0; i < 3 && !xformMismatch; ++i) {
                 if (mInGrid[i]) {
-                    const openvdb::math::Transform* inXform = &(mInGrid[i]->transform());
+                    const laovdb::math::Transform* inXform = &(mInGrid[i]->transform());
                     if (*outXform != *inXform) xformMismatch = true;
                 }
             }
@@ -538,17 +538,17 @@ public:
                     if (mInterrupt && mInterrupt->opInterrupt()) { mOutGrid.reset(); return; }
                     if (!inTree[i]) continue;
                     // Because this is a topology-modifying operation, it must be done serially.
-                    openvdb::tools::foreach(inTree[i]->cbeginValueOff(),
+                    laovdb::tools::foreach(inTree[i]->cbeginValueOff(),
                         op, /*threaded=*/false, /*shareOp=*/false);
                 }
 
                 // 2. For each active value in the vector tree, set v = (x, y, z).
-                openvdb::tools::foreach(vecGrid->beginValueOn(),
+                laovdb::tools::foreach(vecGrid->beginValueOn(),
                     op, /*threaded=*/true, /*shareOp=*/false);
 
                 // 3. Deactivate all values in the vector tree, by processing
                 //    leaf nodes in parallel (which is safe) and tiles serially.
-                openvdb::tools::foreach(vecGrid->tree().beginLeaf(), op, /*threaded=*/true);
+                laovdb::tools::foreach(vecGrid->tree().beginLeaf(), op, /*threaded=*/true);
                 typename VecTreeT::ValueOnIter tileIt = vecGrid->beginValueOn();
                 tileIt.setMaxDepth(tileIt.getLeafDepth() - 1); // skip leaf nodes
                 for (int count = 0; tileIt; ++tileIt, ++count) {
@@ -578,13 +578,13 @@ public:
         try {
             MergeActiveOp<VecTreeT, ScalarTreeT>
                 op(inTree[0], inTree[1], inTree[2], mInterrupt);
-            openvdb::tools::foreach(vecGrid->beginValueOn(),
+            laovdb::tools::foreach(vecGrid->beginValueOn(),
                 op, /*threaded=*/true, /*shareOp=*/false);
         } catch (InterruptException&) {
             mOutGrid.reset();
             return;
         }
-        openvdb::tools::prune(vecGrid->tree());
+        laovdb::tools::prune(vecGrid->tree());
     }
 
 private:
@@ -616,11 +616,11 @@ SOP_OpenVDB_Vector_Merge::Cache::cookVDBSop(OP_Context& context)
         const bool verbose = false;
 #endif
 
-        openvdb::VecType vecType = openvdb::VEC_INVARIANT;
+        laovdb::VecType vecType = laovdb::VEC_INVARIANT;
         {
             const int vtype = static_cast<int>(evalInt("vectype", 0, time));
-            if (vtype >= 0 && vtype < openvdb::NUM_VEC_TYPES) {
-                vecType = static_cast<openvdb::VecType>(vtype);
+            if (vtype >= 0 && vtype < laovdb::NUM_VEC_TYPES) {
+                vecType = static_cast<laovdb::VecType>(vtype);
             }
         }
 

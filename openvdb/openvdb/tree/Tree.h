@@ -27,7 +27,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tree {
@@ -2184,6 +2184,6 @@ Tree<RootNodeType>::print(std::ostream& os, int verboseLevel) const
 
 } // namespace tree
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TREE_TREE_HAS_BEEN_INCLUDED

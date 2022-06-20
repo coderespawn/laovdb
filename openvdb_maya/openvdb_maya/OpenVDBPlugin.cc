@@ -31,7 +31,7 @@
 ////////////////////////////////////////
 
 
-namespace openvdb_maya {
+namespace laovdb_maya {
 
 
 namespace {
@@ -125,7 +125,7 @@ NodeRegistry::deregisterNodes(MFnPlugin& plugin, MStatus& status)
     }
 }
 
-} // namespace openvdb_maya
+} // namespace laovdb_maya
 
 
 ////////////////////////////////////////
@@ -138,7 +138,7 @@ MStatus uninitializePlugin(MObject);
 MStatus
 initializePlugin(MObject obj)
 {
-    openvdb::initialize();
+    laovdb::initialize();
 
     MStatus status;
     MFnPlugin plugin(obj, "DreamWorks Animation", "0.5", "Any");

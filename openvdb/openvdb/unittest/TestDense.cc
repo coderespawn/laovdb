@@ -20,35 +20,35 @@
 class TestDense: public ::testing::Test
 {
 public:
-    template <openvdb::tools::MemoryLayout Layout>
+    template <laovdb::tools::MemoryLayout Layout>
     void testCopy();
-    template <openvdb::tools::MemoryLayout Layout>
+    template <laovdb::tools::MemoryLayout Layout>
     void testCopyBool();
-    template <openvdb::tools::MemoryLayout Layout>
+    template <laovdb::tools::MemoryLayout Layout>
     void testCopyFromDenseWithOffset();
-    template <openvdb::tools::MemoryLayout Layout>
+    template <laovdb::tools::MemoryLayout Layout>
     void testDense2Sparse();
-    template <openvdb::tools::MemoryLayout Layout>
+    template <laovdb::tools::MemoryLayout Layout>
     void testDense2Sparse2();
-    template <openvdb::tools::MemoryLayout Layout>
+    template <laovdb::tools::MemoryLayout Layout>
     void testInvalidBBox();
-    template <openvdb::tools::MemoryLayout Layout>
+    template <laovdb::tools::MemoryLayout Layout>
     void testDense2Sparse2Dense();
 };
 
 
 TEST_F(TestDense, testDenseZYX)
 {
-    const openvdb::CoordBBox bbox(openvdb::Coord(-40,-5, 6),
-                                  openvdb::Coord(-11, 7,22));
-    openvdb::tools::Dense<float> dense(bbox);//LayoutZYX is the default
+    const laovdb::CoordBBox bbox(laovdb::Coord(-40,-5, 6),
+                                  laovdb::Coord(-11, 7,22));
+    laovdb::tools::Dense<float> dense(bbox);//LayoutZYX is the default
 
     // Check Desne::origin()
-    EXPECT_TRUE(openvdb::Coord(-40,-5, 6) == dense.origin());
+    EXPECT_TRUE(laovdb::Coord(-40,-5, 6) == dense.origin());
 
     // Check coordToOffset and offsetToCoord
     size_t offset = 0;
-    for (openvdb::Coord P(bbox.min()); P[0] <= bbox.max()[0]; ++P[0]) {
+    for (laovdb::Coord P(bbox.min()); P[0] <= bbox.max()[0]; ++P[0]) {
         for (P[1] = bbox.min()[1]; P[1] <= bbox.max()[1]; ++P[1]) {
             for (P[2] = bbox.min()[2]; P[2] <= bbox.max()[2]; ++P[2]) {
                 //std::cerr << "offset = " << offset << " P = " << P << std::endl;
@@ -76,7 +76,7 @@ TEST_F(TestDense, testDenseZYX)
     int s = size;
     while(s--) EXPECT_NEAR(v, *a++, /*tolerance=*/0.0001);
 
-    for (openvdb::Coord P(bbox.min()); P[0] <= bbox.max()[0]; ++P[0]) {
+    for (laovdb::Coord P(bbox.min()); P[0] <= bbox.max()[0]; ++P[0]) {
         for (P[1] = bbox.min()[1]; P[1] <= bbox.max()[1]; ++P[1]) {
             for (P[2] = bbox.min()[2]; P[2] <= bbox.max()[2]; ++P[2]) {
                 EXPECT_NEAR(v, dense.getValue(P), /*tolerance=*/0.0001);
@@ -85,10 +85,10 @@ TEST_F(TestDense, testDenseZYX)
     }
 
     // Check Dense::setValue(Coord, float)
-    const openvdb::Coord C(-30, 3,12);
+    const laovdb::Coord C(-30, 3,12);
     const float v1 = 3.45f;
     dense.setValue(C, v1);
-    for (openvdb::Coord P(bbox.min()); P[0] <= bbox.max()[0]; ++P[0]) {
+    for (laovdb::Coord P(bbox.min()); P[0] <= bbox.max()[0]; ++P[0]) {
         for (P[1] = bbox.min()[1]; P[1] <= bbox.max()[1]; ++P[1]) {
             for (P[2] = bbox.min()[2]; P[2] <= bbox.max()[2]; ++P[2]) {
                 EXPECT_NEAR(P==C ? v1 : v, dense.getValue(P),
@@ -99,9 +99,9 @@ TEST_F(TestDense, testDenseZYX)
 
     // Check Dense::setValue(size_t, size_t, size_t, float)
     dense.setValue(C, v);
-    const openvdb::Coord L(1,2,3), C1 = bbox.min() + L;
+    const laovdb::Coord L(1,2,3), C1 = bbox.min() + L;
     dense.setValue(L[0], L[1], L[2], v1);
-    for (openvdb::Coord P(bbox.min()); P[0] <= bbox.max()[0]; ++P[0]) {
+    for (laovdb::Coord P(bbox.min()); P[0] <= bbox.max()[0]; ++P[0]) {
         for (P[1] = bbox.min()[1]; P[1] <= bbox.max()[1]; ++P[1]) {
             for (P[2] = bbox.min()[2]; P[2] <= bbox.max()[2]; ++P[2]) {
                 EXPECT_NEAR(P==C1 ? v1 : v, dense.getValue(P),
@@ -114,16 +114,16 @@ TEST_F(TestDense, testDenseZYX)
 
 TEST_F(TestDense, testDenseXYZ)
 {
-    const openvdb::CoordBBox bbox(openvdb::Coord(-40,-5, 6),
-                                  openvdb::Coord(-11, 7,22));
-    openvdb::tools::Dense<float, openvdb::tools::LayoutXYZ> dense(bbox);
+    const laovdb::CoordBBox bbox(laovdb::Coord(-40,-5, 6),
+                                  laovdb::Coord(-11, 7,22));
+    laovdb::tools::Dense<float, laovdb::tools::LayoutXYZ> dense(bbox);
 
     // Check Desne::origin()
-    EXPECT_TRUE(openvdb::Coord(-40,-5, 6) == dense.origin());
+    EXPECT_TRUE(laovdb::Coord(-40,-5, 6) == dense.origin());
 
     // Check coordToOffset and offsetToCoord
     size_t offset = 0;
-    for (openvdb::Coord P(bbox.min()); P[2] <= bbox.max()[2]; ++P[2]) {
+    for (laovdb::Coord P(bbox.min()); P[2] <= bbox.max()[2]; ++P[2]) {
         for (P[1] = bbox.min()[1]; P[1] <= bbox.max()[1]; ++P[1]) {
             for (P[0] = bbox.min()[0]; P[0] <= bbox.max()[0]; ++P[0]) {
                 //std::cerr << "offset = " << offset << " P = " << P << std::endl;
@@ -151,7 +151,7 @@ TEST_F(TestDense, testDenseXYZ)
     int s = size;
     while(s--) EXPECT_NEAR(v, *a++, /*tolerance=*/0.0001);
 
-    for (openvdb::Coord P(bbox.min()); P[2] <= bbox.max()[2]; ++P[2]) {
+    for (laovdb::Coord P(bbox.min()); P[2] <= bbox.max()[2]; ++P[2]) {
         for (P[1] = bbox.min()[1]; P[1] <= bbox.max()[1]; ++P[1]) {
             for (P[0] = bbox.min()[0]; P[0] <= bbox.max()[0]; ++P[0]) {
                 EXPECT_NEAR(v, dense.getValue(P), /*tolerance=*/0.0001);
@@ -160,10 +160,10 @@ TEST_F(TestDense, testDenseXYZ)
     }
 
     // Check Dense::setValue(Coord, float)
-    const openvdb::Coord C(-30, 3,12);
+    const laovdb::Coord C(-30, 3,12);
     const float v1 = 3.45f;
     dense.setValue(C, v1);
-    for (openvdb::Coord P(bbox.min()); P[2] <= bbox.max()[2]; ++P[2]) {
+    for (laovdb::Coord P(bbox.min()); P[2] <= bbox.max()[2]; ++P[2]) {
         for (P[1] = bbox.min()[1]; P[1] <= bbox.max()[1]; ++P[1]) {
             for (P[0] = bbox.min()[0]; P[0] <= bbox.max()[0]; ++P[0]) {
                 EXPECT_NEAR(P==C ? v1 : v, dense.getValue(P),
@@ -174,9 +174,9 @@ TEST_F(TestDense, testDenseXYZ)
 
     // Check Dense::setValue(size_t, size_t, size_t, float)
     dense.setValue(C, v);
-    const openvdb::Coord L(1,2,3), C1 = bbox.min() + L;
+    const laovdb::Coord L(1,2,3), C1 = bbox.min() + L;
     dense.setValue(L[0], L[1], L[2], v1);
-    for (openvdb::Coord P(bbox.min()); P[2] <= bbox.max()[2]; ++P[2]) {
+    for (laovdb::Coord P(bbox.min()); P[2] <= bbox.max()[2]; ++P[2]) {
         for (P[1] = bbox.min()[1]; P[1] <= bbox.max()[1]; ++P[1]) {
             for (P[0] = bbox.min()[0]; P[0] <= bbox.max()[0]; ++P[0]) {
                 EXPECT_NEAR(P==C1 ? v1 : v, dense.getValue(P),
@@ -190,8 +190,8 @@ TEST_F(TestDense, testDenseXYZ)
 
 // The check is so slow that we're going to multi-thread it :)
 template <typename TreeT,
-          typename DenseT = openvdb::tools::Dense<typename TreeT::ValueType,
-                                                  openvdb::tools::LayoutZYX> >
+          typename DenseT = laovdb::tools::Dense<typename TreeT::ValueType,
+                                                  laovdb::tools::LayoutZYX> >
 class CheckDense
 {
 public:
@@ -199,8 +199,8 @@ public:
 
     CheckDense() : mTree(NULL), mDense(NULL)
     {
-        EXPECT_TRUE(DenseT::memoryLayout() == openvdb::tools::LayoutZYX ||
-                       DenseT::memoryLayout() == openvdb::tools::LayoutXYZ );
+        EXPECT_TRUE(DenseT::memoryLayout() == laovdb::tools::LayoutZYX ||
+                       DenseT::memoryLayout() == laovdb::tools::LayoutXYZ );
     }
 
     void check(const TreeT& tree, const DenseT& dense)
@@ -209,12 +209,12 @@ public:
         mDense = &dense;
         tbb::parallel_for(dense.bbox(), *this);
     }
-    void operator()(const openvdb::CoordBBox& bbox) const
+    void operator()(const laovdb::CoordBBox& bbox) const
     {
-        openvdb::tree::ValueAccessor<const TreeT> acc(*mTree);
+        laovdb::tree::ValueAccessor<const TreeT> acc(*mTree);
 
-        if (DenseT::memoryLayout() == openvdb::tools::LayoutZYX) {//resolved at compiletime
-            for (openvdb::Coord P(bbox.min()); P[0] <= bbox.max()[0]; ++P[0]) {
+        if (DenseT::memoryLayout() == laovdb::tools::LayoutZYX) {//resolved at compiletime
+            for (laovdb::Coord P(bbox.min()); P[0] <= bbox.max()[0]; ++P[0]) {
                 for (P[1] = bbox.min()[1]; P[1] <= bbox.max()[1]; ++P[1]) {
                     for (P[2] = bbox.min()[2]; P[2] <= bbox.max()[2]; ++P[2]) {
                         EXPECT_NEAR(acc.getValue(P), mDense->getValue(P),
@@ -223,7 +223,7 @@ public:
                 }
             }
         } else {
-             for (openvdb::Coord P(bbox.min()); P[2] <= bbox.max()[2]; ++P[2]) {
+             for (laovdb::Coord P(bbox.min()); P[2] <= bbox.max()[2]; ++P[2]) {
                 for (P[1] = bbox.min()[1]; P[1] <= bbox.max()[1]; ++P[1]) {
                     for (P[0] = bbox.min()[0]; P[0] <= bbox.max()[0]; ++P[0]) {
                         EXPECT_NEAR(acc.getValue(P), mDense->getValue(P),
@@ -238,11 +238,11 @@ private:
     const DenseT* mDense;
 };// CheckDense
 
-template <openvdb::tools::MemoryLayout Layout>
+template <laovdb::tools::MemoryLayout Layout>
 void
 TestDense::testCopy()
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     //std::cerr << "\nTesting testCopy with "
     //          << (Layout == tools::LayoutXYZ ? "XYZ" : "ZYX") << " memory layout"
@@ -305,11 +305,11 @@ TestDense::testCopy()
     }
 }
 
-template <openvdb::tools::MemoryLayout Layout>
+template <laovdb::tools::MemoryLayout Layout>
 void
 TestDense::testCopyBool()
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     //std::cerr << "\nTesting testCopyBool with "
     //          << (Layout == tools::LayoutXYZ ? "XYZ" : "ZYX") << " memory layout"
@@ -321,7 +321,7 @@ TestDense::testCopyBool()
     BoolGrid::Ptr grid = createGrid<BoolGrid>(false);
     BoolGrid::ConstAccessor acc = grid->getConstAccessor();
 
-    typedef openvdb::tools::Dense<bool, Layout> DenseT;
+    typedef laovdb::tools::Dense<bool, Layout> DenseT;
     DenseT dense(bbox);
     dense.fill(false);
 
@@ -369,17 +369,17 @@ TestDense::testCopyBool()
 
 
 // Test copying from a dense grid to a sparse grid with various bounding boxes.
-template <openvdb::tools::MemoryLayout Layout>
+template <laovdb::tools::MemoryLayout Layout>
 void
 TestDense::testCopyFromDenseWithOffset()
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     //std::cerr << "\nTesting testCopyFromDenseWithOffset with "
     //          << (Layout == tools::LayoutXYZ ? "XYZ" : "ZYX") << " memory layout"
     //          << std::endl;
 
-    typedef openvdb::tools::Dense<float, Layout> DenseT;
+    typedef laovdb::tools::Dense<float, Layout> DenseT;
 
     const int DIM = 20, COUNT = DIM * DIM * DIM;
     const float FOREGROUND = 99.0f, BACKGROUND = 5000.0f;
@@ -414,12 +414,12 @@ TestDense::testCopyFromDenseWithOffset()
     }
 }
 
-template <openvdb::tools::MemoryLayout Layout>
+template <laovdb::tools::MemoryLayout Layout>
 void
 TestDense::testDense2Sparse()
 {
     // The following test revealed a bug in v2.0.0b2
-    using namespace openvdb;
+    using namespace laovdb;
 
     //std::cerr << "\nTesting testDense2Sparse with "
     //          << (Layout == tools::LayoutXYZ ? "XYZ" : "ZYX") << " memory layout"
@@ -532,14 +532,14 @@ TestDense::testDense2Sparse()
 
 }
 
-template <openvdb::tools::MemoryLayout Layout>
+template <laovdb::tools::MemoryLayout Layout>
 void
 TestDense::testDense2Sparse2()
 {
     // The following tests copying a dense grid into a VDB tree with
     // existing values outside the bbox of the dense grid.
 
-    using namespace openvdb;
+    using namespace laovdb;
 
     //std::cerr << "\nTesting testDense2Sparse2 with "
     //          << (Layout == tools::LayoutXYZ ? "XYZ" : "ZYX") << " memory layout"
@@ -659,11 +659,11 @@ TestDense::testDense2Sparse2()
 
 }
 
-template <openvdb::tools::MemoryLayout Layout>
+template <laovdb::tools::MemoryLayout Layout>
 void
 TestDense::testInvalidBBox()
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     //std::cerr << "\nTesting testInvalidBBox with "
     //          << (Layout == tools::LayoutXYZ ? "XYZ" : "ZYX") << " memory layout"
@@ -676,11 +676,11 @@ TestDense::testInvalidBBox()
     EXPECT_THROW(DenseT dense(badBBox), ValueError);
 }
 
-template <openvdb::tools::MemoryLayout Layout>
+template <laovdb::tools::MemoryLayout Layout>
 void
 TestDense::testDense2Sparse2Dense()
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     //std::cerr << "\nTesting testDense2Sparse2Dense with "
     //          << (Layout == tools::LayoutXYZ ? "XYZ" : "ZYX") << " memory layout"
@@ -790,19 +790,19 @@ TestDense::testDense2Sparse2Dense()
     }
 }
 
-TEST_F(TestDense, testCopyZYX) { this->testCopy<openvdb::tools::LayoutZYX>(); }
-TEST_F(TestDense, testCopyXYZ) { this->testCopy<openvdb::tools::LayoutXYZ>(); }
-TEST_F(TestDense, testCopyBoolZYX) { this->testCopyBool<openvdb::tools::LayoutZYX>(); }
-TEST_F(TestDense, testCopyBoolXYZ) { this->testCopyBool<openvdb::tools::LayoutXYZ>(); }
-TEST_F(TestDense, testCopyFromDenseWithOffsetZYX) { this->testCopyFromDenseWithOffset<openvdb::tools::LayoutZYX>(); }
-TEST_F(TestDense, testCopyFromDenseWithOffsetXYZ) { this->testCopyFromDenseWithOffset<openvdb::tools::LayoutXYZ>(); }
-TEST_F(TestDense, testDense2SparseZYX) { this->testDense2Sparse<openvdb::tools::LayoutZYX>(); }
-TEST_F(TestDense, testDense2SparseXYZ) { this->testDense2Sparse<openvdb::tools::LayoutXYZ>(); }
-TEST_F(TestDense, testDense2Sparse2ZYX) { this->testDense2Sparse2<openvdb::tools::LayoutZYX>(); }
-TEST_F(TestDense, testDense2Sparse2XYZ) { this->testDense2Sparse2<openvdb::tools::LayoutXYZ>(); }
-TEST_F(TestDense, testInvalidBBoxZYX) { this->testInvalidBBox<openvdb::tools::LayoutZYX>(); }
-TEST_F(TestDense, testInvalidBBoxXYZ) { this->testInvalidBBox<openvdb::tools::LayoutXYZ>(); }
-TEST_F(TestDense, testDense2Sparse2DenseZYX) { this->testDense2Sparse2Dense<openvdb::tools::LayoutZYX>(); }
-TEST_F(TestDense, testDense2Sparse2DenseXYZ) { this->testDense2Sparse2Dense<openvdb::tools::LayoutXYZ>(); }
+TEST_F(TestDense, testCopyZYX) { this->testCopy<laovdb::tools::LayoutZYX>(); }
+TEST_F(TestDense, testCopyXYZ) { this->testCopy<laovdb::tools::LayoutXYZ>(); }
+TEST_F(TestDense, testCopyBoolZYX) { this->testCopyBool<laovdb::tools::LayoutZYX>(); }
+TEST_F(TestDense, testCopyBoolXYZ) { this->testCopyBool<laovdb::tools::LayoutXYZ>(); }
+TEST_F(TestDense, testCopyFromDenseWithOffsetZYX) { this->testCopyFromDenseWithOffset<laovdb::tools::LayoutZYX>(); }
+TEST_F(TestDense, testCopyFromDenseWithOffsetXYZ) { this->testCopyFromDenseWithOffset<laovdb::tools::LayoutXYZ>(); }
+TEST_F(TestDense, testDense2SparseZYX) { this->testDense2Sparse<laovdb::tools::LayoutZYX>(); }
+TEST_F(TestDense, testDense2SparseXYZ) { this->testDense2Sparse<laovdb::tools::LayoutXYZ>(); }
+TEST_F(TestDense, testDense2Sparse2ZYX) { this->testDense2Sparse2<laovdb::tools::LayoutZYX>(); }
+TEST_F(TestDense, testDense2Sparse2XYZ) { this->testDense2Sparse2<laovdb::tools::LayoutXYZ>(); }
+TEST_F(TestDense, testInvalidBBoxZYX) { this->testInvalidBBox<laovdb::tools::LayoutZYX>(); }
+TEST_F(TestDense, testInvalidBBoxXYZ) { this->testInvalidBBox<laovdb::tools::LayoutXYZ>(); }
+TEST_F(TestDense, testDense2Sparse2DenseZYX) { this->testDense2Sparse2Dense<laovdb::tools::LayoutZYX>(); }
+TEST_F(TestDense, testDense2Sparse2DenseXYZ) { this->testDense2Sparse2Dense<laovdb::tools::LayoutXYZ>(); }
 
 #undef BENCHMARK_TEST

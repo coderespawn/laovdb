@@ -262,7 +262,7 @@ SOP_OpenVDB_Scatter::syncNodeVersion(const char* oldVersion, const char*, bool*)
     // VDB version string prior to 6.2.0 - "17.5.204"
     // VDB version string since 6.2.0 - "vdb6.2.0 houdini17.5.204"
 
-    openvdb::Name oldVersionStr(oldVersion);
+    laovdb::Name oldVersionStr(oldVersion);
 
     bool disableCompression = false;
     size_t spacePos = oldVersionStr.find_first_of(' ');
@@ -346,14 +346,14 @@ SOP_OpenVDB_Scatter::SOP_OpenVDB_Scatter(OP_Network* net, const char* name, OP_O
 ////////////////////////////////////////
 
 
-// Simple wrapper class required by openvdb::tools::UniformPointScatter and
+// Simple wrapper class required by laovdb::tools::UniformPointScatter and
 // NonUniformPointScatter
 class PointAccessor
 {
 public:
     PointAccessor(GEO_Detail* gdp): mGdp(gdp) {}
 
-    void add(const openvdb::Vec3R& pos)
+    void add(const laovdb::Vec3R& pos)
     {
         const GA_Offset ptoff = mGdp->appendPointOffset();
         mGdp->setPos3(ptoff, pos.x(), pos.y(), pos.z());
@@ -371,13 +371,13 @@ protected:
 class SnapPointsOp
 {
 public:
-    using Sampler = openvdb::tools::BoxSampler;
+    using Sampler = laovdb::tools::BoxSampler;
 
     enum class PointType { kInvalid, kHoudini, kVDB };
 
     // Constructor for Houdini points
     SnapPointsOp(GEO_Detail& detail, const GA_Range& range, float spread, float isovalue,
-        bool rebuild, bool dilate, openvdb::BoolGrid::Ptr mask, openvdb::util::NullInterrupter* interrupter)
+        bool rebuild, bool dilate, laovdb::BoolGrid::Ptr mask, laovdb::util::NullInterrupter* interrupter)
         : mPointType(range.isValid() && !range.empty() ? PointType::kHoudini : PointType::kInvalid)
         , mDetail(&detail)
         , mRange(range)
@@ -391,8 +391,8 @@ public:
     }
 
     // Constructor for VDB points
-    SnapPointsOp(openvdb::points::PointDataGrid& vdbpts, float spread, float isovalue,
-        bool rebuild, bool dilate, openvdb::BoolGrid::Ptr mask, openvdb::util::NullInterrupter* interrupter)
+    SnapPointsOp(laovdb::points::PointDataGrid& vdbpts, float spread, float isovalue,
+        bool rebuild, bool dilate, laovdb::BoolGrid::Ptr mask, laovdb::util::NullInterrupter* interrupter)
         : mVdbPoints(&vdbpts)
         , mSpread(spread)
         , mIsovalue(isovalue)
@@ -404,7 +404,7 @@ public:
         const auto leafIter = vdbpts.tree().cbeginLeaf();
         const auto descriptor = leafIter->attributeSet().descriptor();
         mAttrIdx = descriptor.find("P");
-        mPointType = (mAttrIdx != openvdb::points::AttributeSet::INVALID_POS) ?
+        mPointType = (mAttrIdx != laovdb::points::AttributeSet::INVALID_POS) ?
             PointType::kVDB : PointType::kInvalid;
     }
 
@@ -419,8 +419,8 @@ public:
         // (typically because the isovalue is nonzero).
         typename GridT::Ptr sdf;
         if (mRebuild) {
-            const float width = openvdb::LEVEL_SET_HALF_WIDTH;
-            sdf = openvdb::tools::levelSetRebuild(*grid, mIsovalue,
+            const float width = laovdb::LEVEL_SET_HALF_WIDTH;
+            sdf = laovdb::tools::levelSetRebuild(*grid, mIsovalue,
                 /*exterior=*/width, /*interior=*/width, /*xform=*/nullptr, mBoss);
             if (sdf) {
                 grid = sdf.get();
@@ -431,16 +431,16 @@ public:
         // Compute the closest point transform of the SDF.
         const auto cpt = [&]() {
             if (!mMask) {
-                return openvdb::tools::cpt(*grid, /*threaded=*/true, mBoss);
+                return laovdb::tools::cpt(*grid, /*threaded=*/true, mBoss);
             } else {
                 if (mDilate) {
                     // Dilate the isosurface mask to produce a suitably large CPT mask,
                     // to avoid unnecessary work in case the input is a dense SDF.
-                    const int iterations = static_cast<int>(openvdb::LEVEL_SET_HALF_WIDTH);
-                    openvdb::tools::dilateActiveValues(
-                        mMask->tree(), iterations, openvdb::tools::NN_FACE_EDGE, openvdb::tools::IGNORE_TILES);
+                    const int iterations = static_cast<int>(laovdb::LEVEL_SET_HALF_WIDTH);
+                    laovdb::tools::dilateActiveValues(
+                        mMask->tree(), iterations, laovdb::tools::NN_FACE_EDGE, laovdb::tools::IGNORE_TILES);
                 }
-                return openvdb::tools::cpt(*grid, *mMask, /*threaded=*/true, mBoss);
+                return laovdb::tools::cpt(*grid, *mMask, /*threaded=*/true, mBoss);
             }
         }();
 
@@ -453,7 +453,7 @@ public:
                 for (GA_Iterator it(r); it.blockAdvance(start, end); ) {
                     if (mBoss && mBoss->wasInterrupted()) break;
                     for (auto offset = start; offset < end; ++offset) {
-                        openvdb::Vec3d p{UTvdbConvert(mDetail->getPos3(offset))};
+                        laovdb::Vec3d p{UTvdbConvert(mDetail->getPos3(offset))};
                         // Compute the closest surface point by linear interpolation.
                         const auto surfaceP = Sampler::sample(cptAcc, xform.worldToIndex(p));
                         // Translate the input point toward the surface.
@@ -464,7 +464,7 @@ public:
             });
         } else /*if (mPointType == PointType::kVDB)*/ {
             // Translate VDB points toward the isosurface.
-            using LeafMgr = openvdb::tree::LeafManager<openvdb::points::PointDataTree>;
+            using LeafMgr = laovdb::tree::LeafManager<laovdb::points::PointDataTree>;
             LeafMgr leafMgr(mVdbPoints->tree());
             UTparallelForLightItems(leafMgr.leafRange(), [&](const LeafMgr::LeafRange& range) {
                 const auto cptAcc = cpt->getConstAccessor();
@@ -472,7 +472,7 @@ public:
                     if (mBoss && mBoss->wasInterrupted()) break;
                     // Get a handle to this leaf node's point position array.
                     auto& posArray = leafIter->attributeArray(mAttrIdx);
-                    openvdb::points::AttributeWriteHandle<openvdb::Vec3f> posHandle(posArray);
+                    laovdb::points::AttributeWriteHandle<laovdb::Vec3f> posHandle(posArray);
                     // For each point in this leaf node...
                     for (auto idxIter = leafIter->beginIndexOn(); idxIter; ++idxIter) {
                         // The point position is in index space and is relative to
@@ -480,7 +480,7 @@ public:
                         const auto idxCenter = idxIter.getCoord().asVec3d();
                         const auto idxP = posHandle.get(*idxIter) + idxCenter;
                         // Compute the closest surface point by linear interpolation.
-                        const openvdb::Vec3f surfaceP(Sampler::sample(cptAcc, idxP));
+                        const laovdb::Vec3f surfaceP(Sampler::sample(cptAcc, idxP));
                         // Translate the input point toward the surface.
                         auto p = xform.indexToWorld(idxP);
                         p = surfaceP + mSpread * (p - surfaceP); // (1-spread)*surfaceP + spread*p
@@ -494,16 +494,16 @@ public:
 
 private:
     PointType mPointType = PointType::kInvalid;
-    openvdb::points::PointDataGrid* mVdbPoints = nullptr; // VDB points to be processed
-    openvdb::Index64 mAttrIdx = openvdb::points::AttributeSet::INVALID_POS;
+    laovdb::points::PointDataGrid* mVdbPoints = nullptr; // VDB points to be processed
+    laovdb::Index64 mAttrIdx = laovdb::points::AttributeSet::INVALID_POS;
     GEO_Detail* mDetail = nullptr; // the detail containing Houdini points to be processed
     GA_Range mRange;               // the range of points to be processed
     float mSpread = 1;             // if 0, place points on the isosurface; if 1, don't move them
     float mIsovalue = 0;
     bool mRebuild = false;         // if true, generate a new SDF from the input grid
     bool mDilate = false;          // if true, dilate the isosurface mask
-    openvdb::BoolGrid::Ptr mMask;  // an optional isosurface mask
-    openvdb::util::NullInterrupter* mBoss = nullptr;
+    laovdb::BoolGrid::Ptr mMask;  // an optional isosurface mask
+    laovdb::util::NullInterrupter* mBoss = nullptr;
 }; // class SnapPointsOp
 
 
@@ -512,17 +512,17 @@ private:
 
 struct BaseScatter
 {
-    using NullCodec = openvdb::points::NullCodec;
-    using FixedCodec16 = openvdb::points::FixedPointCodec<false>;
-    using FixedCodec8 = openvdb::points::FixedPointCodec<true>;
+    using NullCodec = laovdb::points::NullCodec;
+    using FixedCodec16 = laovdb::points::FixedPointCodec<false>;
+    using FixedCodec8 = laovdb::points::FixedPointCodec<true>;
 
-    using PositionArray = openvdb::points::TypedAttributeArray<openvdb::Vec3f, NullCodec>;
-    using PositionArray16 = openvdb::points::TypedAttributeArray<openvdb::Vec3f, FixedCodec16>;
-    using PositionArray8 = openvdb::points::TypedAttributeArray<openvdb::Vec3f, FixedCodec8>;
+    using PositionArray = laovdb::points::TypedAttributeArray<laovdb::Vec3f, NullCodec>;
+    using PositionArray16 = laovdb::points::TypedAttributeArray<laovdb::Vec3f, FixedCodec16>;
+    using PositionArray8 = laovdb::points::TypedAttributeArray<laovdb::Vec3f, FixedCodec8>;
 
     BaseScatter(const unsigned int seed,
                 const float spread,
-                openvdb::util::NullInterrupter* interrupter)
+                laovdb::util::NullInterrupter* interrupter)
         : mPoints()
         , mSeed(seed)
         , mSpread(spread)
@@ -535,34 +535,34 @@ struct BaseScatter
     virtual void print(const std::string &name, std::ostream& os = std::cout) const
     {
         if (!mPoints) return;
-        const openvdb::Index64 points = openvdb::points::pointCount(mPoints->tree());
-        const openvdb::Index64 voxels = mPoints->activeVoxelCount();
+        const laovdb::Index64 points = laovdb::points::pointCount(mPoints->tree());
+        const laovdb::Index64 voxels = mPoints->activeVoxelCount();
         os << points << " points into " << voxels << " active voxels in \""
            << name << "\" corresponding to " << (double(points) / double(voxels))
            << " points per voxel." << std::endl;
     }
 
-    inline openvdb::points::PointDataGrid::Ptr points()
+    inline laovdb::points::PointDataGrid::Ptr points()
     {
         UT_ASSERT(mPoints);
         return mPoints;
     }
 
 protected:
-    openvdb::points::PointDataGrid::Ptr mPoints;
+    laovdb::points::PointDataGrid::Ptr mPoints;
     const unsigned int mSeed;
     const float mSpread;
-    openvdb::util::NullInterrupter* mInterrupter;
+    laovdb::util::NullInterrupter* mInterrupter;
 }; // BaseScatter
 
 
 struct VDBUniformScatter : public BaseScatter
 {
-    VDBUniformScatter(const openvdb::Index64 count,
+    VDBUniformScatter(const laovdb::Index64 count,
                       const unsigned int seed,
                       const float spread,
                       const int compression,
-                      openvdb::util::NullInterrupter* interrupter)
+                      laovdb::util::NullInterrupter* interrupter)
         : BaseScatter(seed, spread, interrupter)
         , mCount(count)
         , mCompression(compression)
@@ -571,10 +571,10 @@ struct VDBUniformScatter : public BaseScatter
     template <typename PositionT, typename GridT>
     inline void resolveCompression(const GridT& grid)
     {
-        using namespace openvdb::points;
+        using namespace laovdb::points;
         using PointDataGridT =
-            openvdb::Grid<typename TreeConverter<typename GridT::TreeType>::Type>;
-        mPoints = openvdb::points::uniformPointScatter<
+            laovdb::Grid<typename TreeConverter<typename GridT::TreeType>::Type>;
+        mPoints = laovdb::points::uniformPointScatter<
             GridT, std::mt19937, PositionT, PointDataGridT>(
                 grid, mCount, mSeed, mSpread, mInterrupter);
     }
@@ -597,7 +597,7 @@ struct VDBUniformScatter : public BaseScatter
         BaseScatter::print(name, os);
     }
 
-    const openvdb::Index64 mCount;
+    const laovdb::Index64 mCount;
     const int mCompression;
 }; // VDBUniformScatter
 
@@ -608,7 +608,7 @@ struct VDBDenseUniformScatter : public BaseScatter
                            const unsigned int seed,
                            const float spread,
                            const int compression,
-                           openvdb::util::NullInterrupter* interrupter)
+                           laovdb::util::NullInterrupter* interrupter)
         : BaseScatter(seed, spread, interrupter)
         , mPointsPerVoxel(pointsPerVoxel)
         , mCompression(compression)
@@ -617,9 +617,9 @@ struct VDBDenseUniformScatter : public BaseScatter
     template <typename PositionT, typename GridT>
     inline void resolveCompression(const GridT& grid)
     {
-        using namespace openvdb::points;
+        using namespace laovdb::points;
         using PointDataGridT =
-            openvdb::Grid<typename TreeConverter<typename GridT::TreeType>::Type>;
+            laovdb::Grid<typename TreeConverter<typename GridT::TreeType>::Type>;
         mPoints = denseUniformPointScatter<GridT, std::mt19937, PositionT, PointDataGridT>(
             grid, mPointsPerVoxel, mSeed, mSpread, mInterrupter);
     }
@@ -653,7 +653,7 @@ struct VDBNonUniformScatter : public BaseScatter
                       const unsigned int seed,
                       const float spread,
                       const int compression,
-                      openvdb::util::NullInterrupter* interrupter)
+                      laovdb::util::NullInterrupter* interrupter)
         : BaseScatter(seed, spread, interrupter)
         , mPointsPerVoxel(pointsPerVoxel)
         , mCompression(compression)
@@ -662,9 +662,9 @@ struct VDBNonUniformScatter : public BaseScatter
     template <typename PositionT, typename GridT>
     inline void resolveCompression(const GridT& grid)
     {
-        using namespace openvdb::points;
+        using namespace laovdb::points;
         using PointDataGridT =
-            openvdb::Grid<typename TreeConverter<typename GridT::TreeType>::Type>;
+            laovdb::Grid<typename TreeConverter<typename GridT::TreeType>::Type>;
         mPoints = nonUniformPointScatter<GridT, std::mt19937, PositionT, PointDataGridT>(
             grid, mPointsPerVoxel, mSeed, mSpread, mInterrupter);
     }
@@ -695,10 +695,10 @@ struct VDBNonUniformScatter : public BaseScatter
 template <typename SurfaceGridT>
 struct MarkPointsOutsideIso
 {
-    using GroupIndex = openvdb::points::AttributeSet::Descriptor::GroupIndex;
-    using LeafManagerT = openvdb::tree::LeafManager<openvdb::points::PointDataTree>;
+    using GroupIndex = laovdb::points::AttributeSet::Descriptor::GroupIndex;
+    using LeafManagerT = laovdb::tree::LeafManager<laovdb::points::PointDataTree>;
     using PositionHandleT =
-        openvdb::points::AttributeHandle<openvdb::Vec3f, openvdb::points::NullCodec>;
+        laovdb::points::AttributeHandle<laovdb::Vec3f, laovdb::points::NullCodec>;
     using SurfaceValueT = typename SurfaceGridT::ValueType;
 
     MarkPointsOutsideIso(const SurfaceGridT& grid,
@@ -707,25 +707,25 @@ struct MarkPointsOutsideIso
         , mDeadIndex(deadIndex) {}
 
     void operator()(const LeafManagerT::LeafRange& range) const {
-        openvdb::math::BoxStencil<const SurfaceGridT> stencil(mGrid);
+        laovdb::math::BoxStencil<const SurfaceGridT> stencil(mGrid);
         for (auto leaf = range.begin(); leaf; ++leaf)  {
 
             PositionHandleT::Ptr positionHandle =
                 PositionHandleT::create(leaf->constAttributeArray(0));
-            openvdb::points::GroupWriteHandle deadHandle =
+            laovdb::points::GroupWriteHandle deadHandle =
                 leaf->groupWriteHandle(mDeadIndex);
 
             for (auto voxel = leaf->cbeginValueOn(); voxel; ++voxel) {
 
-                const openvdb::Coord& ijk = voxel.getCoord();
-                const openvdb::Vec3d vec = ijk.asVec3d();
+                const laovdb::Coord& ijk = voxel.getCoord();
+                const laovdb::Vec3d vec = ijk.asVec3d();
 
                 for (auto iter = leaf->beginIndexVoxel(ijk); iter; ++iter) {
-                    const openvdb::Index index = *iter;
-                    const openvdb::Vec3d pos = openvdb::Vec3d(positionHandle->get(index)) + vec;
+                    const laovdb::Index index = *iter;
+                    const laovdb::Vec3d pos = laovdb::Vec3d(positionHandle->get(index)) + vec;
 
                     stencil.moveTo(pos);
-                    if (stencil.interpolation(pos) > openvdb::zeroVal<SurfaceValueT>()) {
+                    if (stencil.interpolation(pos) > laovdb::zeroVal<SurfaceValueT>()) {
                         deadHandle.set(index, true);
                     }
                 }
@@ -741,7 +741,7 @@ private:
 
 template<typename OpType>
 inline bool
-process(const UT_VDBType type, const openvdb::GridBase& grid, OpType& op, const std::string* name)
+process(const UT_VDBType type, const laovdb::GridBase& grid, OpType& op, const std::string* name)
 {
     bool success = grid.apply<hvdb::AllGridTypes>(op);
     if (name) op.print(*name);
@@ -750,30 +750,30 @@ process(const UT_VDBType type, const openvdb::GridBase& grid, OpType& op, const 
 
 
 // Extract an SDF interior mask in which to scatter points.
-inline openvdb::BoolGrid::Ptr
-extractInteriorMask(const openvdb::GridBase::ConstPtr grid, const float isovalue)
+inline laovdb::BoolGrid::Ptr
+extractInteriorMask(const laovdb::GridBase::ConstPtr grid, const float isovalue)
 {
-    if (grid->isType<openvdb::FloatGrid>()) {
-        return openvdb::tools::sdfInteriorMask(
-            static_cast<const openvdb::FloatGrid&>(*grid), isovalue);
-    } else if (grid->isType<openvdb::DoubleGrid>()) {
-        return openvdb::tools::sdfInteriorMask(
-            static_cast<const openvdb::DoubleGrid&>(*grid), isovalue);
+    if (grid->isType<laovdb::FloatGrid>()) {
+        return laovdb::tools::sdfInteriorMask(
+            static_cast<const laovdb::FloatGrid&>(*grid), isovalue);
+    } else if (grid->isType<laovdb::DoubleGrid>()) {
+        return laovdb::tools::sdfInteriorMask(
+            static_cast<const laovdb::DoubleGrid&>(*grid), isovalue);
     }
     return nullptr;
 }
 
 
 // Extract an SDF isosurface mask in which to scatter points.
-inline openvdb::BoolGrid::Ptr
-extractIsosurfaceMask(const openvdb::GridBase::ConstPtr grid, const float isovalue)
+inline laovdb::BoolGrid::Ptr
+extractIsosurfaceMask(const laovdb::GridBase::ConstPtr grid, const float isovalue)
 {
-    if (grid->isType<openvdb::FloatGrid>()) {
-        return openvdb::tools::extractIsosurfaceMask(
-            static_cast<const openvdb::FloatGrid&>(*grid), isovalue);
-    } else if (grid->isType<openvdb::DoubleGrid>()) {
-        return openvdb::tools::extractIsosurfaceMask(
-            static_cast<const openvdb::DoubleGrid&>(*grid), double(isovalue));
+    if (grid->isType<laovdb::FloatGrid>()) {
+        return laovdb::tools::extractIsosurfaceMask(
+            static_cast<const laovdb::FloatGrid&>(*grid), isovalue);
+    } else if (grid->isType<laovdb::DoubleGrid>()) {
+        return laovdb::tools::extractIsosurfaceMask(
+            static_cast<const laovdb::DoubleGrid&>(*grid), double(isovalue));
     }
     return nullptr;
 }
@@ -781,31 +781,31 @@ extractIsosurfaceMask(const openvdb::GridBase::ConstPtr grid, const float isoval
 
 // Remove VDB Points scattered outside of a level set
 inline void
-cullVDBPoints(openvdb::points::PointDataTree& tree,
-              const openvdb::GridBase::ConstPtr grid)
+cullVDBPoints(laovdb::points::PointDataTree& tree,
+              const laovdb::GridBase::ConstPtr grid)
 {
     const auto leaf = tree.cbeginLeaf();
     if (leaf) {
-        using GroupIndex = openvdb::points::AttributeSet::Descriptor::GroupIndex;
-        openvdb::points::appendGroup(tree, "dead");
+        using GroupIndex = laovdb::points::AttributeSet::Descriptor::GroupIndex;
+        laovdb::points::appendGroup(tree, "dead");
         const GroupIndex idx = leaf->attributeSet().groupIndex("dead");
 
-        openvdb::tree::LeafManager<openvdb::points::PointDataTree>
+        laovdb::tree::LeafManager<laovdb::points::PointDataTree>
             leafManager(tree);
 
-        if (grid->isType<openvdb::FloatGrid>()) {
-            const openvdb::FloatGrid& typedGrid =
-                static_cast<const openvdb::FloatGrid&>(*grid);
-            MarkPointsOutsideIso<openvdb::FloatGrid> mark(typedGrid, idx);
+        if (grid->isType<laovdb::FloatGrid>()) {
+            const laovdb::FloatGrid& typedGrid =
+                static_cast<const laovdb::FloatGrid&>(*grid);
+            MarkPointsOutsideIso<laovdb::FloatGrid> mark(typedGrid, idx);
             tbb::parallel_for(leafManager.leafRange(), mark);
         }
-        else if (grid->isType<openvdb::DoubleGrid>()) {
-            const openvdb::DoubleGrid& typedGrid =
-                static_cast<const openvdb::DoubleGrid&>(*grid);
-            MarkPointsOutsideIso<openvdb::DoubleGrid> mark(typedGrid, idx);
+        else if (grid->isType<laovdb::DoubleGrid>()) {
+            const laovdb::DoubleGrid& typedGrid =
+                static_cast<const laovdb::DoubleGrid&>(*grid);
+            MarkPointsOutsideIso<laovdb::DoubleGrid> mark(typedGrid, idx);
             tbb::parallel_for(leafManager.leafRange(), mark);
         }
-        openvdb::points::deleteFromGroup(tree, "dead");
+        laovdb::points::deleteFromGroup(tree, "dead");
     }
 }
 
@@ -832,7 +832,7 @@ SOP_OpenVDB_Scatter::Cache::cookVDBSop(OP_Context& context)
         const int seed = static_cast<int>(evalInt("seed", 0, time));
         const auto theSpread = static_cast<float>(evalFloat("spread", 0, time));
         const bool verbose = evalInt("verbose", 0, time) != 0;
-        const openvdb::Index64 pointCount = evalInt("count", 0, time);
+        const laovdb::Index64 pointCount = evalInt("count", 0, time);
         const float ptsPerVox = static_cast<float>(evalFloat("ppv", 0, time));
         const auto sdfdomain = evalStdString("sdfdomain", time);
         const float density = static_cast<float>(evalFloat("density", 0, time));
@@ -856,14 +856,14 @@ SOP_OpenVDB_Scatter::Cache::cookVDBSop(OP_Context& context)
         const int posCompression = vdbPoints ?
             static_cast<int>(evalInt("poscompression", 0, time)) : 0;
         const bool snapPointsToSurface =
-            ((sdfdomain == "surface") && !openvdb::math::isApproxEqual(theSpread, 1.0f));
+            ((sdfdomain == "surface") && !laovdb::math::isApproxEqual(theSpread, 1.0f));
 
         // If the domain is the isosurface, set the spread to 1 while generating points
         // so that each point ends up snapping to a unique point on the surface.
         const float spread = (snapPointsToSurface ? 1.f : theSpread);
 
         std::vector<std::string> emptyGrids;
-        std::vector<openvdb::points::PointDataGrid::Ptr> pointGrids;
+        std::vector<laovdb::points::PointDataGrid::Ptr> pointGrids;
         PointAccessor pointAccessor(gdp);
 
         const GA_Offset firstOffset = gdp->getNumPointOffsets();
@@ -874,7 +874,7 @@ SOP_OpenVDB_Scatter::Cache::cookVDBSop(OP_Context& context)
 
             // Retrieve a read-only grid pointer.
             UT_VDBType gridType = primIter->getStorageType();
-            openvdb::GridBase::ConstPtr grid = primIter->getConstGridPtr();
+            laovdb::GridBase::ConstPtr grid = primIter->getConstGridPtr();
             const std::string gridName = primIter.getPrimitiveName().toStdString();
 
             if (grid->empty()) {
@@ -883,20 +883,20 @@ SOP_OpenVDB_Scatter::Cache::cookVDBSop(OP_Context& context)
             }
 
             const std::string* const name = verbose ? &gridName : nullptr;
-            const openvdb::GridClass gridClass = grid->getGridClass();
-            const bool isSignedDistance = (gridClass == openvdb::GRID_LEVEL_SET);
+            const laovdb::GridClass gridClass = grid->getGridClass();
+            const bool isSignedDistance = (gridClass == laovdb::GRID_LEVEL_SET);
             bool performCull = false;
 
-            const auto isovalue = (gridClass != openvdb::GRID_FOG_VOLUME) ? theIsovalue
-                : openvdb::math::Clamp(theIsovalue, openvdb::math::Tolerance<float>::value(), 1.f);
+            const auto isovalue = (gridClass != laovdb::GRID_FOG_VOLUME) ? theIsovalue
+                : laovdb::math::Clamp(theIsovalue, laovdb::math::Tolerance<float>::value(), 1.f);
 
-            openvdb::BoolGrid::Ptr mask;
+            laovdb::BoolGrid::Ptr mask;
             if (sdfdomain != "band") {
                 auto iso = isovalue;
                 if (clipPoints) {
-                    const openvdb::Vec3d voxelSize = grid->voxelSize();
+                    const laovdb::Vec3d voxelSize = grid->voxelSize();
                     const double maxVoxelSize =
-                        openvdb::math::Max(voxelSize.x(), voxelSize.y(), voxelSize.z());
+                        laovdb::math::Max(voxelSize.x(), voxelSize.y(), voxelSize.z());
                     iso += static_cast<float>(maxVoxelSize / 2.0);
                     performCull = true;
                 }
@@ -923,7 +923,7 @@ SOP_OpenVDB_Scatter::Cache::cookVDBSop(OP_Context& context)
                 else vdbName = customName;
             }
 
-            openvdb::points::PointDataGrid::Ptr pointGrid;
+            laovdb::points::PointDataGrid::Ptr pointGrid;
 
             const auto postprocessVDBPoints = [&](BaseScatter& scatter, bool cull) {
                 pointGrid = scatter.points();
@@ -933,11 +933,11 @@ SOP_OpenVDB_Scatter::Cache::cookVDBSop(OP_Context& context)
                 if (verbose) scatter.print(gridName);
             };
 
-            using DenseScatterer = openvdb::tools::DenseUniformPointScatter<
+            using DenseScatterer = laovdb::tools::DenseUniformPointScatter<
                 PointAccessor, RandGen>;
-            using NonuniformScatterer = openvdb::tools::NonUniformPointScatter<
+            using NonuniformScatterer = laovdb::tools::NonUniformPointScatter<
                 PointAccessor, RandGen>;
-            using UniformScatterer = openvdb::tools::UniformPointScatter<
+            using UniformScatterer = laovdb::tools::UniformPointScatter<
                 PointAccessor, RandGen>;
 
             const GA_Offset startOffset = gdp->getNumPointOffsets();
@@ -978,7 +978,7 @@ SOP_OpenVDB_Scatter::Cache::cookVDBSop(OP_Context& context)
                 } else { // global density
                     if (vdbPoints) { // VDB points
                         const auto dim = grid->transform().voxelSize();
-                        const auto totalPointCount = openvdb::Index64(
+                        const auto totalPointCount = laovdb::Index64(
                             density * dim.product() * double(grid->activeVoxelCount()));
                         VDBUniformScatter scatter(
                             totalPointCount, seed, spread, posCompression, &boss.interrupter());
@@ -1014,7 +1014,7 @@ SOP_OpenVDB_Scatter::Cache::cookVDBSop(OP_Context& context)
                 // Dilate the mask if it is a single-voxel-wide isosurface mask.
                 const bool dilate = (mask && (sdfdomain == "surface"));
                 // Generate a new SDF if the input is a fog volume or if the isovalue is nonzero.
-                const bool rebuild = (!isSignedDistance || !openvdb::math::isApproxZero(isovalue));
+                const bool rebuild = (!isSignedDistance || !laovdb::math::isApproxZero(isovalue));
                 if (!vdbPoints) {
                     const GA_Range range(gdp->getPointMap(),startOffset,gdp->getNumPointOffsets());
                     // Use the original spread value to control how close to the surface points lie.
@@ -1044,8 +1044,8 @@ SOP_OpenVDB_Scatter::Cache::cookVDBSop(OP_Context& context)
             ptgroup->addRange(GA_Range(gdp->getPointMap(), firstOffset, lastOffset));
 
             for (auto& pointGrid: pointGrids) {
-                openvdb::points::appendGroup(pointGrid->tree(), groupName);
-                openvdb::points::setGroup(pointGrid->tree(), groupName);
+                laovdb::points::appendGroup(pointGrid->tree(), groupName);
+                laovdb::points::setGroup(pointGrid->tree(), groupName);
             }
         }
 

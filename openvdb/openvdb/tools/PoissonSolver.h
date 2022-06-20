@@ -42,7 +42,7 @@
 /// // Activate voxels to indicate that they contain liquid.
 /// source.fill(CoordBBox(Coord(0, -N, 0), Coord(N, 0, N)), /*value=*/0.0);
 ///
-/// auto boundary = [](const openvdb::Coord& ijk, const openvdb::Coord& neighbor,
+/// auto boundary = [](const laovdb::Coord& ijk, const laovdb::Coord& neighbor,
 ///     double& source, double& diagonal)
 /// {
 ///     if (neighbor.x() == ijk.x() && neighbor.z() == ijk.z()) {
@@ -70,7 +70,7 @@
 #include <openvdb/openvdb.h>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -894,6 +894,6 @@ OPENVDB_REAL_TREE_INSTANTIATE(_FUNCTION)
 } // namespace poisson
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_POISSONSOLVER_HAS_BEEN_INCLUDED

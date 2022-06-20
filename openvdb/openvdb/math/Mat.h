@@ -15,7 +15,7 @@
 #include <string>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -1061,6 +1061,6 @@ cwiseGreaterThan(const Mat<SIZE, T>& m0, const Mat<SIZE, T>& m1)
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_MATH_MAT_HAS_BEEN_INCLUDED

@@ -14,7 +14,7 @@ class TestInt64Metadata : public ::testing::Test
 
 TEST_F(TestInt64Metadata, test)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Metadata::Ptr m(new Int64Metadata(123));
     Metadata::Ptr m2 = m->copy();

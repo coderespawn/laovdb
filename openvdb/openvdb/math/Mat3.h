@@ -13,7 +13,7 @@
 #include <iomanip>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -860,6 +860,6 @@ template<> inline math::Mat3s zeroVal<math::Mat3s>() { return math::Mat3s::zero(
 template<> inline math::Mat3d zeroVal<math::Mat3d>() { return math::Mat3d::zero(); }
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_MATH_MAT3_H_HAS_BEEN_INCLUDED

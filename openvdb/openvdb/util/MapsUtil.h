@@ -12,7 +12,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace util {
@@ -289,6 +289,6 @@ calculateBounds<math::NonlinearFrustumMap>(const math::NonlinearFrustumMap& frus
 
 } // namespace util
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_UTIL_MAPSUTIL_HAS_BEEN_INCLUDED

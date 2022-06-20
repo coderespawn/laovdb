@@ -65,10 +65,10 @@ public:
 
         template<class GridType>
         void process(
-            std::list<openvdb::GridBase::Ptr>& grids,
+            std::list<laovdb::GridBase::Ptr>& grids,
             const GU_Detail* cutterGeo,
             const GU_Detail* pointGeo,
-            openvdb::util::NullInterrupter&,
+            laovdb::util::NullInterrupter&,
             const fpreal time);
     }; // class Cache
 
@@ -316,7 +316,7 @@ SOP_OpenVDB_Fracture::Cache::cookVDBSop(OP_Context& context)
 
         const GA_PrimitiveGroup* group = matchGroup(*gdp, evalStdString("group", time));
 
-        std::list<openvdb::GridBase::Ptr> grids;
+        std::list<laovdb::GridBase::Ptr> grids;
         std::vector<GU_PrimVDB*> origvdbs;
 
         std::vector<std::string> nonLevelSetList, nonLinearList;
@@ -325,8 +325,8 @@ SOP_OpenVDB_Fracture::Cache::cookVDBSop(OP_Context& context)
 
             if (boss.wasInterrupted()) break;
 
-            const openvdb::GridClass gridClass = vdbIter->getGrid().getGridClass();
-            if (gridClass != openvdb::GRID_LEVEL_SET) {
+            const laovdb::GridClass gridClass = vdbIter->getGrid().getGridClass();
+            if (gridClass != laovdb::GRID_LEVEL_SET) {
                 nonLevelSetList.push_back(vdbIter.getPrimitiveNameOrIndex().toStdString());
                 continue;
             }
@@ -344,7 +344,7 @@ SOP_OpenVDB_Fracture::Cache::cookVDBSop(OP_Context& context)
             grids.back()->setName(vdb->getGridName());
 
             grids.back()->insertMeta("houdiniorigoffset",
-                openvdb::Int64Metadata( vdb->getMapOffset() ) );
+                laovdb::Int64Metadata( vdb->getMapOffset() ) );
 
             origvdbs.push_back(vdb);
         }
@@ -364,10 +364,10 @@ SOP_OpenVDB_Fracture::Cache::cookVDBSop(OP_Context& context)
 
         if (!grids.empty() && !boss.wasInterrupted()) {
 
-            if (grids.front()->isType<openvdb::FloatGrid>()) {
-                process<openvdb::FloatGrid>(grids, cutterGeo, pointGeo, boss.interrupter(), time);
-            } else if (grids.front()->isType<openvdb::DoubleGrid>()) {
-                process<openvdb::DoubleGrid>(grids, cutterGeo, pointGeo, boss.interrupter(), time);
+            if (grids.front()->isType<laovdb::FloatGrid>()) {
+                process<laovdb::FloatGrid>(grids, cutterGeo, pointGeo, boss.interrupter(), time);
+            } else if (grids.front()->isType<laovdb::DoubleGrid>()) {
+                process<laovdb::DoubleGrid>(grids, cutterGeo, pointGeo, boss.interrupter(), time);
             } else {
                 addError(SOP_MESSAGE, "Unsupported grid type");
             }
@@ -401,10 +401,10 @@ SOP_OpenVDB_Fracture::Cache::cookVDBSop(OP_Context& context)
 template<class GridType>
 void
 SOP_OpenVDB_Fracture::Cache::process(
-    std::list<openvdb::GridBase::Ptr>& grids,
+    std::list<laovdb::GridBase::Ptr>& grids,
     const GU_Detail* cutterGeo,
     const GU_Detail* pointGeo,
-    openvdb::util::NullInterrupter& boss,
+    laovdb::util::NullInterrupter& boss,
     const fpreal time)
 {
     GA_PrimitiveGroup* group = nullptr;
@@ -427,18 +427,18 @@ SOP_OpenVDB_Fracture::Cache::process(
 
     using ValueType = typename GridType::ValueType;
 
-    typename GridType::Ptr firstGrid = openvdb::gridPtrCast<GridType>(grids.front());
+    typename GridType::Ptr firstGrid = laovdb::gridPtrCast<GridType>(grids.front());
     if (!firstGrid) {
         addError(SOP_MESSAGE, "Unsupported grid type.");
         return;
     }
 
     // Get the first grid's transform and background value.
-    openvdb::math::Transform::Ptr transform = firstGrid->transformPtr();
+    laovdb::math::Transform::Ptr transform = firstGrid->transformPtr();
     const ValueType backgroundValue = firstGrid->background();
 
-    std::vector<openvdb::Vec3s> instancePoints;
-    std::vector<openvdb::math::Quats> instanceRotations;
+    std::vector<laovdb::Vec3s> instancePoints;
+    std::vector<laovdb::math::Quats> instanceRotations;
 
     if (pointGeo != nullptr) {
         instancePoints.resize(pointGeo->getNumPoints());
@@ -486,7 +486,7 @@ SOP_OpenVDB_Fracture::Cache::process(
                 xform.getTranslates(trans);
                 xform.extractRotate(rotmat);
                 quat.updateFromRotationMatrix(rotmat);
-                instancePoints[i] = openvdb::Vec3s(trans.x(), trans.y(), trans.z());
+                instancePoints[i] = laovdb::Vec3s(trans.x(), trans.y(), trans.z());
                 instanceRotations[i].init(
                     static_cast<float>(quat.x()),
                     static_cast<float>(quat.y()),
@@ -500,7 +500,7 @@ SOP_OpenVDB_Fracture::Cache::process(
             for (GA_Iterator it(range); !it.atEnd(); it.advance()) {
                 UT_Vector3 pos = pointGeo->getPos3(*it);
                 instancePoints[pointGeo->pointIndex(*it)] =
-                    openvdb::Vec3s(pos.x(), pos.y(), pos.z());
+                    laovdb::Vec3s(pos.x(), pos.y(), pos.z());
             }
         }
     }
@@ -509,12 +509,12 @@ SOP_OpenVDB_Fracture::Cache::process(
     std::list<typename GridType::Ptr> residuals;
 
     {
-        std::list<openvdb::GridBase::Ptr>::iterator it = grids.begin();
+        std::list<laovdb::GridBase::Ptr>::iterator it = grids.begin();
 
         std::vector<std::string> badTransformList, badBackgroundList, badTypeList;
 
         for (; it != grids.end(); ++it) {
-            typename GridType::Ptr residual = openvdb::gridPtrCast<GridType>(*it);
+            typename GridType::Ptr residual = laovdb::gridPtrCast<GridType>(*it);
 
             if (residual) {
 
@@ -523,7 +523,7 @@ SOP_OpenVDB_Fracture::Cache::process(
                     continue;
                 }
 
-                if (!openvdb::math::isApproxEqual(residual->background(), backgroundValue)) {
+                if (!laovdb::math::isApproxEqual(residual->background(), backgroundValue)) {
                     badBackgroundList.push_back(residual->getName());
                     continue;
                 }
@@ -562,21 +562,21 @@ SOP_OpenVDB_Fracture::Cache::process(
     }
 
     // Setup fracture tool
-    openvdb::tools::LevelSetFracture<GridType> lsFracture(&boss);
+    laovdb::tools::LevelSetFracture<GridType> lsFracture(&boss);
 
     const bool separatecutters = (pointGeo == nullptr) && bool(evalInt("separatecutters", 0, time));
 
-    std::vector<openvdb::Vec3s> pointList;
+    std::vector<laovdb::Vec3s> pointList;
 
     {
         pointList.resize(cutterGeo->getNumPoints());
-        openvdb::math::Transform::Ptr xform = transform->copy();
+        laovdb::math::Transform::Ptr xform = transform->copy();
 
         if (!instancePoints.empty() && !separatecutters && bool(evalInt("centercutter", 0, time))) {
             UT_BoundingBox pointBBox;
             cutterGeo->getPointBBox(&pointBBox);
             UT_Vector3 center = pointBBox.center();
-            xform->postTranslate(openvdb::Vec3s(center.x(), center.y(), center.z()));
+            xform->postTranslate(laovdb::Vec3s(center.x(), center.y(), center.z()));
         }
 
         UTparallelFor(GA_SplittableRange(cutterGeo->getPointRange()),
@@ -618,11 +618,11 @@ SOP_OpenVDB_Fracture::Cache::process(
             if (numPrims == 0) continue;
 
             {
-                std::vector<openvdb::Vec4I> primList;
+                std::vector<laovdb::Vec4I> primList;
                 primList.reserve(numPrims);
 
-                openvdb::Vec4I prim;
-                using Vec4IValueType = openvdb::Vec4I::ValueType;
+                laovdb::Vec4I prim;
+                using Vec4IValueType = laovdb::Vec4I::ValueType;
 
                 for (GA_PageIterator pageIt = range.beginPages(); !pageIt.atEnd(); ++pageIt) {
                     for (GA_Iterator blockIt(pageIt.begin()); blockIt.blockAdvance(start, end); ) {
@@ -641,7 +641,7 @@ SOP_OpenVDB_Fracture::Cache::process(
                                             cutterGeo->pointIndex(primRef->getPointOffset(vtx)));
                                     }
 
-                                    if (vtxn != 4) prim[3] = openvdb::util::INVALID_IDX;
+                                    if (vtxn != 4) prim[3] = laovdb::util::INVALID_IDX;
 
                                     primList.push_back(prim);
                                 }
@@ -650,10 +650,10 @@ SOP_OpenVDB_Fracture::Cache::process(
                     }
                 }
 
-                openvdb::tools::QuadAndTriangleDataAdapter<openvdb::Vec3s, openvdb::Vec4I>
+                laovdb::tools::QuadAndTriangleDataAdapter<laovdb::Vec3s, laovdb::Vec4I>
                     mesh(pointList, primList);
 
-                cutterGrid = openvdb::tools::meshToVolume<GridType>(
+                cutterGrid = laovdb::tools::meshToVolume<GridType>(
                     boss, mesh, *transform, bandWidth, bandWidth);
             }
 
@@ -668,17 +668,17 @@ SOP_OpenVDB_Fracture::Cache::process(
         typename GridType::Ptr cutterGrid;
 
         {
-            std::vector<openvdb::Vec4I> primList;
+            std::vector<laovdb::Vec4I> primList;
             primList.resize(cutterGeo->getNumPrimitives());
 
             UTparallelFor(GA_SplittableRange(cutterGeo->getPrimitiveRange()),
                 hvdb::PrimCpyOp(cutterGeo, primList));
 
 
-            openvdb::tools::QuadAndTriangleDataAdapter<openvdb::Vec3s, openvdb::Vec4I>
+            laovdb::tools::QuadAndTriangleDataAdapter<laovdb::Vec3s, laovdb::Vec4I>
                 mesh(pointList, primList);
 
-            cutterGrid = openvdb::tools::meshToVolume<GridType>(
+            cutterGrid = laovdb::tools::meshToVolume<GridType>(
                 boss, mesh, *transform, bandWidth, bandWidth);
         }
 
@@ -724,8 +724,8 @@ SOP_OpenVDB_Fracture::Cache::process(
         GA_Offset origvdboff = GA_INVALID_OFFSET;
 
         typename GridType::Ptr grid = *it;
-        openvdb::Int64Metadata::Ptr offmeta =
-            grid->template getMetadata<openvdb::Int64Metadata>("houdiniorigoffset");
+        laovdb::Int64Metadata::Ptr offmeta =
+            grid->template getMetadata<laovdb::Int64Metadata>("houdiniorigoffset");
         if (offmeta) {
             origvdboff = static_cast<GA_Offset>(offmeta->value());
         }
@@ -738,8 +738,8 @@ SOP_OpenVDB_Fracture::Cache::process(
         GA_Offset origvdboff = GA_INVALID_OFFSET;
 
         typename GridType::Ptr grid = *it;
-        openvdb::Int64Metadata::Ptr offmeta =
-            grid->template getMetadata<openvdb::Int64Metadata>("houdiniorigoffset");
+        laovdb::Int64Metadata::Ptr offmeta =
+            grid->template getMetadata<laovdb::Int64Metadata>("houdiniorigoffset");
         if (offmeta) {
             origvdboff = static_cast<GA_Offset>(offmeta->value());
         }
@@ -754,8 +754,8 @@ SOP_OpenVDB_Fracture::Cache::process(
         typename GridType::Ptr grid = *it;
         GA_Offset origvdboff = GA_INVALID_OFFSET;
 
-        openvdb::Int64Metadata::Ptr offmeta =
-            grid->template getMetadata<openvdb::Int64Metadata>("houdiniorigoffset");
+        laovdb::Int64Metadata::Ptr offmeta =
+            grid->template getMetadata<laovdb::Int64Metadata>("houdiniorigoffset");
         if (offmeta) {
             origvdboff = static_cast<GA_Offset>(offmeta->value());
             grid->removeMeta("houdiniorigoffset");
@@ -823,8 +823,8 @@ SOP_OpenVDB_Fracture::Cache::process(
 
         GA_Offset origvdboff = GA_INVALID_OFFSET;
 
-        openvdb::Int64Metadata::Ptr offmeta =
-            grid->template getMetadata<openvdb::Int64Metadata>("houdiniorigoffset");
+        laovdb::Int64Metadata::Ptr offmeta =
+            grid->template getMetadata<laovdb::Int64Metadata>("houdiniorigoffset");
         if (offmeta) {
             origvdboff = static_cast<GA_Offset>(offmeta->value());
             grid->removeMeta("houdiniorigoffset");

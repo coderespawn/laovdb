@@ -27,7 +27,7 @@
 #endif
 
 
-namespace openvdb_houdini {
+namespace laovdb_houdini {
 
 VdbPrimCIterator::VdbPrimCIterator(const GEO_Detail* gdp, const GA_PrimitiveGroup* group,
     FilterFunc filter):
@@ -185,16 +185,16 @@ evalGridBBox(GridCRef grid, UT_Vector3 corners[8], bool expandHalfVoxel)
 {
     if (grid.activeVoxelCount() == 0) return false;
 
-    openvdb::CoordBBox activeBBox = grid.evalActiveVoxelBoundingBox();
+    laovdb::CoordBBox activeBBox = grid.evalActiveVoxelBoundingBox();
     if (!activeBBox) return false;
 
-    openvdb::BBoxd voxelBBox(activeBBox.min().asVec3d(), activeBBox.max().asVec3d());
+    laovdb::BBoxd voxelBBox(activeBBox.min().asVec3d(), activeBBox.max().asVec3d());
     if (expandHalfVoxel) {
-        voxelBBox.min() -= openvdb::Vec3d(0.5);
-        voxelBBox.max() += openvdb::Vec3d(0.5);
+        voxelBBox.min() -= laovdb::Vec3d(0.5);
+        voxelBBox.max() += laovdb::Vec3d(0.5);
     }
 
-    openvdb::Vec3R bbox[8];
+    laovdb::Vec3R bbox[8];
     bbox[0] = voxelBBox.min();
     bbox[1].init(voxelBBox.min()[0], voxelBBox.min()[1], voxelBBox.max()[2]);
     bbox[2].init(voxelBBox.max()[0], voxelBBox.min()[1], voxelBBox.max()[2]);
@@ -204,7 +204,7 @@ evalGridBBox(GridCRef grid, UT_Vector3 corners[8], bool expandHalfVoxel)
     bbox[6] = voxelBBox.max();
     bbox[7].init(voxelBBox.max()[0], voxelBBox.max()[1], voxelBBox.min()[2]);
 
-    const openvdb::math::Transform& xform = grid.transform();
+    const laovdb::math::Transform& xform = grid.transform();
     bbox[0] = xform.indexToWorld(bbox[0]);
     bbox[1] = xform.indexToWorld(bbox[1]);
     bbox[2] = xform.indexToWorld(bbox[2]);
@@ -225,10 +225,10 @@ evalGridBBox(GridCRef grid, UT_Vector3 corners[8], bool expandHalfVoxel)
 ////////////////////////////////////////
 
 
-openvdb::CoordBBox
-makeCoordBBox(const UT_BoundingBox& b, const openvdb::math::Transform& t)
+laovdb::CoordBBox
+makeCoordBBox(const UT_BoundingBox& b, const laovdb::math::Transform& t)
 {
-    openvdb::Vec3d minWS, maxWS, minIS, maxIS;
+    laovdb::Vec3d minWS, maxWS, minIS, maxIS;
 
     minWS[0] = double(b.xmin());
     minWS[1] = double(b.ymin());
@@ -238,11 +238,11 @@ makeCoordBBox(const UT_BoundingBox& b, const openvdb::math::Transform& t)
     maxWS[1] = double(b.ymax());
     maxWS[2] = double(b.zmax());
 
-    openvdb::math::calculateBounds(t, minWS, maxWS, minIS, maxIS);
+    laovdb::math::calculateBounds(t, minWS, maxWS, minIS, maxIS);
 
-    openvdb::CoordBBox box;
-    box.min() = openvdb::Coord::floor(minIS);
-    box.max() = openvdb::Coord::ceil(maxIS);
+    laovdb::CoordBBox box;
+    box.min() = laovdb::Coord::floor(minIS);
+    box.max() = laovdb::Coord::ceil(maxIS);
 
     return box;
 }
@@ -350,7 +350,7 @@ setLogForwarding(OP_OpTypeId opId, bool enable)
 
     const auto appenderName = getAppenderName(*opInfo);
 
-    auto logger = openvdb::logging::internal::getLogger();
+    auto logger = laovdb::logging::internal::getLogger();
     auto appender = logger.getAppender(appenderName);
 
     if (appender && !enable) {
@@ -389,7 +389,7 @@ bool
 isLogForwarding(OP_OpTypeId opId)
 {
     if (const auto* opInfo = OP_Node::getOpInfoFromOpTypeID(opId)) {
-        return openvdb::logging::internal::getLogger().getAppender(
+        return laovdb::logging::internal::getLogger().getAppender(
             getAppenderName(*opInfo));
     }
     return false;
@@ -397,4 +397,4 @@ isLogForwarding(OP_OpTypeId opId)
 
 #endif // OPENVDB_USE_LOG4CPLUS
 
-} // namespace openvdb_houdini
+} // namespace laovdb_houdini

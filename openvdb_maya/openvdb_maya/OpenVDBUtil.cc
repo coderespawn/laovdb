@@ -17,7 +17,7 @@
 #include <string> // std::string, std::getline
 #include <stdexcept>
 
-namespace openvdb_maya {
+namespace laovdb_maya {
 
 
 ////////////////////////////////////////
@@ -45,7 +45,7 @@ getInputVDB(const MObject& vdb, MDataBlock& data)
     return dynamic_cast<const OpenVDBData*>(inputPxData);
 }
 
-void getGrids(std::vector<openvdb::GridBase::ConstPtr>& grids,
+void getGrids(std::vector<laovdb::GridBase::ConstPtr>& grids,
     const OpenVDBData& vdb, const std::string& names)
 {
     grids.clear();
@@ -158,15 +158,15 @@ void
 printGridInfo(std::ostream& os, const OpenVDBData& vdb)
 {
     os << "\nOutput " << vdb.numberOfGrids() << " VDB(s)\n";
-    openvdb::GridPtrVec::const_iterator it;
+    laovdb::GridPtrVec::const_iterator it;
 
     size_t memUsage = 0, idx = 0;
     for (size_t n = 0, N = vdb.numberOfGrids(); n < N; ++n) {
 
-        const openvdb::GridBase& grid = vdb.grid(n);
+        const laovdb::GridBase& grid = vdb.grid(n);
 
         memUsage += grid.memUsage();
-        openvdb::Coord dim = grid.evalActiveVoxelDim();
+        laovdb::Coord dim = grid.evalActiveVoxelDim();
 
         os << "[" << idx++ << "]";
 
@@ -177,7 +177,7 @@ printGridInfo(std::ostream& os, const OpenVDBData& vdb)
             << dim[0] << "x" << dim[1] << "x" << dim[2] <<"\n";
     }
 
-    openvdb::util::printBytes(os, memUsage, "\nApproximate Memory Usage:");
+    laovdb::util::printBytes(os, memUsage, "\nApproximate Memory Usage:");
 }
 
 
@@ -224,12 +224,12 @@ insertFrameNumber(std::string& str, const MTime& time, int numberingScheme)
             if (!tmpStr.empty()) ss << tmpStr;
 
         } else if (numberingScheme == 2) { // Global ticks
-            int ticks = int(openvdb::math::Round(frame * tpf));
+            int ticks = int(laovdb::math::Round(frame * tpf));
             ss << ticks;
         } else { // Frame.SubTick
             ss << wholeFrame;
             const int frameTick = static_cast<int>(
-                openvdb::math::Round(frame - double(wholeFrame)) * tpf);
+                laovdb::math::Round(frame - double(wholeFrame)) * tpf);
             if (frameTick > 0) {
                 ss << "." << std::setw(tpfDigits) << std::setfill('0') << frameTick;
             }
@@ -499,7 +499,7 @@ ShaderProgram::clear()
 ////////////////////////////////////////
 
 WireBoxBuilder::WireBoxBuilder(
-    const openvdb::math::Transform& xform,
+    const laovdb::math::Transform& xform,
     std::vector<GLuint>& indices,
     std::vector<GLfloat>& points,
     std::vector<GLfloat>& colors)
@@ -510,7 +510,7 @@ WireBoxBuilder::WireBoxBuilder(
 {
 }
 
-void WireBoxBuilder::add(GLuint boxIndex, const openvdb::CoordBBox& bbox, const openvdb::Vec3s& color)
+void WireBoxBuilder::add(GLuint boxIndex, const laovdb::CoordBBox& bbox, const laovdb::Vec3s& color)
 {
     GLuint ptnCount = boxIndex * 8;
 
@@ -520,11 +520,11 @@ void WireBoxBuilder::add(GLuint boxIndex, const openvdb::CoordBBox& bbox, const 
     GLuint colorOffset = ptnOffset;
 
     // Nodes are rendered as cell-centered
-    const openvdb::Vec3d min(bbox.min().x()-0.5, bbox.min().y()-0.5, bbox.min().z()-0.5);
-    const openvdb::Vec3d max(bbox.max().x()+0.5, bbox.max().y()+0.5, bbox.max().z()+0.5);
+    const laovdb::Vec3d min(bbox.min().x()-0.5, bbox.min().y()-0.5, bbox.min().z()-0.5);
+    const laovdb::Vec3d max(bbox.max().x()+0.5, bbox.max().y()+0.5, bbox.max().z()+0.5);
 
     // corner 1
-    openvdb::Vec3d ptn = mXForm->indexToWorld(min);
+    laovdb::Vec3d ptn = mXForm->indexToWorld(min);
     (*mPoints)[ptnOffset++] = static_cast<GLfloat>(ptn[0]);
     (*mPoints)[ptnOffset++] = static_cast<GLfloat>(ptn[1]);
     (*mPoints)[ptnOffset++] = static_cast<GLfloat>(ptn[2]);

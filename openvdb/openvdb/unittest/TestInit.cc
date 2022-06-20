@@ -14,7 +14,7 @@ class TestInit: public ::testing::Test
 
 TEST_F(TestInit, test)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     initialize();
 
@@ -90,10 +90,10 @@ OPENVDB_NO_DEPRECATION_WARNING_END
 TEST_F(TestInit, testMatGrids)
 {
     // small test to ensure matrix grid types compile
-    using Mat3sGrid = openvdb::BoolGrid::ValueConverter<openvdb::Mat3s>::Type;
-    using Mat3dGrid = openvdb::BoolGrid::ValueConverter<openvdb::Mat3d>::Type;
-    using Mat4sGrid = openvdb::BoolGrid::ValueConverter<openvdb::Mat4s>::Type;
-    using Mat4dGrid = openvdb::BoolGrid::ValueConverter<openvdb::Mat4d>::Type;
+    using Mat3sGrid = laovdb::BoolGrid::ValueConverter<laovdb::Mat3s>::Type;
+    using Mat3dGrid = laovdb::BoolGrid::ValueConverter<laovdb::Mat3d>::Type;
+    using Mat4sGrid = laovdb::BoolGrid::ValueConverter<laovdb::Mat4s>::Type;
+    using Mat4dGrid = laovdb::BoolGrid::ValueConverter<laovdb::Mat4d>::Type;
     Mat3sGrid a; (void)(a);
     Mat3dGrid b; (void)(b);
     Mat4sGrid c; (void)(c);

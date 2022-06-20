@@ -10,7 +10,7 @@
 #include <openvdb/tools/Prune.h>// for tree::pruneInactive
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace util {
@@ -130,6 +130,6 @@ leafTopologyDifference(const TreeType1& lhs, const TreeType2& rhs, bool threaded
 
 } // namespace util
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_UTIL_UTIL_HAS_BEEN_INCLUDED

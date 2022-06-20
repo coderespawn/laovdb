@@ -19,7 +19,7 @@
 #include <deque>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tree {
@@ -677,8 +677,8 @@ public:
     ///          ++(nodeCount[NodeT::LEVEL]);
     ///          ++totalCount;
     ///      }
-    ///      std::vector<openvdb::Index64> nodeCount;
-    ///      openvdb::Index64 totalCount;
+    ///      std::vector<laovdb::Index64> nodeCount;
+    ///      laovdb::Index64 totalCount;
     /// };
     ///
     /// // usage:
@@ -723,7 +723,7 @@ protected:
 template <typename OpT>
 struct ForeachFilterOp
 {
-    explicit ForeachFilterOp(const OpT& op, openvdb::Index64 size)
+    explicit ForeachFilterOp(const OpT& op, laovdb::Index64 size)
         : mOp(op)
         , mValidPtr(std::make_unique<bool[]>(size))
         , mValid(mValidPtr.get()) { }
@@ -754,7 +754,7 @@ private:
 template <typename OpT>
 struct ReduceFilterOp
 {
-    ReduceFilterOp(OpT& op, openvdb::Index64 size)
+    ReduceFilterOp(OpT& op, laovdb::Index64 size)
         : mOp(&op)
         , mValidPtr(std::make_unique<bool[]>(size))
         , mValid(mValidPtr.get()) { }
@@ -953,7 +953,7 @@ public:
     ///     {
     ///         // densify child
     ///         for (auto iter = node.cbeginValueAll(); iter; ++iter) {
-    ///             const openvdb::Coord ijk = iter.getCoord();
+    ///             const laovdb::Coord ijk = iter.getCoord();
     ///             node.addChild(new typename NodeT::ChildNodeType(iter.getCoord(), NodeT::LEVEL, true));
     ///         }
     ///         // early-exit termination for all non-zero index children
@@ -1029,8 +1029,8 @@ public:
     ///          ++totalCount;
     ///          return true;
     ///      }
-    ///      std::vector<openvdb::Index64> nodeCount;
-    ///      openvdb::Index64 totalCount;
+    ///      std::vector<laovdb::Index64> nodeCount;
+    ///      laovdb::Index64 totalCount;
     /// };
     ///
     /// // usage:
@@ -1829,6 +1829,6 @@ protected:
 
 } // namespace tree
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TREE_NODEMANAGER_HAS_BEEN_INCLUDED

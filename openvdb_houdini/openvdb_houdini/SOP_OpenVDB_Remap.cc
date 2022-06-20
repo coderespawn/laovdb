@@ -47,15 +47,15 @@ template<typename T>
 inline T maxValue(const T a, const T b) { return std::max(a, b); }
 
 template<typename T>
-inline openvdb::math::Vec3<T>
-minValue(const openvdb::math::Vec3<T>& a, const openvdb::math::Vec3<T>& b) {
-    return openvdb::math::minComponent(a, b);
+inline laovdb::math::Vec3<T>
+minValue(const laovdb::math::Vec3<T>& a, const laovdb::math::Vec3<T>& b) {
+    return laovdb::math::minComponent(a, b);
 }
 
 template<typename T>
-inline openvdb::math::Vec3<T>
-maxValue(const openvdb::math::Vec3<T>& a, const openvdb::math::Vec3<T>& b) {
-    return openvdb::math::maxComponent(a, b);
+inline laovdb::math::Vec3<T>
+maxValue(const laovdb::math::Vec3<T>& a, const laovdb::math::Vec3<T>& b) {
+    return laovdb::math::maxComponent(a, b);
 }
 
 template<typename T>
@@ -66,13 +66,13 @@ inline T maxComponent(const T s) { return s; }
 
 template<typename T>
 inline T
-minComponent(const openvdb::math::Vec3<T>& v) {
+minComponent(const laovdb::math::Vec3<T>& v) {
     return minValue(v[0], minValue(v[1], v[2]));
 }
 
 template<typename T>
 inline T
-maxComponent(const openvdb::math::Vec3<T>& v) {
+maxComponent(const laovdb::math::Vec3<T>& v) {
     return maxValue(v[0], maxValue(v[1], v[2]));
 }
 
@@ -131,10 +131,10 @@ struct Deactivate
     void operator()(const tbb::blocked_range<size_t>& range) const {
         const ValueType
             background(mBackground),
-            delta = openvdb::math::Tolerance<ValueType>::value();
+            delta = laovdb::math::Tolerance<ValueType>::value();
         for (size_t n = range.begin(), N = range.end(); n < N; ++n) {
             for (typename NodeType::ValueOnIter it = mNodes[n]->beginValueOn(); it; ++it) {
-                if (openvdb::math::isApproxEqual(background, *it, delta)) {
+                if (laovdb::math::isApproxEqual(background, *it, delta)) {
                     it.setValueOff();
                 }
             }
@@ -225,11 +225,11 @@ deactivateBackgroundValues(TreeType& tree)
         using ValueType = typename TreeType::ValueType;
         const ValueType
             background(tree.background()),
-            delta = openvdb::math::Tolerance<ValueType>::value();
+            delta = laovdb::math::Tolerance<ValueType>::value();
         typename TreeType::ValueOnIter it(tree);
         it.setMaxDepth(TreeType::ValueAllCIter::LEAF_DEPTH - 2);
         for ( ; it; ++it) {
-            if (openvdb::math::isApproxEqual(background, *it, delta)) {
+            if (laovdb::math::isApproxEqual(background, *it, delta)) {
                it.setValueOff();
             }
         }
@@ -295,11 +295,11 @@ struct RemapGridValues {
         // update tiles
         typename GridType::ValueAllIter it = grid.beginValueAll();
         it.setMaxDepth(GridType::ValueAllIter::LEAF_DEPTH - 1);
-        openvdb::tools::foreach(it, op, true);
+        laovdb::tools::foreach(it, op, true);
 
         // update background value
         grid.tree().root().setBackground(op.map(grid.background()), /*updateChildNodes=*/false);
-        grid.setGridClass(openvdb::GRID_UNKNOWN);
+        grid.setGridClass(laovdb::GRID_UNKNOWN);
 
         ValueType outputMin, outputMax;
         evalMinMax(grid.tree(), outputMin, outputMax);
@@ -382,8 +382,8 @@ private:
         }
 
         template<typename T>
-        inline openvdb::math::Vec3<T> map(const openvdb::math::Vec3<T>& v) const {
-            openvdb::math::Vec3<T> out;
+        inline laovdb::math::Vec3<T> map(const laovdb::math::Vec3<T>& v) const {
+            laovdb::math::Vec3<T> out;
             out[0] = map(v[0]);
             out[1] = map(v[1]);
             out[2] = map(v[2]);

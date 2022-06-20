@@ -83,23 +83,23 @@ public:
         void convert(
             fpreal time,
             ParticleList&,
-            openvdb::FloatGrid::Ptr,
-            openvdb::BoolGrid::Ptr,
-            openvdb::util::NullInterrupter&);
+            laovdb::FloatGrid::Ptr,
+            laovdb::BoolGrid::Ptr,
+            laovdb::util::NullInterrupter&);
 
         void convertWithAttributes(
             fpreal time,
             const GU_Detail&,
             ParticleList&,
-            openvdb::FloatGrid::Ptr,
-            openvdb::BoolGrid::Ptr,
-            openvdb::util::NullInterrupter&);
+            laovdb::FloatGrid::Ptr,
+            laovdb::BoolGrid::Ptr,
+            laovdb::util::NullInterrupter&);
 
         int constructGenericAtttributeList(
             fpreal time,
             hvdb::AttributeDetailList&,
             const GU_Detail&,
-            const openvdb::Int32Grid& closestPtIdxGrid);
+            const laovdb::Int32Grid& closestPtIdxGrid);
 
         float mVoxelSize = 0.1f;
     }; // class Cache
@@ -280,9 +280,9 @@ newSopOperator(OP_OperatorTable* table)
 
     {
         std::vector<std::string> items;
-        for (int i = 0; i < openvdb::NUM_VEC_TYPES ; ++i) {
-            items.push_back(openvdb::GridBase::vecTypeToString(openvdb::VecType(i)));
-            items.push_back(openvdb::GridBase::vecTypeExamples(openvdb::VecType(i)));
+        for (int i = 0; i < laovdb::NUM_VEC_TYPES ; ++i) {
+            items.push_back(laovdb::GridBase::vecTypeToString(laovdb::VecType(i)));
+            items.push_back(laovdb::GridBase::vecTypeExamples(laovdb::VecType(i)));
         }
 
         transferParms.add(hutil::ParmFactory(PRM_ORD, "vecType#", "Vector Type")
@@ -625,12 +625,12 @@ SOP_OpenVDB_From_Particles::buildAttrMenu(void* data, PRM_Name* entries, int max
 namespace {
 
 // This class implements the particle access interface required by
-// openvdb::tools::ParticlesToLevelSet.
+// laovdb::tools::ParticlesToLevelSet.
 class ParticleList
 {
 public:
-    using Real = openvdb::Real;
-    using PosType = openvdb::Vec3R; // required by openvdb::tools::PointPartitioner
+    using Real = laovdb::Real;
+    using PosType = laovdb::Vec3R; // required by laovdb::tools::PointPartitioner
 
     ParticleList(const GU_Detail* gdp, Real radiusMult = 1, Real velocityMult = 1)
         : mGdp(gdp)
@@ -691,7 +691,7 @@ public:
     }
 
     // Required for attribute transfer
-    void getAtt(size_t n, openvdb::Int32& att) const { att = openvdb::Int32(n); }
+    void getAtt(size_t n, laovdb::Int32& att) const { att = laovdb::Int32(n); }
 
 protected:
     const GU_Detail* mGdp;
@@ -713,14 +713,14 @@ addAttributeDetails(
     const GA_Attribute* attribute,
     const GA_AIFTuple* tupleAIF,
     const int attrTupleSize,
-    const openvdb::Int32Grid& closestPtIdxGrid,
+    const laovdb::Int32Grid& closestPtIdxGrid,
     std::string& customName,
     int vecType = -1)
 {
     // Defines a new type of a tree having the same hierarchy as the incoming
     // Int32Grid's tree but potentially a different value type.
-    using TreeType = typename openvdb::Int32Grid::TreeType::ValueConverter<ValueType>::Type;
-    using GridType = typename openvdb::Grid<TreeType>;
+    using TreeType = typename laovdb::Int32Grid::TreeType::ValueConverter<ValueType>::Type;
+    using GridType = typename laovdb::Grid<TreeType>;
 
     if (vecType != -1) { // Vector grid
          // Get the attribute's default value.
@@ -729,10 +729,10 @@ addAttributeDetails(
 
         // Construct a new tree that matches the closestPtIdxGrid's active voxel topology.
         typename TreeType::Ptr tree(
-            new TreeType(closestPtIdxGrid.tree(), defValue, openvdb::TopologyCopy()));
+            new TreeType(closestPtIdxGrid.tree(), defValue, laovdb::TopologyCopy()));
         typename GridType::Ptr grid(GridType::create(tree));
 
-        grid->setVectorType(openvdb::VecType(vecType));
+        grid->setVectorType(laovdb::VecType(vecType));
 
         attributeList.push_back(hvdb::AttributeDetailBase::Ptr(
             new hvdb::AttributeDetail<GridType>(grid, attribute, tupleAIF, 0, true)));
@@ -749,7 +749,7 @@ addAttributeDetails(
 
             // Construct a new tree that matches the closestPtIdxGrid's active voxel topology.
             typename TreeType::Ptr tree(
-                new TreeType(closestPtIdxGrid.tree(), defValue, openvdb::TopologyCopy()));
+                new TreeType(closestPtIdxGrid.tree(), defValue, laovdb::TopologyCopy()));
             typename GridType::Ptr grid(GridType::create(tree));
 
             attributeList.push_back(hvdb::AttributeDetailBase::Ptr(
@@ -770,8 +770,8 @@ addAttributeDetails(
 inline void
 transferAttributes(
     hvdb::AttributeDetailList& pointAttributes,
-    const openvdb::Int32Grid& closestPtIdxGrid,
-    openvdb::math::Transform::Ptr transform,
+    const laovdb::Int32Grid& closestPtIdxGrid,
+    laovdb::math::Transform::Ptr transform,
     const GU_Detail& ptGeo,
     GU_Detail& outputGeo)
 {
@@ -791,7 +791,7 @@ transferAttributes(
 
 
 template<typename AttrT, typename GridT>
-inline openvdb::Int32Grid::Ptr
+inline laovdb::Int32Grid::Ptr
 convertImpl(
     const ParticleList& paList,
     GridT& outGrid,
@@ -799,11 +799,11 @@ convertImpl(
     float maxRadius,
     bool velocityTrails,
     float trailRes,
-    openvdb::util::NullInterrupter& boss,
+    laovdb::util::NullInterrupter& boss,
     size_t& numTooSmall,
     size_t& numTooLarge)
 {
-    openvdb::tools::ParticlesToLevelSet<GridT, AttrT> raster(outGrid, &boss);
+    laovdb::tools::ParticlesToLevelSet<GridT, AttrT> raster(outGrid, &boss);
 
     raster.setRmin(minRadius);
     raster.setRmax(maxRadius);
@@ -821,7 +821,7 @@ convertImpl(
     numTooSmall = raster.getMinCount();
     numTooLarge = raster.getMaxCount();
 
-    return openvdb::gridPtrCast<openvdb::Int32Grid>(raster.attributeGrid());
+    return laovdb::gridPtrCast<laovdb::Int32Grid>(raster.attributeGrid());
 }
 
 
@@ -848,9 +848,9 @@ void
 SOP_OpenVDB_From_Particles::Cache::convert(
     fpreal time,
     ParticleList& paList,
-    openvdb::FloatGrid::Ptr sdfGrid,
-    openvdb::BoolGrid::Ptr maskGrid,
-    openvdb::util::NullInterrupter& boss)
+    laovdb::FloatGrid::Ptr sdfGrid,
+    laovdb::BoolGrid::Ptr maskGrid,
+    laovdb::util::NullInterrupter& boss)
 {
     using NoAttrs = void;
 
@@ -882,9 +882,9 @@ SOP_OpenVDB_From_Particles::Cache::convertWithAttributes(
     fpreal time,
     const GU_Detail& ptGeo,
     ParticleList& paList,
-    openvdb::FloatGrid::Ptr sdfGrid,
-    openvdb::BoolGrid::Ptr maskGrid,
-    openvdb::util::NullInterrupter& boss)
+    laovdb::FloatGrid::Ptr sdfGrid,
+    laovdb::BoolGrid::Ptr maskGrid,
+    laovdb::util::NullInterrupter& boss)
 {
     const bool velocityTrails = paList.hasVelocity() && (0 != evalInt("velocitytrails", 0, time));
     const float
@@ -892,11 +892,11 @@ SOP_OpenVDB_From_Particles::Cache::convertWithAttributes(
         maxRadius = 1e15f,
         trailRes = (!velocityTrails ? 1.f : float(evalFloat("trailresolution", 0, time)));
 
-    openvdb::Int32Grid::Ptr closestPtIdxGrid;
+    laovdb::Int32Grid::Ptr closestPtIdxGrid;
     size_t numTooSmall = 0, numTooLarge = 0;
 
     if (sdfGrid) {
-        closestPtIdxGrid = convertImpl<openvdb::Int32>(paList, *sdfGrid, minRadius, maxRadius,
+        closestPtIdxGrid = convertImpl<laovdb::Int32>(paList, *sdfGrid, minRadius, maxRadius,
             velocityTrails, trailRes, boss, numTooSmall, numTooLarge);
     }
     if (maskGrid) {
@@ -907,7 +907,7 @@ SOP_OpenVDB_From_Particles::Cache::convertWithAttributes(
             convertImpl<NoAttrs>(paList, *maskGrid, minRadius, maxRadius,
                 velocityTrails, trailRes, boss, numTooSmall, numTooLarge);
         } else {
-            closestPtIdxGrid = convertImpl<openvdb::Int32>(paList, *maskGrid,
+            closestPtIdxGrid = convertImpl<laovdb::Int32>(paList, *maskGrid,
                 minRadius, maxRadius, velocityTrails, trailRes, boss, numTooSmall, numTooLarge);
         }
     }
@@ -945,7 +945,7 @@ SOP_OpenVDB_From_Particles::Cache::constructGenericAtttributeList(
     fpreal time,
     hvdb::AttributeDetailList &pointAttributes,
     const GU_Detail& ptGeo,
-    const openvdb::Int32Grid& closestPtIdxGrid)
+    const laovdb::Int32Grid& closestPtIdxGrid)
 {
     UT_String attrName;
     GA_ROAttributeRef attrRef;
@@ -1004,22 +1004,22 @@ SOP_OpenVDB_From_Particles::Cache::constructGenericAtttributeList(
             case GA_STORE_INT16:
             case GA_STORE_INT32:
                 if (interpertAsVector || attrTupleSize == 3) {
-                    addAttributeDetails<openvdb::Vec3i>(pointAttributes, attr, tupleAIF,
+                    addAttributeDetails<laovdb::Vec3i>(pointAttributes, attr, tupleAIF,
                         attrTupleSize, closestPtIdxGrid, customName, vecType);
                 } else {
-                    addAttributeDetails<openvdb::Int32>(pointAttributes, attr, tupleAIF,
+                    addAttributeDetails<laovdb::Int32>(pointAttributes, attr, tupleAIF,
                         attrTupleSize, closestPtIdxGrid, customName);
                 }
 
                 break;
             case GA_STORE_INT64:
-                addAttributeDetails<openvdb::Int64>(pointAttributes, attr, tupleAIF,
+                addAttributeDetails<laovdb::Int64>(pointAttributes, attr, tupleAIF,
                     attrTupleSize, closestPtIdxGrid, customName);
                 break;
             case GA_STORE_REAL16:
             case GA_STORE_REAL32:
                 if (interpertAsVector || attrTupleSize == 3) {
-                    addAttributeDetails<openvdb::Vec3s>(pointAttributes, attr, tupleAIF,
+                    addAttributeDetails<laovdb::Vec3s>(pointAttributes, attr, tupleAIF,
                         attrTupleSize, closestPtIdxGrid, customName, vecType);
                 } else {
                     addAttributeDetails<float>(pointAttributes, attr, tupleAIF,
@@ -1029,7 +1029,7 @@ SOP_OpenVDB_From_Particles::Cache::constructGenericAtttributeList(
                 break;
             case GA_STORE_REAL64:
                 if (interpertAsVector || attrTupleSize == 3) {
-                    addAttributeDetails<openvdb::Vec3d>(pointAttributes, attr, tupleAIF,
+                    addAttributeDetails<laovdb::Vec3d>(pointAttributes, attr, tupleAIF,
                         attrTupleSize, closestPtIdxGrid, customName, vecType);
                 } else {
                     addAttributeDetails<double>(pointAttributes, attr, tupleAIF,
@@ -1094,11 +1094,11 @@ SOP_OpenVDB_From_Particles::Cache::cookVDBSop(OP_Context& context)
         } else {
             background = mVoxelSize * float(evalFloat("halfbandvoxels", 0, time));
         }
-        auto transform = openvdb::math::Transform::createLinearTransform(mVoxelSize);
+        auto transform = laovdb::math::Transform::createLinearTransform(mVoxelSize);
 
-        openvdb::FloatGrid::Ptr sdfGrid;
-        openvdb::BoolGrid::Ptr maskGrid;
-        openvdb::MaskGrid::Ptr pointMaskGrid;
+        laovdb::FloatGrid::Ptr sdfGrid;
+        laovdb::BoolGrid::Ptr maskGrid;
+        laovdb::MaskGrid::Ptr pointMaskGrid;
 
         // Optionally copy the reference grid and/or its transform.
         hvdb::GridCPtr refGrid;
@@ -1118,20 +1118,20 @@ SOP_OpenVDB_From_Particles::Cache::cookVDBSop(OP_Context& context)
             mVoxelSize = static_cast<float>(transform->voxelSize()[0]);
 
             // Match the narrow band width.
-            const bool isLevelSet = ((refGrid->getGridClass() == openvdb::GRID_LEVEL_SET)
-                && refGrid->isType<openvdb::FloatGrid>());
+            const bool isLevelSet = ((refGrid->getGridClass() == laovdb::GRID_LEVEL_SET)
+                && refGrid->isType<laovdb::FloatGrid>());
             if (isLevelSet) {
-                background = openvdb::gridConstPtrCast<openvdb::FloatGrid>(refGrid)->background();
+                background = laovdb::gridConstPtrCast<laovdb::FloatGrid>(refGrid)->background();
                 addMessage(SOP_MESSAGE, "Matching the reference level set's half-band width "
                     " and background value.  The Half Band setting will be ignored.");
             }
 
             if (evalInt("merge", 0, time) != 0) {
                 if (needLeveLSet && isLevelSet) {
-                    sdfGrid = openvdb::gridPtrCast<openvdb::FloatGrid>(refGrid->deepCopyGrid());
+                    sdfGrid = laovdb::gridPtrCast<laovdb::FloatGrid>(refGrid->deepCopyGrid());
                 }
-                if (outputInteriorMaskGrid && refGrid->isType<openvdb::BoolGrid>()) {
-                    maskGrid = openvdb::gridPtrCast<openvdb::BoolGrid>(refGrid->deepCopyGrid());
+                if (outputInteriorMaskGrid && refGrid->isType<laovdb::BoolGrid>()) {
+                    maskGrid = laovdb::gridPtrCast<laovdb::BoolGrid>(refGrid->deepCopyGrid());
                 }
                 if (!sdfGrid && !maskGrid) {
                     if (needLeveLSet) {
@@ -1145,12 +1145,12 @@ SOP_OpenVDB_From_Particles::Cache::cookVDBSop(OP_Context& context)
         if (boss.wasInterrupted()) { return error(); }
 
         if (needLeveLSet) {
-            if (!sdfGrid) { sdfGrid = openvdb::FloatGrid::create(background); }
-            sdfGrid->setGridClass(openvdb::GRID_LEVEL_SET);
+            if (!sdfGrid) { sdfGrid = laovdb::FloatGrid::create(background); }
+            sdfGrid->setGridClass(laovdb::GRID_LEVEL_SET);
             sdfGrid->setTransform(transform);
         }
         if (outputInteriorMaskGrid) {
-            if (!maskGrid) { maskGrid = openvdb::BoolGrid::create(); }
+            if (!maskGrid) { maskGrid = laovdb::BoolGrid::create(); }
             maskGrid->setTransform(transform);
         }
 
@@ -1178,29 +1178,29 @@ SOP_OpenVDB_From_Particles::Cache::cookVDBSop(OP_Context& context)
         } else {
             pointMaskGrid = GUvdbCreatePointMaskGrid(*transform, *ptGeo);
             if (sdfGrid) {
-                openvdb::FloatGrid::Ptr pointSdfGrid = openvdb::tools::topologyToLevelSet(
+                laovdb::FloatGrid::Ptr pointSdfGrid = laovdb::tools::topologyToLevelSet(
                     *pointMaskGrid, bandWidth, closing, dilation, smoothing, &boss.interrupter());
-                openvdb::tools::csgUnion(*sdfGrid, *pointSdfGrid);
+                laovdb::tools::csgUnion(*sdfGrid, *pointSdfGrid);
             }
             if (maskGrid) {
-                openvdb::BoolTree::Ptr maskTree(new openvdb::BoolTree(pointMaskGrid->tree(),
-                    /*off=*/false, /*on=*/true, openvdb::TopologyCopy()));
-                if (dilation > 0) { openvdb::tools::dilateActiveValues(*maskTree, dilation); }
+                laovdb::BoolTree::Ptr maskTree(new laovdb::BoolTree(pointMaskGrid->tree(),
+                    /*off=*/false, /*on=*/true, laovdb::TopologyCopy()));
+                if (dilation > 0) { laovdb::tools::dilateActiveValues(*maskTree, dilation); }
                 maskGrid->setTree(maskTree);
             }
         }
 
         if (outputBoundingMaskGrid) {
-            openvdb::Real radiusScale = paList.radiusMult();
-            openvdb::Real offset = openvdb::Real(evalFloat("boundinglimit", 0,  time));
+            laovdb::Real radiusScale = paList.radiusMult();
+            laovdb::Real offset = laovdb::Real(evalFloat("boundinglimit", 0,  time));
             offset = std::min(std::max(offset, 0.0), 1.0); // clamp to zero-one range.
 
-            openvdb::FloatGrid::Ptr maxGrid = openvdb::FloatGrid::create(background);
-            maxGrid->setGridClass(openvdb::GRID_LEVEL_SET);
+            laovdb::FloatGrid::Ptr maxGrid = laovdb::FloatGrid::create(background);
+            maxGrid->setGridClass(laovdb::GRID_LEVEL_SET);
             maxGrid->setTransform(transform->copy());
 
-            openvdb::FloatGrid::Ptr minGrid = openvdb::FloatGrid::create(background);
-            minGrid->setGridClass(openvdb::GRID_LEVEL_SET);
+            laovdb::FloatGrid::Ptr minGrid = laovdb::FloatGrid::create(background);
+            minGrid->setGridClass(laovdb::GRID_LEVEL_SET);
             minGrid->setTransform(transform->copy());
 
             if (offset > 0.0f) {
@@ -1214,20 +1214,20 @@ SOP_OpenVDB_From_Particles::Cache::cookVDBSop(OP_Context& context)
                     if (!pointMaskGrid) {
                         pointMaskGrid = GUvdbCreatePointMaskGrid(*transform, *ptGeo);
                     }
-                    openvdb::Real dx = openvdb::Real(std::min(dilation, 1));
+                    laovdb::Real dx = laovdb::Real(std::min(dilation, 1));
                     int increase = int(std::ceil(dx * (1.0 + offset)));
                     int decrease = int(dx * (1.0 - offset));
 
-                    maxGrid = openvdb::tools::topologyToLevelSet(
+                    maxGrid = laovdb::tools::topologyToLevelSet(
                         *pointMaskGrid, bandWidth, closing, increase, smoothing, &boss.interrupter());
 
-                    minGrid = openvdb::tools::topologyToLevelSet(
+                    minGrid = laovdb::tools::topologyToLevelSet(
                         *pointMaskGrid, bandWidth, closing, decrease, smoothing, &boss.interrupter());
                 }
             }
 
-            openvdb::tools::csgDifference(*maxGrid, *minGrid);
-            openvdb::tools::sdfToFogVolume(*maxGrid);
+            laovdb::tools::csgDifference(*maxGrid, *minGrid);
+            laovdb::tools::sdfToFogVolume(*maxGrid);
 
             maxGrid->setName(evalStdString("maskname", time));
             hvdb::createVdbPrimitive(*gdp, maxGrid);
@@ -1244,7 +1244,7 @@ SOP_OpenVDB_From_Particles::Cache::cookVDBSop(OP_Context& context)
         if (outputFogVolumeGrid && sdfGrid) {
             // Only duplicate the output grid if both distance and fog volume grids are exported.
             auto fogGrid = (!outputLevelSetGrid ? sdfGrid : sdfGrid->deepCopy());
-            openvdb::tools::sdfToFogVolume(*fogGrid);
+            laovdb::tools::sdfToFogVolume(*fogGrid);
             fogGrid->setName(evalStdString("fogname", time));
             hvdb::createVdbPrimitive(*gdp, fogGrid);
         }

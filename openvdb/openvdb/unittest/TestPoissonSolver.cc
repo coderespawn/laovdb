@@ -28,7 +28,7 @@ class TestPoissonSolver: public ::testing::Test
 
 TEST_F(TestPoissonSolver, testIndexTree)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     using tools::poisson::VIndex;
 
     using VIdxTree = FloatTree::ValueConverter<VIndex>::Type;
@@ -60,7 +60,7 @@ TEST_F(TestPoissonSolver, testIndexTree)
 
 TEST_F(TestPoissonSolver, testTreeToVectorToTree)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     using tools::poisson::VIndex;
 
     using VIdxTree = FloatTree::ValueConverter<VIndex>::Type;
@@ -102,7 +102,7 @@ TEST_F(TestPoissonSolver, testTreeToVectorToTree)
 
 TEST_F(TestPoissonSolver, testLaplacian)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     using tools::poisson::VIndex;
 
     using VIdxTree = FloatTree::ValueConverter<VIndex>::Type;
@@ -111,7 +111,7 @@ TEST_F(TestPoissonSolver, testLaplacian)
     for (int N = 8; N <= 20; N += 12) {
         // Construct an N x N x N volume in which the value of voxel (i, j, k)
         // is sin(i) * sin(j) * sin(k), using a voxel spacing of pi / N.
-        const double delta = openvdb::math::pi<double>() / N;
+        const double delta = laovdb::math::pi<double>() / N;
         FloatTree inputTree(/*background=*/0.f);
         Coord ijk(0);
         Int32 &i = ijk[0], &j = ijk[1], &k = ijk[2];
@@ -163,7 +163,7 @@ TEST_F(TestPoissonSolver, testLaplacian)
 
 TEST_F(TestPoissonSolver, testSolve)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr sphere = tools::createLevelSetSphere<FloatGrid>(
         /*radius=*/10.f, /*center=*/Vec3f(0.f), /*voxelSize=*/0.25f);
@@ -186,12 +186,12 @@ TEST_F(TestPoissonSolver, testSolve)
 namespace {
 
 struct BoundaryOp {
-    void operator()(const openvdb::Coord& ijk, const openvdb::Coord& neighbor,
+    void operator()(const laovdb::Coord& ijk, const laovdb::Coord& neighbor,
         double& source, double& diagonal) const
     {
         if (neighbor.x() == ijk.x() && neighbor.z() == ijk.z()) {
             // Workaround for spurious GCC 4.8 -Wstrict-overflow warning:
-            const openvdb::Coord::ValueType dy = (ijk.y() - neighbor.y());
+            const laovdb::Coord::ValueType dy = (ijk.y() - neighbor.y());
             if (dy > 0) source -= 1.0;
             else diagonal -= 1.0;
         }
@@ -203,7 +203,7 @@ template<typename TreeType>
 void
 doTestSolveWithBoundaryConditions()
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     using ValueType = typename TreeType::ValueType;
 
@@ -252,22 +252,22 @@ doTestSolveWithBoundaryConditions()
 
 TEST_F(TestPoissonSolver, testSolveWithBoundaryConditions)
 {
-    doTestSolveWithBoundaryConditions<openvdb::FloatTree>();
-    doTestSolveWithBoundaryConditions<openvdb::DoubleTree>();
+    doTestSolveWithBoundaryConditions<laovdb::FloatTree>();
+    doTestSolveWithBoundaryConditions<laovdb::DoubleTree>();
 }
 
 
 namespace {
 
-openvdb::FloatGrid::Ptr
+laovdb::FloatGrid::Ptr
 newCubeLS(
     const int outerLength, // in voxels
     const int innerLength, // in voxels
-    const openvdb::Vec3I& centerIS, // in index space
+    const laovdb::Vec3I& centerIS, // in index space
     const float dx, // grid spacing
     bool openTop)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     using BBox = math::BBox<Vec3f>;
 
@@ -306,10 +306,10 @@ newCubeLS(
 class LSBoundaryOp
 {
 public:
-    LSBoundaryOp(const openvdb::FloatTree& lsTree): mLS(&lsTree) {}
+    LSBoundaryOp(const laovdb::FloatTree& lsTree): mLS(&lsTree) {}
     LSBoundaryOp(const LSBoundaryOp& other): mLS(other.mLS) {}
 
-    void operator()(const openvdb::Coord& ijk, const openvdb::Coord& neighbor,
+    void operator()(const laovdb::Coord& ijk, const laovdb::Coord& neighbor,
         double& source, double& diagonal) const
     {
         // Doing nothing is equivalent to imposing dP/dn = 0 boundary condition
@@ -326,7 +326,7 @@ public:
     }
 
 private:
-    const openvdb::FloatTree* mLS;
+    const laovdb::FloatTree* mLS;
 };
 
 } // unnamed namespace
@@ -364,7 +364,7 @@ TEST_F(TestPoissonSolver, testSolveWithSegmentedDomain)
     // may have no solution (or multiple solutions).
     // -D.J.Hill
 
-    using namespace openvdb;
+    using namespace laovdb;
 
     using PreconditionerType =
         math::pcg::IncompleteCholeskyPreconditioner<tools::poisson::LaplacianMatrix>;

@@ -16,7 +16,7 @@ class TestMetaMap: public ::testing::Test
 
 TEST_F(TestMetaMap, testInsert)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     MetaMap meta;
     meta.insertMeta("meta1", StringMetadata("testing"));
@@ -45,7 +45,7 @@ TEST_F(TestMetaMap, testInsert)
 
 TEST_F(TestMetaMap, testRemove)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     MetaMap meta;
     meta.insertMeta("meta1", StringMetadata("testing"));
@@ -86,7 +86,7 @@ TEST_F(TestMetaMap, testRemove)
 
 TEST_F(TestMetaMap, testGetMetadata)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     MetaMap meta;
     meta.insertMeta("meta1", StringMetadata("testing"));
@@ -108,15 +108,15 @@ TEST_F(TestMetaMap, testGetMetadata)
     EXPECT_TRUE(!meta.getMetadata<StringMetadata>("meta2"));
 
     EXPECT_THROW(meta.metaValue<int32_t>("meta3"),
-                         openvdb::TypeError);
+                         laovdb::TypeError);
 
     EXPECT_THROW(meta.metaValue<double>("meta5"),
-                         openvdb::LookupError);
+                         laovdb::LookupError);
 }
 
 TEST_F(TestMetaMap, testIO)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     logging::LevelScope suppressLogging{logging::Level::Fatal};
 
@@ -195,7 +195,7 @@ TEST_F(TestMetaMap, testIO)
 
 TEST_F(TestMetaMap, testEmptyIO)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     MetaMap meta;
 
@@ -212,7 +212,7 @@ TEST_F(TestMetaMap, testEmptyIO)
 
 TEST_F(TestMetaMap, testCopyConstructor)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     MetaMap meta;
     meta.insertMeta("meta1", StringMetadata("testing"));
@@ -240,7 +240,7 @@ TEST_F(TestMetaMap, testCopyConstructor)
 
 TEST_F(TestMetaMap, testCopyConstructorEmpty)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     MetaMap meta;
 
@@ -253,7 +253,7 @@ TEST_F(TestMetaMap, testCopyConstructorEmpty)
 
 TEST_F(TestMetaMap, testAssignment)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // Populate a map with data.
     MetaMap meta;
@@ -285,7 +285,7 @@ TEST_F(TestMetaMap, testAssignment)
 
 TEST_F(TestMetaMap, testEquality)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     // Populate a map with data.
     MetaMap meta;

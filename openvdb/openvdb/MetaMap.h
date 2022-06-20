@@ -11,7 +11,7 @@
 #include <map>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -212,6 +212,6 @@ MetaMap::metaValue(const Name &name) const
 }
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_METADATA_METAMAP_HAS_BEEN_INCLUDED

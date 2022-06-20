@@ -14,14 +14,14 @@
 
 class TestMeanCurvature: public ::testing::Test
 {
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 };
 
 
 TEST_F(TestMeanCurvature, testISMeanCurvature)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     typedef FloatGrid::ConstAccessor  AccessorType;
 
@@ -43,8 +43,8 @@ TEST_F(TestMeanCurvature, testISMeanCurvature)
     EXPECT_TRUE(!SixthOrder::result(inAccessor, xyz, alpha, beta));
 
     // Next test a level set sphere
-    const openvdb::Coord dim(64,64,64);
-    const openvdb::Vec3f center(35.0f ,30.0f, 40.0f);
+    const laovdb::Coord dim(64,64,64);
+    const laovdb::Vec3f center(35.0f ,30.0f, 40.0f);
     const float radius=0.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 
@@ -88,7 +88,7 @@ TEST_F(TestMeanCurvature, testISMeanCurvature)
 
 TEST_F(TestMeanCurvature, testISMeanCurvatureStencil)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     typedef FloatGrid::ConstAccessor  AccessorType;
 
@@ -116,8 +116,8 @@ TEST_F(TestMeanCurvature, testISMeanCurvatureStencil)
     EXPECT_TRUE(!SixthOrder::result(dense_6th, alpha, beta));
 
     // Next test on a level set sphere
-    const openvdb::Coord dim(64,64,64);
-    const openvdb::Vec3f center(35.0f ,30.0f, 40.0f);
+    const laovdb::Coord dim(64,64,64);
+    const laovdb::Vec3f center(35.0f ,30.0f, 40.0f);
     const float radius=0.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
     dense_2nd.moveTo(xyz);
@@ -164,7 +164,7 @@ TEST_F(TestMeanCurvature, testISMeanCurvatureStencil)
 
 TEST_F(TestMeanCurvature, testWSMeanCurvature)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     using math::AffineMap;
     using math::TranslationMap;
     using math::UniformScaleMap;
@@ -219,8 +219,8 @@ TEST_F(TestMeanCurvature, testWSMeanCurvature)
         FloatGrid::Ptr grid = createGrid<FloatGrid>(/*background=*/5.0);
         FloatTree& tree = grid->tree();
 
-        const openvdb::Coord dim(64,64,64);
-        const openvdb::Vec3f center(35.0f ,30.0f, 40.0f);
+        const laovdb::Coord dim(64,64,64);
+        const laovdb::Vec3f center(35.0f ,30.0f, 40.0f);
         const float radius=0.0f;
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -278,8 +278,8 @@ TEST_F(TestMeanCurvature, testWSMeanCurvature)
         grid->setTransform(math::Transform::createLinearTransform(voxel_size));
         EXPECT_TRUE(grid->empty());
 
-        const openvdb::Coord dim(32,32,32);
-        const openvdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
+        const laovdb::Coord dim(32,32,32);
+        const laovdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
         const float radius=10.0f;
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -327,8 +327,8 @@ TEST_F(TestMeanCurvature, testWSMeanCurvature)
         grid->setTransform(math::Transform::Ptr(new math::Transform(rotated_map)));
         EXPECT_TRUE(grid->empty());
 
-        const openvdb::Coord dim(32,32,32);
-        const openvdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
+        const laovdb::Coord dim(32,32,32);
+        const laovdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
         const float radius=10.0f;
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -363,7 +363,7 @@ TEST_F(TestMeanCurvature, testWSMeanCurvature)
 
 TEST_F(TestMeanCurvature, testWSMeanCurvatureStencil)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     using math::AffineMap;
     using math::TranslationMap;
     using math::UniformScaleMap;
@@ -426,8 +426,8 @@ TEST_F(TestMeanCurvature, testWSMeanCurvatureStencil)
         FloatGrid::Ptr grid = createGrid<FloatGrid>(/*background=*/5.0);
         FloatTree& tree = grid->tree();
 
-        const openvdb::Coord dim(64,64,64);
-        const openvdb::Vec3f center(35.0f, 30.0f, 40.0f);//i.e. (35,30,40) in index space
+        const laovdb::Coord dim(64,64,64);
+        const laovdb::Vec3f center(35.0f, 30.0f, 40.0f);//i.e. (35,30,40) in index space
         const float radius=0.0f;
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -489,8 +489,8 @@ TEST_F(TestMeanCurvature, testWSMeanCurvatureStencil)
         grid->setTransform(math::Transform::createLinearTransform(voxel_size));
         EXPECT_TRUE(grid->empty());
 
-        const openvdb::Coord dim(32,32,32);
-        const openvdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
+        const laovdb::Coord dim(32,32,32);
+        const laovdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
         const float radius=10.0f;
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -543,8 +543,8 @@ TEST_F(TestMeanCurvature, testWSMeanCurvatureStencil)
         grid->setTransform(math::Transform::Ptr(new math::Transform(rotated_map)));
         EXPECT_TRUE(grid->empty());
 
-        const openvdb::Coord dim(32,32,32);
-        const openvdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
+        const laovdb::Coord dim(32,32,32);
+        const laovdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
         const float radius=10.0f;
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -583,13 +583,13 @@ TEST_F(TestMeanCurvature, testWSMeanCurvatureStencil)
 
 TEST_F(TestMeanCurvature, testMeanCurvatureTool)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = createGrid<FloatGrid>(/*background=*/5.0);
     FloatTree& tree = grid->tree();
 
-    const openvdb::Coord dim(64,64,64);
-    const openvdb::Vec3f center(35.0f, 30.0f, 40.0f);//i.e. (35,30,40) in index space
+    const laovdb::Coord dim(64,64,64);
+    const laovdb::Vec3f center(35.0f, 30.0f, 40.0f);//i.e. (35,30,40) in index space
     const float radius=0.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 
@@ -607,20 +607,20 @@ TEST_F(TestMeanCurvature, testMeanCurvatureTool)
 
 TEST_F(TestMeanCurvature, testMeanCurvatureMaskedTool)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     FloatGrid::Ptr grid = createGrid<FloatGrid>(/*background=*/5.0);
     FloatTree& tree = grid->tree();
 
-    const openvdb::Coord dim(64,64,64);
-    const openvdb::Vec3f center(35.0f, 30.0f, 40.0f);//i.e. (35,30,40) in index space
+    const laovdb::Coord dim(64,64,64);
+    const laovdb::Vec3f center(35.0f, 30.0f, 40.0f);//i.e. (35,30,40) in index space
     const float radius=0.0f;
     unittest_util::makeSphere<FloatGrid>(dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
 
     EXPECT_TRUE(!tree.empty());
 
 
-    const openvdb::CoordBBox maskbbox(openvdb::Coord(35, 30, 30), openvdb::Coord(41, 41, 41));
+    const laovdb::CoordBBox maskbbox(laovdb::Coord(35, 30, 30), laovdb::Coord(41, 41, 41));
     BoolGrid::Ptr maskGrid = BoolGrid::create(false);
     maskGrid->fill(maskbbox, true/*value*/, true/*activate*/);
 
@@ -642,7 +642,7 @@ TEST_F(TestMeanCurvature, testMeanCurvatureMaskedTool)
 
 TEST_F(TestMeanCurvature, testCurvatureStencil)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     {// test of level set to sphere at (6,8,10) with R=10 and dx=0.5
 
@@ -658,8 +658,8 @@ TEST_F(TestMeanCurvature, testCurvatureStencil)
         EXPECT_NEAR(0.0, cs.meanCurvatureNormGrad(), 0.0);
 
         // Next test on a level set sphere
-        const openvdb::Coord dim(32,32,32);
-        const openvdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
+        const laovdb::Coord dim(32,32,32);
+        const laovdb::Vec3f center(6.0f, 8.0f, 10.0f);//i.e. (12,16,20) in index space
         const float radius=10.0f;
         unittest_util::makeSphere<FloatGrid>(
             dim, center, radius, *grid, unittest_util::SPHERE_DENSE);
@@ -736,7 +736,7 @@ TEST_F(TestMeanCurvature, testCurvatureStencil)
 
 TEST_F(TestMeanCurvature, testIntersection)
 {
-  using namespace openvdb;
+  using namespace laovdb;
   const Coord ijk(1,4,-9);
   FloatGrid grid(0.0f);
   auto acc = grid.getAccessor();

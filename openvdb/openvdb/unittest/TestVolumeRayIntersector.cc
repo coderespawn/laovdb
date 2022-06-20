@@ -30,7 +30,7 @@ class TestVolumeRayIntersector : public ::testing::Test
 
 TEST_F(TestVolumeRayIntersector, testAll)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     typedef math::Ray<double>  RayT;
     typedef RayT::Vec3Type     Vec3T;
 

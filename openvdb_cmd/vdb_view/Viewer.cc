@@ -29,7 +29,7 @@
 #endif
 #include <GLFW/glfw3.h>
 
-namespace openvdb_viewer {
+namespace laovdb_viewer {
 
 class ViewerImpl
 {
@@ -46,7 +46,7 @@ public:
 
     bool isOpen() const;
     bool open(int width = 900, int height = 800);
-    void view(const openvdb::GridCPtrVec&);
+    void view(const laovdb::GridCPtrVec&);
     void handleEvents();
     void close();
 
@@ -76,8 +76,8 @@ public:
     void windowSizeCallback(int width, int height);
     void windowRefreshCallback();
 
-    static openvdb::BBoxd worldSpaceBBox(const openvdb::math::Transform&,
-        const openvdb::CoordBBox&);
+    static laovdb::BBoxd worldSpaceBBox(const laovdb::math::Transform&,
+        const laovdb::CoordBBox&);
     static void sleep(double seconds);
 
 private:
@@ -86,7 +86,7 @@ private:
     ClipBoxPtr mClipBox;
     RenderModulePtr mViewportModule;
     std::vector<RenderModulePtr> mRenderModules;
-    openvdb::GridCPtrVec mGrids;
+    laovdb::GridCPtrVec mGrids;
     size_t mGridIdx, mUpdates;
     std::string mGridName, mProgName, mGridInfo, mTransformInfo, mTreeInfo;
     int mWheelPos;
@@ -101,7 +101,7 @@ class ThreadManager
 public:
     ThreadManager();
 
-    void view(const openvdb::GridCPtrVec& gridList);
+    void view(const laovdb::GridCPtrVec& gridList);
     void close();
     void resize(int width, int height);
 
@@ -112,7 +112,7 @@ private:
     std::atomic<bool> mRedisplay;
     bool mClose, mHasThread;
     std::thread mThread;
-    openvdb::GridCPtrVec mGrids;
+    laovdb::GridCPtrVec mGrids;
 };
 
 
@@ -233,7 +233,7 @@ Viewer::open(int width, int height)
 
 
 void
-Viewer::view(const openvdb::GridCPtrVec& grids)
+Viewer::view(const laovdb::GridCPtrVec& grids)
 {
     if (sThreadMgr) {
         sThreadMgr->view(grids);
@@ -286,7 +286,7 @@ ThreadManager::ThreadManager()
 
 
 void
-ThreadManager::view(const openvdb::GridCPtrVec& gridList)
+ThreadManager::view(const laovdb::GridCPtrVec& gridList)
 {
     if (!sViewer) return;
 
@@ -399,9 +399,9 @@ ViewerImpl::getVersionString() const
     std::ostringstream ostr;
 
     ostr << "OpenVDB: " <<
-        openvdb::OPENVDB_LIBRARY_MAJOR_VERSION << "." <<
-        openvdb::OPENVDB_LIBRARY_MINOR_VERSION << "." <<
-        openvdb::OPENVDB_LIBRARY_PATCH_VERSION;
+        laovdb::OPENVDB_LIBRARY_MAJOR_VERSION << "." <<
+        laovdb::OPENVDB_LIBRARY_MINOR_VERSION << "." <<
+        laovdb::OPENVDB_LIBRARY_PATCH_VERSION;
 
     int major, minor, rev;
     glfwGetVersion(&major, &minor, &rev);
@@ -509,7 +509,7 @@ ViewerImpl::close()
 
 
 void
-ViewerImpl::view(const openvdb::GridCPtrVec& gridList)
+ViewerImpl::view(const laovdb::GridCPtrVec& gridList)
 {
     if (!isOpen()) return;
 
@@ -518,11 +518,11 @@ ViewerImpl::view(const openvdb::GridCPtrVec& gridList)
     mGridName.clear();
 
     // Compute the combined bounding box of all the grids.
-    openvdb::BBoxd bbox(openvdb::Vec3d(0.0), openvdb::Vec3d(0.0));
+    laovdb::BBoxd bbox(laovdb::Vec3d(0.0), laovdb::Vec3d(0.0));
     if (!gridList.empty()) {
         bbox = worldSpaceBBox(
             gridList[0]->transform(), gridList[0]->evalActiveVoxelBoundingBox());
-        openvdb::Vec3d voxelSize = gridList[0]->voxelSize();
+        laovdb::Vec3d voxelSize = gridList[0]->voxelSize();
 
         for (size_t n = 1; n < gridList.size(); ++n) {
             bbox.expand(worldSpaceBBox(gridList[n]->transform(),
@@ -546,7 +546,7 @@ ViewerImpl::view(const openvdb::GridCPtrVec& gridList)
 
     {
         // set up camera
-        openvdb::Vec3d extents = bbox.extents();
+        laovdb::Vec3d extents = bbox.extents();
         double maxExtent = std::max(extents[0], std::max(extents[1], extents[2]));
         mCamera->setTarget(bbox.getCenter(), maxExtent);
         mCamera->lookAtTarget();
@@ -697,18 +697,18 @@ ViewerImpl::sleep(double secs)
 
 
 //static
-openvdb::BBoxd
-ViewerImpl::worldSpaceBBox(const openvdb::math::Transform& xform, const openvdb::CoordBBox& bbox)
+laovdb::BBoxd
+ViewerImpl::worldSpaceBBox(const laovdb::math::Transform& xform, const laovdb::CoordBBox& bbox)
 {
-    openvdb::Vec3d pMin = openvdb::Vec3d(std::numeric_limits<double>::max());
-    openvdb::Vec3d pMax = -pMin;
+    laovdb::Vec3d pMin = laovdb::Vec3d(std::numeric_limits<double>::max());
+    laovdb::Vec3d pMax = -pMin;
 
-    const openvdb::Coord& min = bbox.min();
-    const openvdb::Coord& max = bbox.max();
-    openvdb::Coord ijk;
+    const laovdb::Coord& min = bbox.min();
+    const laovdb::Coord& max = bbox.max();
+    laovdb::Coord ijk;
 
     // corner 1
-    openvdb::Vec3d ptn = xform.indexToWorld(min);
+    laovdb::Vec3d ptn = xform.indexToWorld(min);
     for (int i = 0; i < 3; ++i) {
         if (ptn[i] < pMin[i]) pMin[i] = ptn[i];
         if (ptn[i] > pMax[i]) pMax[i] = ptn[i];
@@ -782,7 +782,7 @@ ViewerImpl::worldSpaceBBox(const openvdb::math::Transform& xform, const openvdb:
         if (ptn[i] > pMax[i]) pMax[i] = ptn[i];
     }
 
-    return openvdb::BBoxd(pMin, pMax);
+    return laovdb::BBoxd(pMin, pMax);
 }
 
 
@@ -882,15 +882,15 @@ ViewerImpl::showNthGrid(size_t n)
     {
         std::ostringstream ostrm;
         std::string s = mGrids[n]->getName();
-        const openvdb::GridClass cls = mGrids[n]->getGridClass();
+        const laovdb::GridClass cls = mGrids[n]->getGridClass();
         if (!s.empty()) ostrm << s << " / ";
         ostrm << mGrids[n]->valueType() << " / ";
-        if (cls == openvdb::GRID_UNKNOWN) ostrm << " class unknown";
-        else ostrm << " " << openvdb::GridBase::gridClassToString(cls);
+        if (cls == laovdb::GRID_UNKNOWN) ostrm << " class unknown";
+        else ostrm << " " << laovdb::GridBase::gridClassToString(cls);
         mGridInfo = ostrm.str();
     }
     {
-        openvdb::Coord dim = mGrids[n]->evalActiveVoxelDim();
+        laovdb::Coord dim = mGrids[n]->evalActiveVoxelDim();
         std::ostringstream ostrm;
         ostrm << dim[0] << " x " << dim[1] << " x " << dim[2]
             << " / voxel size " << std::setprecision(4) << mGrids[n]->voxelSize()[0]
@@ -899,18 +899,18 @@ ViewerImpl::showNthGrid(size_t n)
     }
     {
         std::ostringstream ostrm;
-        const openvdb::Index64 count = mGrids[n]->activeVoxelCount();
-        ostrm << openvdb::util::formattedInt(count)
+        const laovdb::Index64 count = mGrids[n]->activeVoxelCount();
+        ostrm << laovdb::util::formattedInt(count)
             << " active voxel" << (count == 1 ? "" : "s");
         mTreeInfo = ostrm.str();
     }
     {
-        if (mGrids[n]->isType<openvdb::points::PointDataGrid>()) {
-            const openvdb::points::PointDataGrid::ConstPtr points =
-                openvdb::gridConstPtrCast<openvdb::points::PointDataGrid>(mGrids[n]);
-            const openvdb::Index64 count = openvdb::points::pointCount(points->tree());
+        if (mGrids[n]->isType<laovdb::points::PointDataGrid>()) {
+            const laovdb::points::PointDataGrid::ConstPtr points =
+                laovdb::gridConstPtrCast<laovdb::points::PointDataGrid>(mGrids[n]);
+            const laovdb::Index64 count = laovdb::points::pointCount(points->tree());
             std::ostringstream ostrm;
-            ostrm << " / " << openvdb::util::formattedInt(count)
+            ostrm << " / " << laovdb::util::formattedInt(count)
                  << " point" << (count == 1 ? "" : "s");
             mTreeInfo.append(ostrm.str());
         }
@@ -949,7 +949,7 @@ ViewerImpl::keyCallback(int key, int action)
             mClipBox->reset();
             break;
         case 'h': case 'H': // center home
-            mCamera->lookAt(openvdb::Vec3d(0.0), 10.0);
+            mCamera->lookAt(laovdb::Vec3d(0.0), 10.0);
             break;
         case 'g': case 'G': // center geometry
             mCamera->lookAtTarget();
@@ -1069,4 +1069,4 @@ ViewerImpl::toggleInfoText()
     mShowInfo = !mShowInfo;
 }
 
-} // namespace openvdb_viewer
+} // namespace laovdb_viewer

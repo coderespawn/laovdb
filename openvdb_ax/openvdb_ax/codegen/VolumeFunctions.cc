@@ -25,7 +25,7 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -50,7 +50,7 @@ namespace {
 
 inline FunctionGroup::UniquePtr axcoordtooffset(const FunctionOptions& op)
 {
-    using LeafNodeT = openvdb::BoolGrid::TreeType::LeafNodeType;
+    using LeafNodeT = laovdb::BoolGrid::TreeType::LeafNodeType;
 
     /// @warning This function assumes that the node in question is a LeafNode!
     ///   This means that the result of this method is ONLY correct if the
@@ -95,15 +95,15 @@ inline FunctionGroup::UniquePtr axcoordtooffset(const FunctionOptions& op)
     };
 
     static auto coordtooffset =
-        [](const openvdb::math::Vec3<int32_t>* iscoord)
+        [](const laovdb::math::Vec3<int32_t>* iscoord)
     {
-        const openvdb::Coord* ijk = reinterpret_cast<const openvdb::Coord*>(iscoord);
+        const laovdb::Coord* ijk = reinterpret_cast<const laovdb::Coord*>(iscoord);
         return int32_t(LeafNodeT::coordToOffset(*ijk));
     };
 
     return FunctionBuilder("coordtooffset")
-        .addSignature<int32_t(const openvdb::math::Vec3<int32_t>*)>(generate,
-                (int32_t(*)(const openvdb::math::Vec3<int32_t>*))(coordtooffset))
+        .addSignature<int32_t(const laovdb::math::Vec3<int32_t>*)>(generate,
+                (int32_t(*)(const laovdb::math::Vec3<int32_t>*))(coordtooffset))
         .setArgumentNames({"coord"})
         .addFunctionAttribute(llvm::Attribute::ReadOnly)
         .addFunctionAttribute(llvm::Attribute::NoRecurse)
@@ -117,7 +117,7 @@ inline FunctionGroup::UniquePtr axcoordtooffset(const FunctionOptions& op)
 
 inline FunctionGroup::UniquePtr axoffsettocoord(const FunctionOptions& op)
 {
-    using LeafNodeT = openvdb::BoolGrid::TreeType::LeafNodeType;
+    using LeafNodeT = laovdb::BoolGrid::TreeType::LeafNodeType;
 
     /// @warning This function assumes that the node in question is a LeafNode!
     ///   This means that the result of this method is ONLY correct if the
@@ -161,12 +161,12 @@ inline FunctionGroup::UniquePtr axoffsettocoord(const FunctionOptions& op)
     };
 
     static auto offsetToCoord =
-        [](openvdb::math::Vec3<int32_t>* out, const int32_t offset)
+        [](laovdb::math::Vec3<int32_t>* out, const int32_t offset)
     {
         *out = LeafNodeT::offsetToLocalCoord(offset).asVec3i();
     };
 
-    using OffsetToCoordT = void(openvdb::math::Vec3<int32_t>*, const int32_t);
+    using OffsetToCoordT = void(laovdb::math::Vec3<int32_t>*, const int32_t);
 
     return FunctionBuilder("offsettocoord")
         .addSignature<OffsetToCoordT, true>(generate, (OffsetToCoordT*)(offsetToCoord))
@@ -185,7 +185,7 @@ inline FunctionGroup::UniquePtr axoffsettocoord(const FunctionOptions& op)
 
 inline FunctionGroup::UniquePtr axoffsettoglobalcoord(const FunctionOptions& op)
 {
-    using LeafNodeT = openvdb::BoolGrid::TreeType::LeafNodeType;
+    using LeafNodeT = laovdb::BoolGrid::TreeType::LeafNodeType;
 
     /// @warning This function assumes that the node in question is a LeafNode!
     ///   This means that the result of this method is ONLY correct if the
@@ -220,7 +220,7 @@ inline FunctionGroup::UniquePtr axoffsettoglobalcoord(const FunctionOptions& op)
     };
 
     static auto offsetToGlobalCoord =
-        [](openvdb::math::Vec3<int32_t>* out, const int32_t offset, const openvdb::math::Vec3<int32_t>* in)
+        [](laovdb::math::Vec3<int32_t>* out, const int32_t offset, const laovdb::math::Vec3<int32_t>* in)
     {
         auto coord = LeafNodeT::offsetToLocalCoord(offset);
         out->x() = coord.x() + in->x();
@@ -228,7 +228,7 @@ inline FunctionGroup::UniquePtr axoffsettoglobalcoord(const FunctionOptions& op)
         out->z() = coord.z() + in->z();
     };
 
-    using OffsetToGlobalCoordT = void(openvdb::math::Vec3<int32_t>*,const int32_t,const openvdb::math::Vec3<int32_t>*);
+    using OffsetToGlobalCoordT = void(laovdb::math::Vec3<int32_t>*,const int32_t,const laovdb::math::Vec3<int32_t>*);
 
     return FunctionBuilder("offsettoglobalcoord")
         .addSignature<OffsetToGlobalCoordT, true>(generate, (OffsetToGlobalCoordT*)(offsetToGlobalCoord))
@@ -248,17 +248,17 @@ inline FunctionGroup::UniquePtr axoffsettoglobalcoord(const FunctionOptions& op)
 inline FunctionGroup::UniquePtr axindextoworld(const FunctionOptions& op)
 {
     static auto indexToWorld =
-        [](openvdb::math::Vec3<double>* out,
-           const openvdb::math::Vec3<int32_t>* coord,
+        [](laovdb::math::Vec3<double>* out,
+           const laovdb::math::Vec3<int32_t>* coord,
            const void* transform)
     {
-        const openvdb::math::Transform* const transformPtr =
-                static_cast<const openvdb::math::Transform*>(transform);
-        const openvdb::Coord* ijk = reinterpret_cast<const openvdb::Coord*>(coord);
+        const laovdb::math::Transform* const transformPtr =
+                static_cast<const laovdb::math::Transform*>(transform);
+        const laovdb::Coord* ijk = reinterpret_cast<const laovdb::Coord*>(coord);
         *out = transformPtr->indexToWorld(*ijk);
     };
 
-    using IndexToWorldT = void(openvdb::math::Vec3<double>*, const openvdb::math::Vec3<int32_t>*, const void*);
+    using IndexToWorldT = void(laovdb::math::Vec3<double>*, const laovdb::math::Vec3<int32_t>*, const void*);
 
     return FunctionBuilder("indextoworld")
         .addSignature<IndexToWorldT, true>((IndexToWorldT*)(indexToWorld))
@@ -289,7 +289,7 @@ inline FunctionGroup::UniquePtr axgetcoord(const FunctionOptions& op)
     };
 
     return FunctionBuilder("getcoord")
-        .addSignature<openvdb::math::Vec3<int32_t>*()>(generate)
+        .addSignature<laovdb::math::Vec3<int32_t>*()>(generate)
         .setEmbedIR(true)
         .setConstantFold(false)
         .addDependency("offsettoglobalcoord")
@@ -339,7 +339,7 @@ inline FunctionGroup::UniquePtr axgetvoxelpws(const FunctionOptions& op)
     };
 
     return FunctionBuilder("getvoxelpws")
-        .addSignature<openvdb::math::Vec3<double>*()>(generate)
+        .addSignature<laovdb::math::Vec3<double>*()>(generate)
         .setEmbedIR(true)
         .setConstantFold(false)
         .addDependency("getcoord")
@@ -373,7 +373,7 @@ inline FunctionGroup::UniquePtr axsetvoxel(const FunctionOptions& op)
 {
     static auto setvoxelptr =
         [](void* accessor,
-           const openvdb::math::Vec3<int32_t>* coord,
+           const laovdb::math::Vec3<int32_t>* coord,
            const int32_t level,
            const bool ison,
            const auto value)
@@ -381,7 +381,7 @@ inline FunctionGroup::UniquePtr axsetvoxel(const FunctionOptions& op)
         using ValueType = typename std::remove_const
             <typename std::remove_pointer
                 <decltype(value)>::type>::type;
-        using GridType = typename openvdb::BoolGrid::ValueConverter<ValueType>::Type;
+        using GridType = typename laovdb::BoolGrid::ValueConverter<ValueType>::Type;
         using RootNodeType = typename GridType::TreeType::RootNodeType;
         using AccessorType = typename GridType::Accessor;
 
@@ -389,7 +389,7 @@ inline FunctionGroup::UniquePtr axsetvoxel(const FunctionOptions& op)
         assert(coord);
 
         // set value only to avoid changing topology
-        const openvdb::Coord* ijk = reinterpret_cast<const openvdb::Coord*>(coord);
+        const laovdb::Coord* ijk = reinterpret_cast<const laovdb::Coord*>(coord);
         AccessorType* const accessorPtr = static_cast<AccessorType*>(accessor);
 
         if (level != -1) {
@@ -419,12 +419,12 @@ inline FunctionGroup::UniquePtr axsetvoxel(const FunctionOptions& op)
                 using NodeT1 = typename AccessorType::NodeT1;
                 using NodeT2 = typename AccessorType::NodeT2;
                 if (NodeT1* node = accessorPtr->template getNode<NodeT1>()) {
-                    const openvdb::Index index = node->coordToOffset(*ijk);
+                    const laovdb::Index index = node->coordToOffset(*ijk);
                     assert(node->isChildMaskOff(index));
                     node->addTile(index, *value, ison);
                 }
                 else if (NodeT2* node = accessorPtr->template getNode<NodeT2>()) {
-                    const openvdb::Index index = node->coordToOffset(*ijk);
+                    const laovdb::Index index = node->coordToOffset(*ijk);
                     assert(node->isChildMaskOff(index));
                     node->addTile(index, *value, ison);
                 }
@@ -438,7 +438,7 @@ inline FunctionGroup::UniquePtr axsetvoxel(const FunctionOptions& op)
 
     static auto setvoxelstr =
         [](void* accessor,
-           const openvdb::math::Vec3<int32_t>* coord,
+           const laovdb::math::Vec3<int32_t>* coord,
            const int32_t level,
            const bool ison,
            codegen::String* value)
@@ -449,33 +449,33 @@ inline FunctionGroup::UniquePtr axsetvoxel(const FunctionOptions& op)
 
     static auto setvoxel =
         [](void* accessor,
-           const openvdb::math::Vec3<int32_t>* coord,
+           const laovdb::math::Vec3<int32_t>* coord,
            const int32_t level,
            const bool ison,
            const auto value) {
         setvoxelptr(accessor, coord, level, ison, &value);
     };
 
-    using SetVoxelD = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const double);
-    using SetVoxelF = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const float);
-    using SetVoxelI64 = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const int64_t);
-    using SetVoxelI32 = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const int32_t);
-    using SetVoxelI16 = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const int16_t);
-    using SetVoxelB = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const bool);
-    using SetVoxelV2D = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Vec2<double>*);
-    using SetVoxelV2F = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Vec2<float>*);
-    using SetVoxelV2I = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Vec2<int32_t>*);
-    using SetVoxelV3D = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Vec3<double>*);
-    using SetVoxelV3F = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Vec3<float>*);
-    using SetVoxelV3I = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Vec3<int32_t>*);
-    using SetVoxelV4D = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Vec4<double>*);
-    using SetVoxelV4F = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Vec4<float>*);
-    using SetVoxelV4I = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Vec4<int32_t>*);
-    using SetVoxelM3D = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Mat3<double>*);
-    using SetVoxelM3F = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Mat3<float>*);
-    using SetVoxelM4D = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Mat4<double>*);
-    using SetVoxelM4F = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, const openvdb::math::Mat4<float>*);
-    using SetVoxelStr = void(void*, const openvdb::math::Vec3<int32_t>*, const int32_t, const bool, codegen::String*);
+    using SetVoxelD = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const double);
+    using SetVoxelF = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const float);
+    using SetVoxelI64 = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const int64_t);
+    using SetVoxelI32 = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const int32_t);
+    using SetVoxelI16 = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const int16_t);
+    using SetVoxelB = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const bool);
+    using SetVoxelV2D = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Vec2<double>*);
+    using SetVoxelV2F = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Vec2<float>*);
+    using SetVoxelV2I = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Vec2<int32_t>*);
+    using SetVoxelV3D = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Vec3<double>*);
+    using SetVoxelV3F = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Vec3<float>*);
+    using SetVoxelV3I = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Vec3<int32_t>*);
+    using SetVoxelV4D = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Vec4<double>*);
+    using SetVoxelV4F = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Vec4<float>*);
+    using SetVoxelV4I = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Vec4<int32_t>*);
+    using SetVoxelM3D = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Mat3<double>*);
+    using SetVoxelM3F = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Mat3<float>*);
+    using SetVoxelM4D = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Mat4<double>*);
+    using SetVoxelM4F = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, const laovdb::math::Mat4<float>*);
+    using SetVoxelStr = void(void*, const laovdb::math::Vec3<int32_t>*, const int32_t, const bool, codegen::String*);
 
     return FunctionBuilder("setvoxel")
         .addSignature<SetVoxelD>((SetVoxelD*)(setvoxel))
@@ -526,34 +526,34 @@ inline FunctionGroup::UniquePtr axgetvoxel(const FunctionOptions& op)
 {
     static auto getvoxel =
         [](void* accessor,
-           const openvdb::math::Vec3<int32_t>* coord,
+           const laovdb::math::Vec3<int32_t>* coord,
            auto value)
     {
         using ValueType = typename std::remove_pointer<decltype(value)>::type;
-        using GridType = typename openvdb::BoolGrid::ValueConverter<ValueType>::Type;
+        using GridType = typename laovdb::BoolGrid::ValueConverter<ValueType>::Type;
         using AccessorType = typename GridType::Accessor;
 
         assert(accessor);
         assert(coord);
         assert(value);
 
-        const openvdb::Coord* ijk = reinterpret_cast<const openvdb::Coord*>(coord);
+        const laovdb::Coord* ijk = reinterpret_cast<const laovdb::Coord*>(coord);
         (*value) = static_cast<const AccessorType*>(accessor)->getValue(*ijk);
     };
 
     static auto getvoxelstr =
         [](void* accessor,
-           const openvdb::math::Vec3<int32_t>* coord,
+           const laovdb::math::Vec3<int32_t>* coord,
            codegen::String* value)
     {
-        using GridType = openvdb::BoolGrid::ValueConverter<std::string>::Type;
+        using GridType = laovdb::BoolGrid::ValueConverter<std::string>::Type;
         using AccessorType = GridType::Accessor;
 
         assert(accessor);
         assert(coord);
         assert(value);
 
-        const openvdb::Coord* ijk = reinterpret_cast<const openvdb::Coord*>(coord);
+        const laovdb::Coord* ijk = reinterpret_cast<const laovdb::Coord*>(coord);
         const std::string& str = static_cast<const AccessorType*>(accessor)->getValue(*ijk);
         // Copy the string to AX's required representation
         *value = str;
@@ -563,12 +563,12 @@ inline FunctionGroup::UniquePtr axgetvoxel(const FunctionOptions& op)
         [](void* accessor,
            void* sourceTransform,
            void* targetTransform,
-           const openvdb::math::Vec3<int32_t>* origin,
+           const laovdb::math::Vec3<int32_t>* origin,
            const int32_t offset,
            auto value)
     {
         using ValueType = typename std::remove_pointer<decltype(value)>::type;
-        using GridType = typename openvdb::BoolGrid::ValueConverter<ValueType>::Type;
+        using GridType = typename laovdb::BoolGrid::ValueConverter<ValueType>::Type;
         using LeafNodeT = typename GridType::TreeType::LeafNodeType;
         using AccessorType = typename GridType::Accessor;
 
@@ -578,12 +578,12 @@ inline FunctionGroup::UniquePtr axgetvoxel(const FunctionOptions& op)
         assert(targetTransform);
 
         const AccessorType* const accessorPtr = static_cast<const AccessorType*>(accessor);
-        const openvdb::math::Transform* const sourceTransformPtr =
-                static_cast<const openvdb::math::Transform*>(sourceTransform);
-        const openvdb::math::Transform* const targetTransformPtr =
-                static_cast<const openvdb::math::Transform*>(targetTransform);
+        const laovdb::math::Transform* const sourceTransformPtr =
+                static_cast<const laovdb::math::Transform*>(sourceTransform);
+        const laovdb::math::Transform* const targetTransformPtr =
+                static_cast<const laovdb::math::Transform*>(targetTransform);
 
-        const openvdb::Coord* ijk = reinterpret_cast<const openvdb::Coord*>(origin);
+        const laovdb::Coord* ijk = reinterpret_cast<const laovdb::Coord*>(origin);
         auto coord = *ijk + LeafNodeT::offsetToLocalCoord(offset);
         coord = targetTransformPtr->worldToIndexCellCentered(sourceTransformPtr->indexToWorld(coord));
         (*value) = accessorPtr->getValue(coord);
@@ -593,11 +593,11 @@ inline FunctionGroup::UniquePtr axgetvoxel(const FunctionOptions& op)
         [](void* accessor,
            void* sourceTransform,
            void* targetTransform,
-           const openvdb::math::Vec3<int32_t>* origin,
+           const laovdb::math::Vec3<int32_t>* origin,
            const int32_t offset,
            codegen::String* value)
     {
-        using GridType = typename openvdb::BoolGrid::ValueConverter<std::string>::Type;
+        using GridType = typename laovdb::BoolGrid::ValueConverter<std::string>::Type;
         using LeafNodeT = typename GridType::TreeType::LeafNodeType;
         using AccessorType = typename GridType::Accessor;
 
@@ -607,12 +607,12 @@ inline FunctionGroup::UniquePtr axgetvoxel(const FunctionOptions& op)
         assert(targetTransform);
 
         const AccessorType* const accessorPtr = static_cast<const AccessorType*>(accessor);
-        const openvdb::math::Transform* const sourceTransformPtr =
-                static_cast<const openvdb::math::Transform*>(sourceTransform);
-        const openvdb::math::Transform* const targetTransformPtr =
-                static_cast<const openvdb::math::Transform*>(targetTransform);
+        const laovdb::math::Transform* const sourceTransformPtr =
+                static_cast<const laovdb::math::Transform*>(sourceTransform);
+        const laovdb::math::Transform* const targetTransformPtr =
+                static_cast<const laovdb::math::Transform*>(targetTransform);
 
-        const openvdb::Coord* ijk = reinterpret_cast<const openvdb::Coord*>(origin);
+        const laovdb::Coord* ijk = reinterpret_cast<const laovdb::Coord*>(origin);
         auto coord = *ijk + LeafNodeT::offsetToLocalCoord(offset);
         coord = targetTransformPtr->worldToIndexCellCentered(sourceTransformPtr->indexToWorld(coord));
         const std::string& str = accessorPtr->getValue(coord);
@@ -620,47 +620,47 @@ inline FunctionGroup::UniquePtr axgetvoxel(const FunctionOptions& op)
         *value = str;
     };
 
-    using GetVoxelS2T_D = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, double*);
-    using GetVoxelS2T_F = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, float*);
-    using GetVoxelS2T_I64 = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, int64_t*);
-    using GetVoxelS2T_I32 = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, int32_t*);
-    using GetVoxelS2T_I16 = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, int16_t*);
-    using GetVoxelS2T_B = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, bool*);
-    using GetVoxelS2T_V2D = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Vec2<double>*);
-    using GetVoxelS2T_V2F = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Vec2<float>*);
-    using GetVoxelS2T_V2I = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Vec2<int32_t>*);
-    using GetVoxelS2T_V3D = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Vec3<double>*);
-    using GetVoxelS2T_V3F = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Vec3<float>*);
-    using GetVoxelS2T_V3I = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Vec3<int32_t>*);
-    using GetVoxelS2T_V4D = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Vec4<double>*);
-    using GetVoxelS2T_V4F = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Vec4<float>*);
-    using GetVoxelS2T_V4I = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Vec4<int32_t>*);
-    using GetVoxelS2T_M3D = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Mat3<double>*);
-    using GetVoxelS2T_M3F = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Mat3<float>*);
-    using GetVoxelS2T_M4D = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Mat4<double>*);
-    using GetVoxelS2T_M4F = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, openvdb::math::Mat4<float>*);
-    using GetVoxelS2T_Str = void(void*, void*, void*, const openvdb::math::Vec3<int32_t>*, int32_t, codegen::String*);
+    using GetVoxelS2T_D = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, double*);
+    using GetVoxelS2T_F = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, float*);
+    using GetVoxelS2T_I64 = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, int64_t*);
+    using GetVoxelS2T_I32 = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, int32_t*);
+    using GetVoxelS2T_I16 = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, int16_t*);
+    using GetVoxelS2T_B = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, bool*);
+    using GetVoxelS2T_V2D = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Vec2<double>*);
+    using GetVoxelS2T_V2F = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Vec2<float>*);
+    using GetVoxelS2T_V2I = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Vec2<int32_t>*);
+    using GetVoxelS2T_V3D = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Vec3<double>*);
+    using GetVoxelS2T_V3F = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Vec3<float>*);
+    using GetVoxelS2T_V3I = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Vec3<int32_t>*);
+    using GetVoxelS2T_V4D = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Vec4<double>*);
+    using GetVoxelS2T_V4F = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Vec4<float>*);
+    using GetVoxelS2T_V4I = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Vec4<int32_t>*);
+    using GetVoxelS2T_M3D = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Mat3<double>*);
+    using GetVoxelS2T_M3F = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Mat3<float>*);
+    using GetVoxelS2T_M4D = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Mat4<double>*);
+    using GetVoxelS2T_M4F = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, laovdb::math::Mat4<float>*);
+    using GetVoxelS2T_Str = void(void*, void*, void*, const laovdb::math::Vec3<int32_t>*, int32_t, codegen::String*);
 
-    using GetVoxelD = void(void*, const openvdb::math::Vec3<int32_t>*, double*);
-    using GetVoxelF = void(void*, const openvdb::math::Vec3<int32_t>*, float*);
-    using GetVoxelI64 = void(void*, const openvdb::math::Vec3<int32_t>*, int64_t*);
-    using GetVoxelI32 = void(void*, const openvdb::math::Vec3<int32_t>*, int32_t*);
-    using GetVoxelI16 = void(void*, const openvdb::math::Vec3<int32_t>*, int16_t*);
-    using GetVoxelB = void(void*, const openvdb::math::Vec3<int32_t>*, bool*);
-    using GetVoxelV2D = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Vec2<double>*);
-    using GetVoxelV2F = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Vec2<float>*);
-    using GetVoxelV2I = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Vec2<int32_t>*);
-    using GetVoxelV3D = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Vec3<double>*);
-    using GetVoxelV3F = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Vec3<float>*);
-    using GetVoxelV3I = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Vec3<int32_t>*);
-    using GetVoxelV4D = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Vec4<double>*);
-    using GetVoxelV4F = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Vec4<float>*);
-    using GetVoxelV4I = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Vec4<int32_t>*);
-    using GetVoxelM3D = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Mat3<double>*);
-    using GetVoxelM3F = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Mat3<float>*);
-    using GetVoxelM4D = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Mat4<double>*);
-    using GetVoxelM4F = void(void*, const openvdb::math::Vec3<int32_t>*, openvdb::math::Mat4<float>*);
-    using GetVoxelStr = void(void*, const openvdb::math::Vec3<int32_t>*, codegen::String*);
+    using GetVoxelD = void(void*, const laovdb::math::Vec3<int32_t>*, double*);
+    using GetVoxelF = void(void*, const laovdb::math::Vec3<int32_t>*, float*);
+    using GetVoxelI64 = void(void*, const laovdb::math::Vec3<int32_t>*, int64_t*);
+    using GetVoxelI32 = void(void*, const laovdb::math::Vec3<int32_t>*, int32_t*);
+    using GetVoxelI16 = void(void*, const laovdb::math::Vec3<int32_t>*, int16_t*);
+    using GetVoxelB = void(void*, const laovdb::math::Vec3<int32_t>*, bool*);
+    using GetVoxelV2D = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Vec2<double>*);
+    using GetVoxelV2F = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Vec2<float>*);
+    using GetVoxelV2I = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Vec2<int32_t>*);
+    using GetVoxelV3D = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Vec3<double>*);
+    using GetVoxelV3F = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Vec3<float>*);
+    using GetVoxelV3I = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Vec3<int32_t>*);
+    using GetVoxelV4D = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Vec4<double>*);
+    using GetVoxelV4F = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Vec4<float>*);
+    using GetVoxelV4I = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Vec4<int32_t>*);
+    using GetVoxelM3D = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Mat3<double>*);
+    using GetVoxelM3F = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Mat3<float>*);
+    using GetVoxelM4D = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Mat4<double>*);
+    using GetVoxelM4F = void(void*, const laovdb::math::Vec3<int32_t>*, laovdb::math::Mat4<float>*);
+    using GetVoxelStr = void(void*, const laovdb::math::Vec3<int32_t>*, codegen::String*);
 
     return FunctionBuilder("getvoxel")
         .addSignature<GetVoxelD>((GetVoxelD*)(getvoxel))
@@ -729,12 +729,12 @@ inline FunctionGroup::UniquePtr axprobevalue(const FunctionOptions& op)
 {
     static auto probe =
         [](void* accessor,
-           const openvdb::math::Vec3<int32_t>* coord,
+           const laovdb::math::Vec3<int32_t>* coord,
            bool* ison,
            auto value)
     {
         using ValueType = typename std::remove_pointer<decltype(value)>::type;
-        using GridType = typename openvdb::BoolGrid::ValueConverter<ValueType>::Type;
+        using GridType = typename laovdb::BoolGrid::ValueConverter<ValueType>::Type;
         using AccessorType = typename GridType::Accessor;
 
         assert(accessor);
@@ -742,17 +742,17 @@ inline FunctionGroup::UniquePtr axprobevalue(const FunctionOptions& op)
         assert(value);
         assert(ison);
 
-        const openvdb::Coord* ijk = reinterpret_cast<const openvdb::Coord*>(coord);
+        const laovdb::Coord* ijk = reinterpret_cast<const laovdb::Coord*>(coord);
         *ison = static_cast<const AccessorType*>(accessor)->probeValue(*ijk, *value);
     };
 
     static auto probestr =
         [](void* accessor,
-           const openvdb::math::Vec3<int32_t>* coord,
+           const laovdb::math::Vec3<int32_t>* coord,
            bool* ison,
            codegen::String* value)
     {
-        using GridType = openvdb::BoolGrid::ValueConverter<std::string>::Type;
+        using GridType = laovdb::BoolGrid::ValueConverter<std::string>::Type;
         using AccessorType = GridType::Accessor;
 
         assert(accessor);
@@ -760,7 +760,7 @@ inline FunctionGroup::UniquePtr axprobevalue(const FunctionOptions& op)
         assert(value);
         assert(ison);
 
-        const openvdb::Coord* ijk = reinterpret_cast<const openvdb::Coord*>(coord);
+        const laovdb::Coord* ijk = reinterpret_cast<const laovdb::Coord*>(coord);
 
         std::string str;
         *ison = static_cast<const AccessorType*>(accessor)->probeValue(*ijk, str);
@@ -768,26 +768,26 @@ inline FunctionGroup::UniquePtr axprobevalue(const FunctionOptions& op)
         *value = str;
     };
 
-    using ProbeValueD = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, double*);
-    using ProbeValueF = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, float*);
-    using ProbeValueI64 = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, int64_t*);
-    using ProbeValueI32 = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, int32_t*);
-    using ProbeValueI16 = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, int16_t*);
-    using ProbeValueB = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, bool*);
-    using ProbeValueV2D = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Vec2<double>*);
-    using ProbeValueV2F = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Vec2<float>*);
-    using ProbeValueV2I = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Vec2<int32_t>*);
-    using ProbeValueV3D = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Vec3<double>*);
-    using ProbeValueV3F = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Vec3<float>*);
-    using ProbeValueV3I = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Vec3<int32_t>*);
-    using ProbeValueV4D = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Vec4<double>*);
-    using ProbeValueV4F = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Vec4<float>*);
-    using ProbeValueV4I = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Vec4<int32_t>*);
-    using ProbeValueM3D = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Mat3<double>*);
-    using ProbeValueM3F = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Mat3<float>*);
-    using ProbeValueM4D = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Mat4<double>*);
-    using ProbeValueM4F = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, openvdb::math::Mat4<float>*);
-    using ProbeValueStr = void(void*, const openvdb::math::Vec3<int32_t>*, bool*, codegen::String*);
+    using ProbeValueD = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, double*);
+    using ProbeValueF = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, float*);
+    using ProbeValueI64 = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, int64_t*);
+    using ProbeValueI32 = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, int32_t*);
+    using ProbeValueI16 = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, int16_t*);
+    using ProbeValueB = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, bool*);
+    using ProbeValueV2D = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Vec2<double>*);
+    using ProbeValueV2F = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Vec2<float>*);
+    using ProbeValueV2I = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Vec2<int32_t>*);
+    using ProbeValueV3D = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Vec3<double>*);
+    using ProbeValueV3F = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Vec3<float>*);
+    using ProbeValueV3I = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Vec3<int32_t>*);
+    using ProbeValueV4D = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Vec4<double>*);
+    using ProbeValueV4F = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Vec4<float>*);
+    using ProbeValueV4I = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Vec4<int32_t>*);
+    using ProbeValueM3D = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Mat3<double>*);
+    using ProbeValueM3F = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Mat3<float>*);
+    using ProbeValueM4D = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Mat4<double>*);
+    using ProbeValueM4F = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, laovdb::math::Mat4<float>*);
+    using ProbeValueStr = void(void*, const laovdb::math::Vec3<int32_t>*, bool*, codegen::String*);
 
     return FunctionBuilder("probevalue")
         .addSignature<ProbeValueD>((ProbeValueD*)(probe))
@@ -862,5 +862,5 @@ void insertVDBVolumeFunctions(FunctionRegistry& registry,
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

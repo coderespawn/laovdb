@@ -855,7 +855,7 @@ __hostdev__ inline uint64_t AlignUp(uint64_t byteCount)
 // forward decleration so we can define Coord::asVec3s and Coord::asVec3d
 template<typename> class Vec3;
 
-/// @brief Signed (i, j, k) 32-bit integer coordinate class, similar to openvdb::math::Coord
+/// @brief Signed (i, j, k) 32-bit integer coordinate class, similar to laovdb::math::Coord
 class Coord
 {
     int32_t mVec[3]; // private member data - three signed index coordinates
@@ -908,7 +908,7 @@ public:
     /// @warning The argument is assumed to be 0, 1, or 2.
     __hostdev__ ValueType& operator[](IndexType i) { return mVec[i]; }
 
-   /// @brief Assignment operator that works with openvdb::Coord
+   /// @brief Assignment operator that works with laovdb::Coord
    template <typename CoordT>
     __hostdev__ Coord& operator=(const CoordT &other)
     {
@@ -1038,7 +1038,7 @@ public:
 
 // ----------------------------> Vec3 <--------------------------------------
 
-/// @brief A simple vector class with three double components, similar to openvdb::math::Vec3
+/// @brief A simple vector class with three double components, similar to laovdb::math::Vec3
 template<typename T>
 class Vec3
 {
@@ -1183,7 +1183,7 @@ __hostdev__ inline Vec3d Coord::asVec3d() const { return Vec3d(double(mVec[0]), 
 
 // ----------------------------> Vec4 <--------------------------------------
 
-/// @brief A simple vector class with three double components, similar to openvdb::math::Vec4
+/// @brief A simple vector class with three double components, similar to laovdb::math::Vec4
 template<typename T>
 class Vec4
 {
@@ -1871,7 +1871,7 @@ public:
         return reinterpret_cast<const WordT*>(mWords)[n];
     }
 
-    /// @brief Assignment operator that works with openvdb::util::NodeMask
+    /// @brief Assignment operator that works with laovdb::util::NodeMask
     template<typename MaskT>
     __hostdev__ Mask& operator=(const MaskT& other)
     {

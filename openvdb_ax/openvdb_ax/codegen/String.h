@@ -19,7 +19,7 @@
 #include <cstdlib>
 #include <cassert>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -125,7 +125,7 @@ struct String
 template<> inline ax::codegen::String zeroVal<ax::codegen::String>() { return ""; }
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_CODEGEN_STRING_HAS_BEEN_INCLUDED
 

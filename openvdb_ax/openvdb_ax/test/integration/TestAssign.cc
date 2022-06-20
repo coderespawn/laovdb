@@ -11,7 +11,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-using namespace openvdb::points;
+using namespace laovdb::points;
 
 // Configuration values for assignment code
 
@@ -172,171 +172,171 @@ _T1_@test8 = _l1_;
             },
         },
         { "vec2i",
-            [&](){ mHarness.addAttributes<openvdb::math::Vec2<int32_t>>(names,
-                    { openvdb::math::Vec2<int32_t>(1,2),
-                      openvdb::math::Vec2<int32_t>(1,2),
-                      openvdb::math::Vec2<int32_t>(1,2),
-                      openvdb::math::Vec2<int32_t>(1,2),
-                      openvdb::math::Vec2<int32_t>(3,4),
-                      openvdb::math::Vec2<int32_t>(3,4),
-                      openvdb::math::Vec2<int32_t>(1,2),
-                      openvdb::math::Vec2<int32_t>(1,2)
+            [&](){ mHarness.addAttributes<laovdb::math::Vec2<int32_t>>(names,
+                    { laovdb::math::Vec2<int32_t>(1,2),
+                      laovdb::math::Vec2<int32_t>(1,2),
+                      laovdb::math::Vec2<int32_t>(1,2),
+                      laovdb::math::Vec2<int32_t>(1,2),
+                      laovdb::math::Vec2<int32_t>(3,4),
+                      laovdb::math::Vec2<int32_t>(3,4),
+                      laovdb::math::Vec2<int32_t>(1,2),
+                      laovdb::math::Vec2<int32_t>(1,2)
                     });
             },
         },
         { "vec2f",
-            [&](){ mHarness.addAttributes<openvdb::math::Vec2<float>>(names,
-                    { openvdb::math::Vec2<float>(1.1f, 2.3f),
-                      openvdb::math::Vec2<float>(1.1f, 2.3f),
-                      openvdb::math::Vec2<float>(1.1f, 2.3f),
-                      openvdb::math::Vec2<float>(1.1f, 2.3f),
-                      openvdb::math::Vec2<float>(4.1f, 5.3f),
-                      openvdb::math::Vec2<float>(4.1f, 5.3f),
-                      openvdb::math::Vec2<float>(1.1f, 2.3f),
-                      openvdb::math::Vec2<float>(1.1f, 2.3f)
+            [&](){ mHarness.addAttributes<laovdb::math::Vec2<float>>(names,
+                    { laovdb::math::Vec2<float>(1.1f, 2.3f),
+                      laovdb::math::Vec2<float>(1.1f, 2.3f),
+                      laovdb::math::Vec2<float>(1.1f, 2.3f),
+                      laovdb::math::Vec2<float>(1.1f, 2.3f),
+                      laovdb::math::Vec2<float>(4.1f, 5.3f),
+                      laovdb::math::Vec2<float>(4.1f, 5.3f),
+                      laovdb::math::Vec2<float>(1.1f, 2.3f),
+                      laovdb::math::Vec2<float>(1.1f, 2.3f)
                     });
             },
         },
         { "vec2d",
-            [&](){ mHarness.addAttributes<openvdb::math::Vec2<double>>(names,
-                    { openvdb::math::Vec2<double>(1.1, 2.3),
-                      openvdb::math::Vec2<double>(1.1, 2.3),
-                      openvdb::math::Vec2<double>(1.1, 2.3),
-                      openvdb::math::Vec2<double>(1.1, 2.3),
-                      openvdb::math::Vec2<double>(4.1, 5.3),
-                      openvdb::math::Vec2<double>(4.1, 5.3),
-                      openvdb::math::Vec2<double>(1.1, 2.3),
-                      openvdb::math::Vec2<double>(1.1, 2.3)
+            [&](){ mHarness.addAttributes<laovdb::math::Vec2<double>>(names,
+                    { laovdb::math::Vec2<double>(1.1, 2.3),
+                      laovdb::math::Vec2<double>(1.1, 2.3),
+                      laovdb::math::Vec2<double>(1.1, 2.3),
+                      laovdb::math::Vec2<double>(1.1, 2.3),
+                      laovdb::math::Vec2<double>(4.1, 5.3),
+                      laovdb::math::Vec2<double>(4.1, 5.3),
+                      laovdb::math::Vec2<double>(1.1, 2.3),
+                      laovdb::math::Vec2<double>(1.1, 2.3)
                     });
             },
         },
         { "vec3i",
-            [&](){ mHarness.addAttributes<openvdb::math::Vec3<int32_t>>(names,
-                    { openvdb::math::Vec3<int32_t>(1,2,3),
-                      openvdb::math::Vec3<int32_t>(1,2,3),
-                      openvdb::math::Vec3<int32_t>(1,2,3),
-                      openvdb::math::Vec3<int32_t>(1,2,3),
-                      openvdb::math::Vec3<int32_t>(4,5,6),
-                      openvdb::math::Vec3<int32_t>(4,5,6),
-                      openvdb::math::Vec3<int32_t>(1,2,3),
-                      openvdb::math::Vec3<int32_t>(1,2,3)
+            [&](){ mHarness.addAttributes<laovdb::math::Vec3<int32_t>>(names,
+                    { laovdb::math::Vec3<int32_t>(1,2,3),
+                      laovdb::math::Vec3<int32_t>(1,2,3),
+                      laovdb::math::Vec3<int32_t>(1,2,3),
+                      laovdb::math::Vec3<int32_t>(1,2,3),
+                      laovdb::math::Vec3<int32_t>(4,5,6),
+                      laovdb::math::Vec3<int32_t>(4,5,6),
+                      laovdb::math::Vec3<int32_t>(1,2,3),
+                      laovdb::math::Vec3<int32_t>(1,2,3)
                     });
             },
         },
         { "vec3f",
-            [&](){ mHarness.addAttributes<openvdb::math::Vec3<float>>(names,
-                    { openvdb::math::Vec3<float>(1.1f, 2.3f, 4.3f),
-                      openvdb::math::Vec3<float>(1.1f, 2.3f, 4.3f),
-                      openvdb::math::Vec3<float>(1.1f, 2.3f, 4.3f),
-                      openvdb::math::Vec3<float>(1.1f, 2.3f, 4.3f),
-                      openvdb::math::Vec3<float>(4.1f, 5.3f, 6.3f),
-                      openvdb::math::Vec3<float>(4.1f, 5.3f, 6.3f),
-                      openvdb::math::Vec3<float>(1.1f, 2.3f, 4.3f),
-                      openvdb::math::Vec3<float>(1.1f, 2.3f, 4.3f)
+            [&](){ mHarness.addAttributes<laovdb::math::Vec3<float>>(names,
+                    { laovdb::math::Vec3<float>(1.1f, 2.3f, 4.3f),
+                      laovdb::math::Vec3<float>(1.1f, 2.3f, 4.3f),
+                      laovdb::math::Vec3<float>(1.1f, 2.3f, 4.3f),
+                      laovdb::math::Vec3<float>(1.1f, 2.3f, 4.3f),
+                      laovdb::math::Vec3<float>(4.1f, 5.3f, 6.3f),
+                      laovdb::math::Vec3<float>(4.1f, 5.3f, 6.3f),
+                      laovdb::math::Vec3<float>(1.1f, 2.3f, 4.3f),
+                      laovdb::math::Vec3<float>(1.1f, 2.3f, 4.3f)
                     });
             },
         },
         { "vec3d",
-            [&](){ mHarness.addAttributes<openvdb::math::Vec3<double>>(names,
-                    { openvdb::math::Vec3<double>(1.1, 2.3, 4.3),
-                      openvdb::math::Vec3<double>(1.1, 2.3, 4.3),
-                      openvdb::math::Vec3<double>(1.1, 2.3, 4.3),
-                      openvdb::math::Vec3<double>(1.1, 2.3, 4.3),
-                      openvdb::math::Vec3<double>(4.1, 5.3, 6.3),
-                      openvdb::math::Vec3<double>(4.1, 5.3, 6.3),
-                      openvdb::math::Vec3<double>(1.1, 2.3, 4.3),
-                      openvdb::math::Vec3<double>(1.1, 2.3, 4.3)
+            [&](){ mHarness.addAttributes<laovdb::math::Vec3<double>>(names,
+                    { laovdb::math::Vec3<double>(1.1, 2.3, 4.3),
+                      laovdb::math::Vec3<double>(1.1, 2.3, 4.3),
+                      laovdb::math::Vec3<double>(1.1, 2.3, 4.3),
+                      laovdb::math::Vec3<double>(1.1, 2.3, 4.3),
+                      laovdb::math::Vec3<double>(4.1, 5.3, 6.3),
+                      laovdb::math::Vec3<double>(4.1, 5.3, 6.3),
+                      laovdb::math::Vec3<double>(1.1, 2.3, 4.3),
+                      laovdb::math::Vec3<double>(1.1, 2.3, 4.3)
                     });
             },
         },
         { "vec4i",
-            [&](){ mHarness.addAttributes<openvdb::math::Vec4<int32_t>>(names,
-                    { openvdb::math::Vec4<int32_t>(1, 2, 3, 4),
-                      openvdb::math::Vec4<int32_t>(1, 2, 3, 4),
-                      openvdb::math::Vec4<int32_t>(1, 2, 3, 4),
-                      openvdb::math::Vec4<int32_t>(1, 2, 3, 4),
-                      openvdb::math::Vec4<int32_t>(5, 6, 7, 8),
-                      openvdb::math::Vec4<int32_t>(5, 6, 7, 8),
-                      openvdb::math::Vec4<int32_t>(1, 2, 3, 4),
-                      openvdb::math::Vec4<int32_t>(1, 2, 3, 4)
+            [&](){ mHarness.addAttributes<laovdb::math::Vec4<int32_t>>(names,
+                    { laovdb::math::Vec4<int32_t>(1, 2, 3, 4),
+                      laovdb::math::Vec4<int32_t>(1, 2, 3, 4),
+                      laovdb::math::Vec4<int32_t>(1, 2, 3, 4),
+                      laovdb::math::Vec4<int32_t>(1, 2, 3, 4),
+                      laovdb::math::Vec4<int32_t>(5, 6, 7, 8),
+                      laovdb::math::Vec4<int32_t>(5, 6, 7, 8),
+                      laovdb::math::Vec4<int32_t>(1, 2, 3, 4),
+                      laovdb::math::Vec4<int32_t>(1, 2, 3, 4)
                     });
             },
         },
         { "vec4f",
-            [&](){ mHarness.addAttributes<openvdb::math::Vec4<float>>(names,
-                    { openvdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f),
-                      openvdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f),
-                      openvdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f),
-                      openvdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f),
-                      openvdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f),
-                      openvdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f),
-                      openvdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f),
-                      openvdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f)
+            [&](){ mHarness.addAttributes<laovdb::math::Vec4<float>>(names,
+                    { laovdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f),
+                      laovdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f),
+                      laovdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f),
+                      laovdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f),
+                      laovdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f),
+                      laovdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f),
+                      laovdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f),
+                      laovdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f)
                     });
             },
         },
         { "vec4d",
-            [&](){ mHarness.addAttributes<openvdb::math::Vec4<double>>(names,
-                    { openvdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4),
-                      openvdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4),
-                      openvdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4),
-                      openvdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4),
-                      openvdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4),
-                      openvdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4),
-                      openvdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4),
-                      openvdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4)
+            [&](){ mHarness.addAttributes<laovdb::math::Vec4<double>>(names,
+                    { laovdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4),
+                      laovdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4),
+                      laovdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4),
+                      laovdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4),
+                      laovdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4),
+                      laovdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4),
+                      laovdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4),
+                      laovdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4)
                     });
             },
         },
         { "mat3f",
-            [&](){ mHarness.addAttributes<openvdb::math::Mat3<float>>(names,
-                    { openvdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f),
-                      openvdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f),
-                      openvdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f),
-                      openvdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f),
-                      openvdb::math::Mat3<float>(9.1f, 7.3f, -1.3f,  4.4f, -6.7f, 0.8f,  9.1f, -0.5f, 8.2f),
-                      openvdb::math::Mat3<float>(9.1f, 7.3f, -1.3f,  4.4f, -6.7f, 0.8f,  9.1f, -0.5f, 8.2f),
-                      openvdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f),
-                      openvdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f)
+            [&](){ mHarness.addAttributes<laovdb::math::Mat3<float>>(names,
+                    { laovdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f),
+                      laovdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f),
+                      laovdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f),
+                      laovdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f),
+                      laovdb::math::Mat3<float>(9.1f, 7.3f, -1.3f,  4.4f, -6.7f, 0.8f,  9.1f, -0.5f, 8.2f),
+                      laovdb::math::Mat3<float>(9.1f, 7.3f, -1.3f,  4.4f, -6.7f, 0.8f,  9.1f, -0.5f, 8.2f),
+                      laovdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f),
+                      laovdb::math::Mat3<float>(1.1f, 2.3f, 4.3f,   5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f)
                     });
             },
         },
         { "mat3d",
-            [&](){ mHarness.addAttributes<openvdb::math::Mat3<double>>(names,
-                    { openvdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2),
-                      openvdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2),
-                      openvdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2),
-                      openvdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2),
-                      openvdb::math::Mat3<double>(9.1, 7.3, -1.3,  4.4, -6.7, 0.8,  9.1, -0.5, 8.2),
-                      openvdb::math::Mat3<double>(9.1, 7.3, -1.3,  4.4, -6.7, 0.8,  9.1, -0.5, 8.2),
-                      openvdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2),
-                      openvdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2)
+            [&](){ mHarness.addAttributes<laovdb::math::Mat3<double>>(names,
+                    { laovdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2),
+                      laovdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2),
+                      laovdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2),
+                      laovdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2),
+                      laovdb::math::Mat3<double>(9.1, 7.3, -1.3,  4.4, -6.7, 0.8,  9.1, -0.5, 8.2),
+                      laovdb::math::Mat3<double>(9.1, 7.3, -1.3,  4.4, -6.7, 0.8,  9.1, -0.5, 8.2),
+                      laovdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2),
+                      laovdb::math::Mat3<double>(1.1, 2.3, 4.3,   5.4, 6.7, 7.8,   9.1, 4.5, 8.2)
                     });
             },
         },
         { "mat4f",
-            [&](){ mHarness.addAttributes<openvdb::math::Mat4<float>>(names,
-                    { openvdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f),
-                      openvdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f),
-                      openvdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f),
-                      openvdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f),
-                      openvdb::math::Mat4<float>(0.1f, 2.3f,-9.3f, 4.5f,  -1.7f, 7.8f, 2.1f, 3.3f,  3.3f,-3.3f,-0.3f, 2.5f,  5.1f, 0.5f, 8.1f,-1.7f),
-                      openvdb::math::Mat4<float>(0.1f, 2.3f,-9.3f, 4.5f,  -1.7f, 7.8f, 2.1f, 3.3f,  3.3f,-3.3f,-0.3f, 2.5f,  5.1f, 0.5f, 8.1f,-1.7f),
-                      openvdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f),
-                      openvdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f)
+            [&](){ mHarness.addAttributes<laovdb::math::Mat4<float>>(names,
+                    { laovdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f),
+                      laovdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f),
+                      laovdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f),
+                      laovdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f),
+                      laovdb::math::Mat4<float>(0.1f, 2.3f,-9.3f, 4.5f,  -1.7f, 7.8f, 2.1f, 3.3f,  3.3f,-3.3f,-0.3f, 2.5f,  5.1f, 0.5f, 8.1f,-1.7f),
+                      laovdb::math::Mat4<float>(0.1f, 2.3f,-9.3f, 4.5f,  -1.7f, 7.8f, 2.1f, 3.3f,  3.3f,-3.3f,-0.3f, 2.5f,  5.1f, 0.5f, 8.1f,-1.7f),
+                      laovdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f),
+                      laovdb::math::Mat4<float>(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f)
                     });
             },
         },
         { "mat4d",
-            [&](){ mHarness.addAttributes<openvdb::math::Mat4<double>>(names,
-                    { openvdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9),
-                      openvdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9),
-                      openvdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9),
-                      openvdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9),
-                      openvdb::math::Mat4<double>(0.1, 2.3,-9.3, 4.5,  -1.7, 7.8, 2.1, 3.3,  3.3,-3.3,-0.3, 2.5,  5.1, 0.5, 8.1,-1.7),
-                      openvdb::math::Mat4<double>(0.1, 2.3,-9.3, 4.5,  -1.7, 7.8, 2.1, 3.3,  3.3,-3.3,-0.3, 2.5,  5.1, 0.5, 8.1,-1.7),
-                      openvdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9),
-                      openvdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9)
+            [&](){ mHarness.addAttributes<laovdb::math::Mat4<double>>(names,
+                    { laovdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9),
+                      laovdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9),
+                      laovdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9),
+                      laovdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9),
+                      laovdb::math::Mat4<double>(0.1, 2.3,-9.3, 4.5,  -1.7, 7.8, 2.1, 3.3,  3.3,-3.3,-0.3, 2.5,  5.1, 0.5, 8.1,-1.7),
+                      laovdb::math::Mat4<double>(0.1, 2.3,-9.3, 4.5,  -1.7, 7.8, 2.1, 3.3,  3.3,-3.3,-0.3, 2.5,  5.1, 0.5, 8.1,-1.7),
+                      laovdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9),
+                      laovdb::math::Mat4<double>(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9)
                     });
             },
         },
@@ -547,313 +547,313 @@ _T1_@test9 += local2;
     const auto names = unittest_util::nameSequence("test", 9);
     const std::map<std::string, std::vector<std::function<void()>>> expected = {
         { "vec2i", {
-                [&](){ mHarness.addAttributes<openvdb::math::Vec2<int32_t>>(names,
-                        { openvdb::math::Vec2<int32_t>(1,2),
-                          openvdb::math::Vec2<int32_t>(-1,-2),
-                          openvdb::math::Vec2<int32_t>(0,0),
-                          openvdb::math::Vec2<int32_t>(0,0),
-                          openvdb::math::Vec2<int32_t>(0,0),
-                          openvdb::math::Vec2<int32_t>(4,6),
-                          openvdb::math::Vec2<int32_t>(0,0),
-                          openvdb::math::Vec2<int32_t>(0,0),
-                          openvdb::math::Vec2<int32_t>(3,4) });
+                [&](){ mHarness.addAttributes<laovdb::math::Vec2<int32_t>>(names,
+                        { laovdb::math::Vec2<int32_t>(1,2),
+                          laovdb::math::Vec2<int32_t>(-1,-2),
+                          laovdb::math::Vec2<int32_t>(0,0),
+                          laovdb::math::Vec2<int32_t>(0,0),
+                          laovdb::math::Vec2<int32_t>(0,0),
+                          laovdb::math::Vec2<int32_t>(4,6),
+                          laovdb::math::Vec2<int32_t>(0,0),
+                          laovdb::math::Vec2<int32_t>(0,0),
+                          laovdb::math::Vec2<int32_t>(3,4) });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Vec2<int32_t>>(names,
-                        { openvdb::math::Vec2<int32_t>(1,2),
-                          openvdb::math::Vec2<int32_t>(3,4),
-                          openvdb::math::Vec2<int32_t>(5,6),
-                          openvdb::math::Vec2<int32_t>(7,8),
-                          openvdb::math::Vec2<int32_t>(3,9),
-                          openvdb::math::Vec2<int32_t>(9,-1),
-                          openvdb::math::Vec2<int32_t>(-2,-3),
-                          openvdb::math::Vec2<int32_t>(-4,-5),
-                          openvdb::math::Vec2<int32_t>(-6,-7) }, // in
-                        { openvdb::math::Vec2<int32_t>(2,4),
-                          openvdb::math::Vec2<int32_t>(2,2),
-                          openvdb::math::Vec2<int32_t>(5,12),
-                          openvdb::math::Vec2<int32_t>(7,4),
-                          openvdb::math::Vec2<int32_t>(0,1),
-                          openvdb::math::Vec2<int32_t>(4,6),
-                          openvdb::math::Vec2<int32_t>(-6,-8),
-                          openvdb::math::Vec2<int32_t>(-4,-5),
-                          openvdb::math::Vec2<int32_t>(-3,-3) }); // expected
+                [&](){ mHarness.addAttributes<laovdb::math::Vec2<int32_t>>(names,
+                        { laovdb::math::Vec2<int32_t>(1,2),
+                          laovdb::math::Vec2<int32_t>(3,4),
+                          laovdb::math::Vec2<int32_t>(5,6),
+                          laovdb::math::Vec2<int32_t>(7,8),
+                          laovdb::math::Vec2<int32_t>(3,9),
+                          laovdb::math::Vec2<int32_t>(9,-1),
+                          laovdb::math::Vec2<int32_t>(-2,-3),
+                          laovdb::math::Vec2<int32_t>(-4,-5),
+                          laovdb::math::Vec2<int32_t>(-6,-7) }, // in
+                        { laovdb::math::Vec2<int32_t>(2,4),
+                          laovdb::math::Vec2<int32_t>(2,2),
+                          laovdb::math::Vec2<int32_t>(5,12),
+                          laovdb::math::Vec2<int32_t>(7,4),
+                          laovdb::math::Vec2<int32_t>(0,1),
+                          laovdb::math::Vec2<int32_t>(4,6),
+                          laovdb::math::Vec2<int32_t>(-6,-8),
+                          laovdb::math::Vec2<int32_t>(-4,-5),
+                          laovdb::math::Vec2<int32_t>(-3,-3) }); // expected
                 }
             }
         },
         { "vec2f", {
-                [&](){ mHarness.addAttributes<openvdb::math::Vec2<float>>(names,
-                        { openvdb::math::Vec2<float>(1.1f,2.3f),
-                          openvdb::math::Vec2<float>(-1.1f,-2.3f),
-                          openvdb::math::Vec2<float>(0.0f,0.0f),
-                          openvdb::math::Vec2<float>(0.0f,0.0f),
-                          openvdb::math::Vec2<float>(0.0f,0.0f),
-                          openvdb::math::Vec2<float>(1.1f, 2.3f) + openvdb::math::Vec2<float>(4.1f, 5.3f),
-                          openvdb::math::Vec2<float>(0.0f,0.0f),
-                          openvdb::math::Vec2<float>(0.0f,0.0f),
-                          openvdb::math::Vec2<float>(4.1f,5.3f) });
+                [&](){ mHarness.addAttributes<laovdb::math::Vec2<float>>(names,
+                        { laovdb::math::Vec2<float>(1.1f,2.3f),
+                          laovdb::math::Vec2<float>(-1.1f,-2.3f),
+                          laovdb::math::Vec2<float>(0.0f,0.0f),
+                          laovdb::math::Vec2<float>(0.0f,0.0f),
+                          laovdb::math::Vec2<float>(0.0f,0.0f),
+                          laovdb::math::Vec2<float>(1.1f, 2.3f) + laovdb::math::Vec2<float>(4.1f, 5.3f),
+                          laovdb::math::Vec2<float>(0.0f,0.0f),
+                          laovdb::math::Vec2<float>(0.0f,0.0f),
+                          laovdb::math::Vec2<float>(4.1f,5.3f) });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Vec2<float>>(names,
-                        { openvdb::math::Vec2<float>(1.1f,2.2f),
-                          openvdb::math::Vec2<float>(3.3f,4.4f),
-                          openvdb::math::Vec2<float>(5.5f,6.6f),
-                          openvdb::math::Vec2<float>(7.7f,8.8f),
-                          openvdb::math::Vec2<float>(2.3f,5.5f),
-                          openvdb::math::Vec2<float>(9.9f,-1.1f),
-                          openvdb::math::Vec2<float>(-2.2f,-3.3f),
-                          openvdb::math::Vec2<float>(-4.3f,-5.5f),
-                          openvdb::math::Vec2<float>(-6.1f,-8.2f) }, // in
-                        { openvdb::math::Vec2<float>(1.1f,2.2f) + openvdb::math::Vec2<float>(1.1f,2.3f),
-                          openvdb::math::Vec2<float>(3.3f,4.4f) - openvdb::math::Vec2<float>(1.1f,2.3f),
-                          openvdb::math::Vec2<float>(5.5f,6.6f) * openvdb::math::Vec2<float>(1.1f,2.3f),
-                          openvdb::math::Vec2<float>(7.7f,8.8f) / openvdb::math::Vec2<float>(1.1f,2.3f),
-                          openvdb::math::Vec2<float>(std::fmod(2.3f, 1.1f), std::fmod(5.5f, 2.3f)),
-                          openvdb::math::Vec2<float>(1.1f, 2.3f) + openvdb::math::Vec2<float>(4.1f, 5.3f),
-                          openvdb::math::Vec2<float>(-2.2f,-3.3f) + openvdb::math::Vec2<float>(-4.3f,-5.5f),
-                          openvdb::math::Vec2<float>(-4.3f,-5.5f),
-                          openvdb::math::Vec2<float>(-6.1f,-8.2f) + openvdb::math::Vec2<float>(4.1f,5.3f)
+                [&](){ mHarness.addAttributes<laovdb::math::Vec2<float>>(names,
+                        { laovdb::math::Vec2<float>(1.1f,2.2f),
+                          laovdb::math::Vec2<float>(3.3f,4.4f),
+                          laovdb::math::Vec2<float>(5.5f,6.6f),
+                          laovdb::math::Vec2<float>(7.7f,8.8f),
+                          laovdb::math::Vec2<float>(2.3f,5.5f),
+                          laovdb::math::Vec2<float>(9.9f,-1.1f),
+                          laovdb::math::Vec2<float>(-2.2f,-3.3f),
+                          laovdb::math::Vec2<float>(-4.3f,-5.5f),
+                          laovdb::math::Vec2<float>(-6.1f,-8.2f) }, // in
+                        { laovdb::math::Vec2<float>(1.1f,2.2f) + laovdb::math::Vec2<float>(1.1f,2.3f),
+                          laovdb::math::Vec2<float>(3.3f,4.4f) - laovdb::math::Vec2<float>(1.1f,2.3f),
+                          laovdb::math::Vec2<float>(5.5f,6.6f) * laovdb::math::Vec2<float>(1.1f,2.3f),
+                          laovdb::math::Vec2<float>(7.7f,8.8f) / laovdb::math::Vec2<float>(1.1f,2.3f),
+                          laovdb::math::Vec2<float>(std::fmod(2.3f, 1.1f), std::fmod(5.5f, 2.3f)),
+                          laovdb::math::Vec2<float>(1.1f, 2.3f) + laovdb::math::Vec2<float>(4.1f, 5.3f),
+                          laovdb::math::Vec2<float>(-2.2f,-3.3f) + laovdb::math::Vec2<float>(-4.3f,-5.5f),
+                          laovdb::math::Vec2<float>(-4.3f,-5.5f),
+                          laovdb::math::Vec2<float>(-6.1f,-8.2f) + laovdb::math::Vec2<float>(4.1f,5.3f)
                         }); // expected
                 }
             }
         },
         { "vec2d", {
-                [&](){ mHarness.addAttributes<openvdb::math::Vec2<double>>(names,
-                        { openvdb::math::Vec2<double>(1.1,2.3),
-                          openvdb::math::Vec2<double>(-1.1,-2.3),
-                          openvdb::math::Vec2<double>(0.0,0.0),
-                          openvdb::math::Vec2<double>(0.0,0.0),
-                          openvdb::math::Vec2<double>(0.0,0.0),
-                          openvdb::math::Vec2<double>(1.1, 2.3) + openvdb::math::Vec2<double>(4.1, 5.3),
-                          openvdb::math::Vec2<double>(0.0,0.0),
-                          openvdb::math::Vec2<double>(0.0,0.0),
-                          openvdb::math::Vec2<double>(4.1,5.3) });
+                [&](){ mHarness.addAttributes<laovdb::math::Vec2<double>>(names,
+                        { laovdb::math::Vec2<double>(1.1,2.3),
+                          laovdb::math::Vec2<double>(-1.1,-2.3),
+                          laovdb::math::Vec2<double>(0.0,0.0),
+                          laovdb::math::Vec2<double>(0.0,0.0),
+                          laovdb::math::Vec2<double>(0.0,0.0),
+                          laovdb::math::Vec2<double>(1.1, 2.3) + laovdb::math::Vec2<double>(4.1, 5.3),
+                          laovdb::math::Vec2<double>(0.0,0.0),
+                          laovdb::math::Vec2<double>(0.0,0.0),
+                          laovdb::math::Vec2<double>(4.1,5.3) });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Vec2<double>>(names,
-                        { openvdb::math::Vec2<double>(1.1,2.2),
-                          openvdb::math::Vec2<double>(3.3,4.4),
-                          openvdb::math::Vec2<double>(5.5,6.6),
-                          openvdb::math::Vec2<double>(7.7,8.8),
-                          openvdb::math::Vec2<double>(2.3,5.5),
-                          openvdb::math::Vec2<double>(9.9,-1.1),
-                          openvdb::math::Vec2<double>(-2.2,-3.3),
-                          openvdb::math::Vec2<double>(-4.3,-5.5),
-                          openvdb::math::Vec2<double>(-6.1,-8.2) }, // in
-                        { openvdb::math::Vec2<double>(1.1,2.2) + openvdb::math::Vec2<double>(1.1,2.3),
-                          openvdb::math::Vec2<double>(3.3,4.4) - openvdb::math::Vec2<double>(1.1,2.3),
-                          openvdb::math::Vec2<double>(5.5,6.6) * openvdb::math::Vec2<double>(1.1,2.3),
-                          openvdb::math::Vec2<double>(7.7,8.8) / openvdb::math::Vec2<double>(1.1,2.3),
-                          openvdb::math::Vec2<double>(std::fmod(2.3, 1.1), std::fmod(5.5, 2.3)),
-                          openvdb::math::Vec2<double>(1.1, 2.3) + openvdb::math::Vec2<double>(4.1, 5.3),
-                          openvdb::math::Vec2<double>(-2.2,-3.3) + openvdb::math::Vec2<double>(-4.3,-5.5),
-                          openvdb::math::Vec2<double>(-4.3,-5.5),
-                          openvdb::math::Vec2<double>(-6.1,-8.2) + openvdb::math::Vec2<double>(4.1,5.3)
+                [&](){ mHarness.addAttributes<laovdb::math::Vec2<double>>(names,
+                        { laovdb::math::Vec2<double>(1.1,2.2),
+                          laovdb::math::Vec2<double>(3.3,4.4),
+                          laovdb::math::Vec2<double>(5.5,6.6),
+                          laovdb::math::Vec2<double>(7.7,8.8),
+                          laovdb::math::Vec2<double>(2.3,5.5),
+                          laovdb::math::Vec2<double>(9.9,-1.1),
+                          laovdb::math::Vec2<double>(-2.2,-3.3),
+                          laovdb::math::Vec2<double>(-4.3,-5.5),
+                          laovdb::math::Vec2<double>(-6.1,-8.2) }, // in
+                        { laovdb::math::Vec2<double>(1.1,2.2) + laovdb::math::Vec2<double>(1.1,2.3),
+                          laovdb::math::Vec2<double>(3.3,4.4) - laovdb::math::Vec2<double>(1.1,2.3),
+                          laovdb::math::Vec2<double>(5.5,6.6) * laovdb::math::Vec2<double>(1.1,2.3),
+                          laovdb::math::Vec2<double>(7.7,8.8) / laovdb::math::Vec2<double>(1.1,2.3),
+                          laovdb::math::Vec2<double>(std::fmod(2.3, 1.1), std::fmod(5.5, 2.3)),
+                          laovdb::math::Vec2<double>(1.1, 2.3) + laovdb::math::Vec2<double>(4.1, 5.3),
+                          laovdb::math::Vec2<double>(-2.2,-3.3) + laovdb::math::Vec2<double>(-4.3,-5.5),
+                          laovdb::math::Vec2<double>(-4.3,-5.5),
+                          laovdb::math::Vec2<double>(-6.1,-8.2) + laovdb::math::Vec2<double>(4.1,5.3)
                         }); // expected
                 }
             }
         },
         { "vec3i", {
-                [&](){ mHarness.addAttributes<openvdb::math::Vec3<int32_t>>(names,
-                        { openvdb::math::Vec3<int32_t>(1,2,3),
-                          openvdb::math::Vec3<int32_t>(-1,-2,-3),
-                          openvdb::math::Vec3<int32_t>(0,0,0),
-                          openvdb::math::Vec3<int32_t>(0,0,0),
-                          openvdb::math::Vec3<int32_t>(0,0,0),
-                          openvdb::math::Vec3<int32_t>(5,7,9),
-                          openvdb::math::Vec3<int32_t>(0,0,0),
-                          openvdb::math::Vec3<int32_t>(0,0,0),
-                          openvdb::math::Vec3<int32_t>(4,5,6) });
+                [&](){ mHarness.addAttributes<laovdb::math::Vec3<int32_t>>(names,
+                        { laovdb::math::Vec3<int32_t>(1,2,3),
+                          laovdb::math::Vec3<int32_t>(-1,-2,-3),
+                          laovdb::math::Vec3<int32_t>(0,0,0),
+                          laovdb::math::Vec3<int32_t>(0,0,0),
+                          laovdb::math::Vec3<int32_t>(0,0,0),
+                          laovdb::math::Vec3<int32_t>(5,7,9),
+                          laovdb::math::Vec3<int32_t>(0,0,0),
+                          laovdb::math::Vec3<int32_t>(0,0,0),
+                          laovdb::math::Vec3<int32_t>(4,5,6) });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Vec3<int32_t>>(names,
-                        { openvdb::math::Vec3<int32_t>(1,2,3),
-                          openvdb::math::Vec3<int32_t>(4,5,6),
-                          openvdb::math::Vec3<int32_t>(7,8,9),
-                          openvdb::math::Vec3<int32_t>(-1,-2,-3),
-                          openvdb::math::Vec3<int32_t>(4,-5,6),
-                          openvdb::math::Vec3<int32_t>(5,7,9),
-                          openvdb::math::Vec3<int32_t>(-7,-8,-9),
-                          openvdb::math::Vec3<int32_t>(-1,2,-3),
-                          openvdb::math::Vec3<int32_t>(-4,5,-6) }, // in
-                        { openvdb::math::Vec3<int32_t>(2,4,6),
-                          openvdb::math::Vec3<int32_t>(3,3,3),
-                          openvdb::math::Vec3<int32_t>(7,16,27),
-                          openvdb::math::Vec3<int32_t>(-1,-1,-1),
-                          openvdb::math::Vec3<int32_t>(0,1,0),
-                          openvdb::math::Vec3<int32_t>(5,7,9),
-                          openvdb::math::Vec3<int32_t>(-8,-6,-12),
-                          openvdb::math::Vec3<int32_t>(-1,2,-3),
-                          openvdb::math::Vec3<int32_t>(0,10,0) }); // expected
+                [&](){ mHarness.addAttributes<laovdb::math::Vec3<int32_t>>(names,
+                        { laovdb::math::Vec3<int32_t>(1,2,3),
+                          laovdb::math::Vec3<int32_t>(4,5,6),
+                          laovdb::math::Vec3<int32_t>(7,8,9),
+                          laovdb::math::Vec3<int32_t>(-1,-2,-3),
+                          laovdb::math::Vec3<int32_t>(4,-5,6),
+                          laovdb::math::Vec3<int32_t>(5,7,9),
+                          laovdb::math::Vec3<int32_t>(-7,-8,-9),
+                          laovdb::math::Vec3<int32_t>(-1,2,-3),
+                          laovdb::math::Vec3<int32_t>(-4,5,-6) }, // in
+                        { laovdb::math::Vec3<int32_t>(2,4,6),
+                          laovdb::math::Vec3<int32_t>(3,3,3),
+                          laovdb::math::Vec3<int32_t>(7,16,27),
+                          laovdb::math::Vec3<int32_t>(-1,-1,-1),
+                          laovdb::math::Vec3<int32_t>(0,1,0),
+                          laovdb::math::Vec3<int32_t>(5,7,9),
+                          laovdb::math::Vec3<int32_t>(-8,-6,-12),
+                          laovdb::math::Vec3<int32_t>(-1,2,-3),
+                          laovdb::math::Vec3<int32_t>(0,10,0) }); // expected
                 }
             }
         },
         { "vec3f", {
-                [&](){ mHarness.addAttributes<openvdb::math::Vec3<float>>(names,
-                        { openvdb::math::Vec3<float>(1.1f,2.3f,4.3f),
-                          openvdb::math::Vec3<float>(-1.1f,-2.3f,-4.3f),
-                          openvdb::math::Vec3<float>(0.0f,0.0f,0.0f),
-                          openvdb::math::Vec3<float>(0.0f,0.0f,0.0f),
-                          openvdb::math::Vec3<float>(0.0f,0.0f,0.0f),
-                          openvdb::math::Vec3<float>(1.1f, 2.3f, 4.3f) + openvdb::math::Vec3<float>(4.1f, 5.3f, 6.3f),
-                          openvdb::math::Vec3<float>(0.0f,0.0f,0.0f),
-                          openvdb::math::Vec3<float>(0.0f,0.0f,0.0f),
-                          openvdb::math::Vec3<float>(4.1f, 5.3f, 6.3f) });
+                [&](){ mHarness.addAttributes<laovdb::math::Vec3<float>>(names,
+                        { laovdb::math::Vec3<float>(1.1f,2.3f,4.3f),
+                          laovdb::math::Vec3<float>(-1.1f,-2.3f,-4.3f),
+                          laovdb::math::Vec3<float>(0.0f,0.0f,0.0f),
+                          laovdb::math::Vec3<float>(0.0f,0.0f,0.0f),
+                          laovdb::math::Vec3<float>(0.0f,0.0f,0.0f),
+                          laovdb::math::Vec3<float>(1.1f, 2.3f, 4.3f) + laovdb::math::Vec3<float>(4.1f, 5.3f, 6.3f),
+                          laovdb::math::Vec3<float>(0.0f,0.0f,0.0f),
+                          laovdb::math::Vec3<float>(0.0f,0.0f,0.0f),
+                          laovdb::math::Vec3<float>(4.1f, 5.3f, 6.3f) });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Vec3<float>>(names,
-                        { openvdb::math::Vec3<float>(1.1f,2.2f,3.3f),
-                          openvdb::math::Vec3<float>(3.3f,4.4f,5.5f),
-                          openvdb::math::Vec3<float>(5.5f,6.6f,7.7f),
-                          openvdb::math::Vec3<float>(7.7f,8.8f,9.9f),
-                          openvdb::math::Vec3<float>(7.7f,8.8f,9.9f),
-                          openvdb::math::Vec3<float>(9.9f,-1.1f,-2.2f),
-                          openvdb::math::Vec3<float>(-2.2f,-3.3f,-4.4f),
-                          openvdb::math::Vec3<float>(-4.3f,-5.5f,-6.6f),
-                          openvdb::math::Vec3<float>(-7.1f,8.5f,-9.9f), }, // in
-                        { openvdb::math::Vec3<float>(1.1f,2.2f,3.3f) + openvdb::math::Vec3<float>(1.1f,2.3f,4.3f),
-                          openvdb::math::Vec3<float>(3.3f,4.4f,5.5f) - openvdb::math::Vec3<float>(1.1f,2.3f,4.3f),
-                          openvdb::math::Vec3<float>(5.5f,6.6f,7.7f) * openvdb::math::Vec3<float>(1.1f,2.3f,4.3f),
-                          openvdb::math::Vec3<float>(7.7f,8.8f,9.9f) / openvdb::math::Vec3<float>(1.1f,2.3f,4.3f),
-                          openvdb::math::Vec3<float>(std::fmod(7.7f,1.1f), std::fmod(8.8f,2.3f), std::fmod(9.9f,4.3f)),
-                          openvdb::math::Vec3<float>(1.1f, 2.3f, 4.3f) + openvdb::math::Vec3<float>(4.1f, 5.3f, 6.3f),
-                          openvdb::math::Vec3<float>(-2.2f,-3.3f,-4.4f) + openvdb::math::Vec3<float>(-4.3f,-5.5f,-6.6f),
-                          openvdb::math::Vec3<float>(-4.3f,-5.5f,-6.6f),
-                          openvdb::math::Vec3<float>(-7.1f,8.5f,-9.9f) + openvdb::math::Vec3<float>(4.1f, 5.3f, 6.3f)
+                [&](){ mHarness.addAttributes<laovdb::math::Vec3<float>>(names,
+                        { laovdb::math::Vec3<float>(1.1f,2.2f,3.3f),
+                          laovdb::math::Vec3<float>(3.3f,4.4f,5.5f),
+                          laovdb::math::Vec3<float>(5.5f,6.6f,7.7f),
+                          laovdb::math::Vec3<float>(7.7f,8.8f,9.9f),
+                          laovdb::math::Vec3<float>(7.7f,8.8f,9.9f),
+                          laovdb::math::Vec3<float>(9.9f,-1.1f,-2.2f),
+                          laovdb::math::Vec3<float>(-2.2f,-3.3f,-4.4f),
+                          laovdb::math::Vec3<float>(-4.3f,-5.5f,-6.6f),
+                          laovdb::math::Vec3<float>(-7.1f,8.5f,-9.9f), }, // in
+                        { laovdb::math::Vec3<float>(1.1f,2.2f,3.3f) + laovdb::math::Vec3<float>(1.1f,2.3f,4.3f),
+                          laovdb::math::Vec3<float>(3.3f,4.4f,5.5f) - laovdb::math::Vec3<float>(1.1f,2.3f,4.3f),
+                          laovdb::math::Vec3<float>(5.5f,6.6f,7.7f) * laovdb::math::Vec3<float>(1.1f,2.3f,4.3f),
+                          laovdb::math::Vec3<float>(7.7f,8.8f,9.9f) / laovdb::math::Vec3<float>(1.1f,2.3f,4.3f),
+                          laovdb::math::Vec3<float>(std::fmod(7.7f,1.1f), std::fmod(8.8f,2.3f), std::fmod(9.9f,4.3f)),
+                          laovdb::math::Vec3<float>(1.1f, 2.3f, 4.3f) + laovdb::math::Vec3<float>(4.1f, 5.3f, 6.3f),
+                          laovdb::math::Vec3<float>(-2.2f,-3.3f,-4.4f) + laovdb::math::Vec3<float>(-4.3f,-5.5f,-6.6f),
+                          laovdb::math::Vec3<float>(-4.3f,-5.5f,-6.6f),
+                          laovdb::math::Vec3<float>(-7.1f,8.5f,-9.9f) + laovdb::math::Vec3<float>(4.1f, 5.3f, 6.3f)
                         }); // expected
                 }
             }
         },
         { "vec3d", {
-                [&](){ mHarness.addAttributes<openvdb::math::Vec3<double>>(names,
-                        { openvdb::math::Vec3<double>(1.1,2.3,4.3),
-                          openvdb::math::Vec3<double>(-1.1,-2.3,-4.3),
-                          openvdb::math::Vec3<double>(0.0,0.0,0.0),
-                          openvdb::math::Vec3<double>(0.0,0.0,0.0),
-                          openvdb::math::Vec3<double>(0.0,0.0,0.0),
-                          openvdb::math::Vec3<double>(1.1, 2.3, 4.3) + openvdb::math::Vec3<double>(4.1, 5.3, 6.3),
-                          openvdb::math::Vec3<double>(0.0,0.0,0.0),
-                          openvdb::math::Vec3<double>(0.0,0.0,0.0),
-                          openvdb::math::Vec3<double>(4.1, 5.3, 6.3) });
+                [&](){ mHarness.addAttributes<laovdb::math::Vec3<double>>(names,
+                        { laovdb::math::Vec3<double>(1.1,2.3,4.3),
+                          laovdb::math::Vec3<double>(-1.1,-2.3,-4.3),
+                          laovdb::math::Vec3<double>(0.0,0.0,0.0),
+                          laovdb::math::Vec3<double>(0.0,0.0,0.0),
+                          laovdb::math::Vec3<double>(0.0,0.0,0.0),
+                          laovdb::math::Vec3<double>(1.1, 2.3, 4.3) + laovdb::math::Vec3<double>(4.1, 5.3, 6.3),
+                          laovdb::math::Vec3<double>(0.0,0.0,0.0),
+                          laovdb::math::Vec3<double>(0.0,0.0,0.0),
+                          laovdb::math::Vec3<double>(4.1, 5.3, 6.3) });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Vec3<double>>(names,
-                        { openvdb::math::Vec3<double>(1.1,2.2,3.3),
-                          openvdb::math::Vec3<double>(3.3,4.4,5.5),
-                          openvdb::math::Vec3<double>(5.5,6.6,7.7),
-                          openvdb::math::Vec3<double>(7.7,8.8,9.9),
-                          openvdb::math::Vec3<double>(7.7,8.8,9.9),
-                          openvdb::math::Vec3<double>(9.9,-1.1,-2.2),
-                          openvdb::math::Vec3<double>(-2.2,-3.3,-4.4),
-                          openvdb::math::Vec3<double>(-4.3,-5.5,-6.6),
-                          openvdb::math::Vec3<double>(-7.1,8.5,-9.9), }, // in
-                        { openvdb::math::Vec3<double>(1.1,2.2,3.3) + openvdb::math::Vec3<double>(1.1,2.3,4.3),
-                          openvdb::math::Vec3<double>(3.3,4.4,5.5) - openvdb::math::Vec3<double>(1.1,2.3,4.3),
-                          openvdb::math::Vec3<double>(5.5,6.6,7.7) * openvdb::math::Vec3<double>(1.1,2.3,4.3),
-                          openvdb::math::Vec3<double>(7.7,8.8,9.9) / openvdb::math::Vec3<double>(1.1,2.3,4.3),
-                          openvdb::math::Vec3<double>(std::fmod(7.7,1.1), std::fmod(8.8,2.3), std::fmod(9.9,4.3)),
-                          openvdb::math::Vec3<double>(1.1, 2.3, 4.3) + openvdb::math::Vec3<double>(4.1, 5.3, 6.3),
-                          openvdb::math::Vec3<double>(-2.2,-3.3,-4.4) + openvdb::math::Vec3<double>(-4.3,-5.5,-6.6),
-                          openvdb::math::Vec3<double>(-4.3,-5.5,-6.6),
-                          openvdb::math::Vec3<double>(-7.1,8.5,-9.9) + openvdb::math::Vec3<double>(4.1, 5.3, 6.3)
+                [&](){ mHarness.addAttributes<laovdb::math::Vec3<double>>(names,
+                        { laovdb::math::Vec3<double>(1.1,2.2,3.3),
+                          laovdb::math::Vec3<double>(3.3,4.4,5.5),
+                          laovdb::math::Vec3<double>(5.5,6.6,7.7),
+                          laovdb::math::Vec3<double>(7.7,8.8,9.9),
+                          laovdb::math::Vec3<double>(7.7,8.8,9.9),
+                          laovdb::math::Vec3<double>(9.9,-1.1,-2.2),
+                          laovdb::math::Vec3<double>(-2.2,-3.3,-4.4),
+                          laovdb::math::Vec3<double>(-4.3,-5.5,-6.6),
+                          laovdb::math::Vec3<double>(-7.1,8.5,-9.9), }, // in
+                        { laovdb::math::Vec3<double>(1.1,2.2,3.3) + laovdb::math::Vec3<double>(1.1,2.3,4.3),
+                          laovdb::math::Vec3<double>(3.3,4.4,5.5) - laovdb::math::Vec3<double>(1.1,2.3,4.3),
+                          laovdb::math::Vec3<double>(5.5,6.6,7.7) * laovdb::math::Vec3<double>(1.1,2.3,4.3),
+                          laovdb::math::Vec3<double>(7.7,8.8,9.9) / laovdb::math::Vec3<double>(1.1,2.3,4.3),
+                          laovdb::math::Vec3<double>(std::fmod(7.7,1.1), std::fmod(8.8,2.3), std::fmod(9.9,4.3)),
+                          laovdb::math::Vec3<double>(1.1, 2.3, 4.3) + laovdb::math::Vec3<double>(4.1, 5.3, 6.3),
+                          laovdb::math::Vec3<double>(-2.2,-3.3,-4.4) + laovdb::math::Vec3<double>(-4.3,-5.5,-6.6),
+                          laovdb::math::Vec3<double>(-4.3,-5.5,-6.6),
+                          laovdb::math::Vec3<double>(-7.1,8.5,-9.9) + laovdb::math::Vec3<double>(4.1, 5.3, 6.3)
                         }); // expected
                 }
             }
         },
         { "vec4i", {
-                [&](){ mHarness.addAttributes<openvdb::math::Vec4<int32_t>>(names,
-                        { openvdb::math::Vec4<int32_t>(1,2,3,4),
-                          openvdb::math::Vec4<int32_t>(-1,-2,-3,-4),
-                          openvdb::math::Vec4<int32_t>(0,0,0,0),
-                          openvdb::math::Vec4<int32_t>(0,0,0,0),
-                          openvdb::math::Vec4<int32_t>(0,0,0,0),
-                          openvdb::math::Vec4<int32_t>(6,8,10,12),
-                          openvdb::math::Vec4<int32_t>(0,0,0,0),
-                          openvdb::math::Vec4<int32_t>(0,0,0,0),
-                          openvdb::math::Vec4<int32_t>(5,6,7,8) });
+                [&](){ mHarness.addAttributes<laovdb::math::Vec4<int32_t>>(names,
+                        { laovdb::math::Vec4<int32_t>(1,2,3,4),
+                          laovdb::math::Vec4<int32_t>(-1,-2,-3,-4),
+                          laovdb::math::Vec4<int32_t>(0,0,0,0),
+                          laovdb::math::Vec4<int32_t>(0,0,0,0),
+                          laovdb::math::Vec4<int32_t>(0,0,0,0),
+                          laovdb::math::Vec4<int32_t>(6,8,10,12),
+                          laovdb::math::Vec4<int32_t>(0,0,0,0),
+                          laovdb::math::Vec4<int32_t>(0,0,0,0),
+                          laovdb::math::Vec4<int32_t>(5,6,7,8) });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Vec4<int32_t>>(names,
-                        { openvdb::math::Vec4<int32_t>(1,2,3,4),
-                          openvdb::math::Vec4<int32_t>(4,5,6,7),
-                          openvdb::math::Vec4<int32_t>(7,8,9,-1),
-                          openvdb::math::Vec4<int32_t>(-1,-2,-3,1),
-                          openvdb::math::Vec4<int32_t>(-4,-5,-6,2),
-                          openvdb::math::Vec4<int32_t>(4,5,-6,2),
-                          openvdb::math::Vec4<int32_t>(-7,-8,-9,3),
-                          openvdb::math::Vec4<int32_t>(-1,2,-3,4),
-                          openvdb::math::Vec4<int32_t>(-5,6,-7,8) }, // in
-                        { openvdb::math::Vec4<int32_t>(2,4,6,8),
-                          openvdb::math::Vec4<int32_t>(3,3,3,3),
-                          openvdb::math::Vec4<int32_t>(7,16,27,-4),
-                          openvdb::math::Vec4<int32_t>(-1,-1,-1,0),
-                          openvdb::math::Vec4<int32_t>(0,1,0,2),
-                          openvdb::math::Vec4<int32_t>(6,8,10,12),
-                          openvdb::math::Vec4<int32_t>(-8,-6,-12,7),
-                          openvdb::math::Vec4<int32_t>(-1,2,-3,4),
-                          openvdb::math::Vec4<int32_t>(0,12,0,16) }); // expected
+                [&](){ mHarness.addAttributes<laovdb::math::Vec4<int32_t>>(names,
+                        { laovdb::math::Vec4<int32_t>(1,2,3,4),
+                          laovdb::math::Vec4<int32_t>(4,5,6,7),
+                          laovdb::math::Vec4<int32_t>(7,8,9,-1),
+                          laovdb::math::Vec4<int32_t>(-1,-2,-3,1),
+                          laovdb::math::Vec4<int32_t>(-4,-5,-6,2),
+                          laovdb::math::Vec4<int32_t>(4,5,-6,2),
+                          laovdb::math::Vec4<int32_t>(-7,-8,-9,3),
+                          laovdb::math::Vec4<int32_t>(-1,2,-3,4),
+                          laovdb::math::Vec4<int32_t>(-5,6,-7,8) }, // in
+                        { laovdb::math::Vec4<int32_t>(2,4,6,8),
+                          laovdb::math::Vec4<int32_t>(3,3,3,3),
+                          laovdb::math::Vec4<int32_t>(7,16,27,-4),
+                          laovdb::math::Vec4<int32_t>(-1,-1,-1,0),
+                          laovdb::math::Vec4<int32_t>(0,1,0,2),
+                          laovdb::math::Vec4<int32_t>(6,8,10,12),
+                          laovdb::math::Vec4<int32_t>(-8,-6,-12,7),
+                          laovdb::math::Vec4<int32_t>(-1,2,-3,4),
+                          laovdb::math::Vec4<int32_t>(0,12,0,16) }); // expected
                 }
             }
         },
         { "vec4f", {
-                [&](){ mHarness.addAttributes<openvdb::math::Vec4<float>>(names,
-                        { openvdb::math::Vec4<float>(1.1f,2.3f,4.3f,5.4f),
-                          openvdb::math::Vec4<float>(-1.1f,-2.3f,-4.3f,-5.4f),
-                          openvdb::math::Vec4<float>(0.0f,0.0f,0.0f,0.0f),
-                          openvdb::math::Vec4<float>(0.0f,0.0f,0.0f,0.0f),
-                          openvdb::math::Vec4<float>(0.0f,0.0f,0.0f,0.0f),
-                          openvdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f) + openvdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f),
-                          openvdb::math::Vec4<float>(0.0f,0.0f,0.0f,0.0f),
-                          openvdb::math::Vec4<float>(0.0f,0.0f,0.0f,0.0f),
-                          openvdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f) });
+                [&](){ mHarness.addAttributes<laovdb::math::Vec4<float>>(names,
+                        { laovdb::math::Vec4<float>(1.1f,2.3f,4.3f,5.4f),
+                          laovdb::math::Vec4<float>(-1.1f,-2.3f,-4.3f,-5.4f),
+                          laovdb::math::Vec4<float>(0.0f,0.0f,0.0f,0.0f),
+                          laovdb::math::Vec4<float>(0.0f,0.0f,0.0f,0.0f),
+                          laovdb::math::Vec4<float>(0.0f,0.0f,0.0f,0.0f),
+                          laovdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f) + laovdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f),
+                          laovdb::math::Vec4<float>(0.0f,0.0f,0.0f,0.0f),
+                          laovdb::math::Vec4<float>(0.0f,0.0f,0.0f,0.0f),
+                          laovdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f) });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Vec4<float>>(names,
-                        { openvdb::math::Vec4<float>(1.1f,2.2f,3.3f,4.4f),
-                          openvdb::math::Vec4<float>(3.3f,4.4f,5.5f,6.6f),
-                          openvdb::math::Vec4<float>(5.5f,6.6f,7.7f,8.8f),
-                          openvdb::math::Vec4<float>(7.7f,8.8f,9.9f,-1.1f),
-                          openvdb::math::Vec4<float>(7.7f,8.8f,9.9f,-1.1f),
-                          openvdb::math::Vec4<float>(9.9f,-1.1f,-2.2f,-3.3f),
-                          openvdb::math::Vec4<float>(-2.2f,-3.3f,-4.4f,-5.5f),
-                          openvdb::math::Vec4<float>(-4.3f,-5.5f,-6.6f,-7.7f),
-                          openvdb::math::Vec4<float>(-8.2f,-9.3f,0.6f,-1.7f) }, // in
-                        { openvdb::math::Vec4<float>(1.1f,2.2f,3.3f,4.4f) + openvdb::math::Vec4<float>(1.1f,2.3f,4.3f,5.4f),
-                          openvdb::math::Vec4<float>(3.3f,4.4f,5.5f,6.6f) - openvdb::math::Vec4<float>(1.1f,2.3f,4.3f,5.4f),
-                          openvdb::math::Vec4<float>(5.5f,6.6f,7.7f,8.8f) * openvdb::math::Vec4<float>(1.1f,2.3f,4.3f,5.4f),
-                          openvdb::math::Vec4<float>(7.7f,8.8f,9.9f,-1.1f) / openvdb::math::Vec4<float>(1.1f,2.3f,4.3f,5.4f),
-                          openvdb::math::Vec4<float>(std::fmod(7.7f,1.1f),std::fmod(8.8f,2.3f),std::fmod(9.9f,4.3f),std::fmod(-1.1f,5.4f)+5.4f), // floored mod
-                          openvdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f) + openvdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f),
-                          openvdb::math::Vec4<float>(-2.2f,-3.3f,-4.4f,-5.5f) + openvdb::math::Vec4<float>(-4.3f,-5.5f,-6.6f,-7.7f),
-                          openvdb::math::Vec4<float>(-4.3f,-5.5f,-6.6f,-7.7f),
-                          openvdb::math::Vec4<float>(-8.2f,-9.3f,0.6f,-1.7f) + openvdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f)
+                [&](){ mHarness.addAttributes<laovdb::math::Vec4<float>>(names,
+                        { laovdb::math::Vec4<float>(1.1f,2.2f,3.3f,4.4f),
+                          laovdb::math::Vec4<float>(3.3f,4.4f,5.5f,6.6f),
+                          laovdb::math::Vec4<float>(5.5f,6.6f,7.7f,8.8f),
+                          laovdb::math::Vec4<float>(7.7f,8.8f,9.9f,-1.1f),
+                          laovdb::math::Vec4<float>(7.7f,8.8f,9.9f,-1.1f),
+                          laovdb::math::Vec4<float>(9.9f,-1.1f,-2.2f,-3.3f),
+                          laovdb::math::Vec4<float>(-2.2f,-3.3f,-4.4f,-5.5f),
+                          laovdb::math::Vec4<float>(-4.3f,-5.5f,-6.6f,-7.7f),
+                          laovdb::math::Vec4<float>(-8.2f,-9.3f,0.6f,-1.7f) }, // in
+                        { laovdb::math::Vec4<float>(1.1f,2.2f,3.3f,4.4f) + laovdb::math::Vec4<float>(1.1f,2.3f,4.3f,5.4f),
+                          laovdb::math::Vec4<float>(3.3f,4.4f,5.5f,6.6f) - laovdb::math::Vec4<float>(1.1f,2.3f,4.3f,5.4f),
+                          laovdb::math::Vec4<float>(5.5f,6.6f,7.7f,8.8f) * laovdb::math::Vec4<float>(1.1f,2.3f,4.3f,5.4f),
+                          laovdb::math::Vec4<float>(7.7f,8.8f,9.9f,-1.1f) / laovdb::math::Vec4<float>(1.1f,2.3f,4.3f,5.4f),
+                          laovdb::math::Vec4<float>(std::fmod(7.7f,1.1f),std::fmod(8.8f,2.3f),std::fmod(9.9f,4.3f),std::fmod(-1.1f,5.4f)+5.4f), // floored mod
+                          laovdb::math::Vec4<float>(1.1f, 2.3f, 4.3f, 5.4f) + laovdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f),
+                          laovdb::math::Vec4<float>(-2.2f,-3.3f,-4.4f,-5.5f) + laovdb::math::Vec4<float>(-4.3f,-5.5f,-6.6f,-7.7f),
+                          laovdb::math::Vec4<float>(-4.3f,-5.5f,-6.6f,-7.7f),
+                          laovdb::math::Vec4<float>(-8.2f,-9.3f,0.6f,-1.7f) + laovdb::math::Vec4<float>(5.1f, 6.3f, 7.3f, 8.4f)
                         }); // expected
                 }
             }
         },
         { "vec4d", {
-                [&](){ mHarness.addAttributes<openvdb::math::Vec4<double>>(names,
-                        { openvdb::math::Vec4<double>(1.1,2.3,4.3,5.4),
-                          openvdb::math::Vec4<double>(-1.1,-2.3,-4.3,-5.4),
-                          openvdb::math::Vec4<double>(0.0,0.0,0.0,0.0),
-                          openvdb::math::Vec4<double>(0.0,0.0,0.0,0.0),
-                          openvdb::math::Vec4<double>(0.0,0.0,0.0,0.0),
-                          openvdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4) + openvdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4),
-                          openvdb::math::Vec4<double>(0.0,0.0,0.0,0.0),
-                          openvdb::math::Vec4<double>(0.0,0.0,0.0,0.0),
-                          openvdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4) });
+                [&](){ mHarness.addAttributes<laovdb::math::Vec4<double>>(names,
+                        { laovdb::math::Vec4<double>(1.1,2.3,4.3,5.4),
+                          laovdb::math::Vec4<double>(-1.1,-2.3,-4.3,-5.4),
+                          laovdb::math::Vec4<double>(0.0,0.0,0.0,0.0),
+                          laovdb::math::Vec4<double>(0.0,0.0,0.0,0.0),
+                          laovdb::math::Vec4<double>(0.0,0.0,0.0,0.0),
+                          laovdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4) + laovdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4),
+                          laovdb::math::Vec4<double>(0.0,0.0,0.0,0.0),
+                          laovdb::math::Vec4<double>(0.0,0.0,0.0,0.0),
+                          laovdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4) });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Vec4<double>>(names,
-                        { openvdb::math::Vec4<double>(1.1,2.2,3.3,4.4),
-                          openvdb::math::Vec4<double>(3.3,4.4,5.5,6.6),
-                          openvdb::math::Vec4<double>(5.5,6.6,7.7,8.8),
-                          openvdb::math::Vec4<double>(7.7,8.8,9.9,-1.1),
-                          openvdb::math::Vec4<double>(7.7,8.8,9.9,-1.1),
-                          openvdb::math::Vec4<double>(9.9,-1.1,-2.2,-3.3),
-                          openvdb::math::Vec4<double>(-2.2,-3.3,-4.4,-5.5),
-                          openvdb::math::Vec4<double>(-4.3,-5.5,-6.6,-7.7),
-                          openvdb::math::Vec4<double>(-8.2,-9.3,0.6,-1.7) }, // in
-                        { openvdb::math::Vec4<double>(1.1,2.2,3.3,4.4) + openvdb::math::Vec4<double>(1.1,2.3,4.3,5.4),
-                          openvdb::math::Vec4<double>(3.3,4.4,5.5,6.6) - openvdb::math::Vec4<double>(1.1,2.3,4.3,5.4),
-                          openvdb::math::Vec4<double>(5.5,6.6,7.7,8.8) * openvdb::math::Vec4<double>(1.1,2.3,4.3,5.4),
-                          openvdb::math::Vec4<double>(7.7,8.8,9.9,-1.1) / openvdb::math::Vec4<double>(1.1,2.3,4.3,5.4),
-                          openvdb::math::Vec4<double>(std::fmod(7.7,1.1),std::fmod(8.8,2.3),std::fmod(9.9,4.3),std::fmod(-1.1,5.4)+5.4), // floored mod
-                          openvdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4) + openvdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4),
-                          openvdb::math::Vec4<double>(-2.2,-3.3,-4.4,-5.5) + openvdb::math::Vec4<double>(-4.3,-5.5,-6.6,-7.7),
-                          openvdb::math::Vec4<double>(-4.3,-5.5,-6.6,-7.7),
-                          openvdb::math::Vec4<double>(-8.2,-9.3,0.6,-1.7) + openvdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4)
+                [&](){ mHarness.addAttributes<laovdb::math::Vec4<double>>(names,
+                        { laovdb::math::Vec4<double>(1.1,2.2,3.3,4.4),
+                          laovdb::math::Vec4<double>(3.3,4.4,5.5,6.6),
+                          laovdb::math::Vec4<double>(5.5,6.6,7.7,8.8),
+                          laovdb::math::Vec4<double>(7.7,8.8,9.9,-1.1),
+                          laovdb::math::Vec4<double>(7.7,8.8,9.9,-1.1),
+                          laovdb::math::Vec4<double>(9.9,-1.1,-2.2,-3.3),
+                          laovdb::math::Vec4<double>(-2.2,-3.3,-4.4,-5.5),
+                          laovdb::math::Vec4<double>(-4.3,-5.5,-6.6,-7.7),
+                          laovdb::math::Vec4<double>(-8.2,-9.3,0.6,-1.7) }, // in
+                        { laovdb::math::Vec4<double>(1.1,2.2,3.3,4.4) + laovdb::math::Vec4<double>(1.1,2.3,4.3,5.4),
+                          laovdb::math::Vec4<double>(3.3,4.4,5.5,6.6) - laovdb::math::Vec4<double>(1.1,2.3,4.3,5.4),
+                          laovdb::math::Vec4<double>(5.5,6.6,7.7,8.8) * laovdb::math::Vec4<double>(1.1,2.3,4.3,5.4),
+                          laovdb::math::Vec4<double>(7.7,8.8,9.9,-1.1) / laovdb::math::Vec4<double>(1.1,2.3,4.3,5.4),
+                          laovdb::math::Vec4<double>(std::fmod(7.7,1.1),std::fmod(8.8,2.3),std::fmod(9.9,4.3),std::fmod(-1.1,5.4)+5.4), // floored mod
+                          laovdb::math::Vec4<double>(1.1, 2.3, 4.3, 5.4) + laovdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4),
+                          laovdb::math::Vec4<double>(-2.2,-3.3,-4.4,-5.5) + laovdb::math::Vec4<double>(-4.3,-5.5,-6.6,-7.7),
+                          laovdb::math::Vec4<double>(-4.3,-5.5,-6.6,-7.7),
+                          laovdb::math::Vec4<double>(-8.2,-9.3,0.6,-1.7) + laovdb::math::Vec4<double>(5.1, 6.3, 7.3, 8.4)
                         }); // expected
                 }
             }
@@ -903,138 +903,138 @@ _T1_@test7 += local2;
     generate(mat3);
     generate(mat4);
 
-    const openvdb::math::Mat3<float> m3fl1(1.1f, 2.3f, 4.3f,  5.4f, 6.7f, 7.8f,  9.1f, 4.5f, 8.2f);
-    const openvdb::math::Mat3<float> m3fl2(9.1f, 7.3f,-1.3f,  4.4f,-6.7f, 0.8f,  9.1f,-0.5f, 8.2f);
-    const openvdb::math::Mat3<double> m3dl1(1.1, 2.3, 4.3,  5.4, 6.7, 7.8,  9.1, 4.5, 8.2);
-    const openvdb::math::Mat3<double> m3dl2(9.1, 7.3,-1.3,  4.4,-6.7, 0.8,  9.1,-0.5, 8.2);
+    const laovdb::math::Mat3<float> m3fl1(1.1f, 2.3f, 4.3f,  5.4f, 6.7f, 7.8f,  9.1f, 4.5f, 8.2f);
+    const laovdb::math::Mat3<float> m3fl2(9.1f, 7.3f,-1.3f,  4.4f,-6.7f, 0.8f,  9.1f,-0.5f, 8.2f);
+    const laovdb::math::Mat3<double> m3dl1(1.1, 2.3, 4.3,  5.4, 6.7, 7.8,  9.1, 4.5, 8.2);
+    const laovdb::math::Mat3<double> m3dl2(9.1, 7.3,-1.3,  4.4,-6.7, 0.8,  9.1,-0.5, 8.2);
 
-    const openvdb::math::Mat4<float> m4fl1(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f);
-    const openvdb::math::Mat4<float> m4fl2(0.1f, 2.3f,-9.3f, 4.5f,  -1.7f, 7.8f, 2.1f, 3.3f,  3.3f,-3.3f,-0.3f, 2.5f,  5.1f, 0.5f, 8.1f,-1.7f);
-    const openvdb::math::Mat4<double> m4dl1(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9);
-    const openvdb::math::Mat4<double> m4dl2(0.1, 2.3,-9.3, 4.5,  -1.7, 7.8, 2.1, 3.3,  3.3,-3.3,-0.3, 2.5,  5.1, 0.5, 8.1,-1.7);
+    const laovdb::math::Mat4<float> m4fl1(1.1f, 2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f, 4.5f,  8.2f, 3.3f, 2.9f, 5.9f,  0.1f, 0.3f, 5.1f, 1.9f);
+    const laovdb::math::Mat4<float> m4fl2(0.1f, 2.3f,-9.3f, 4.5f,  -1.7f, 7.8f, 2.1f, 3.3f,  3.3f,-3.3f,-0.3f, 2.5f,  5.1f, 0.5f, 8.1f,-1.7f);
+    const laovdb::math::Mat4<double> m4dl1(1.1, 2.3, 4.3, 5.4,   6.7, 7.8, 9.1, 4.5,  8.2, 3.3, 2.9, 5.9,  0.1, 0.3, 5.1, 1.9);
+    const laovdb::math::Mat4<double> m4dl2(0.1, 2.3,-9.3, 4.5,  -1.7, 7.8, 2.1, 3.3,  3.3,-3.3,-0.3, 2.5,  5.1, 0.5, 8.1,-1.7);
 
     const auto names = unittest_util::nameSequence("test", 7);
     const std::map<std::string, std::vector<std::function<void()>>> expected = {
         { "mat3f", {
-                [&](){ mHarness.addAttributes<openvdb::math::Mat3<float>>(names,
+                [&](){ mHarness.addAttributes<laovdb::math::Mat3<float>>(names,
                         { m3fl1,
                           -m3fl1,
-                          openvdb::math::Mat3<float>::zero(),
+                          laovdb::math::Mat3<float>::zero(),
                           m3fl1 + m3fl2,
-                          openvdb::math::Mat3<float>::zero(),
-                          openvdb::math::Mat3<float>::zero(),
+                          laovdb::math::Mat3<float>::zero(),
+                          laovdb::math::Mat3<float>::zero(),
                           m3fl2 });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Mat3<float>>(names,
-                        { openvdb::math::Mat3<float>(2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f,   4.5f, 8.2f, 1.1f),
-                          openvdb::math::Mat3<float>(4.3f, 5.4f, 6.7f,   7.8f, 9.1f, 4.5f,   8.2f, 1.1f, 2.3f),
-                          openvdb::math::Mat3<float>(5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f,   1.1f, 2.3f, 4.3f),
-                          openvdb::math::Mat3<float>(8.3f, 2.3f, 6.1f,   4.5f, 0.1f, 0.1f,   5.3f, 4.5f, 8.9f),
-                          openvdb::math::Mat3<float>(6.7f, 7.8f, 9.1f,   4.5f, 8.2f, 1.1f,   2.3f, 4.3f, 5.4f),
-                          openvdb::math::Mat3<float>(7.8f, 9.1f, 4.5f,   8.2f, 1.1f, 2.3f,   4.3f, 5.4f, 6.7f),
-                          openvdb::math::Mat3<float>(-6.8f,-8.1f,-4.5f,  5.2f,-1.1f, 2.3f,  -0.3f, 5.4f,-3.7f)
+                [&](){ mHarness.addAttributes<laovdb::math::Mat3<float>>(names,
+                        { laovdb::math::Mat3<float>(2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f,   4.5f, 8.2f, 1.1f),
+                          laovdb::math::Mat3<float>(4.3f, 5.4f, 6.7f,   7.8f, 9.1f, 4.5f,   8.2f, 1.1f, 2.3f),
+                          laovdb::math::Mat3<float>(5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f,   1.1f, 2.3f, 4.3f),
+                          laovdb::math::Mat3<float>(8.3f, 2.3f, 6.1f,   4.5f, 0.1f, 0.1f,   5.3f, 4.5f, 8.9f),
+                          laovdb::math::Mat3<float>(6.7f, 7.8f, 9.1f,   4.5f, 8.2f, 1.1f,   2.3f, 4.3f, 5.4f),
+                          laovdb::math::Mat3<float>(7.8f, 9.1f, 4.5f,   8.2f, 1.1f, 2.3f,   4.3f, 5.4f, 6.7f),
+                          laovdb::math::Mat3<float>(-6.8f,-8.1f,-4.5f,  5.2f,-1.1f, 2.3f,  -0.3f, 5.4f,-3.7f)
                         }, // in
-                        { openvdb::math::Mat3<float>(2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f,   4.5f, 8.2f, 1.1f) + m3fl1,
-                          openvdb::math::Mat3<float>(4.3f, 5.4f, 6.7f,   7.8f, 9.1f, 4.5f,   8.2f, 1.1f, 2.3f) - m3fl1,
-                          openvdb::math::Mat3<float>(5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f,   1.1f, 2.3f, 4.3f) * m3fl1,
+                        { laovdb::math::Mat3<float>(2.3f, 4.3f, 5.4f,   6.7f, 7.8f, 9.1f,   4.5f, 8.2f, 1.1f) + m3fl1,
+                          laovdb::math::Mat3<float>(4.3f, 5.4f, 6.7f,   7.8f, 9.1f, 4.5f,   8.2f, 1.1f, 2.3f) - m3fl1,
+                          laovdb::math::Mat3<float>(5.4f, 6.7f, 7.8f,   9.1f, 4.5f, 8.2f,   1.1f, 2.3f, 4.3f) * m3fl1,
                           m3fl1 + m3fl2,
-                          openvdb::math::Mat3<float>(6.7f, 7.8f, 9.1f,   4.5f, 8.2f, 1.1f,   2.3f, 4.3f, 5.4f) +
-                              openvdb::math::Mat3<float>(7.8f, 9.1f, 4.5f,   8.2f, 1.1f, 2.3f,   4.3f, 5.4f, 6.7f),
-                          openvdb::math::Mat3<float>(7.8f, 9.1f, 4.5f,   8.2f, 1.1f, 2.3f,   4.3f, 5.4f, 6.7f),
-                          openvdb::math::Mat3<float>(-6.8f,-8.1f,-4.5f,  5.2f,-1.1f, 2.3f,  -0.3f, 5.4f,-3.7f)  + m3fl2
+                          laovdb::math::Mat3<float>(6.7f, 7.8f, 9.1f,   4.5f, 8.2f, 1.1f,   2.3f, 4.3f, 5.4f) +
+                              laovdb::math::Mat3<float>(7.8f, 9.1f, 4.5f,   8.2f, 1.1f, 2.3f,   4.3f, 5.4f, 6.7f),
+                          laovdb::math::Mat3<float>(7.8f, 9.1f, 4.5f,   8.2f, 1.1f, 2.3f,   4.3f, 5.4f, 6.7f),
+                          laovdb::math::Mat3<float>(-6.8f,-8.1f,-4.5f,  5.2f,-1.1f, 2.3f,  -0.3f, 5.4f,-3.7f)  + m3fl2
                         }); // expected
                 }
             }
         },
         { "mat3d", {
-                [&](){ mHarness.addAttributes<openvdb::math::Mat3<double>>(names,
+                [&](){ mHarness.addAttributes<laovdb::math::Mat3<double>>(names,
                         { m3dl1,
                           -m3dl1,
-                          openvdb::math::Mat3<double>::zero(),
+                          laovdb::math::Mat3<double>::zero(),
                           m3dl1 + m3dl2,
-                          openvdb::math::Mat3<double>::zero(),
-                          openvdb::math::Mat3<double>::zero(),
+                          laovdb::math::Mat3<double>::zero(),
+                          laovdb::math::Mat3<double>::zero(),
                           m3dl2 });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Mat3<double>>(names,
-                        { openvdb::math::Mat3<double>(2.3, 4.3, 5.4,   6.7, 7.8, 9.1,   4.5, 8.2, 1.1),
-                          openvdb::math::Mat3<double>(4.3, 5.4, 6.7,   7.8, 9.1, 4.5,   8.2, 1.1, 2.3),
-                          openvdb::math::Mat3<double>(5.4, 6.7, 7.8,   9.1, 4.5, 8.2,   1.1, 2.3, 4.3),
-                          openvdb::math::Mat3<double>(8.3, 2.3, 6.1,   4.5, 0.1, 0.1,   5.3, 4.5, 8.9),
-                          openvdb::math::Mat3<double>(6.7, 7.8, 9.1,   4.5, 8.2, 1.1,   2.3, 4.3, 5.4),
-                          openvdb::math::Mat3<double>(7.8, 9.1, 4.5,   8.2, 1.1, 2.3,   4.3, 5.4, 6.7),
-                          openvdb::math::Mat3<double>(-6.8,-8.1,-4.5,  5.2,-1.1, 2.3,  -0.3, 5.4,-3.7)
+                [&](){ mHarness.addAttributes<laovdb::math::Mat3<double>>(names,
+                        { laovdb::math::Mat3<double>(2.3, 4.3, 5.4,   6.7, 7.8, 9.1,   4.5, 8.2, 1.1),
+                          laovdb::math::Mat3<double>(4.3, 5.4, 6.7,   7.8, 9.1, 4.5,   8.2, 1.1, 2.3),
+                          laovdb::math::Mat3<double>(5.4, 6.7, 7.8,   9.1, 4.5, 8.2,   1.1, 2.3, 4.3),
+                          laovdb::math::Mat3<double>(8.3, 2.3, 6.1,   4.5, 0.1, 0.1,   5.3, 4.5, 8.9),
+                          laovdb::math::Mat3<double>(6.7, 7.8, 9.1,   4.5, 8.2, 1.1,   2.3, 4.3, 5.4),
+                          laovdb::math::Mat3<double>(7.8, 9.1, 4.5,   8.2, 1.1, 2.3,   4.3, 5.4, 6.7),
+                          laovdb::math::Mat3<double>(-6.8,-8.1,-4.5,  5.2,-1.1, 2.3,  -0.3, 5.4,-3.7)
                         }, // in
-                        { openvdb::math::Mat3<double>(2.3, 4.3, 5.4,   6.7, 7.8, 9.1,   4.5, 8.2, 1.1) + m3dl1,
-                          openvdb::math::Mat3<double>(4.3, 5.4, 6.7,   7.8, 9.1, 4.5,   8.2, 1.1, 2.3) - m3dl1,
-                          openvdb::math::Mat3<double>(5.4, 6.7, 7.8,   9.1, 4.5, 8.2,   1.1, 2.3, 4.3) * m3dl1,
+                        { laovdb::math::Mat3<double>(2.3, 4.3, 5.4,   6.7, 7.8, 9.1,   4.5, 8.2, 1.1) + m3dl1,
+                          laovdb::math::Mat3<double>(4.3, 5.4, 6.7,   7.8, 9.1, 4.5,   8.2, 1.1, 2.3) - m3dl1,
+                          laovdb::math::Mat3<double>(5.4, 6.7, 7.8,   9.1, 4.5, 8.2,   1.1, 2.3, 4.3) * m3dl1,
                           m3dl1 + m3dl2,
-                          openvdb::math::Mat3<double>(6.7, 7.8, 9.1,   4.5, 8.2, 1.1,   2.3, 4.3, 5.4) +
-                              openvdb::math::Mat3<double>(7.8, 9.1, 4.5,   8.2, 1.1, 2.3,   4.3, 5.4, 6.7),
-                          openvdb::math::Mat3<double>(7.8, 9.1, 4.5,   8.2, 1.1, 2.3,   4.3, 5.4, 6.7),
-                          openvdb::math::Mat3<double>(-6.8,-8.1,-4.5,  5.2,-1.1, 2.3,  -0.3, 5.4,-3.7)  + m3dl2
+                          laovdb::math::Mat3<double>(6.7, 7.8, 9.1,   4.5, 8.2, 1.1,   2.3, 4.3, 5.4) +
+                              laovdb::math::Mat3<double>(7.8, 9.1, 4.5,   8.2, 1.1, 2.3,   4.3, 5.4, 6.7),
+                          laovdb::math::Mat3<double>(7.8, 9.1, 4.5,   8.2, 1.1, 2.3,   4.3, 5.4, 6.7),
+                          laovdb::math::Mat3<double>(-6.8,-8.1,-4.5,  5.2,-1.1, 2.3,  -0.3, 5.4,-3.7)  + m3dl2
                         }); // expected
                 }
             }
         },
         { "mat4f", {
-                [&](){ mHarness.addAttributes<openvdb::math::Mat4<float>>(names,
+                [&](){ mHarness.addAttributes<laovdb::math::Mat4<float>>(names,
                         { m4fl1,
                           -m4fl1,
-                          openvdb::math::Mat4<float>::zero(),
+                          laovdb::math::Mat4<float>::zero(),
                           m4fl1 + m4fl2,
-                          openvdb::math::Mat4<float>::zero(),
-                          openvdb::math::Mat4<float>::zero(),
+                          laovdb::math::Mat4<float>::zero(),
+                          laovdb::math::Mat4<float>::zero(),
                           m4fl2 });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Mat4<float>>(names,
-                        { openvdb::math::Mat4<float>(2.3f,-4.3f, 5.4f, 6.7f,  7.8f,-9.1f, 4.5f, 8.2f,  1.1f,-5.4f,-6.7f, 7.8f,  6.7f, 7.8f, 9.1f,-2.4f),
-                          openvdb::math::Mat4<float>(4.3f,-5.4f, 6.7f, 7.8f,  9.1f, 4.5f, 8.2f, 1.1f,  2.3f, 6.7f, 7.8f, 9.1f, -1.3f,-0.1f, 1.1f, 0.9f),
-                          openvdb::math::Mat4<float>(5.4f, 6.7f, 7.8f, 9.1f, -4.5f, 8.2f, 1.1f,-2.3f, -4.3f,-7.8f, 9.1f, 4.5f, -6.7f, 2.2f,-7.1f, 1.1f),
-                          openvdb::math::Mat4<float>(1.2f, 5.1f, 8.2f, 3.1f, -3.3f, -7.3f, 0.2f,-0.1f,  1.4f, 0.8f, 8.8f,-1.1f, -7.8f, 4.1f, 4.4f, -4.7f),
-                          openvdb::math::Mat4<float>(5.4f, 6.7f, 8.2f, 1.1f, -2.3f, -4.3f, 2.2f,-7.1f,  1.1f, 7.8f, 9.1f,-4.5f, -7.8f, 9.1f, 4.5f, -6.7f),
-                          openvdb::math::Mat4<float>(8.2f, 1.1f, 6.3f,-4.3f,  9.1f, -4.5f,-7.8f, 9.1f,  4.5f, 6.7f,-5.4f, 6.7f,  2.2f,-7.1f, 1.1f, 7.8f),
-                          openvdb::math::Mat4<float>(4.3f,-5.1f,-5.3f, 2.2f,  2.1f, -4.2f, 2.3f,-1.1f,  0.5f, 0.7f, 1.3f, 0.7f, -1.2f, 3.4f, 9.9f, 9.8f),
+                [&](){ mHarness.addAttributes<laovdb::math::Mat4<float>>(names,
+                        { laovdb::math::Mat4<float>(2.3f,-4.3f, 5.4f, 6.7f,  7.8f,-9.1f, 4.5f, 8.2f,  1.1f,-5.4f,-6.7f, 7.8f,  6.7f, 7.8f, 9.1f,-2.4f),
+                          laovdb::math::Mat4<float>(4.3f,-5.4f, 6.7f, 7.8f,  9.1f, 4.5f, 8.2f, 1.1f,  2.3f, 6.7f, 7.8f, 9.1f, -1.3f,-0.1f, 1.1f, 0.9f),
+                          laovdb::math::Mat4<float>(5.4f, 6.7f, 7.8f, 9.1f, -4.5f, 8.2f, 1.1f,-2.3f, -4.3f,-7.8f, 9.1f, 4.5f, -6.7f, 2.2f,-7.1f, 1.1f),
+                          laovdb::math::Mat4<float>(1.2f, 5.1f, 8.2f, 3.1f, -3.3f, -7.3f, 0.2f,-0.1f,  1.4f, 0.8f, 8.8f,-1.1f, -7.8f, 4.1f, 4.4f, -4.7f),
+                          laovdb::math::Mat4<float>(5.4f, 6.7f, 8.2f, 1.1f, -2.3f, -4.3f, 2.2f,-7.1f,  1.1f, 7.8f, 9.1f,-4.5f, -7.8f, 9.1f, 4.5f, -6.7f),
+                          laovdb::math::Mat4<float>(8.2f, 1.1f, 6.3f,-4.3f,  9.1f, -4.5f,-7.8f, 9.1f,  4.5f, 6.7f,-5.4f, 6.7f,  2.2f,-7.1f, 1.1f, 7.8f),
+                          laovdb::math::Mat4<float>(4.3f,-5.1f,-5.3f, 2.2f,  2.1f, -4.2f, 2.3f,-1.1f,  0.5f, 0.7f, 1.3f, 0.7f, -1.2f, 3.4f, 9.9f, 9.8f),
                         }, // in
-                        { openvdb::math::Mat4<float>(2.3f,-4.3f, 5.4f, 6.7f,  7.8f,-9.1f, 4.5f, 8.2f,  1.1f,-5.4f,-6.7f, 7.8f,  6.7f, 7.8f, 9.1f,-2.4f) + m4fl1,
-                          openvdb::math::Mat4<float>(4.3f,-5.4f, 6.7f, 7.8f,  9.1f, 4.5f, 8.2f, 1.1f,  2.3f, 6.7f, 7.8f, 9.1f, -1.3f,-0.1f, 1.1f, 0.9f) - m4fl1,
-                          openvdb::math::Mat4<float>(5.4f, 6.7f, 7.8f, 9.1f, -4.5f, 8.2f, 1.1f,-2.3f, -4.3f,-7.8f, 9.1f, 4.5f, -6.7f, 2.2f,-7.1f, 1.1f) * m4fl1,
+                        { laovdb::math::Mat4<float>(2.3f,-4.3f, 5.4f, 6.7f,  7.8f,-9.1f, 4.5f, 8.2f,  1.1f,-5.4f,-6.7f, 7.8f,  6.7f, 7.8f, 9.1f,-2.4f) + m4fl1,
+                          laovdb::math::Mat4<float>(4.3f,-5.4f, 6.7f, 7.8f,  9.1f, 4.5f, 8.2f, 1.1f,  2.3f, 6.7f, 7.8f, 9.1f, -1.3f,-0.1f, 1.1f, 0.9f) - m4fl1,
+                          laovdb::math::Mat4<float>(5.4f, 6.7f, 7.8f, 9.1f, -4.5f, 8.2f, 1.1f,-2.3f, -4.3f,-7.8f, 9.1f, 4.5f, -6.7f, 2.2f,-7.1f, 1.1f) * m4fl1,
                           m4fl1 + m4fl2,
-                          openvdb::math::Mat4<float>(5.4f, 6.7f, 8.2f, 1.1f, -2.3f, -4.3f, 2.2f,-7.1f,  1.1f, 7.8f, 9.1f,-4.5f, -7.8f, 9.1f, 4.5f, -6.7f) +
-                              openvdb::math::Mat4<float>(8.2f, 1.1f, 6.3f,-4.3f,  9.1f, -4.5f,-7.8f, 9.1f,  4.5f, 6.7f,-5.4f, 6.7f,  2.2f,-7.1f,  1.1f, 7.8f),
-                          openvdb::math::Mat4<float>(8.2f, 1.1f, 6.3f,-4.3f,  9.1f, -4.5f,-7.8f, 9.1f,  4.5f, 6.7f,-5.4f, 6.7f,  2.2f,-7.1f,  1.1f, 7.8f),
-                          openvdb::math::Mat4<float>(4.3f,-5.1f,-5.3f, 2.2f,  2.1f, -4.2f, 2.3f,-1.1f,  0.5f, 0.7f, 1.3f, 0.7f, -1.2f, 3.4f, 9.9f, 9.8f) + m4fl2
+                          laovdb::math::Mat4<float>(5.4f, 6.7f, 8.2f, 1.1f, -2.3f, -4.3f, 2.2f,-7.1f,  1.1f, 7.8f, 9.1f,-4.5f, -7.8f, 9.1f, 4.5f, -6.7f) +
+                              laovdb::math::Mat4<float>(8.2f, 1.1f, 6.3f,-4.3f,  9.1f, -4.5f,-7.8f, 9.1f,  4.5f, 6.7f,-5.4f, 6.7f,  2.2f,-7.1f,  1.1f, 7.8f),
+                          laovdb::math::Mat4<float>(8.2f, 1.1f, 6.3f,-4.3f,  9.1f, -4.5f,-7.8f, 9.1f,  4.5f, 6.7f,-5.4f, 6.7f,  2.2f,-7.1f,  1.1f, 7.8f),
+                          laovdb::math::Mat4<float>(4.3f,-5.1f,-5.3f, 2.2f,  2.1f, -4.2f, 2.3f,-1.1f,  0.5f, 0.7f, 1.3f, 0.7f, -1.2f, 3.4f, 9.9f, 9.8f) + m4fl2
                         }); // expected
                 }
             }
         },
         { "mat4d", {
-                [&](){ mHarness.addAttributes<openvdb::math::Mat4<double>>(names,
+                [&](){ mHarness.addAttributes<laovdb::math::Mat4<double>>(names,
                         { m4dl1,
                           -m4dl1,
-                          openvdb::math::Mat4<double>::zero(),
+                          laovdb::math::Mat4<double>::zero(),
                           m4dl1 + m4dl2,
-                          openvdb::math::Mat4<double>::zero(),
-                          openvdb::math::Mat4<double>::zero(),
+                          laovdb::math::Mat4<double>::zero(),
+                          laovdb::math::Mat4<double>::zero(),
                           m4dl2 });
                 },
-                [&](){ mHarness.addAttributes<openvdb::math::Mat4<double>>(names,
-                        { openvdb::math::Mat4<double>(2.3,-4.3, 5.4, 6.7,  7.8,-9.1, 4.5, 8.2,  1.1,-5.4,-6.7, 7.8,  6.7, 7.8, 9.1,-2.4),
-                          openvdb::math::Mat4<double>(4.3,-5.4, 6.7, 7.8,  9.1, 4.5, 8.2, 1.1,  2.3, 6.7, 7.8, 9.1, -1.3,-0.1, 1.1, 0.9),
-                          openvdb::math::Mat4<double>(5.4, 6.7, 7.8, 9.1, -4.5, 8.2, 1.1,-2.3, -4.3,-7.8, 9.1, 4.5, -6.7, 2.2,-7.1, 1.1),
-                          openvdb::math::Mat4<double>(1.2, 5.1, 8.2, 3.1, -3.3, -7.3, 0.2,-0.1,  1.4, 0.8, 8.8,-1.1, -7.8, 4.1, 4.4, -4.7),
-                          openvdb::math::Mat4<double>(5.4, 6.7, 8.2, 1.1, -2.3, -4.3, 2.2,-7.1,  1.1, 7.8, 9.1,-4.5, -7.8, 9.1, 4.5, -6.7),
-                          openvdb::math::Mat4<double>(8.2, 1.1, 6.3,-4.3,  9.1, -4.5,-7.8, 9.1,  4.5, 6.7,-5.4, 6.7,  2.2,-7.1, 1.1, 7.8),
-                          openvdb::math::Mat4<double>(4.3,-5.1,-5.3, 2.2,  2.1, -4.2, 2.3,-1.1,  0.5, 0.7, 1.3, 0.7, -1.2, 3.4, 9.9, 9.8),
+                [&](){ mHarness.addAttributes<laovdb::math::Mat4<double>>(names,
+                        { laovdb::math::Mat4<double>(2.3,-4.3, 5.4, 6.7,  7.8,-9.1, 4.5, 8.2,  1.1,-5.4,-6.7, 7.8,  6.7, 7.8, 9.1,-2.4),
+                          laovdb::math::Mat4<double>(4.3,-5.4, 6.7, 7.8,  9.1, 4.5, 8.2, 1.1,  2.3, 6.7, 7.8, 9.1, -1.3,-0.1, 1.1, 0.9),
+                          laovdb::math::Mat4<double>(5.4, 6.7, 7.8, 9.1, -4.5, 8.2, 1.1,-2.3, -4.3,-7.8, 9.1, 4.5, -6.7, 2.2,-7.1, 1.1),
+                          laovdb::math::Mat4<double>(1.2, 5.1, 8.2, 3.1, -3.3, -7.3, 0.2,-0.1,  1.4, 0.8, 8.8,-1.1, -7.8, 4.1, 4.4, -4.7),
+                          laovdb::math::Mat4<double>(5.4, 6.7, 8.2, 1.1, -2.3, -4.3, 2.2,-7.1,  1.1, 7.8, 9.1,-4.5, -7.8, 9.1, 4.5, -6.7),
+                          laovdb::math::Mat4<double>(8.2, 1.1, 6.3,-4.3,  9.1, -4.5,-7.8, 9.1,  4.5, 6.7,-5.4, 6.7,  2.2,-7.1, 1.1, 7.8),
+                          laovdb::math::Mat4<double>(4.3,-5.1,-5.3, 2.2,  2.1, -4.2, 2.3,-1.1,  0.5, 0.7, 1.3, 0.7, -1.2, 3.4, 9.9, 9.8),
                         }, // in
-                        { openvdb::math::Mat4<double>(2.3,-4.3, 5.4, 6.7,  7.8,-9.1, 4.5, 8.2,  1.1,-5.4,-6.7, 7.8,  6.7, 7.8, 9.1,-2.4) + m4dl1,
-                          openvdb::math::Mat4<double>(4.3,-5.4, 6.7, 7.8,  9.1, 4.5, 8.2, 1.1,  2.3, 6.7, 7.8, 9.1, -1.3,-0.1, 1.1, 0.9) - m4dl1,
-                          openvdb::math::Mat4<double>(5.4, 6.7, 7.8, 9.1, -4.5, 8.2, 1.1,-2.3, -4.3,-7.8, 9.1, 4.5, -6.7, 2.2,-7.1, 1.1) * m4dl1,
+                        { laovdb::math::Mat4<double>(2.3,-4.3, 5.4, 6.7,  7.8,-9.1, 4.5, 8.2,  1.1,-5.4,-6.7, 7.8,  6.7, 7.8, 9.1,-2.4) + m4dl1,
+                          laovdb::math::Mat4<double>(4.3,-5.4, 6.7, 7.8,  9.1, 4.5, 8.2, 1.1,  2.3, 6.7, 7.8, 9.1, -1.3,-0.1, 1.1, 0.9) - m4dl1,
+                          laovdb::math::Mat4<double>(5.4, 6.7, 7.8, 9.1, -4.5, 8.2, 1.1,-2.3, -4.3,-7.8, 9.1, 4.5, -6.7, 2.2,-7.1, 1.1) * m4dl1,
                           m4dl1 + m4dl2,
-                          openvdb::math::Mat4<double>(5.4, 6.7, 8.2, 1.1, -2.3, -4.3, 2.2,-7.1,  1.1, 7.8, 9.1,-4.5, -7.8, 9.1, 4.5, -6.7) +
-                              openvdb::math::Mat4<double>(8.2, 1.1, 6.3,-4.3,  9.1, -4.5,-7.8, 9.1,  4.5, 6.7,-5.4, 6.7,  2.2,-7.1,  1.1, 7.8),
-                          openvdb::math::Mat4<double>(8.2, 1.1, 6.3,-4.3,  9.1, -4.5,-7.8, 9.1,  4.5, 6.7,-5.4, 6.7,  2.2,-7.1,  1.1, 7.8),
-                          openvdb::math::Mat4<double>(4.3,-5.1,-5.3, 2.2,  2.1, -4.2, 2.3,-1.1,  0.5, 0.7, 1.3, 0.7, -1.2, 3.4, 9.9, 9.8) + m4dl2
+                          laovdb::math::Mat4<double>(5.4, 6.7, 8.2, 1.1, -2.3, -4.3, 2.2,-7.1,  1.1, 7.8, 9.1,-4.5, -7.8, 9.1, 4.5, -6.7) +
+                              laovdb::math::Mat4<double>(8.2, 1.1, 6.3,-4.3,  9.1, -4.5,-7.8, 9.1,  4.5, 6.7,-5.4, 6.7,  2.2,-7.1,  1.1, 7.8),
+                          laovdb::math::Mat4<double>(8.2, 1.1, 6.3,-4.3,  9.1, -4.5,-7.8, 9.1,  4.5, 6.7,-5.4, 6.7,  2.2,-7.1,  1.1, 7.8),
+                          laovdb::math::Mat4<double>(4.3,-5.1,-5.3, 2.2,  2.1, -4.2, 2.3,-1.1,  0.5, 0.7, 1.3, 0.7, -1.2, 3.4, 9.9, 9.8) + m4dl2
                         }); // expected
                 }
             }
@@ -1216,69 +1216,69 @@ TestAssign::implicitContainerAssignment()
     // test name is the source type in use. source -> dest
     const std::map<std::string, std::function<void()>> expected = {
         { "vec2i", [&]() {
-                mHarness.addAttribute<openvdb::math::Vec2<float>>("testvec2f", openvdb::math::Vec2<float>(1.0f,2.0f));
-                mHarness.addAttribute<openvdb::math::Vec2<double>>("testvec2d", openvdb::math::Vec2<double>(1.0,2.0));
+                mHarness.addAttribute<laovdb::math::Vec2<float>>("testvec2f", laovdb::math::Vec2<float>(1.0f,2.0f));
+                mHarness.addAttribute<laovdb::math::Vec2<double>>("testvec2d", laovdb::math::Vec2<double>(1.0,2.0));
             }
         },
         { "vec2f", [&]() {
-                mHarness.addAttribute<openvdb::math::Vec2<int32_t>>("testvec2i", openvdb::math::Vec2<int32_t>(1,2));
-                mHarness.addAttribute<openvdb::math::Vec2<double>>("testvec2d", openvdb::math::Vec2<double>(double(1.1f),double(2.3f)));
+                mHarness.addAttribute<laovdb::math::Vec2<int32_t>>("testvec2i", laovdb::math::Vec2<int32_t>(1,2));
+                mHarness.addAttribute<laovdb::math::Vec2<double>>("testvec2d", laovdb::math::Vec2<double>(double(1.1f),double(2.3f)));
             }
         },
         { "vec2d", [&]() {
-                mHarness.addAttribute<openvdb::math::Vec2<int32_t>>("testvec2i", openvdb::math::Vec2<int32_t>(1,2));
-                mHarness.addAttribute<openvdb::math::Vec2<float>>("testvec2f", openvdb::math::Vec2<float>(float(1.1),float(2.3)));
+                mHarness.addAttribute<laovdb::math::Vec2<int32_t>>("testvec2i", laovdb::math::Vec2<int32_t>(1,2));
+                mHarness.addAttribute<laovdb::math::Vec2<float>>("testvec2f", laovdb::math::Vec2<float>(float(1.1),float(2.3)));
             }
         },
         { "vec3i", [&]() {
-                mHarness.addAttribute<openvdb::math::Vec3<float>>("testvec3f", openvdb::math::Vec3<float>(1.0f,2.0f,3.0f));
-                mHarness.addAttribute<openvdb::math::Vec3<double>>("testvec3d", openvdb::math::Vec3<double>(1.0,2.0,3.0));
+                mHarness.addAttribute<laovdb::math::Vec3<float>>("testvec3f", laovdb::math::Vec3<float>(1.0f,2.0f,3.0f));
+                mHarness.addAttribute<laovdb::math::Vec3<double>>("testvec3d", laovdb::math::Vec3<double>(1.0,2.0,3.0));
             }
         },
         { "vec3f", [&]() {
-                mHarness.addAttribute<openvdb::math::Vec3<int32_t>>("testvec3i", openvdb::math::Vec3<int32_t>(1,2,4));
-                mHarness.addAttribute<openvdb::math::Vec3<double>>("testvec3d", openvdb::math::Vec3<double>(double(1.1f),double(2.3f),double(4.3f)));
+                mHarness.addAttribute<laovdb::math::Vec3<int32_t>>("testvec3i", laovdb::math::Vec3<int32_t>(1,2,4));
+                mHarness.addAttribute<laovdb::math::Vec3<double>>("testvec3d", laovdb::math::Vec3<double>(double(1.1f),double(2.3f),double(4.3f)));
             }
         },
         { "vec3d", [&]() {
-                mHarness.addAttribute<openvdb::math::Vec3<int32_t>>("testvec3i", openvdb::math::Vec3<int32_t>(1,2,4));
-                mHarness.addAttribute<openvdb::math::Vec3<float>>("testvec3f", openvdb::math::Vec3<float>(float(1.1),float(2.3),float(4.3)));
+                mHarness.addAttribute<laovdb::math::Vec3<int32_t>>("testvec3i", laovdb::math::Vec3<int32_t>(1,2,4));
+                mHarness.addAttribute<laovdb::math::Vec3<float>>("testvec3f", laovdb::math::Vec3<float>(float(1.1),float(2.3),float(4.3)));
             }
         },
         { "vec4i", [&]() {
-                mHarness.addAttribute<openvdb::math::Vec4<float>>("testvec4f", openvdb::math::Vec4<float>(1.0f,2.0f,3.0f,4.0f));
-                mHarness.addAttribute<openvdb::math::Vec4<double>>("testvec4d", openvdb::math::Vec4<double>(1.0,2.0,3.0,4.0));
+                mHarness.addAttribute<laovdb::math::Vec4<float>>("testvec4f", laovdb::math::Vec4<float>(1.0f,2.0f,3.0f,4.0f));
+                mHarness.addAttribute<laovdb::math::Vec4<double>>("testvec4d", laovdb::math::Vec4<double>(1.0,2.0,3.0,4.0));
             }
         },
         { "vec4f", [&]() {
-                mHarness.addAttribute<openvdb::math::Vec4<int32_t>>("testvec4i", openvdb::math::Vec4<int32_t>(1,2,4,5));
-                mHarness.addAttribute<openvdb::math::Vec4<double>>("testvec4d", openvdb::math::Vec4<double>(double(1.1f),double(2.3f),double(4.3f),double(5.4f)));
+                mHarness.addAttribute<laovdb::math::Vec4<int32_t>>("testvec4i", laovdb::math::Vec4<int32_t>(1,2,4,5));
+                mHarness.addAttribute<laovdb::math::Vec4<double>>("testvec4d", laovdb::math::Vec4<double>(double(1.1f),double(2.3f),double(4.3f),double(5.4f)));
             }
         },
         { "vec4d", [&]() {
-                mHarness.addAttribute<openvdb::math::Vec4<int32_t>>("testvec4i", openvdb::math::Vec4<int32_t>(1,2,4,5));
-                mHarness.addAttribute<openvdb::math::Vec4<float>>("testvec4f", openvdb::math::Vec4<float>(float(1.1),float(2.3),float(4.3),float(5.4)));
+                mHarness.addAttribute<laovdb::math::Vec4<int32_t>>("testvec4i", laovdb::math::Vec4<int32_t>(1,2,4,5));
+                mHarness.addAttribute<laovdb::math::Vec4<float>>("testvec4f", laovdb::math::Vec4<float>(float(1.1),float(2.3),float(4.3),float(5.4)));
             }
         },
         { "mat3f",
-            [&](){ mHarness.addAttribute<openvdb::math::Mat3<double>>("testmat3d",
-                     openvdb::math::Mat3<double>(
+            [&](){ mHarness.addAttribute<laovdb::math::Mat3<double>>("testmat3d",
+                     laovdb::math::Mat3<double>(
                         double(1.1f),double(2.3f),double(4.3f),
                         double(5.4f),double(6.7f),double(7.8f),
                         double(9.1f),double(4.5f),double(8.2f)));
             }
         },
         { "mat3d",
-            [&](){ mHarness.addAttribute<openvdb::math::Mat3<float>>("testmat3f",
-                     openvdb::math::Mat3<float>(
+            [&](){ mHarness.addAttribute<laovdb::math::Mat3<float>>("testmat3f",
+                     laovdb::math::Mat3<float>(
                          float(1.1),float(2.3),float(4.3),
                          float(5.4),float(6.7),float(7.8),
                          float(9.1),float(4.5),float(8.2)));
             }
         },
         { "mat4f",
-            [&](){ mHarness.addAttribute<openvdb::math::Mat4<double>>("testmat4d",
-                openvdb::math::Mat4<double>(
+            [&](){ mHarness.addAttribute<laovdb::math::Mat4<double>>("testmat4d",
+                laovdb::math::Mat4<double>(
                     double(1.1f),double(2.3f),double(4.3f),double(5.4f),
                     double(6.7f),double(7.8f),double(9.1f),double(4.5f),
                     double(8.2f),double(3.3f),double(2.9f),double(5.9f),
@@ -1286,8 +1286,8 @@ TestAssign::implicitContainerAssignment()
             }
         },
         { "mat4d",
-            [&](){ mHarness.addAttribute<openvdb::math::Mat4<float>>("testmat4f",
-                    openvdb::math::Mat4<float>(
+            [&](){ mHarness.addAttribute<laovdb::math::Mat4<float>>("testmat4f",
+                    laovdb::math::Mat4<float>(
                         float(1.1),float(2.3),float(4.3),float(5.4),
                         float(6.7),float(7.8),float(9.1),float(4.5),
                         float(8.2),float(3.3),float(2.9),float(5.9),
@@ -1330,8 +1330,8 @@ TestAssign::implicitContainerScalarAssignment()
     generate(integral, std::vector<decltype(integral)*>{ &vec2, &vec3, &vec4, &mat3, &mat4 });
     generate(floating, std::vector<decltype(integral)*>{ &vec2, &vec3, &vec4, &mat3, &mat4 });
 
-    auto symmetric3 = [](auto val) -> openvdb::math::Mat3<decltype(val)> {
-        openvdb::math::Mat3<decltype(val)> mat;
+    auto symmetric3 = [](auto val) -> laovdb::math::Mat3<decltype(val)> {
+        laovdb::math::Mat3<decltype(val)> mat;
         mat.setZero();
         mat(0,0) = val;
         mat(1,1) = val;
@@ -1339,8 +1339,8 @@ TestAssign::implicitContainerScalarAssignment()
         return mat;
     };
 
-    auto symmetric4 = [](auto val) -> openvdb::math::Mat4<decltype(val)> {
-        openvdb::math::Mat4<decltype(val)> mat;
+    auto symmetric4 = [](auto val) -> laovdb::math::Mat4<decltype(val)> {
+        laovdb::math::Mat4<decltype(val)> mat;
         mat.setZero();
         mat(0,0) = val;
         mat(1,1) = val;
@@ -1351,83 +1351,83 @@ TestAssign::implicitContainerScalarAssignment()
 
     const std::map<std::string, std::function<void()>> expected = {
         { "bool", [&]() {
-                mHarness.addAttribute<openvdb::math::Vec2<int32_t>>("testvec2i", openvdb::math::Vec2<int32_t>(1,1));
-                mHarness.addAttribute<openvdb::math::Vec2<float>>("testvec2f", openvdb::math::Vec2<float>(1.0f,1.0f));
-                mHarness.addAttribute<openvdb::math::Vec2<double>>("testvec2d", openvdb::math::Vec2<double>(1.0,1.0));
-                mHarness.addAttribute<openvdb::math::Vec3<int32_t>>("testvec3i", openvdb::math::Vec3<int32_t>(1,1,1));
-                mHarness.addAttribute<openvdb::math::Vec3<float>>("testvec3f", openvdb::math::Vec3<float>(1.0f,1.0f,1.0f));
-                mHarness.addAttribute<openvdb::math::Vec3<double>>("testvec3d", openvdb::math::Vec3<double>(1.0,1.0,1.0));
-                mHarness.addAttribute<openvdb::math::Vec4<int32_t>>("testvec4i", openvdb::math::Vec4<int32_t>(1,1,1,1));
-                mHarness.addAttribute<openvdb::math::Vec4<float>>("testvec4f", openvdb::math::Vec4<float>(1.0f,1.0f,1.0f,1.0f));
-                mHarness.addAttribute<openvdb::math::Vec4<double>>("testvec4d", openvdb::math::Vec4<double>(1.0,1.0,1.0,1.0));
-                mHarness.addAttribute<openvdb::math::Mat3<float>>("testmat3f", symmetric3(1.0f));
-                mHarness.addAttribute<openvdb::math::Mat3<double>>("testmat3d", symmetric3(1.0));
-                mHarness.addAttribute<openvdb::math::Mat4<float>>("testmat4f", symmetric4(1.0f));
-                mHarness.addAttribute<openvdb::math::Mat4<double>>("testmat4d", symmetric4(1.0));
+                mHarness.addAttribute<laovdb::math::Vec2<int32_t>>("testvec2i", laovdb::math::Vec2<int32_t>(1,1));
+                mHarness.addAttribute<laovdb::math::Vec2<float>>("testvec2f", laovdb::math::Vec2<float>(1.0f,1.0f));
+                mHarness.addAttribute<laovdb::math::Vec2<double>>("testvec2d", laovdb::math::Vec2<double>(1.0,1.0));
+                mHarness.addAttribute<laovdb::math::Vec3<int32_t>>("testvec3i", laovdb::math::Vec3<int32_t>(1,1,1));
+                mHarness.addAttribute<laovdb::math::Vec3<float>>("testvec3f", laovdb::math::Vec3<float>(1.0f,1.0f,1.0f));
+                mHarness.addAttribute<laovdb::math::Vec3<double>>("testvec3d", laovdb::math::Vec3<double>(1.0,1.0,1.0));
+                mHarness.addAttribute<laovdb::math::Vec4<int32_t>>("testvec4i", laovdb::math::Vec4<int32_t>(1,1,1,1));
+                mHarness.addAttribute<laovdb::math::Vec4<float>>("testvec4f", laovdb::math::Vec4<float>(1.0f,1.0f,1.0f,1.0f));
+                mHarness.addAttribute<laovdb::math::Vec4<double>>("testvec4d", laovdb::math::Vec4<double>(1.0,1.0,1.0,1.0));
+                mHarness.addAttribute<laovdb::math::Mat3<float>>("testmat3f", symmetric3(1.0f));
+                mHarness.addAttribute<laovdb::math::Mat3<double>>("testmat3d", symmetric3(1.0));
+                mHarness.addAttribute<laovdb::math::Mat4<float>>("testmat4f", symmetric4(1.0f));
+                mHarness.addAttribute<laovdb::math::Mat4<double>>("testmat4d", symmetric4(1.0));
             }
         },
         { "int32", [&](){
-                mHarness.addAttribute<openvdb::math::Vec2<int32_t>>("testvec2i", openvdb::math::Vec2<int32_t>(2,2));
-                mHarness.addAttribute<openvdb::math::Vec2<double>>("testvec2d", openvdb::math::Vec2<double>(2.0,2.0));
-                mHarness.addAttribute<openvdb::math::Vec2<float>>("testvec2f", openvdb::math::Vec2<float>(2.0f,2.0f));
-                mHarness.addAttribute<openvdb::math::Vec3<int32_t>>("testvec3i", openvdb::math::Vec3<int32_t>(2,2,2));
-                mHarness.addAttribute<openvdb::math::Vec3<double>>("testvec3d", openvdb::math::Vec3<double>(2.0,2.0,2.0));
-                mHarness.addAttribute<openvdb::math::Vec3<float>>("testvec3f", openvdb::math::Vec3<float>(2.0f,2.0f,2.0f));
-                mHarness.addAttribute<openvdb::math::Vec4<int32_t>>("testvec4i", openvdb::math::Vec4<int32_t>(2,2,2,2));
-                mHarness.addAttribute<openvdb::math::Vec4<double>>("testvec4d", openvdb::math::Vec4<double>(2.0,2.0,2.0,2.0));
-                mHarness.addAttribute<openvdb::math::Vec4<float>>("testvec4f", openvdb::math::Vec4<float>(2.0f,2.0f,2.0f,2.0f));
-                mHarness.addAttribute<openvdb::math::Mat3<float>>("testmat3f", symmetric3(2.0f));
-                mHarness.addAttribute<openvdb::math::Mat3<double>>("testmat3d", symmetric3(2.0));
-                mHarness.addAttribute<openvdb::math::Mat4<float>>("testmat4f", symmetric4(2.0f));
-                mHarness.addAttribute<openvdb::math::Mat4<double>>("testmat4d", symmetric4(2.0));
+                mHarness.addAttribute<laovdb::math::Vec2<int32_t>>("testvec2i", laovdb::math::Vec2<int32_t>(2,2));
+                mHarness.addAttribute<laovdb::math::Vec2<double>>("testvec2d", laovdb::math::Vec2<double>(2.0,2.0));
+                mHarness.addAttribute<laovdb::math::Vec2<float>>("testvec2f", laovdb::math::Vec2<float>(2.0f,2.0f));
+                mHarness.addAttribute<laovdb::math::Vec3<int32_t>>("testvec3i", laovdb::math::Vec3<int32_t>(2,2,2));
+                mHarness.addAttribute<laovdb::math::Vec3<double>>("testvec3d", laovdb::math::Vec3<double>(2.0,2.0,2.0));
+                mHarness.addAttribute<laovdb::math::Vec3<float>>("testvec3f", laovdb::math::Vec3<float>(2.0f,2.0f,2.0f));
+                mHarness.addAttribute<laovdb::math::Vec4<int32_t>>("testvec4i", laovdb::math::Vec4<int32_t>(2,2,2,2));
+                mHarness.addAttribute<laovdb::math::Vec4<double>>("testvec4d", laovdb::math::Vec4<double>(2.0,2.0,2.0,2.0));
+                mHarness.addAttribute<laovdb::math::Vec4<float>>("testvec4f", laovdb::math::Vec4<float>(2.0f,2.0f,2.0f,2.0f));
+                mHarness.addAttribute<laovdb::math::Mat3<float>>("testmat3f", symmetric3(2.0f));
+                mHarness.addAttribute<laovdb::math::Mat3<double>>("testmat3d", symmetric3(2.0));
+                mHarness.addAttribute<laovdb::math::Mat4<float>>("testmat4f", symmetric4(2.0f));
+                mHarness.addAttribute<laovdb::math::Mat4<double>>("testmat4d", symmetric4(2.0));
             }
         },
         { "int64", [&](){
-                mHarness.addAttribute<openvdb::math::Vec2<int32_t>>("testvec2i", openvdb::math::Vec2<int32_t>(2,2));
-                mHarness.addAttribute<openvdb::math::Vec2<double>>("testvec2d", openvdb::math::Vec2<double>(2.0,2.0));
-                mHarness.addAttribute<openvdb::math::Vec2<float>>("testvec2f", openvdb::math::Vec2<float>(2.0f,2.0f));
-                mHarness.addAttribute<openvdb::math::Vec3<int32_t>>("testvec3i", openvdb::math::Vec3<int32_t>(2,2,2));
-                mHarness.addAttribute<openvdb::math::Vec3<double>>("testvec3d", openvdb::math::Vec3<double>(2.0,2.0,2.0));
-                mHarness.addAttribute<openvdb::math::Vec3<float>>("testvec3f", openvdb::math::Vec3<float>(2.0f,2.0f,2.0f));
-                mHarness.addAttribute<openvdb::math::Vec4<int32_t>>("testvec4i", openvdb::math::Vec4<int32_t>(2,2,2,2));
-                mHarness.addAttribute<openvdb::math::Vec4<double>>("testvec4d", openvdb::math::Vec4<double>(2.0,2.0,2.0,2.0));
-                mHarness.addAttribute<openvdb::math::Vec4<float>>("testvec4f", openvdb::math::Vec4<float>(2.0f,2.0f,2.0f,2.0f));
-                mHarness.addAttribute<openvdb::math::Mat3<float>>("testmat3f", symmetric3(2.0f));
-                mHarness.addAttribute<openvdb::math::Mat3<double>>("testmat3d", symmetric3(2.0));
-                mHarness.addAttribute<openvdb::math::Mat4<float>>("testmat4f", symmetric4(2.0f));
-                mHarness.addAttribute<openvdb::math::Mat4<double>>("testmat4d", symmetric4(2.0));
+                mHarness.addAttribute<laovdb::math::Vec2<int32_t>>("testvec2i", laovdb::math::Vec2<int32_t>(2,2));
+                mHarness.addAttribute<laovdb::math::Vec2<double>>("testvec2d", laovdb::math::Vec2<double>(2.0,2.0));
+                mHarness.addAttribute<laovdb::math::Vec2<float>>("testvec2f", laovdb::math::Vec2<float>(2.0f,2.0f));
+                mHarness.addAttribute<laovdb::math::Vec3<int32_t>>("testvec3i", laovdb::math::Vec3<int32_t>(2,2,2));
+                mHarness.addAttribute<laovdb::math::Vec3<double>>("testvec3d", laovdb::math::Vec3<double>(2.0,2.0,2.0));
+                mHarness.addAttribute<laovdb::math::Vec3<float>>("testvec3f", laovdb::math::Vec3<float>(2.0f,2.0f,2.0f));
+                mHarness.addAttribute<laovdb::math::Vec4<int32_t>>("testvec4i", laovdb::math::Vec4<int32_t>(2,2,2,2));
+                mHarness.addAttribute<laovdb::math::Vec4<double>>("testvec4d", laovdb::math::Vec4<double>(2.0,2.0,2.0,2.0));
+                mHarness.addAttribute<laovdb::math::Vec4<float>>("testvec4f", laovdb::math::Vec4<float>(2.0f,2.0f,2.0f,2.0f));
+                mHarness.addAttribute<laovdb::math::Mat3<float>>("testmat3f", symmetric3(2.0f));
+                mHarness.addAttribute<laovdb::math::Mat3<double>>("testmat3d", symmetric3(2.0));
+                mHarness.addAttribute<laovdb::math::Mat4<float>>("testmat4f", symmetric4(2.0f));
+                mHarness.addAttribute<laovdb::math::Mat4<double>>("testmat4d", symmetric4(2.0));
             }
         },
         { "float", [&](){
-                mHarness.addAttribute<openvdb::math::Vec2<int32_t>>("testvec2i", openvdb::math::Vec2<int32_t>(1,1));
-                mHarness.addAttribute<openvdb::math::Vec2<double>>("testvec2d", openvdb::math::Vec2<double>(double(1.1f),double(1.1f)));
-                mHarness.addAttribute<openvdb::math::Vec2<float>>("testvec2f", openvdb::math::Vec2<float>(1.1f,1.1f));
-                mHarness.addAttribute<openvdb::math::Vec3<int32_t>>("testvec3i", openvdb::math::Vec3<int32_t>(1,1,1));
-                mHarness.addAttribute<openvdb::math::Vec3<double>>("testvec3d", openvdb::math::Vec3<double>(double(1.1f),double(1.1f),double(1.1f)));
-                mHarness.addAttribute<openvdb::math::Vec3<float>>("testvec3f", openvdb::math::Vec3<float>(1.1f,1.1f,1.1f));
-                mHarness.addAttribute<openvdb::math::Vec4<int32_t>>("testvec4i", openvdb::math::Vec4<int32_t>(1,1,1,1));
-                mHarness.addAttribute<openvdb::math::Vec4<double>>("testvec4d", openvdb::math::Vec4<double>(double(1.1f),double(1.1f),double(1.1f),double(1.1f)));
-                mHarness.addAttribute<openvdb::math::Vec4<float>>("testvec4f", openvdb::math::Vec4<float>(1.1f,1.1f,1.1f,1.1f));
-                mHarness.addAttribute<openvdb::math::Mat3<float>>("testmat3f", symmetric3(1.1f));
-                mHarness.addAttribute<openvdb::math::Mat3<double>>("testmat3d", symmetric3(double(1.1f)));
-                mHarness.addAttribute<openvdb::math::Mat4<float>>("testmat4f", symmetric4(1.1f));
-                mHarness.addAttribute<openvdb::math::Mat4<double>>("testmat4d", symmetric4(double(1.1f)));
+                mHarness.addAttribute<laovdb::math::Vec2<int32_t>>("testvec2i", laovdb::math::Vec2<int32_t>(1,1));
+                mHarness.addAttribute<laovdb::math::Vec2<double>>("testvec2d", laovdb::math::Vec2<double>(double(1.1f),double(1.1f)));
+                mHarness.addAttribute<laovdb::math::Vec2<float>>("testvec2f", laovdb::math::Vec2<float>(1.1f,1.1f));
+                mHarness.addAttribute<laovdb::math::Vec3<int32_t>>("testvec3i", laovdb::math::Vec3<int32_t>(1,1,1));
+                mHarness.addAttribute<laovdb::math::Vec3<double>>("testvec3d", laovdb::math::Vec3<double>(double(1.1f),double(1.1f),double(1.1f)));
+                mHarness.addAttribute<laovdb::math::Vec3<float>>("testvec3f", laovdb::math::Vec3<float>(1.1f,1.1f,1.1f));
+                mHarness.addAttribute<laovdb::math::Vec4<int32_t>>("testvec4i", laovdb::math::Vec4<int32_t>(1,1,1,1));
+                mHarness.addAttribute<laovdb::math::Vec4<double>>("testvec4d", laovdb::math::Vec4<double>(double(1.1f),double(1.1f),double(1.1f),double(1.1f)));
+                mHarness.addAttribute<laovdb::math::Vec4<float>>("testvec4f", laovdb::math::Vec4<float>(1.1f,1.1f,1.1f,1.1f));
+                mHarness.addAttribute<laovdb::math::Mat3<float>>("testmat3f", symmetric3(1.1f));
+                mHarness.addAttribute<laovdb::math::Mat3<double>>("testmat3d", symmetric3(double(1.1f)));
+                mHarness.addAttribute<laovdb::math::Mat4<float>>("testmat4f", symmetric4(1.1f));
+                mHarness.addAttribute<laovdb::math::Mat4<double>>("testmat4d", symmetric4(double(1.1f)));
             }
         },
         { "double",  [&](){
-                mHarness.addAttribute<openvdb::math::Vec2<int32_t>>("testvec2i", openvdb::math::Vec2<int32_t>(1,1));
-                mHarness.addAttribute<openvdb::math::Vec2<double>>("testvec2d", openvdb::math::Vec2<double>(1.1,1.1));
-                mHarness.addAttribute<openvdb::math::Vec2<float>>("testvec2f", openvdb::math::Vec2<float>(float(1.1),float(1.1)));
-                mHarness.addAttribute<openvdb::math::Vec3<int32_t>>("testvec3i", openvdb::math::Vec3<int32_t>(1,1,1));
-                mHarness.addAttribute<openvdb::math::Vec3<double>>("testvec3d", openvdb::math::Vec3<double>(1.1,1.1,1.1));
-                mHarness.addAttribute<openvdb::math::Vec3<float>>("testvec3f", openvdb::math::Vec3<float>(float(1.1),float(1.1),float(1.1)));
-                mHarness.addAttribute<openvdb::math::Vec4<int32_t>>("testvec4i", openvdb::math::Vec4<int32_t>(1,1,1,1));
-                mHarness.addAttribute<openvdb::math::Vec4<double>>("testvec4d", openvdb::math::Vec4<double>(1.1,1.1,1.1,1.1));
-                mHarness.addAttribute<openvdb::math::Vec4<float>>("testvec4f", openvdb::math::Vec4<float>(float(1.1),float(1.1),float(1.1),float(1.1)));
-                mHarness.addAttribute<openvdb::math::Mat3<float>>("testmat3f", symmetric3(float(1.1)));
-                mHarness.addAttribute<openvdb::math::Mat3<double>>("testmat3d", symmetric3(1.1));
-                mHarness.addAttribute<openvdb::math::Mat4<float>>("testmat4f", symmetric4(float(1.1)));
-                mHarness.addAttribute<openvdb::math::Mat4<double>>("testmat4d", symmetric4(1.1));
+                mHarness.addAttribute<laovdb::math::Vec2<int32_t>>("testvec2i", laovdb::math::Vec2<int32_t>(1,1));
+                mHarness.addAttribute<laovdb::math::Vec2<double>>("testvec2d", laovdb::math::Vec2<double>(1.1,1.1));
+                mHarness.addAttribute<laovdb::math::Vec2<float>>("testvec2f", laovdb::math::Vec2<float>(float(1.1),float(1.1)));
+                mHarness.addAttribute<laovdb::math::Vec3<int32_t>>("testvec3i", laovdb::math::Vec3<int32_t>(1,1,1));
+                mHarness.addAttribute<laovdb::math::Vec3<double>>("testvec3d", laovdb::math::Vec3<double>(1.1,1.1,1.1));
+                mHarness.addAttribute<laovdb::math::Vec3<float>>("testvec3f", laovdb::math::Vec3<float>(float(1.1),float(1.1),float(1.1)));
+                mHarness.addAttribute<laovdb::math::Vec4<int32_t>>("testvec4i", laovdb::math::Vec4<int32_t>(1,1,1,1));
+                mHarness.addAttribute<laovdb::math::Vec4<double>>("testvec4d", laovdb::math::Vec4<double>(1.1,1.1,1.1,1.1));
+                mHarness.addAttribute<laovdb::math::Vec4<float>>("testvec4f", laovdb::math::Vec4<float>(float(1.1),float(1.1),float(1.1),float(1.1)));
+                mHarness.addAttribute<laovdb::math::Mat3<float>>("testmat3f", symmetric3(float(1.1)));
+                mHarness.addAttribute<laovdb::math::Mat3<double>>("testmat3d", symmetric3(1.1));
+                mHarness.addAttribute<laovdb::math::Mat4<float>>("testmat4f", symmetric4(float(1.1)));
+                mHarness.addAttribute<laovdb::math::Mat4<double>>("testmat4d", symmetric4(1.1));
             }
         }
     };

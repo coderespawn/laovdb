@@ -105,7 +105,7 @@ public:
             // Print elapsed time only for successful tests.
             const double msec = std::round(mTimer.milliseconds());
             if (msec > 1.0) {
-                openvdb::util::printTime(std::cout, msec, " : OK (", ")",
+                laovdb::util::printTime(std::cout, msec, " : OK (", ")",
                     /*width=*/0, /*precision=*/(msec > 1000.0 ? 1 : 0), /*verbose=*/0);
             } else {
                 std::cout << " : OK (<1ms)";
@@ -115,7 +115,7 @@ public:
     }
 
 private:
-    openvdb::util::CpuTimer mTimer;
+    laovdb::util::CpuTimer mTimer;
     bool mFailed = false;
 };
 
@@ -254,30 +254,30 @@ run(int argc, char* argv[])
 template <typename T>
 static inline void registerType()
 {
-    if (!openvdb::points::TypedAttributeArray<T>::isRegistered())
-        openvdb::points::TypedAttributeArray<T>::registerType();
+    if (!laovdb::points::TypedAttributeArray<T>::isRegistered())
+        laovdb::points::TypedAttributeArray<T>::registerType();
 }
 
 int
 main(int argc, char *argv[])
 {
-    openvdb::initialize();
-    openvdb::ax::initialize();
-    openvdb::logging::initialize(argc, argv);
+    laovdb::initialize();
+    laovdb::ax::initialize();
+    laovdb::logging::initialize(argc, argv);
 
     // Also intialize Vec2/4 point attributes
 
-    registerType<openvdb::math::Vec2<int32_t>>();
-    registerType<openvdb::math::Vec2<float>>();
-    registerType<openvdb::math::Vec2<double>>();
-    registerType<openvdb::math::Vec4<int32_t>>();
-    registerType<openvdb::math::Vec4<float>>();
-    registerType<openvdb::math::Vec4<double>>();
+    registerType<laovdb::math::Vec2<int32_t>>();
+    registerType<laovdb::math::Vec2<float>>();
+    registerType<laovdb::math::Vec2<double>>();
+    registerType<laovdb::math::Vec4<int32_t>>();
+    registerType<laovdb::math::Vec4<float>>();
+    registerType<laovdb::math::Vec4<double>>();
 
     auto value = run(argc, argv);
 
-    openvdb::ax::uninitialize();
-    openvdb::uninitialize();
+    laovdb::ax::uninitialize();
+    laovdb::uninitialize();
 
     return value;
 }

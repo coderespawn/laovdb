@@ -18,8 +18,8 @@ class TestBBox: public ::testing::Test
 
 TEST_F(TestBBox, testBBox)
 {
-    typedef openvdb::Vec3R                     Vec3R;
-    typedef openvdb::math::BBox<Vec3R>         BBoxType;
+    typedef laovdb::Vec3R                     Vec3R;
+    typedef laovdb::math::BBox<Vec3R>         BBoxType;
 
     {
         BBoxType B(Vec3R(1,1,1),Vec3R(2,2,2));
@@ -44,24 +44,24 @@ TEST_F(TestBBox, testBBox)
 
 TEST_F(TestBBox, testCenter)
 {
-    using namespace openvdb::math;
+    using namespace laovdb::math;
 
     const Vec3<double> expected(1.5);
 
-    BBox<openvdb::Vec3R> fbox(openvdb::Vec3R(1.0), openvdb::Vec3R(2.0));
+    BBox<laovdb::Vec3R> fbox(laovdb::Vec3R(1.0), laovdb::Vec3R(2.0));
     EXPECT_EQ(expected, fbox.getCenter());
 
-    BBox<openvdb::Vec3i> ibox(openvdb::Vec3i(1), openvdb::Vec3i(2));
+    BBox<laovdb::Vec3i> ibox(laovdb::Vec3i(1), laovdb::Vec3i(2));
     EXPECT_EQ(expected, ibox.getCenter());
 
-    openvdb::CoordBBox cbox(openvdb::Coord(1), openvdb::Coord(2));
+    laovdb::CoordBBox cbox(laovdb::Coord(1), laovdb::Coord(2));
     EXPECT_EQ(expected, cbox.getCenter());
 }
 
 TEST_F(TestBBox, testExtent)
 {
-    typedef openvdb::Vec3R                     Vec3R;
-    typedef openvdb::math::BBox<Vec3R>         BBoxType;
+    typedef laovdb::Vec3R                     Vec3R;
+    typedef laovdb::math::BBox<Vec3R>         BBoxType;
 
     {
         BBoxType B(Vec3R(-20,0,1),Vec3R(2,2,2));

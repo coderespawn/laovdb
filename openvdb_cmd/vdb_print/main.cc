@@ -35,7 +35,7 @@ usage [[noreturn]] (int exitStatus = EXIT_FAILURE)
 
 
 std::string
-sizeAsString(openvdb::Index64 n, const std::string& units)
+sizeAsString(laovdb::Index64 n, const std::string& units)
 {
     std::ostringstream ostr;
     ostr << std::setprecision(3);
@@ -54,7 +54,7 @@ sizeAsString(openvdb::Index64 n, const std::string& units)
 
 
 std::string
-bytesAsString(openvdb::Index64 n)
+bytesAsString(laovdb::Index64 n)
 {
     std::ostringstream ostr;
     ostr << std::setprecision(3);
@@ -72,7 +72,7 @@ bytesAsString(openvdb::Index64 n)
 
 
 std::string
-coordAsString(const openvdb::Coord ijk, const std::string& sep,
+coordAsString(const laovdb::Coord ijk, const std::string& sep,
               const std::string& start, const std::string& stop)
 {
     std::ostringstream ostr;
@@ -82,13 +82,13 @@ coordAsString(const openvdb::Coord ijk, const std::string& sep,
 
 
 std::string
-bkgdValueAsString(const openvdb::GridBase::ConstPtr& grid)
+bkgdValueAsString(const laovdb::GridBase::ConstPtr& grid)
 {
     std::ostringstream ostr;
     if (grid) {
-        const openvdb::TreeBase& tree = grid->baseTree();
+        const laovdb::TreeBase& tree = grid->baseTree();
         ostr << "background: ";
-        openvdb::Metadata::Ptr background = tree.getBackgroundValue();
+        laovdb::Metadata::Ptr background = tree.getBackgroundValue();
         if (background) ostr << background->str();
     }
     return ostr.str();
@@ -103,17 +103,17 @@ printLongListing(const StringVec& filenames)
     bool oneFile = (filenames.size() == 1), firstFile = true;
 
     for (size_t i = 0, N = filenames.size(); i < N; ++i, firstFile = false) {
-        openvdb::io::File file(filenames[i]);
+        laovdb::io::File file(filenames[i]);
         std::string version;
-        openvdb::GridPtrVecPtr grids;
-        openvdb::MetaMap::Ptr meta;
+        laovdb::GridPtrVecPtr grids;
+        laovdb::MetaMap::Ptr meta;
         try {
             file.open();
             grids = file.getGrids();
             meta = file.getMetadata();
             version = file.version();
             file.close();
-        } catch (openvdb::Exception& e) {
+        } catch (laovdb::Exception& e) {
             OPENVDB_LOG_ERROR(e.what() << " (" << filenames[i] << ")");
         }
         if (!grids) continue;
@@ -135,8 +135,8 @@ printLongListing(const StringVec& filenames)
 
         // For each grid in the file...
         bool firstGrid = true;
-        for (openvdb::GridPtrVec::const_iterator it = grids->begin(); it != grids->end(); ++it) {
-            if (openvdb::GridBase::ConstPtr grid = *it) {
+        for (laovdb::GridPtrVec::const_iterator it = grids->begin(); it != grids->end(); ++it) {
+            if (laovdb::GridBase::ConstPtr grid = *it) {
                 if (!firstGrid) std::cout << "\n\n";
                 std::cout << "Name: " << grid->getName() << std::endl;
                 grid->print(std::cout, /*verboseLevel=*/11);
@@ -164,16 +164,16 @@ printShortListing(const StringVec& filenames, bool metadata)
             std::cout << filenames[i] << ":\n";
         }
 
-        openvdb::GridPtrVecPtr grids;
-        openvdb::MetaMap::Ptr meta;
+        laovdb::GridPtrVecPtr grids;
+        laovdb::MetaMap::Ptr meta;
 
-        openvdb::io::File file(filenames[i]);
+        laovdb::io::File file(filenames[i]);
         try {
             file.open();
             grids = file.getGrids();
             meta = file.getMetadata();
             file.close();
-        } catch (openvdb::Exception& e) {
+        } catch (laovdb::Exception& e) {
             OPENVDB_LOG_ERROR(e.what() << " (" << filenames[i] << ")");
         }
         if (!grids) continue;
@@ -185,8 +185,8 @@ printShortListing(const StringVec& filenames, bool metadata)
         }
 
         // For each grid in the file...
-        for (openvdb::GridPtrVec::const_iterator it = grids->begin(); it != grids->end(); ++it) {
-            const openvdb::GridBase::ConstPtr grid = *it;
+        for (laovdb::GridPtrVec::const_iterator it = grids->begin(); it != grids->end(); ++it) {
+            const laovdb::GridBase::ConstPtr grid = *it;
             if (!grid) continue;
 
             // Print the grid name and its voxel value datatype.
@@ -194,7 +194,7 @@ printShortListing(const StringVec& filenames, bool metadata)
                 << " " << std::right << std::setw(6) << grid->valueType();
 
             // Print the grid's bounding box and dimensions.
-            openvdb::CoordBBox bbox = grid->evalActiveVoxelBoundingBox();
+            laovdb::CoordBBox bbox = grid->evalActiveVoxelBoundingBox();
             std::string
                 boxStr = coordAsString(bbox.min(), ",", "(", ")") + "->" +
                          coordAsString(bbox.max(), ",", "(", ")"),
@@ -211,15 +211,15 @@ printShortListing(const StringVec& filenames, bool metadata)
 
             // no support for memUsageIfLoaded until ABI >= 10 for points::PointDataGrid types
 #if OPENVDB_ABI_VERSION_NUMBER < 10
-            using ListT = openvdb::GridTypes::Remove<openvdb::points::PointDataGrid>;
+            using ListT = laovdb::GridTypes::Remove<laovdb::points::PointDataGrid>;
 #else
-            using ListT = openvdb::GridTypes;
+            using ListT = laovdb::GridTypes;
 #endif
             bool success =
                 grid->apply<ListT>([&](const auto& typed){
                     // @todo combine these methods to avoid iterating across the tree twice
-                    const openvdb::Index64 incore = openvdb::tools::memUsage(typed.tree());
-                    const openvdb::Index64 total = openvdb::tools::memUsageIfLoaded(typed.tree());
+                    const laovdb::Index64 incore = laovdb::tools::memUsage(typed.tree());
+                    const laovdb::Index64 total = laovdb::tools::memUsageIfLoaded(typed.tree());
 
                     std::cout << " " << std::right << std::setw(6) << bytesAsString(incore) << " (In Core)";
                     std::cout << " " << std::right << std::setw(6) << bytesAsString(total) << " (Total)";
@@ -228,8 +228,8 @@ printShortListing(const StringVec& filenames, bool metadata)
 #if OPENVDB_ABI_VERSION_NUMBER < 10
             if (!success) {
                 // could be a points grid, print in-core memory only
-                grid->apply<openvdb::GridTypes>([&](const auto& typed){
-                    const openvdb::Index64 incore = openvdb::tools::memUsage(typed.tree());
+                grid->apply<laovdb::GridTypes>([&](const auto& typed){
+                    const laovdb::Index64 incore = laovdb::tools::memUsage(typed.tree());
                     std::cout << " " << std::right << std::setw(6) << bytesAsString(incore) << " (In Core)";
                 });
             }
@@ -270,7 +270,7 @@ main(int argc, char *argv[])
 
     if (argc == 1) usage();
 
-    openvdb::logging::initialize(argc, argv);
+    laovdb::logging::initialize(argc, argv);
 
     bool stats = false, metadata = false, version = false;
     StringVec filenames;
@@ -296,9 +296,9 @@ main(int argc, char *argv[])
 
     if (version) {
         std::cout << "OpenVDB library version: "
-            << openvdb::getLibraryAbiVersionString() << "\n";
+            << laovdb::getLibraryAbiVersionString() << "\n";
         std::cout << "OpenVDB file format version: "
-            << openvdb::OPENVDB_FILE_VERSION << std::endl;
+            << laovdb::OPENVDB_FILE_VERSION << std::endl;
         if (filenames.empty()) return EXIT_SUCCESS;
     }
 
@@ -308,20 +308,20 @@ main(int argc, char *argv[])
     }
 
     try {
-        openvdb::initialize();
+        laovdb::initialize();
 
         /// @todo Remove the following at some point:
-        openvdb::Grid<openvdb::tree::Tree4<bool, 4, 3, 3>::Type>::registerGrid();
-        openvdb::Grid<openvdb::tree::Tree4<float, 4, 3, 3>::Type>::registerGrid();
-        openvdb::Grid<openvdb::tree::Tree4<double, 4, 3, 3>::Type>::registerGrid();
-        openvdb::Grid<openvdb::tree::Tree4<int32_t, 4, 3, 3>::Type>::registerGrid();
-        openvdb::Grid<openvdb::tree::Tree4<int64_t, 4, 3, 3>::Type>::registerGrid();
-        openvdb::Grid<openvdb::tree::Tree4<openvdb::Vec2i, 4, 3, 3>::Type>::registerGrid();
-        openvdb::Grid<openvdb::tree::Tree4<openvdb::Vec2s, 4, 3, 3>::Type>::registerGrid();
-        openvdb::Grid<openvdb::tree::Tree4<openvdb::Vec2d, 4, 3, 3>::Type>::registerGrid();
-        openvdb::Grid<openvdb::tree::Tree4<openvdb::Vec3i, 4, 3, 3>::Type>::registerGrid();
-        openvdb::Grid<openvdb::tree::Tree4<openvdb::Vec3f, 4, 3, 3>::Type>::registerGrid();
-        openvdb::Grid<openvdb::tree::Tree4<openvdb::Vec3d, 4, 3, 3>::Type>::registerGrid();
+        laovdb::Grid<laovdb::tree::Tree4<bool, 4, 3, 3>::Type>::registerGrid();
+        laovdb::Grid<laovdb::tree::Tree4<float, 4, 3, 3>::Type>::registerGrid();
+        laovdb::Grid<laovdb::tree::Tree4<double, 4, 3, 3>::Type>::registerGrid();
+        laovdb::Grid<laovdb::tree::Tree4<int32_t, 4, 3, 3>::Type>::registerGrid();
+        laovdb::Grid<laovdb::tree::Tree4<int64_t, 4, 3, 3>::Type>::registerGrid();
+        laovdb::Grid<laovdb::tree::Tree4<laovdb::Vec2i, 4, 3, 3>::Type>::registerGrid();
+        laovdb::Grid<laovdb::tree::Tree4<laovdb::Vec2s, 4, 3, 3>::Type>::registerGrid();
+        laovdb::Grid<laovdb::tree::Tree4<laovdb::Vec2d, 4, 3, 3>::Type>::registerGrid();
+        laovdb::Grid<laovdb::tree::Tree4<laovdb::Vec3i, 4, 3, 3>::Type>::registerGrid();
+        laovdb::Grid<laovdb::tree::Tree4<laovdb::Vec3f, 4, 3, 3>::Type>::registerGrid();
+        laovdb::Grid<laovdb::tree::Tree4<laovdb::Vec3d, 4, 3, 3>::Type>::registerGrid();
 
         if (stats) {
             printLongListing(filenames);

@@ -34,7 +34,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -1045,7 +1045,7 @@ PointPartitioner<PointIndexType, BucketLog2Dim>::create(
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 
 #endif // OPENVDB_TOOLS_POINT_PARTITIONER_HAS_BEEN_INCLUDED

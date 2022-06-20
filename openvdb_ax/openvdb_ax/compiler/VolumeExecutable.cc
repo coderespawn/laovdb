@@ -27,7 +27,7 @@
 
 #include <memory>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -55,27 +55,27 @@ using KernelBufferFunctionPtr = std::add_pointer<codegen::VolumeKernelBuffer::Si
 using KernelNodeFunctionPtr = std::add_pointer<codegen::VolumeKernelNode::Signature>::type;
 
 template <typename ValueT>
-using ConverterT = typename openvdb::BoolGrid::ValueConverter<ValueT>::Type;
-using SupportedTypeList = openvdb::TypeList<
+using ConverterT = typename laovdb::BoolGrid::ValueConverter<ValueT>::Type;
+using SupportedTypeList = laovdb::TypeList<
     ConverterT<double>,
     ConverterT<float>,
     ConverterT<int64_t>,
     ConverterT<int32_t>,
     ConverterT<int16_t>,
     ConverterT<bool>,
-    ConverterT<openvdb::math::Vec2<double>>,
-    ConverterT<openvdb::math::Vec2<float>>,
-    ConverterT<openvdb::math::Vec2<int32_t>>,
-    ConverterT<openvdb::math::Vec3<double>>,
-    ConverterT<openvdb::math::Vec3<float>>,
-    ConverterT<openvdb::math::Vec3<int32_t>>,
-    ConverterT<openvdb::math::Vec4<double>>,
-    ConverterT<openvdb::math::Vec4<float>>,
-    ConverterT<openvdb::math::Vec4<int32_t>>,
-    ConverterT<openvdb::math::Mat3<double>>,
-    ConverterT<openvdb::math::Mat3<float>>,
-    ConverterT<openvdb::math::Mat4<double>>,
-    ConverterT<openvdb::math::Mat4<float>>,
+    ConverterT<laovdb::math::Vec2<double>>,
+    ConverterT<laovdb::math::Vec2<float>>,
+    ConverterT<laovdb::math::Vec2<int32_t>>,
+    ConverterT<laovdb::math::Vec3<double>>,
+    ConverterT<laovdb::math::Vec3<float>>,
+    ConverterT<laovdb::math::Vec3<int32_t>>,
+    ConverterT<laovdb::math::Vec4<double>>,
+    ConverterT<laovdb::math::Vec4<float>>,
+    ConverterT<laovdb::math::Vec4<int32_t>>,
+    ConverterT<laovdb::math::Mat3<double>>,
+    ConverterT<laovdb::math::Mat3<float>>,
+    ConverterT<laovdb::math::Mat4<double>>,
+    ConverterT<laovdb::math::Mat4<float>>,
     ConverterT<std::string>>;
 
 inline bool supported(const ast::tokens::CoreType type)
@@ -106,7 +106,7 @@ inline bool supported(const ast::tokens::CoreType type)
     }
 }
 
-inline openvdb::GridBase::Ptr
+inline laovdb::GridBase::Ptr
 createGrid(const ast::tokens::CoreType& type)
 {
     // assert so the executer can be marked as noexcept (assuming nothing throws in compute)
@@ -118,19 +118,19 @@ createGrid(const ast::tokens::CoreType& type)
         case ast::tokens::INT64   : return ConverterT<int64_t>::create();
         case ast::tokens::FLOAT   : return ConverterT<float>::create();
         case ast::tokens::DOUBLE  : return ConverterT<double>::create();
-        case ast::tokens::VEC2D   : return ConverterT<openvdb::math::Vec2<double>>::create();
-        case ast::tokens::VEC2F   : return ConverterT<openvdb::math::Vec2<float>>::create();
-        case ast::tokens::VEC2I   : return ConverterT<openvdb::math::Vec2<int32_t>>::create();
-        case ast::tokens::VEC3D   : return ConverterT<openvdb::math::Vec3<double>>::create();
-        case ast::tokens::VEC3F   : return ConverterT<openvdb::math::Vec3<float>>::create();
-        case ast::tokens::VEC3I   : return ConverterT<openvdb::math::Vec3<int32_t>>::create();
-        case ast::tokens::VEC4D   : return ConverterT<openvdb::math::Vec4<double>>::create();
-        case ast::tokens::VEC4F   : return ConverterT<openvdb::math::Vec4<float>>::create();
-        case ast::tokens::VEC4I   : return ConverterT<openvdb::math::Vec4<int32_t>>::create();
-        case ast::tokens::MAT3D   : return ConverterT<openvdb::math::Mat3<double>>::create();
-        case ast::tokens::MAT3F   : return ConverterT<openvdb::math::Mat3<float>>::create();
-        case ast::tokens::MAT4D   : return ConverterT<openvdb::math::Mat4<double>>::create();
-        case ast::tokens::MAT4F   : return ConverterT<openvdb::math::Mat4<float>>::create();
+        case ast::tokens::VEC2D   : return ConverterT<laovdb::math::Vec2<double>>::create();
+        case ast::tokens::VEC2F   : return ConverterT<laovdb::math::Vec2<float>>::create();
+        case ast::tokens::VEC2I   : return ConverterT<laovdb::math::Vec2<int32_t>>::create();
+        case ast::tokens::VEC3D   : return ConverterT<laovdb::math::Vec3<double>>::create();
+        case ast::tokens::VEC3F   : return ConverterT<laovdb::math::Vec3<float>>::create();
+        case ast::tokens::VEC3I   : return ConverterT<laovdb::math::Vec3<int32_t>>::create();
+        case ast::tokens::VEC4D   : return ConverterT<laovdb::math::Vec4<double>>::create();
+        case ast::tokens::VEC4F   : return ConverterT<laovdb::math::Vec4<float>>::create();
+        case ast::tokens::VEC4I   : return ConverterT<laovdb::math::Vec4<int32_t>>::create();
+        case ast::tokens::MAT3D   : return ConverterT<laovdb::math::Mat3<double>>::create();
+        case ast::tokens::MAT3F   : return ConverterT<laovdb::math::Mat3<float>>::create();
+        case ast::tokens::MAT4D   : return ConverterT<laovdb::math::Mat4<double>>::create();
+        case ast::tokens::MAT4F   : return ConverterT<laovdb::math::Mat4<float>>::create();
         case ast::tokens::STRING  : return ConverterT<std::string>::create();
         case ast::tokens::UNKNOWN :
         default                   : return nullptr;
@@ -169,7 +169,7 @@ struct OpData
     const CustomData* mCustomData;
     const AttributeRegistry* mAttributeRegistry;
     std::vector<void*> mVoidTransforms;
-    openvdb::GridBase** mGrids;
+    laovdb::GridBase** mGrids;
     size_t mActiveIndex;
     Index mTreeLevelMin; // only used with NodeManagers
     Index mTreeLevelMax; // only used with NodeManagers
@@ -199,7 +199,7 @@ struct VolumeFunctionArguments
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 
-    VolumeFunctionArguments(const OpData& data, openvdb::GridBase** read, const AttributeRegistry& reg)
+    VolumeFunctionArguments(const OpData& data, laovdb::GridBase** read, const AttributeRegistry& reg)
         : mData(data)
         , mAccessors()
         , mVoidAccessors()
@@ -220,7 +220,7 @@ struct VolumeFunctionArguments
         using FunctionTraitsT = codegen::VolumeKernelBuffer::FunctionTraitsT;
         using ReturnT = FunctionTraitsT::ReturnType;
 
-        return [&](const openvdb::Coord& origin, void* buffer, Index64* mask, const size_t size) -> ReturnT {
+        return [&](const laovdb::Coord& origin, void* buffer, Index64* mask, const size_t size) -> ReturnT {
             return mData.mKernelValueBuffer(static_cast<FunctionTraitsT::Arg<0>::Type>(mData.mCustomData),
                 reinterpret_cast<FunctionTraitsT::Arg<1>::Type>(origin.data()),
                 static_cast<FunctionTraitsT::Arg<2>::Type>(buffer),
@@ -238,7 +238,7 @@ struct VolumeFunctionArguments
         using FunctionTraitsT = codegen::VolumeKernelNode::FunctionTraitsT;
         using ReturnT = FunctionTraitsT::ReturnType;
 
-        return [&, activeAccessor](const openvdb::Coord& ijk) -> ReturnT {
+        return [&, activeAccessor](const laovdb::Coord& ijk) -> ReturnT {
             return mData.mKernelNode(static_cast<FunctionTraitsT::Arg<0>::Type>(mData.mCustomData),
                 reinterpret_cast<FunctionTraitsT::Arg<1>::Type>(ijk.data()),
                 static_cast<FunctionTraitsT::Arg<2>::Type>(mVoidAccessors.data()),
@@ -259,7 +259,7 @@ private:
     }
 
     inline void
-    addAccessor(openvdb::GridBase* grid, const ast::tokens::CoreType& type)
+    addAccessor(laovdb::GridBase* grid, const ast::tokens::CoreType& type)
     {
         assert(grid);
         // assert so the executer can be marked as noexcept (assuming nothing throws in compute)
@@ -271,19 +271,19 @@ private:
             case ast::tokens::INT64   : { this->addAccessor(static_cast<ConverterT<int64_t>*>(grid)->tree()); return; }
             case ast::tokens::FLOAT   : { this->addAccessor(static_cast<ConverterT<float>*>(grid)->tree()); return; }
             case ast::tokens::DOUBLE  : { this->addAccessor(static_cast<ConverterT<double>*>(grid)->tree()); return; }
-            case ast::tokens::VEC2D   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Vec2<double>>*>(grid)->tree()); return; }
-            case ast::tokens::VEC2F   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Vec2<float>>*>(grid)->tree()); return; }
-            case ast::tokens::VEC2I   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Vec2<int32_t>>*>(grid)->tree()); return; }
-            case ast::tokens::VEC3D   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Vec3<double>>*>(grid)->tree()); return; }
-            case ast::tokens::VEC3F   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Vec3<float>>*>(grid)->tree()); return; }
-            case ast::tokens::VEC3I   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Vec3<int32_t>>*>(grid)->tree()); return; }
-            case ast::tokens::VEC4D   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Vec4<double>>*>(grid)->tree()); return; }
-            case ast::tokens::VEC4F   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Vec4<float>>*>(grid)->tree()); return; }
-            case ast::tokens::VEC4I   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Vec4<int32_t>>*>(grid)->tree()); return; }
-            case ast::tokens::MAT3D   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Mat3<double>>*>(grid)->tree()); return; }
-            case ast::tokens::MAT3F   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Mat3<float>>*>(grid)->tree()); return; }
-            case ast::tokens::MAT4D   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Mat4<double>>*>(grid)->tree()); return; }
-            case ast::tokens::MAT4F   : { this->addAccessor(static_cast<ConverterT<openvdb::math::Mat4<float>>*>(grid)->tree()); return; }
+            case ast::tokens::VEC2D   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Vec2<double>>*>(grid)->tree()); return; }
+            case ast::tokens::VEC2F   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Vec2<float>>*>(grid)->tree()); return; }
+            case ast::tokens::VEC2I   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Vec2<int32_t>>*>(grid)->tree()); return; }
+            case ast::tokens::VEC3D   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Vec3<double>>*>(grid)->tree()); return; }
+            case ast::tokens::VEC3F   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Vec3<float>>*>(grid)->tree()); return; }
+            case ast::tokens::VEC3I   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Vec3<int32_t>>*>(grid)->tree()); return; }
+            case ast::tokens::VEC4D   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Vec4<double>>*>(grid)->tree()); return; }
+            case ast::tokens::VEC4F   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Vec4<float>>*>(grid)->tree()); return; }
+            case ast::tokens::VEC4I   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Vec4<int32_t>>*>(grid)->tree()); return; }
+            case ast::tokens::MAT3D   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Mat3<double>>*>(grid)->tree()); return; }
+            case ast::tokens::MAT3F   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Mat3<float>>*>(grid)->tree()); return; }
+            case ast::tokens::MAT4D   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Mat4<double>>*>(grid)->tree()); return; }
+            case ast::tokens::MAT4F   : { this->addAccessor(static_cast<ConverterT<laovdb::math::Mat4<float>>*>(grid)->tree()); return; }
             case ast::tokens::STRING  : { this->addAccessor(static_cast<ConverterT<std::string>*>(grid)->tree()); return; }
             case ast::tokens::UNKNOWN :
             default                   : return;
@@ -858,7 +858,7 @@ registerVolumes(GridPtrVec& grids,
 
     for (auto& iter : registry.data()) {
 
-        openvdb::GridBase* matchedGrid = nullptr;
+        laovdb::GridBase* matchedGrid = nullptr;
         bool matchedName = false;
         ast::tokens::CoreType type = ast::tokens::UNKNOWN;
         const std::string& iterName = iter.name();
@@ -1044,7 +1044,7 @@ inline void run(GridCache& cache,
     data.mActiveTileStreaming = ((data.mIterMode == 1 || data.mIterMode == 2) &&
         (S.mActiveTileStreaming != VolumeExecutable::Streaming::OFF));
 
-    openvdb::GridBase** read = cache.mRead.data();
+    laovdb::GridBase** read = cache.mRead.data();
     data.mVoidTransforms.reserve(cache.mRead.size());
     for (size_t i = 0; i < registry.data().size(); ++i, ++read) {
         assert(read);
@@ -1129,7 +1129,7 @@ VolumeExecutable::VolumeExecutable(const VolumeExecutable& other)
 
 VolumeExecutable::~VolumeExecutable() {}
 
-void VolumeExecutable::execute(openvdb::GridPtrVec& grids) const
+void VolumeExecutable::execute(laovdb::GridPtrVec& grids) const
 {
     Logger* logger;
     std::unique_ptr<Logger> log;
@@ -1161,7 +1161,7 @@ void VolumeExecutable::execute(openvdb::GridPtrVec& grids) const
     }
 }
 
-void VolumeExecutable::execute(openvdb::GridBase& grid) const
+void VolumeExecutable::execute(laovdb::GridBase& grid) const
 {
     // wrap the input with a no delete shared pointer so we can call the main
     // invocation. execute is guaranteed to not take ownership of the inputs
@@ -1309,5 +1309,5 @@ const AttributeBindings& VolumeExecutable::getAttributeBindings() const
 
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

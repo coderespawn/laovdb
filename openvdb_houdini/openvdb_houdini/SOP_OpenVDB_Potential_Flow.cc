@@ -128,7 +128,7 @@ newSopOperator(OP_OperatorTable* table)
             << int(std::log10(DEFAULT_MAX_ERROR)) << "</sup>.";
 
         parms.add(hutil::ParmFactory(PRM_FLT_J, "tolerance", "Tolerance")
-            .setDefault(openvdb::math::Delta<float>::value())
+            .setDefault(laovdb::math::Delta<float>::value())
             .setRange(PRM_RANGE_RESTRICTED, DEFAULT_MAX_ERROR, PRM_RANGE_UI, 1)
             .setTooltip(
                 "The potential flow solver is deemed to have converged when\n"
@@ -292,18 +292,18 @@ namespace {
 struct MaskOp
 {
     template<typename GridType>
-    void operator()(const GridType& grid) { mMaskGrid = openvdb::tools::interiorMask(grid); }
+    void operator()(const GridType& grid) { mMaskGrid = laovdb::tools::interiorMask(grid); }
 
-    openvdb::BoolGrid::Ptr mMaskGrid;
+    laovdb::BoolGrid::Ptr mMaskGrid;
 };
 
 
 struct MaskToLevelSetOp
 {
     template<typename GridType>
-    void operator()(const GridType& grid) { mSdfGrid = openvdb::tools::topologyToLevelSet(grid); }
+    void operator()(const GridType& grid) { mSdfGrid = laovdb::tools::topologyToLevelSet(grid); }
 
-    openvdb::FloatGrid::Ptr mSdfGrid;
+    laovdb::FloatGrid::Ptr mSdfGrid;
 };
 
 
@@ -315,7 +315,7 @@ struct PotentialFlowOp
     using VecT = typename VelGridT::ValueType;
     using ScalarT = typename GridT::ValueType;
 
-    PotentialFlowOp(const openvdb::FloatGrid& solidBoundary,
+    PotentialFlowOp(const laovdb::FloatGrid& solidBoundary,
                     const MaskGridT& domain,
                     const typename VelGridT::ConstPtr& boundaryVelocity,
                     const VecT& backgroundVelocity,
@@ -326,10 +326,10 @@ struct PotentialFlowOp
         , mBackgroundVelocity(backgroundVelocity)
         , mApplyBackgroundVelocity(applyBackgroundVelocity) { }
 
-    openvdb::math::pcg::State
+    laovdb::math::pcg::State
     process(int iterations, float absoluteError) {
 
-        using namespace openvdb;
+        using namespace laovdb;
 
         typename VelGridT::Ptr neumann = tools::createPotentialFlowNeumannVelocities(
             mSolidBoundary, mDomain, mBoundaryVelocity, mBackgroundVelocity);
@@ -355,7 +355,7 @@ struct PotentialFlowOp
     typename GridT::Ptr potential;
 
 private:
-    const openvdb::FloatGrid& mSolidBoundary;
+    const laovdb::FloatGrid& mSolidBoundary;
     const MaskGridT& mDomain;
     const typename VelGridT::ConstPtr mBoundaryVelocity;
     const VecT mBackgroundVelocity;
@@ -379,8 +379,8 @@ SOP_OpenVDB_Potential_Flow::Cache::cookVDBSop(OP_Context& context)
         const GA_PrimitiveGroup* velocityGroup = matchGroup(*gdp, velocity);
 
         // SOP currently only supports float level sets
-        using SdfGridT = openvdb::FloatGrid;
-        using MaskGridT = openvdb::BoolGrid;
+        using SdfGridT = laovdb::FloatGrid;
+        using MaskGridT = laovdb::BoolGrid;
 
         typename SdfGridT::ConstPtr grid;
         const GU_PrimVDB * velGridPrim(nullptr);
@@ -393,11 +393,11 @@ SOP_OpenVDB_Potential_Flow::Cache::cookVDBSop(OP_Context& context)
 
             if (boss.wasInterrupted()) break;
 
-            const openvdb::GridClass gridClass = vdbIt->getGrid().getGridClass();
+            const laovdb::GridClass gridClass = vdbIt->getGrid().getGridClass();
 
             if (!grid && vdbIt->getStorageType() == UT_VDB_FLOAT
-                    && gridClass == openvdb::GRID_LEVEL_SET) {
-                grid = openvdb::gridConstPtrCast<SdfGridT>(vdbIt->getGridPtr());
+                    && gridClass == laovdb::GRID_LEVEL_SET) {
+                grid = laovdb::gridConstPtrCast<SdfGridT>(vdbIt->getGridPtr());
             }
         }
 
@@ -462,7 +462,7 @@ SOP_OpenVDB_Potential_Flow::Cache::cookVDBSop(OP_Context& context)
                         resampledMask->setTransform(grid->transform().copy());
 
                         // resample the mask to match the boundary level set
-                        openvdb::tools::resampleToMatch<openvdb::tools::PointSampler>(
+                        laovdb::tools::resampleToMatch<laovdb::tools::PointSampler>(
                             *mask, *resampledMask);
                     }
                 }
@@ -480,7 +480,7 @@ SOP_OpenVDB_Potential_Flow::Cache::cookVDBSop(OP_Context& context)
                 dilation = static_cast<int>(evalInt("dilationvoxels", 0, time));
             }
 
-            auto domain = openvdb::tools::createPotentialFlowMask(*grid, dilation);
+            auto domain = laovdb::tools::createPotentialFlowMask(*grid, dilation);
 
             if (mask) {
                 if (static_cast<int>(evalInt("masktype", 0, time)) == /*intersection*/0) {
@@ -496,14 +496,14 @@ SOP_OpenVDB_Potential_Flow::Cache::cookVDBSop(OP_Context& context)
                 static_cast<int>(evalInt("usetolerance", 0, time)) == 1 ?
                 evalFloat("tolerance", 0, time) : DEFAULT_MAX_ERROR);
 
-            openvdb::Vec3f backgroundVelocity(0);
+            laovdb::Vec3f backgroundVelocity(0);
             bool applyBackground(false);
 
             const bool useBackgroundVelocity =
                 static_cast<int>(evalInt("usebackgroundvelocity", 0, time)) == 1;
 
             if (useBackgroundVelocity) {
-                backgroundVelocity = openvdb::Vec3f(
+                backgroundVelocity = laovdb::Vec3f(
                     static_cast<float>(evalFloat("backgroundvelocity", 0, time)),
                     static_cast<float>(evalFloat("backgroundvelocity", 1, time)),
                     static_cast<float>(evalFloat("backgroundvelocity", 2, time)));
@@ -514,14 +514,14 @@ SOP_OpenVDB_Potential_Flow::Cache::cookVDBSop(OP_Context& context)
             const bool outputPotential = static_cast<int>(
                 evalInt("outputpotential", 0, time)) == 1;
 
-            openvdb::math::pcg::State solverState;
+            laovdb::math::pcg::State solverState;
 
             if (velGridPrim && velGridPrim->getStorageType() == UT_VDB_VEC3D) {
-                openvdb::Vec3d backgroundVelocityD(
+                laovdb::Vec3d backgroundVelocityD(
                     backgroundVelocity[0], backgroundVelocity[1], backgroundVelocity[2]);
-                openvdb::Vec3dGrid::ConstPtr velGrid =
-                    openvdb::gridConstPtrCast<openvdb::Vec3dGrid>(velGridPrim->getGridPtr());
-                PotentialFlowOp<openvdb::Vec3dGrid, openvdb::MaskGrid> potentialFlowOp(
+                laovdb::Vec3dGrid::ConstPtr velGrid =
+                    laovdb::gridConstPtrCast<laovdb::Vec3dGrid>(velGridPrim->getGridPtr());
+                PotentialFlowOp<laovdb::Vec3dGrid, laovdb::MaskGrid> potentialFlowOp(
                     *grid, *domain, velGrid, backgroundVelocityD, applyBackground);
                 solverState = potentialFlowOp.process(iterations, absoluteError);
                 hvdb::createVdbPrimitive(*gdp, potentialFlowOp.flowvel, "flowvel");
@@ -530,12 +530,12 @@ SOP_OpenVDB_Potential_Flow::Cache::cookVDBSop(OP_Context& context)
                 }
             }
             else {
-                openvdb::Vec3fGrid::ConstPtr velGrid;
+                laovdb::Vec3fGrid::ConstPtr velGrid;
                 if (velGridPrim && velGridPrim->getStorageType() == UT_VDB_VEC3F) {
-                    velGrid = openvdb::gridConstPtrCast<openvdb::Vec3fGrid>(
+                    velGrid = laovdb::gridConstPtrCast<laovdb::Vec3fGrid>(
                         velGridPrim->getGridPtr());
                 }
-                PotentialFlowOp<openvdb::Vec3fGrid, openvdb::MaskGrid> potentialFlowOp(
+                PotentialFlowOp<laovdb::Vec3fGrid, laovdb::MaskGrid> potentialFlowOp(
                     *grid, *domain, velGrid, backgroundVelocity, applyBackground);
                 solverState = potentialFlowOp.process(iterations, absoluteError);
                 hvdb::createVdbPrimitive(*gdp, potentialFlowOp.flowvel, "flowvel");

@@ -29,7 +29,7 @@
 #include <type_traits>
 #include <functional>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -1117,6 +1117,6 @@ OPENVDB_VOLUME_TREE_INSTANTIATE(_FUNCTION)
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_COMPOSITE_HAS_BEEN_INCLUDED

@@ -18,14 +18,14 @@ const int GRID_DIM = 10;
 class TestCurl: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 };
 
 
 TEST_F(TestCurl, testCurlTool)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     VectorGrid::Ptr inGrid = VectorGrid::create();
     const VectorTree& inTree = inGrid->tree();
@@ -71,7 +71,7 @@ TEST_F(TestCurl, testCurlTool)
 
 TEST_F(TestCurl, testCurlMaskedTool)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     VectorGrid::Ptr inGrid = VectorGrid::create();
     const VectorTree& inTree = inGrid->tree();
@@ -90,11 +90,11 @@ TEST_F(TestCurl, testCurlMaskedTool)
     EXPECT_TRUE(!inTree.empty());
     EXPECT_EQ(math::Pow3(2*dim), int(inTree.activeVoxelCount()));
 
-    openvdb::CoordBBox maskBBox(openvdb::Coord(0), openvdb::Coord(dim));
+    laovdb::CoordBBox maskBBox(laovdb::Coord(0), laovdb::Coord(dim));
     BoolGrid::Ptr maskGrid = BoolGrid::create(false);
     maskGrid->fill(maskBBox, true /*value*/, true /*activate*/);
 
-    openvdb::CoordBBox testBBox(openvdb::Coord(-dim+1), openvdb::Coord(dim));
+    laovdb::CoordBBox testBBox(laovdb::Coord(-dim+1), laovdb::Coord(dim));
     BoolGrid::Ptr testGrid = BoolGrid::create(false);
     testGrid->fill(testBBox, true, true);
 
@@ -135,7 +135,7 @@ TEST_F(TestCurl, testCurlMaskedTool)
 
 TEST_F(TestCurl, testISCurl)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     VectorGrid::Ptr inGrid = VectorGrid::create();
     const VectorTree& inTree = inGrid->tree();
@@ -249,7 +249,7 @@ TEST_F(TestCurl, testISCurl)
 
 TEST_F(TestCurl, testISCurlStencil)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     VectorGrid::Ptr inGrid = VectorGrid::create();
     const VectorTree& inTree = inGrid->tree();
@@ -375,7 +375,7 @@ TEST_F(TestCurl, testISCurlStencil)
 
 TEST_F(TestCurl, testWSCurl)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     VectorGrid::Ptr inGrid = VectorGrid::create();
     const VectorTree& inTree = inGrid->tree();
@@ -456,7 +456,7 @@ TEST_F(TestCurl, testWSCurl)
 
 TEST_F(TestCurl, testWSCurlStencil)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     VectorGrid::Ptr inGrid = VectorGrid::create();
     const VectorTree& inTree = inGrid->tree();

@@ -117,25 +117,25 @@ parseRangeSpec(const std::string& rangeSpec, Options& opts)
 /// @brief Mipmap a single grid of a fully-resolved type.
 /// @return a vector of pointers to the member grids of the mipmap
 template<typename GridType>
-inline openvdb::GridPtrVec
+inline laovdb::GridPtrVec
 mip(const GridType& inGrid, const Options& opts)
 {
     OPENVDB_LOG_INFO("processing grid \"" << inGrid.getName() << "\"");
 
     // MultiResGrid requires at least two mipmap levels, starting from level 0.
-    const int levels = std::max(2, openvdb::math::Ceil(opts.to) + 1);
+    const int levels = std::max(2, laovdb::math::Ceil(opts.to) + 1);
 
-    openvdb::util::CpuTimer timer;
+    laovdb::util::CpuTimer timer;
     timer.start();
 
     // Initialize the mipmap.
     typedef typename GridType::TreeType TreeT;
-    openvdb::tools::MultiResGrid<TreeT> mrg(levels, inGrid);
+    laovdb::tools::MultiResGrid<TreeT> mrg(levels, inGrid);
 
-    openvdb::GridPtrVec outGrids;
+    laovdb::GridPtrVec outGrids;
     for (double level = opts.from; level <= opts.to; level += opts.step) {
         // Request a level from the mipmap.
-        if (openvdb::GridBase::Ptr levelGrid =
+        if (laovdb::GridBase::Ptr levelGrid =
             mrg.template createGrid</*sampling order=*/1>(static_cast<float>(level)))
         {
             outGrids.push_back(levelGrid);
@@ -157,9 +157,9 @@ mip(const GridType& inGrid, const Options& opts)
 
 /// @brief Mipmap a single grid and append the resulting grids to @a outGrids.
 inline void
-process(const openvdb::GridBase::Ptr& baseGrid, openvdb::GridPtrVec& outGrids, const Options& opts)
+process(const laovdb::GridBase::Ptr& baseGrid, laovdb::GridPtrVec& outGrids, const Options& opts)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     if (!baseGrid) return;
 
@@ -198,8 +198,8 @@ main(int argc, char *argv[])
 
     if (argc == 1) usage();
 
-    openvdb::logging::initialize(argc, argv);
-    openvdb::initialize();
+    laovdb::logging::initialize(argc, argv);
+    laovdb::initialize();
 
     // Parse command-line arguments.
     Options opts;
@@ -254,9 +254,9 @@ main(int argc, char *argv[])
 
     if (version) {
         std::cout << "OpenVDB library version: "
-            << openvdb::getLibraryAbiVersionString() << "\n";
+            << laovdb::getLibraryAbiVersionString() << "\n";
         std::cout << "OpenVDB file format version: "
-            << openvdb::OPENVDB_FILE_VERSION << std::endl;
+            << laovdb::OPENVDB_FILE_VERSION << std::endl;
         if (outFilename.empty()) return EXIT_SUCCESS;
     }
 
@@ -289,15 +289,15 @@ main(int argc, char *argv[])
 
     // Process the input file.
     try {
-        openvdb::io::File file(inFilename);
+        laovdb::io::File file(inFilename);
         file.open();
 
-        const openvdb::MetaMap::ConstPtr fileMetadata = file.getMetadata();
+        const laovdb::MetaMap::ConstPtr fileMetadata = file.getMetadata();
 
-        openvdb::GridPtrVec outGrids;
+        laovdb::GridPtrVec outGrids;
 
         // For each input grid...
-        for (openvdb::io::File::NameIterator nameIter = file.beginName();
+        for (laovdb::io::File::NameIterator nameIter = file.beginName();
             nameIter != file.endName(); ++nameIter)
         {
             const std::string& name = nameIter.gridName();
@@ -308,7 +308,7 @@ main(int argc, char *argv[])
                 OPENVDB_LOG_INFO("skipped grid \"" << name << "\"");
             } else {
                 // If the grid's name is on the white list or if -keep is in effect, read the grid.
-                openvdb::GridBase::Ptr baseGrid = file.readGrid(name);
+                laovdb::GridBase::Ptr baseGrid = file.readGrid(name);
                 if (!baseGrid) {
                     OPENVDB_LOG_WARN("failed to read grid \"" << name << "\"");
                 } else {
@@ -323,10 +323,10 @@ main(int argc, char *argv[])
         }
         file.close();
 
-        openvdb::util::CpuTimer timer;
+        laovdb::util::CpuTimer timer;
         timer.start();
 
-        openvdb::io::File outFile(outFilename);
+        laovdb::io::File outFile(outFilename);
         if (fileMetadata) {
             outFile.write(outGrids, *fileMetadata);
         } else {

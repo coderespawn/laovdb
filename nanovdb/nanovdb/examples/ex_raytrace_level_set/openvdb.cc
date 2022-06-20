@@ -23,19 +23,19 @@ using BufferT = nanovdb::HostBuffer;
 
 void runOpenVDB(nanovdb::GridHandle<nanovdb::CudaDeviceBuffer>& handle, int numIterations, int width, int height, BufferT& imageBuffer)
 {
-    using GridT = openvdb::FloatGrid;
-    using CoordT = openvdb::Coord;
+    using GridT = laovdb::FloatGrid;
+    using CoordT = laovdb::Coord;
     using RealT = float;
-    using Vec3T = openvdb::math::Vec3<RealT>;
-    using RayT = openvdb::math::Ray<RealT>;
+    using Vec3T = laovdb::math::Vec3<RealT>;
+    using RayT = laovdb::math::Ray<RealT>;
 
 #if 1
     auto srcGrid = nanovdb::nanoToOpenVDB(handle);
     std::cout << "Exporting to OpenVDB grid[" << srcGrid->getName() << "]...\n";
 #else
-    openvdb::initialize();
+    laovdb::initialize();
     std::string       filename = "C:/Users/william/Downloads/dragon.vdb";
-    openvdb::io::File file(filename);
+    laovdb::io::File file(filename);
     file.open(false); //disable delayed loading
     auto srcGrid = file.readGrid<BufferT>("ls_dragon");
     std::cout << "Loading OpenVDB grid[" << srcGrid->getName() << "]...\n";
@@ -54,12 +54,12 @@ void runOpenVDB(nanovdb::GridHandle<nanovdb::CudaDeviceBuffer>& handle, int numI
     RayGenOp<Vec3T> rayGenOp(wBBoxDimZ, wBBoxCenter);
     CompositeOp     compositeOp;
 
-    openvdb::CoordBBox treeIndexBbox;
+    laovdb::CoordBBox treeIndexBbox;
     treeIndexBbox = h_grid->evalActiveVoxelBoundingBox();
     std::cout << "Bounds: " << treeIndexBbox << std::endl;
 
     auto renderOp = [width, height, rayGenOp, compositeOp, treeIndexBbox, wBBoxDimZ] __hostdev__(int start, int end, float* image, const GridT* grid) {
-        openvdb::tools::LevelSetRayIntersector<GridT, openvdb::tools::LinearSearchImpl<GridT, 0, RealT>, GridT::TreeType::RootNodeType::ChildNodeType::LEVEL, RayT> intersector(*grid);
+        laovdb::tools::LevelSetRayIntersector<GridT, laovdb::tools::LinearSearchImpl<GridT, 0, RealT>, GridT::TreeType::RootNodeType::ChildNodeType::LEVEL, RayT> intersector(*grid);
         for (int i = start; i < end; ++i) {
             Vec3T rayEye;
             Vec3T rayDir;

@@ -18,7 +18,7 @@
 #include <openvdb/points/PointDataGrid.h>
 #include <openvdb/points/PointGroup.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -43,13 +43,13 @@ namespace codegen_internal {
 struct PointLeafLocalData
 {
     using UniquePtr = std::unique_ptr<PointLeafLocalData>;
-    using GroupArrayT = openvdb::points::GroupAttributeArray;
-    using GroupHandleT = openvdb::points::GroupWriteHandle;
+    using GroupArrayT = laovdb::points::GroupAttributeArray;
+    using GroupHandleT = laovdb::points::GroupWriteHandle;
 
     using PointStringMap = std::map<uint64_t, std::string>;
     using StringArrayMap = std::map<points::AttributeArray*, PointStringMap>;
 
-    using LeafNode = openvdb::points::PointDataTree::LeafNodeType;
+    using LeafNode = laovdb::points::PointDataTree::LeafNodeType;
 
     /// @brief  Construct a new data object to keep track of various data objects
     ///         created per leaf by the point compute generator.
@@ -91,8 +91,8 @@ struct PointLeafLocalData
 #endif
 
         if (mArrays.empty() || mOffset == maxGroupsInArray) {
-            assert(mPointCount < static_cast<size_t>(std::numeric_limits<openvdb::Index>::max()));
-            mArrays.emplace_back(new GroupArrayT(static_cast<openvdb::Index>(mPointCount)));
+            assert(mPointCount < static_cast<size_t>(std::numeric_limits<laovdb::Index>::max()));
+            mArrays.emplace_back(new GroupArrayT(static_cast<laovdb::Index>(mPointCount)));
             mOffset = 0;
         }
 
@@ -228,7 +228,7 @@ private:
 } // namespace compiler
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_AX_COMPILER_LEAF_LOCAL_DATA_HAS_BEEN_INCLUDED
 

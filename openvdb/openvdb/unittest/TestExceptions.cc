@@ -14,25 +14,25 @@ protected:
 
 template<typename ExceptionT> struct ExceptionTraits
 { static std::string name() { return ""; } };
-template<> struct ExceptionTraits<openvdb::ArithmeticError>
+template<> struct ExceptionTraits<laovdb::ArithmeticError>
 { static std::string name() { return "ArithmeticError"; } };
-template<> struct ExceptionTraits<openvdb::IndexError>
+template<> struct ExceptionTraits<laovdb::IndexError>
 { static std::string name() { return "IndexError"; } };
-template<> struct ExceptionTraits<openvdb::IoError>
+template<> struct ExceptionTraits<laovdb::IoError>
 { static std::string name() { return "IoError"; } };
-template<> struct ExceptionTraits<openvdb::KeyError>
+template<> struct ExceptionTraits<laovdb::KeyError>
 { static std::string name() { return "KeyError"; } };
-template<> struct ExceptionTraits<openvdb::LookupError>
+template<> struct ExceptionTraits<laovdb::LookupError>
 { static std::string name() { return "LookupError"; } };
-template<> struct ExceptionTraits<openvdb::NotImplementedError>
+template<> struct ExceptionTraits<laovdb::NotImplementedError>
 { static std::string name() { return "NotImplementedError"; } };
-template<> struct ExceptionTraits<openvdb::ReferenceError>
+template<> struct ExceptionTraits<laovdb::ReferenceError>
 { static std::string name() { return "ReferenceError"; } };
-template<> struct ExceptionTraits<openvdb::RuntimeError>
+template<> struct ExceptionTraits<laovdb::RuntimeError>
 { static std::string name() { return "RuntimeError"; } };
-template<> struct ExceptionTraits<openvdb::TypeError>
+template<> struct ExceptionTraits<laovdb::TypeError>
 { static std::string name() { return "TypeError"; } };
-template<> struct ExceptionTraits<openvdb::ValueError>
+template<> struct ExceptionTraits<laovdb::ValueError>
 { static std::string name() { return "ValueError"; } };
 
 
@@ -46,19 +46,19 @@ TestExceptions::testException()
 
     try {
         OPENVDB_THROW(ExceptionT, ErrorMsg);
-    } catch (openvdb::Exception& e) {
+    } catch (laovdb::Exception& e) {
         const std::string expectedMsg = ExceptionTraits<ExceptionT>::name() + ": " + ErrorMsg;
         EXPECT_EQ(expectedMsg, std::string(e.what()));
     }
 }
 
-TEST_F(TestExceptions, testArithmeticError) { testException<openvdb::ArithmeticError>(); }
-TEST_F(TestExceptions, testIndexError) { testException<openvdb::IndexError>(); }
-TEST_F(TestExceptions, testIoError) { testException<openvdb::IoError>(); }
-TEST_F(TestExceptions, testKeyError) { testException<openvdb::KeyError>(); }
-TEST_F(TestExceptions, testLookupError) { testException<openvdb::LookupError>(); }
-TEST_F(TestExceptions, testNotImplementedError) { testException<openvdb::NotImplementedError>(); }
-TEST_F(TestExceptions, testReferenceError) { testException<openvdb::ReferenceError>(); }
-TEST_F(TestExceptions, testRuntimeError) { testException<openvdb::RuntimeError>(); }
-TEST_F(TestExceptions, testTypeError) { testException<openvdb::TypeError>(); }
-TEST_F(TestExceptions, testValueError) { testException<openvdb::ValueError>(); }
+TEST_F(TestExceptions, testArithmeticError) { testException<laovdb::ArithmeticError>(); }
+TEST_F(TestExceptions, testIndexError) { testException<laovdb::IndexError>(); }
+TEST_F(TestExceptions, testIoError) { testException<laovdb::IoError>(); }
+TEST_F(TestExceptions, testKeyError) { testException<laovdb::KeyError>(); }
+TEST_F(TestExceptions, testLookupError) { testException<laovdb::LookupError>(); }
+TEST_F(TestExceptions, testNotImplementedError) { testException<laovdb::NotImplementedError>(); }
+TEST_F(TestExceptions, testReferenceError) { testException<laovdb::ReferenceError>(); }
+TEST_F(TestExceptions, testRuntimeError) { testException<laovdb::RuntimeError>(); }
+TEST_F(TestExceptions, testTypeError) { testException<laovdb::TypeError>(); }
+TEST_F(TestExceptions, testValueError) { testException<laovdb::ValueError>(); }

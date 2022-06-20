@@ -9,7 +9,7 @@
 #ifndef OPENVDB_POINTS_POINT_RASTERIZE_FRUSTUM_IMPL_HAS_BEEN_INCLUDED
 #define OPENVDB_POINTS_POINT_RASTERIZE_FRUSTUM_IMPL_HAS_BEEN_INCLUDED
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -147,9 +147,9 @@ struct RasterizeOp
     using CombinableT = tbb::combinable<GridT>;
     using SumOpT = tools::valxform::SumOp<ValueT>;
     using MaxOpT = tools::valxform::MaxOp<ValueT>;
-    using PositionHandleT = openvdb::points::AttributeHandle<Vec3f>;
-    using VelocityHandleT = openvdb::points::AttributeHandle<Vec3f>;
-    using RadiusHandleT = openvdb::points::AttributeHandle<float>;
+    using PositionHandleT = laovdb::points::AttributeHandle<Vec3f>;
+    using VelocityHandleT = laovdb::points::AttributeHandle<Vec3f>;
+    using RadiusHandleT = laovdb::points::AttributeHandle<float>;
 
     // to prevent checking the interrupter too frequently, only check every 32 voxels cubed
     static const int interruptThreshold = 32*32*32;
@@ -534,14 +534,14 @@ struct RasterizeOp
 
             // disable ray-tracing if velocity is very small
 
-            openvdb::Vec3f velocity(0.0f);
+            laovdb::Vec3f velocity(0.0f);
             bool doRaytrace = useRaytrace;
             if (doRaytrace) {
-                if (increment < openvdb::math::Delta<float>::value()) {
+                if (increment < laovdb::math::Delta<float>::value()) {
                     doRaytrace = false;
                 } else {
                     if (velocityHandle)     velocity = velocityHandle->get(*iter);
-                    if (mStaticCamera && velocity.lengthSqr() < openvdb::math::Delta<float>::value()) {
+                    if (mStaticCamera && velocity.lengthSqr() < laovdb::math::Delta<float>::value()) {
                         doRaytrace = false;
                     }
                 }
@@ -773,7 +773,7 @@ struct RasterizeOp
 
 private:
     mutable math::Ray<double> mDdaRay;
-    mutable math::DDA<openvdb::math::Ray<double>> mDda;
+    mutable math::DDA<laovdb::math::Ray<double>> mDda;
     const PointDataGridT& mGrid;
     const std::vector<Index64>& mOffsets;
     const size_t mAttributeIndex;
@@ -947,7 +947,7 @@ public:
 
         // generate leaf offsets (if necessary)
         if (mLeafOffsets.empty()) {
-            openvdb::points::pointOffsets(mLeafOffsets, mGrid->constTree(), resolvedFilter,
+            laovdb::points::pointOffsets(mLeafOffsets, mGrid->constTree(), resolvedFilter,
                 /*inCoreOnly=*/false, mSettings.threaded);
         }
 
@@ -1119,7 +1119,7 @@ bool RasterCamera::hasWeight(Index i) const
 {
     if (mWeights.empty())  return false;
     assert(i < mWeights.size());
-    return !openvdb::math::isApproxEqual(mWeights[i], 1.0f, 1e-3f);
+    return !laovdb::math::isApproxEqual(mWeights[i], 1.0f, 1e-3f);
 }
 
 float RasterCamera::weight(Index i) const
@@ -1337,7 +1337,7 @@ template <typename PointDataGridT>
 template <typename FilterT>
 FloatGrid::Ptr
 FrustumRasterizer<PointDataGridT>::rasterizeDensity(
-    const openvdb::Name& attribute, RasterMode mode, bool reduceMemory, float scale, const FilterT& filter)
+    const laovdb::Name& attribute, RasterMode mode, bool reduceMemory, float scale, const FilterT& filter)
 {
     auto density = rasterizeAttribute<FloatGrid, float>(attribute, mode, reduceMemory, scale, filter);
     // hard-code grid name to density
@@ -1453,10 +1453,10 @@ template <typename PointDataGridT>
 template <typename AttributeT, typename GridT, typename FilterT>
 void
 FrustumRasterizer<PointDataGridT>::performRasterization(
-    GridT& grid, RasterMode mode, const openvdb::Name& attribute, bool reduceMemory,
+    GridT& grid, RasterMode mode, const laovdb::Name& attribute, bool reduceMemory,
     float scale, const FilterT& filter)
 {
-    using openvdb::points::point_mask_internal::GridCombinerOp;
+    using laovdb::points::point_mask_internal::GridCombinerOp;
     using point_rasterize_internal::computeWeightedValue;
 
     using TreeT = typename GridT::TreeType;
@@ -1574,6 +1574,6 @@ FrustumRasterizer<PointDataGridT>::performRasterization(
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_POINTS_POINT_RASTERIZE_FRUSTUM_IMPL_HAS_BEEN_INCLUDED

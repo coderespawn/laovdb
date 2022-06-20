@@ -21,7 +21,7 @@
 #define ENABLE_TREE_VALUE_DEPTH_BOUND_OPTIMIZATION
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tree {
@@ -1359,6 +1359,6 @@ private:
 
 } // namespace tree
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TREE_TREEITERATOR_HAS_BEEN_INCLUDED

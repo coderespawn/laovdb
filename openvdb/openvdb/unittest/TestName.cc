@@ -14,7 +14,7 @@ class TestName : public ::testing::Test
 
 TEST_F(TestName, test)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Name name;
     Name name2("something");
@@ -29,13 +29,13 @@ TEST_F(TestName, test)
 
 TEST_F(TestName, testIO)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Name name("some name that i made up");
 
     std::ostringstream ostr(std::ios_base::binary);
 
-    openvdb::writeString(ostr, name);
+    laovdb::writeString(ostr, name);
 
     name = "some other name";
 
@@ -43,26 +43,26 @@ TEST_F(TestName, testIO)
 
     std::istringstream istr(ostr.str(), std::ios_base::binary);
 
-    name = openvdb::readString(istr);
+    name = laovdb::readString(istr);
 
     EXPECT_TRUE(name == Name("some name that i made up"));
 }
 
 TEST_F(TestName, testMultipleIO)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Name name("some name that i made up");
     Name name2("something else");
 
     std::ostringstream ostr(std::ios_base::binary);
 
-    openvdb::writeString(ostr, name);
-    openvdb::writeString(ostr, name2);
+    laovdb::writeString(ostr, name);
+    laovdb::writeString(ostr, name2);
 
     std::istringstream istr(ostr.str(), std::ios_base::binary);
 
-    Name n = openvdb::readString(istr), n2 = openvdb::readString(istr);
+    Name n = laovdb::readString(istr), n2 = laovdb::readString(istr);
 
     EXPECT_TRUE(name == n);
     EXPECT_TRUE(name2 == n2);

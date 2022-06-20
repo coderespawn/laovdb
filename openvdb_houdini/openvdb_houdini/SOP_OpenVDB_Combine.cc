@@ -827,8 +827,8 @@ struct MulAdd
     /// @return true if the scale is 1 and the offset is 0
     bool isIdentity() const
     {
-        return (openvdb::math::isApproxEqual(scale, 1.f, 1.0e-6f)
-            && openvdb::math::isApproxEqual(offset, 0.f, 1.0e-6f));
+        return (laovdb::math::isApproxEqual(scale, 1.f, 1.0e-6f)
+            && laovdb::math::isApproxEqual(offset, 0.f, 1.0e-6f));
     }
 
     /// Compute dest = src * scale + offset
@@ -840,7 +840,7 @@ struct MulAdd
             if (!dest) dest = GridT::create(src); // same transform, new tree
             ValueT bg;
             (*this)(src.background(), ValueT(), bg);
-            openvdb::tools::changeBackground(dest->tree(), bg);
+            laovdb::tools::changeBackground(dest->tree(), bg);
             dest->tree().combine2(src.tree(), src.tree(), *this, /*prune=*/false);
         }
     }
@@ -857,7 +857,7 @@ struct Blend1
     float aMult, bMult;
     const ValueT ONE;
     explicit Blend1(float a = 1.0, float b = 1.0):
-        aMult(a), bMult(b), ONE(openvdb::zeroVal<ValueT>() + 1) {}
+        aMult(a), bMult(b), ONE(laovdb::zeroVal<ValueT>() + 1) {}
     void operator()(const ValueT& a, const ValueT& b, ValueT& out) const
     {
         OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
@@ -877,7 +877,7 @@ struct Blend2
     float aMult, bMult;
     const ValueT ONE;
     explicit Blend2(float a = 1.0, float b = 1.0):
-        aMult(a), bMult(b), ONE(openvdb::zeroVal<ValueT>() + 1) {}
+        aMult(a), bMult(b), ONE(laovdb::zeroVal<ValueT>() + 1) {}
     void operator()(const ValueT& a, const ValueT& b, ValueT& out) const
     {
         OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
@@ -897,7 +897,7 @@ struct ApproxEq
     const ValueT &a, &b;
     ApproxEq(const ValueT& _a, const ValueT& _b): a(_a), b(_b) {}
     operator bool() const {
-        return openvdb::math::isRelOrApproxEqual(
+        return laovdb::math::isRelOrApproxEqual(
             a, b, /*rel*/ValueT(1e-6f), /*abs*/ValueT(1e-8f));
     }
 };
@@ -905,9 +905,9 @@ struct ApproxEq
 
 // Specialization for Vec2
 template<typename T>
-struct ApproxEq<openvdb::math::Vec2<T> >
+struct ApproxEq<laovdb::math::Vec2<T> >
 {
-    using VecT = openvdb::math::Vec2<T>;
+    using VecT = laovdb::math::Vec2<T>;
     using ValueT = typename VecT::value_type;
     const VecT &a, &b;
     ApproxEq(const VecT& _a, const VecT& _b): a(_a), b(_b) {}
@@ -917,9 +917,9 @@ struct ApproxEq<openvdb::math::Vec2<T> >
 
 // Specialization for Vec3
 template<typename T>
-struct ApproxEq<openvdb::math::Vec3<T> >
+struct ApproxEq<laovdb::math::Vec3<T> >
 {
-    using VecT = openvdb::math::Vec3<T>;
+    using VecT = laovdb::math::Vec3<T>;
     using ValueT = typename VecT::value_type;
     const VecT &a, &b;
     ApproxEq(const VecT& _a, const VecT& _b): a(_a), b(_b) {}
@@ -929,9 +929,9 @@ struct ApproxEq<openvdb::math::Vec3<T> >
 
 // Specialization for Vec4
 template<typename T>
-struct ApproxEq<openvdb::math::Vec4<T> >
+struct ApproxEq<laovdb::math::Vec4<T> >
 {
-    using VecT = openvdb::math::Vec4<T>;
+    using VecT = laovdb::math::Vec4<T>;
     using ValueT = typename VecT::value_type;
     const VecT &a, &b;
     ApproxEq(const VecT& _a, const VecT& _b): a(_a), b(_b) {}
@@ -988,22 +988,22 @@ struct SOP_OpenVDB_Combine::CombineOp
     typename GridT::Ptr resampleToMatch(const GridT& src, const hvdb::Grid& ref, int order)
     {
         using ValueT = typename GridT::ValueType;
-        const ValueT ZERO = openvdb::zeroVal<ValueT>();
+        const ValueT ZERO = laovdb::zeroVal<ValueT>();
 
-        const openvdb::math::Transform& refXform = ref.constTransform();
+        const laovdb::math::Transform& refXform = ref.constTransform();
 
         typename GridT::Ptr dest;
-        if (src.getGridClass() == openvdb::GRID_LEVEL_SET) {
+        if (src.getGridClass() == laovdb::GRID_LEVEL_SET) {
             // For level set grids, use the level set rebuild tool to both resample the
             // source grid to match the reference grid and to rebuild the resulting level set.
-            const bool refIsLevelSet = ref.getGridClass() == openvdb::GRID_LEVEL_SET;
+            const bool refIsLevelSet = ref.getGridClass() == laovdb::GRID_LEVEL_SET;
             OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
             const ValueT halfWidth = refIsLevelSet
                 ? ValueT(ZERO + this->getScalarBackgroundValue(ref) * (1.0 / ref.voxelSize()[0]))
                 : ValueT(src.background() * (1.0 / src.voxelSize()[0]));
             OPENVDB_NO_TYPE_CONVERSION_WARNING_END
 
-            if (!openvdb::math::isFinite(halfWidth)) {
+            if (!laovdb::math::isFinite(halfWidth)) {
                 std::stringstream msg;
                 msg << "Resample to match: Illegal narrow band width = " << halfWidth
                     << ", caused by grid '" << src.getName() << "' with background "
@@ -1012,9 +1012,9 @@ struct SOP_OpenVDB_Combine::CombineOp
             }
 
             try {
-                dest = openvdb::tools::doLevelSetRebuild(src, /*iso=*/ZERO,
+                dest = laovdb::tools::doLevelSetRebuild(src, /*iso=*/ZERO,
                     /*exWidth=*/halfWidth, /*inWidth=*/halfWidth, &refXform, &interrupt.interrupter());
-            } catch (openvdb::TypeError&) {
+            } catch (laovdb::TypeError&) {
                 self->addWarning(SOP_MESSAGE, ("skipped rebuild of level set grid "
                     + src.getName() + " of type " + src.type()).c_str());
                 dest.reset();
@@ -1026,7 +1026,7 @@ struct SOP_OpenVDB_Combine::CombineOp
             // the reference grid.
             dest = src.copyWithNewTree();
             dest->setTransform(refXform.copy());
-            using namespace openvdb;
+            using namespace laovdb;
             switch (order) {
             case 0: tools::resampleToMatch<tools::PointSampler>(src, *dest, interrupt.interrupter()); break;
             case 1: tools::resampleToMatch<tools::BoxSampler>(src, *dest, interrupt.interrupter()); break;
@@ -1057,7 +1057,7 @@ struct SOP_OpenVDB_Combine::CombineOp
 
         // Determine which of the two grids should be resampled.
         if (resample == RESAMPLE_HI_RES || resample == RESAMPLE_LO_RES) {
-            const openvdb::Vec3d
+            const laovdb::Vec3d
                 aVoxSize = aGrid->voxelSize(),
                 bVoxSize = bGrid->voxelSize();
             const double
@@ -1093,8 +1093,8 @@ struct SOP_OpenVDB_Combine::CombineOp
             }
         }
 
-        if (aGrid->getGridClass() == openvdb::GRID_LEVEL_SET &&
-            bGrid->getGridClass() == openvdb::GRID_LEVEL_SET)
+        if (aGrid->getGridClass() == laovdb::GRID_LEVEL_SET &&
+            bGrid->getGridClass() == laovdb::GRID_LEVEL_SET)
         {
             // If both grids are level sets, ensure that their background values match.
             // (If one of the grids was resampled, then the background values should
@@ -1142,7 +1142,7 @@ struct SOP_OpenVDB_Combine::CombineOp
 
             default:
             {
-                const openvdb::VecType
+                const laovdb::VecType
                     aVecType = aGrid->getVectorType(),
                     bVecType = bGrid->getVectorType();
                 if (aVecType != bVecType) {
@@ -1161,17 +1161,17 @@ struct SOP_OpenVDB_Combine::CombineOp
     template <typename GridT>
     void doUnion(GridT &result, GridT &temp)
     {
-        openvdb::tools::csgUnion(result, temp);
+        laovdb::tools::csgUnion(result, temp);
     }
     template <typename GridT>
     void doIntersection(GridT &result, GridT &temp)
     {
-        openvdb::tools::csgIntersection(result, temp);
+        laovdb::tools::csgIntersection(result, temp);
     }
     template <typename GridT>
     void doDifference(GridT &result, GridT &temp)
     {
-        openvdb::tools::csgDifference(result, temp);
+        laovdb::tools::csgDifference(result, temp);
     }
 
     // Combine two grids of the same type.
@@ -1194,7 +1194,7 @@ struct SOP_OpenVDB_Combine::CombineOp
         if (needB && !bGrid) throw std::runtime_error("missing B grid");
 
         // Warn if combining vector grids with different vector types.
-        if (needA && needB && openvdb::VecTraits<ValueT>::IsVec) {
+        if (needA && needB && laovdb::VecTraits<ValueT>::IsVec) {
             this->checkVectorTypes(aGrid, bGrid);
         }
 
@@ -1202,7 +1202,7 @@ struct SOP_OpenVDB_Combine::CombineOp
         // registers with the other grid's.
         if (aGrid && bGrid) this->resampleGrids(aGrid, bGrid);
 
-        const ValueT ZERO = openvdb::zeroVal<ValueT>();
+        const ValueT ZERO = laovdb::zeroVal<ValueT>();
 
         // A temporary grid is needed for binary operations, because they
         // cannibalize the B grid.
@@ -1224,37 +1224,37 @@ struct SOP_OpenVDB_Combine::CombineOp
             case OP_ADD:
                 MulAdd<GridT>(aMult).process(*aGrid, resultGrid);
                 MulAdd<GridT>(bMult).process(*bGrid, tempGrid);
-                openvdb::tools::compSum(*resultGrid, *tempGrid);
+                laovdb::tools::compSum(*resultGrid, *tempGrid);
                 break;
 
             case OP_SUBTRACT:
                 MulAdd<GridT>(aMult).process(*aGrid, resultGrid);
                 MulAdd<GridT>(-bMult).process(*bGrid, tempGrid);
-                openvdb::tools::compSum(*resultGrid, *tempGrid);
+                laovdb::tools::compSum(*resultGrid, *tempGrid);
                 break;
 
             case OP_MULTIPLY:
                 MulAdd<GridT>(aMult).process(*aGrid, resultGrid);
                 MulAdd<GridT>(bMult).process(*bGrid, tempGrid);
-                openvdb::tools::compMul(*resultGrid, *tempGrid);
+                laovdb::tools::compMul(*resultGrid, *tempGrid);
                 break;
 
             case OP_DIVIDE:
                 MulAdd<GridT>(aMult).process(*aGrid, resultGrid);
                 MulAdd<GridT>(bMult).process(*bGrid, tempGrid);
-                openvdb::tools::compDiv(*resultGrid, *tempGrid);
+                laovdb::tools::compDiv(*resultGrid, *tempGrid);
                 break;
 
             case OP_MAXIMUM:
                 MulAdd<GridT>(aMult).process(*aGrid, resultGrid);
                 MulAdd<GridT>(bMult).process(*bGrid, tempGrid);
-                openvdb::tools::compMax(*resultGrid, *tempGrid);
+                laovdb::tools::compMax(*resultGrid, *tempGrid);
                 break;
 
             case OP_MINIMUM:
                 MulAdd<GridT>(aMult).process(*aGrid, resultGrid);
                 MulAdd<GridT>(bMult).process(*bGrid, tempGrid);
-                openvdb::tools::compMin(*resultGrid, *tempGrid);
+                laovdb::tools::compMin(*resultGrid, *tempGrid);
                 break;
 
             case OP_BLEND1: // (1 - A) * B
@@ -1263,7 +1263,7 @@ struct SOP_OpenVDB_Combine::CombineOp
                 ValueT bg;
                 comp(aGrid->background(), ZERO, bg);
                 resultGrid = aGrid->copyWithNewTree();
-                openvdb::tools::changeBackground(resultGrid->tree(), bg);
+                laovdb::tools::changeBackground(resultGrid->tree(), bg);
                 resultGrid->tree().combine2(aGrid->tree(), bGrid->tree(), comp, /*prune=*/false);
                 break;
             }
@@ -1273,7 +1273,7 @@ struct SOP_OpenVDB_Combine::CombineOp
                 ValueT bg;
                 comp(aGrid->background(), ZERO, bg);
                 resultGrid = aGrid->copyWithNewTree();
-                openvdb::tools::changeBackground(resultGrid->tree(), bg);
+                laovdb::tools::changeBackground(resultGrid->tree(), bg);
                 resultGrid->tree().combine2(aGrid->tree(), bGrid->tree(), comp, /*prune=*/false);
                 break;
             }
@@ -1299,7 +1299,7 @@ struct SOP_OpenVDB_Combine::CombineOp
             case OP_REPLACE:
                 MulAdd<GridT>(aMult).process(*aGrid, resultGrid);
                 MulAdd<GridT>(bMult).process(*bGrid, tempGrid);
-                openvdb::tools::compReplace(*resultGrid, *tempGrid);
+                laovdb::tools::compReplace(*resultGrid, *tempGrid);
                 break;
 
             case OP_TOPO_UNION:
@@ -1339,8 +1339,8 @@ struct SOP_OpenVDB_Combine::CombineOp
         if (needB && !bGrid) throw std::runtime_error("missing B grid");
 
         // Warn if combining vector grids with different vector types.
-        if (needA && needB && openvdb::VecTraits<typename AGridT::ValueType>::IsVec
-            && openvdb::VecTraits<typename BGridT::ValueType>::IsVec)
+        if (needA && needB && laovdb::VecTraits<typename AGridT::ValueType>::IsVec
+            && laovdb::VecTraits<typename BGridT::ValueType>::IsVec)
         {
             this->checkVectorTypes(aGrid, bGrid);
         }
@@ -1388,7 +1388,7 @@ struct SOP_OpenVDB_Combine::CombineOp
     typename GridT::Ptr postprocess(typename GridT::Ptr resultGrid)
     {
         using ValueT = typename GridT::ValueType;
-        const ValueT ZERO = openvdb::zeroVal<ValueT>();
+        const ValueT ZERO = laovdb::zeroVal<ValueT>();
 
         const bool
             prune = self->evalInt("prune", 0, self->getTime()),
@@ -1404,18 +1404,18 @@ struct SOP_OpenVDB_Combine::CombineOp
             // Mark active output tiles and voxels as inactive if their
             // values match the output grid's background value.
             // Do this first to facilitate pruning.
-            openvdb::tools::deactivate(*resultGrid, resultGrid->background(), tolerance);
+            laovdb::tools::deactivate(*resultGrid, resultGrid->background(), tolerance);
         }
 
-        if (flood && resultGrid->getGridClass() == openvdb::GRID_LEVEL_SET) {
-            openvdb::tools::signedFloodFill(resultGrid->tree());
+        if (flood && resultGrid->getGridClass() == laovdb::GRID_LEVEL_SET) {
+            laovdb::tools::signedFloodFill(resultGrid->tree());
         }
         if (prune) {
             const float pruneTolerance = float(self->evalFloat("tolerance", 0, self->getTime()));
             OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
             const ValueT tolerance(ZERO + pruneTolerance);
             OPENVDB_NO_TYPE_CONVERSION_WARNING_END
-            openvdb::tools::prune(resultGrid->tree(), tolerance);
+            laovdb::tools::prune(resultGrid->tree(), tolerance);
         }
 
         return resultGrid;
@@ -1445,15 +1445,15 @@ struct SOP_OpenVDB_Combine::CombineOp
 }; // struct CombineOp
 
 template <>
-void SOP_OpenVDB_Combine::CombineOp::doUnion(openvdb::BoolGrid &result, openvdb::BoolGrid &temp)
+void SOP_OpenVDB_Combine::CombineOp::doUnion(laovdb::BoolGrid &result, laovdb::BoolGrid &temp)
 {
 }
 template <>
-void SOP_OpenVDB_Combine::CombineOp::doIntersection(openvdb::BoolGrid &result, openvdb::BoolGrid &temp)
+void SOP_OpenVDB_Combine::CombineOp::doIntersection(laovdb::BoolGrid &result, laovdb::BoolGrid &temp)
 {
 }
 template <>
-void SOP_OpenVDB_Combine::CombineOp::doDifference(openvdb::BoolGrid &result, openvdb::BoolGrid &temp)
+void SOP_OpenVDB_Combine::CombineOp::doDifference(laovdb::BoolGrid &result, laovdb::BoolGrid &temp)
 {
 }
 
@@ -1491,8 +1491,8 @@ SOP_OpenVDB_Combine::Cache::combineGrids(
     if (needB && !bGrid) throw std::runtime_error("missing B grid");
 
     if (needLS &&
-        ((aGrid && aGrid->getGridClass() != openvdb::GRID_LEVEL_SET) ||
-         (bGrid && bGrid->getGridClass() != openvdb::GRID_LEVEL_SET)))
+        ((aGrid && aGrid->getGridClass() != laovdb::GRID_LEVEL_SET) ||
+         (bGrid && bGrid->getGridClass() != laovdb::GRID_LEVEL_SET)))
     {
         std::ostringstream ostr;
         ostr << "expected level set grids for the " << sOpMenuItems[op*2+1]

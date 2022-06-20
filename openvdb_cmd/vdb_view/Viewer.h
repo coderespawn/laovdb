@@ -36,7 +36,7 @@ public:
     void open(int width = DEFAULT_WIDTH, int height = DEFAULT_HEIGHT);
 
     /// Display the given grids.
-    void view(const openvdb::GridCPtrVec&);
+    void view(const laovdb::GridCPtrVec&);
 
     /// @brief Process any pending user input (keyboard, mouse, etc.)
     /// in the window associated with this viewer.

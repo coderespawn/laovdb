@@ -25,7 +25,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tools {
@@ -94,13 +94,13 @@ private:
 /// Supports both collocated velocity grids and staggered velocity grids
 ///
 /// The @c PointListT template argument refers to any class with the following
-/// interface (e.g., std::vector<openvdb::Vec3f>):
+/// interface (e.g., std::vector<laovdb::Vec3f>):
 /// @code
 /// class PointList {
 ///     ...
 /// public:
 ///     using value_type = internal_vector3_type; // must support [] component access
-///     openvdb::Index size() const;              // number of points in list
+///     laovdb::Index size() const;              // number of points in list
 ///     value_type& operator[](int n);            // world space position of nth point
 /// };
 /// @endcode
@@ -390,6 +390,6 @@ private:
 
 } // namespace tools
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TOOLS_POINT_ADVECT_HAS_BEEN_INCLUDED

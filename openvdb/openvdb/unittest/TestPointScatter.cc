@@ -13,14 +13,14 @@
 #include <random>
 
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 class TestPointScatter: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointScatter
 
 
@@ -362,7 +362,7 @@ TEST_F(TestPointScatter, testDenseUniformPointScatter)
 
         // Test below 0 throws
 
-        EXPECT_THROW(points::denseUniformPointScatter(grid, -0.1f), openvdb::ValueError);
+        EXPECT_THROW(points::denseUniformPointScatter(grid, -0.1f), laovdb::ValueError);
     }
 
     // Test a grid containing tiles scatters correctly
@@ -534,7 +534,7 @@ TEST_F(TestPointScatter, testNonUniformPointScatter)
 
     // Test below 0 throws
 
-    EXPECT_THROW(points::nonUniformPointScatter(grid, -0.1f), openvdb::ValueError);
+    EXPECT_THROW(points::nonUniformPointScatter(grid, -0.1f), laovdb::ValueError);
 
     // Test a grid containing tiles scatters correctly
 

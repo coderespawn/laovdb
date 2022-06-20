@@ -93,14 +93,14 @@ getMaskVDB(const GU_Detail * geoPt, const GA_PrimitiveGroup *group = nullptr)
 }
 
 
-inline UT_SharedPtr<openvdb::BBoxd>
+inline UT_SharedPtr<laovdb::BBoxd>
 getMaskGeoBBox(const GU_Detail * geoPt)
 {
     if (geoPt) {
         UT_BoundingBox box;
         geoPt->getBBox(&box);
 
-        UT_SharedPtr<openvdb::BBoxd> bbox(new openvdb::BBoxd());
+        UT_SharedPtr<laovdb::BBoxd> bbox(new laovdb::BBoxd());
         bbox->min()[0] = box.xmin();
         bbox->min()[1] = box.ymin();
         bbox->min()[2] = box.zmin();
@@ -111,7 +111,7 @@ getMaskGeoBBox(const GU_Detail * geoPt)
         return bbox;
     }
 
-    return UT_SharedPtr<openvdb::BBoxd>();
+    return UT_SharedPtr<laovdb::BBoxd>();
 }
 
 
@@ -124,9 +124,9 @@ struct BoolSampler
 
     template<class TreeT>
     static bool sample(const TreeT& inTree,
-        const openvdb::Vec3R& inCoord, typename TreeT::ValueType& result)
+        const laovdb::Vec3R& inCoord, typename TreeT::ValueType& result)
     {
-        openvdb::Coord ijk;
+        laovdb::Coord ijk;
         ijk[0] = int(std::floor(inCoord[0]));
         ijk[1] = int(std::floor(inCoord[1]));
         ijk[2] = int(std::floor(inCoord[2]));
@@ -146,24 +146,24 @@ struct CompZCoord
 
 
 /// returns the world space voxel size for the given frustum depth.
-inline openvdb::Vec3d
-computeFrustumVoxelSize(int zDepth, const openvdb::math::Transform& xform)
+inline laovdb::Vec3d
+computeFrustumVoxelSize(int zDepth, const laovdb::math::Transform& xform)
 {
-    using MapType = openvdb::math::NonlinearFrustumMap;
+    using MapType = laovdb::math::NonlinearFrustumMap;
     MapType::ConstPtr map = xform.map<MapType>();
 
     if (map) {
-        const openvdb::BBoxd& box = map->getBBox();
+        const laovdb::BBoxd& box = map->getBBox();
 
-        openvdb::CoordBBox bbox(
-            openvdb::Coord::floor(box.min()), openvdb::Coord::ceil(box.max()));
+        laovdb::CoordBBox bbox(
+            laovdb::Coord::floor(box.min()), laovdb::Coord::ceil(box.max()));
 
         double nearPlaneX = 0.5 * double(bbox.min().x() + bbox.max().x());
         double nearPlaneY = 0.5 * double(bbox.min().y() + bbox.max().y());
 
         zDepth = std::max(zDepth, bbox.min().z());
 
-        openvdb::Vec3d xyz(nearPlaneX, nearPlaneY, double(zDepth));
+        laovdb::Vec3d xyz(nearPlaneX, nearPlaneY, double(zDepth));
 
         return xform.voxelSize(xyz);
     }
@@ -179,8 +179,8 @@ linearBlend(double a, double b, double w) { return a * w + b * (1.0 - w); }
 /// Inactivates the region defined by @a bbox in @a mask.
 template <typename MaskTreeType>
 inline void
-bboxClip(MaskTreeType& mask, const openvdb::BBoxd& bbox, bool invertMask,
-    const openvdb::math::Transform& maskXform, const openvdb::math::Transform* srcXform = nullptr)
+bboxClip(MaskTreeType& mask, const laovdb::BBoxd& bbox, bool invertMask,
+    const laovdb::math::Transform& maskXform, const laovdb::math::Transform* srcXform = nullptr)
 {
     using ValueType = typename MaskTreeType::ValueType;
     const ValueType offVal = ValueType(0);
@@ -188,10 +188,10 @@ bboxClip(MaskTreeType& mask, const openvdb::BBoxd& bbox, bool invertMask,
 
     if (!srcXform) {
 
-        openvdb::Vec3d minIS, maxIS;
-        openvdb::math::calculateBounds(maskXform, bbox.min(), bbox.max(), minIS, maxIS);
+        laovdb::Vec3d minIS, maxIS;
+        laovdb::math::calculateBounds(maskXform, bbox.min(), bbox.max(), minIS, maxIS);
 
-        openvdb::CoordBBox clipRegion;
+        laovdb::CoordBBox clipRegion;
         clipRegion.min()[0] = int(std::floor(minIS[0]));
         clipRegion.min()[1] = int(std::floor(minIS[1]));
         clipRegion.min()[2] = int(std::floor(minIS[2]));
@@ -211,10 +211,10 @@ bboxClip(MaskTreeType& mask, const openvdb::BBoxd& bbox, bool invertMask,
 
     } else {
 
-        openvdb::Vec3d minIS, maxIS;
-        openvdb::math::calculateBounds(*srcXform, bbox.min(), bbox.max(), minIS, maxIS);
+        laovdb::Vec3d minIS, maxIS;
+        laovdb::math::calculateBounds(*srcXform, bbox.min(), bbox.max(), minIS, maxIS);
 
-        openvdb::CoordBBox clipRegion;
+        laovdb::CoordBBox clipRegion;
         clipRegion.min()[0] = int(std::floor(minIS[0]));
         clipRegion.min()[1] = int(std::floor(minIS[1]));
         clipRegion.min()[2] = int(std::floor(minIS[2]));
@@ -223,7 +223,7 @@ bboxClip(MaskTreeType& mask, const openvdb::BBoxd& bbox, bool invertMask,
         clipRegion.max()[1] = int(std::floor(maxIS[1]));
         clipRegion.max()[2] = int(std::floor(maxIS[2]));
 
-        using MaskGridType = openvdb::Grid<MaskTreeType>;
+        using MaskGridType = laovdb::Grid<MaskTreeType>;
 
         MaskGridType srcClipMask(offVal);
         srcClipMask.setTransform(srcXform->copy());
@@ -233,7 +233,7 @@ bboxClip(MaskTreeType& mask, const openvdb::BBoxd& bbox, bool invertMask,
         dstClipMask.setTransform(maskXform.copy());
 
         hvdb::HoudiniInterrupter interrupter;
-        openvdb::tools::resampleToMatch<BoolSampler>(srcClipMask, dstClipMask, interrupter.interrupter());
+        laovdb::tools::resampleToMatch<BoolSampler>(srcClipMask, dstClipMask, interrupter.interrupter());
 
         if (invertMask) {
             mask.topologyDifference(dstClipMask.tree());
@@ -248,7 +248,7 @@ template <typename MaskTreeType>
 struct GridTopologyClipOp
 {
     GridTopologyClipOp(
-        MaskTreeType& mask, const openvdb::math::Transform& maskXform, bool invertMask)
+        MaskTreeType& mask, const laovdb::math::Transform& maskXform, bool invertMask)
         : mMask(&mask), mMaskXform(&maskXform), mInvertMask(invertMask)
     {
     }
@@ -257,7 +257,7 @@ struct GridTopologyClipOp
     template<typename GridType>
     void operator()(const GridType& grid)
     {
-        using MaskGridType = openvdb::Grid<MaskTreeType>;
+        using MaskGridType = laovdb::Grid<MaskTreeType>;
         using ValueType = typename MaskTreeType::ValueType;
 
         const ValueType offVal = ValueType(0);
@@ -270,7 +270,7 @@ struct GridTopologyClipOp
         dstClipMask.setTransform(mMaskXform->copy());
 
         hvdb::HoudiniInterrupter interrupter;
-        openvdb::tools::resampleToMatch<BoolSampler>(srcClipMask, dstClipMask, interrupter.interrupter());
+        laovdb::tools::resampleToMatch<BoolSampler>(srcClipMask, dstClipMask, interrupter.interrupter());
 
         if (mInvertMask) {
             mMask->topologyDifference(dstClipMask.tree());
@@ -281,7 +281,7 @@ struct GridTopologyClipOp
 
 private:
     MaskTreeType                   * const mMask;
-    openvdb::math::Transform const * const mMaskXform;
+    laovdb::math::Transform const * const mMaskXform;
     bool mInvertMask;
 }; // struct GridTopologyClipOp
 
@@ -293,7 +293,7 @@ private:
 struct PointCache
 {
     using Ptr = UT_SharedPtr<PointCache>;
-    using PosType = openvdb::Vec3s;
+    using PosType = laovdb::Vec3s;
     using ScalarType = PosType::value_type;
 
     PointCache(const GU_Detail& detail, const float radiusScale,
@@ -318,7 +318,7 @@ struct PointCache
             }
 
             mRadius.reset(new float[mSize]);
-            mPos.reset(new openvdb::Vec3s[mSize]);
+            mPos.reset(new laovdb::Vec3s[mSize]);
 
             tbb::parallel_for(tbb::blocked_range<size_t>(0, mSize),
                 IFOCachePointGroupData(mOffsets, detail, mRadius, mPos, radiusScale));
@@ -332,7 +332,7 @@ struct PointCache
 
         if (!group) {
             mRadius.reset(new float[mSize]);
-            mPos.reset(new openvdb::Vec3s[mSize]);
+            mPos.reset(new laovdb::Vec3s[mSize]);
 
             UTparallelFor(GA_SplittableRange(detail.getPointRange(group)),
                 IFOCachePointData(detail, mRadius, mPos, radiusScale));
@@ -348,7 +348,7 @@ struct PointCache
     {
         mOffsets.reset(new GA_Offset[mSize]);
         mRadius.reset(new float[mSize]);
-        mPos.reset(new openvdb::Vec3s[mSize]);
+        mPos.reset(new laovdb::Vec3s[mSize]);
 
         tbb::parallel_for(tbb::blocked_range<size_t>(0, mSize),
             IFOCopyPointData(indices, mOffsets, mRadius, mPos, rhs));
@@ -360,14 +360,14 @@ struct PointCache
 
     const float& radius(size_t n) const { return mRadius[n]; }
 
-    const openvdb::Vec3s& pos(size_t n) const { return mPos[n]; }
+    const laovdb::Vec3s& pos(size_t n) const { return mPos[n]; }
 
-    void getPos(size_t n, openvdb::Vec3s& xyz) const { xyz = mPos[n]; }
+    void getPos(size_t n, laovdb::Vec3s& xyz) const { xyz = mPos[n]; }
 
     GA_Offset offsetFromIndex(size_t n) const { return (this->*getOffset)(n); }
 
     const float* radiusData() const { return mRadius.get(); }
-    const openvdb::Vec3s* posData() const { return mPos.get(); }
+    const laovdb::Vec3s* posData() const { return mPos.get(); }
 
     float evalMaxRadius() const {
         IFOEvalMaxRadius op(mRadius.get());
@@ -409,7 +409,7 @@ private:
             const std::vector<unsigned>& indices,
             UT_UniquePtr<GA_Offset[]>& offsets,
             UT_UniquePtr<float[]>& radius,
-            UT_UniquePtr<openvdb::Vec3s[]>& pos,
+            UT_UniquePtr<laovdb::Vec3s[]>& pos,
             const PointCache& PointCache)
             : mIndices(&indices[0])
             , mOffsets(offsets.get())
@@ -422,7 +422,7 @@ private:
         void operator()(const tbb::blocked_range<size_t>& range) const
         {
             const float* radiusData = mPointCache->radiusData();
-            const openvdb::Vec3s* posData = mPointCache->posData();
+            const laovdb::Vec3s* posData = mPointCache->posData();
 
             for (size_t n = range.begin(), N = range.end(); n != N; ++n) {
                 const size_t idx = size_t(mIndices[n]);
@@ -435,7 +435,7 @@ private:
         unsigned        const * const mIndices;
         GA_Offset             * const mOffsets;
         float                 * const mRadiusData;
-        openvdb::Vec3s        * const mPosData;
+        laovdb::Vec3s        * const mPosData;
         PointCache      const * const mPointCache;
     }; // struct IFOCopyPointData
 
@@ -443,7 +443,7 @@ private:
     {
         IFOCachePointData(const GU_Detail& detail,
             UT_UniquePtr<float[]>& radius,
-            UT_UniquePtr<openvdb::Vec3s[]>& pos,
+            UT_UniquePtr<laovdb::Vec3s[]>& pos,
             float radiusScale = 1.0)
             : mDetail(&detail)
             , mRadiusData(radius.get())
@@ -481,7 +481,7 @@ private:
                         mRadiusData[idx] = hasScale ? scaleHandle.get(i) * scale : scale;
 
                         xyz = posHandle.get(i);
-                        openvdb::Vec3s& p = mPosData[idx];
+                        laovdb::Vec3s& p = mPosData[idx];
                         p[0] = xyz[0];
                         p[1] = xyz[1];
                         p[2] = xyz[2];
@@ -492,7 +492,7 @@ private:
 
         GU_Detail const * const mDetail;
         float           * const mRadiusData;
-        openvdb::Vec3s  * const mPosData;
+        laovdb::Vec3s  * const mPosData;
         float             const mRadiusScale;
     }; // struct IFOCachePointData
 
@@ -501,7 +501,7 @@ private:
         IFOCachePointGroupData(const UT_UniquePtr<GA_Offset[]>& offsets,
             const GU_Detail& detail,
             UT_UniquePtr<float[]>& radius,
-            UT_UniquePtr<openvdb::Vec3s[]>& pos,
+            UT_UniquePtr<laovdb::Vec3s[]>& pos,
             float radiusScale = 1.0)
             : mOffsets(offsets.get())
             , mDetail(&detail)
@@ -535,7 +535,7 @@ private:
                 mRadiusData[n] = hasScale ? scaleHandle.get(offset) * scale : scale;
 
                 xyz = posHandle.get(offset);
-                openvdb::Vec3s& p = mPosData[n];
+                laovdb::Vec3s& p = mPosData[n];
                 p[0] = xyz[0];
                 p[1] = xyz[1];
                 p[2] = xyz[2];
@@ -545,7 +545,7 @@ private:
         GA_Offset const * const mOffsets;
         GU_Detail const * const mDetail;
         float           * const mRadiusData;
-        openvdb::Vec3s  * const mPosData;
+        laovdb::Vec3s  * const mPosData;
         float             const mRadiusScale;
     }; // struct IFOCachePointGroupData
 
@@ -593,22 +593,22 @@ private:
     size_t                          mSize;
     UT_UniquePtr<GA_Offset[]>       mOffsets;
     UT_UniquePtr<float[]>           mRadius;
-    UT_UniquePtr<openvdb::Vec3s[]>  mPos;
+    UT_UniquePtr<laovdb::Vec3s[]>  mPos;
 }; // struct PointCache
 
 
-///@brief   Radius based partitioning of points into multiple @c openvdb::tools::PointIndexGrid
+///@brief   Radius based partitioning of points into multiple @c laovdb::tools::PointIndexGrid
 ///         acceleration structures. Improves spatial query time for points with varying radius.
 struct PointIndexGridCollection
 {
-    using PointIndexGrid = openvdb::tools::PointIndexGrid;
+    using PointIndexGrid = laovdb::tools::PointIndexGrid;
     using PointIndexTree = PointIndexGrid::TreeType;
     using PointIndexLeafNode = PointIndexTree::LeafNodeType;
     using BoolTreeType = PointIndexTree::ValueConverter<bool>::Type;
 
     PointIndexGridCollection(const GU_Detail& detail, const float radiusScale,
         const float minVoxelSize, const GA_PointGroup* group = nullptr,
-        openvdb::util::NullInterrupter* interrupter = nullptr)
+        laovdb::util::NullInterrupter* interrupter = nullptr)
         : mPointCacheArray() , mIdxGridArray(), mMinRadiusArray(), mMaxRadiusArray()
     {
         mPointCacheArray.push_back(PointCache::Ptr(new PointCache(detail, radiusScale, group)));
@@ -703,10 +703,10 @@ private:
         {}
 
         void operator()() const {
-            const openvdb::math::Transform::Ptr transform =
-                openvdb::math::Transform::createLinearTransform(mVoxelSize);
+            const laovdb::math::Transform::Ptr transform =
+                laovdb::math::Transform::createLinearTransform(mVoxelSize);
             *mIdxGrid =
-                openvdb::tools::createPointIndexGrid<PointIndexGrid>(*mPointCache, *transform);
+                laovdb::tools::createPointIndexGrid<PointIndexGrid>(*mPointCache, *transform);
             *mMinRadius = mPointCache->evalMinRadius();
             *mMaxRadius = mPointCache->evalMaxRadius();
         }
@@ -733,7 +733,7 @@ struct ConstructCandidateVoxelMask
     using PosType = PointCache::PosType;
     using ScalarType = PosType::value_type;
 
-    using PointIndexTree = openvdb::tools::PointIndexGrid::TreeType;
+    using PointIndexTree = laovdb::tools::PointIndexGrid::TreeType;
     using PointIndexLeafNode = PointIndexTree::LeafNodeType;
     using PointIndexType = PointIndexLeafNode::ValueType;
 
@@ -744,9 +744,9 @@ struct ConstructCandidateVoxelMask
 
     ConstructCandidateVoxelMask(BoolTreeType& maskTree, const PointCache& points,
         const std::vector<const PointIndexLeafNode*>& pointIndexLeafNodes,
-        const openvdb::math::Transform& xform,
-        const openvdb::CoordBBox * clipBox = nullptr,
-        openvdb::util::NullInterrupter* interrupter = nullptr)
+        const laovdb::math::Transform& xform,
+        const laovdb::CoordBBox * clipBox = nullptr,
+        laovdb::util::NullInterrupter* interrupter = nullptr)
         : mMaskTree(false)
         , mMaskTreePt(&maskTree)
         , mMaskAccessor(*mMaskTreePt)
@@ -773,7 +773,7 @@ struct ConstructCandidateVoxelMask
 
     void operator()(const tbb::blocked_range<size_t>& range) {
 
-        openvdb::CoordBBox box;
+        laovdb::CoordBBox box;
         PosType pos, bboxMin, bboxMax, pMin, pMax;
         ScalarType radius(0.0);
 
@@ -787,7 +787,7 @@ struct ConstructCandidateVoxelMask
         for (size_t n = range.begin(), N = range.end(); n != N; ++n) {
 
             if (this->wasInterrupted()) {
-                openvdb::thread::cancelGroupExecution();
+                laovdb::thread::cancelGroupExecution();
                 break;
             }
 
@@ -843,19 +843,19 @@ struct ConstructCandidateVoxelMask
                         box.min() = mXform.worldToIndexCellCentered(bboxMin);
                         box.max() = mXform.worldToIndexCellCentered(bboxMax);
                     } else {
-                        openvdb::math::Vec3d ijkMin, ijkMax;
-                        openvdb::math::calculateBounds(mXform, bboxMin, bboxMax, ijkMin, ijkMax);
+                        laovdb::math::Vec3d ijkMin, ijkMax;
+                        laovdb::math::calculateBounds(mXform, bboxMin, bboxMax, ijkMin, ijkMax);
 
-                        box.min() = openvdb::Coord::round(ijkMin);
-                        box.max() = openvdb::Coord::round(ijkMax);
+                        box.min() = laovdb::Coord::round(ijkMin);
+                        box.max() = laovdb::Coord::round(ijkMax);
                     }
 
                     if (mClipBox) {
 
                         if (mClipBox->hasOverlap(box)) {
                             // Intersect bbox with the region of interest.
-                            box.min() = openvdb::Coord::maxComponent(box.min(), mClipBox->min());
-                            box.max() = openvdb::Coord::minComponent(box.max(), mClipBox->max());
+                            box.min() = laovdb::Coord::maxComponent(box.min(), mClipBox->min());
+                            box.max() = laovdb::Coord::minComponent(box.max(), mClipBox->max());
                             activateRegion(box);
                         }
                     } else {
@@ -901,8 +901,8 @@ struct ConstructCandidateVoxelMask
 
                 if (mClipBox->hasOverlap(box)) {
                     // Intersect bbox with the region of interest.
-                    box.min() = openvdb::Coord::maxComponent(box.min(), mClipBox->min());
-                    box.max() = openvdb::Coord::minComponent(box.max(), mClipBox->max());
+                    box.min() = laovdb::Coord::maxComponent(box.min(), mClipBox->min());
+                    box.max() = laovdb::Coord::minComponent(box.max(), mClipBox->max());
                     activateRegion(box);
                 }
             } else {
@@ -920,15 +920,15 @@ struct ConstructCandidateVoxelMask
 
         // Steal unique leafnodes
 
-        openvdb::tree::ValueAccessor<BoolTreeType> lhsAcc(*mMaskTreePt);
-        openvdb::tree::ValueAccessor<BoolTreeType> rhsAcc(*rhs.mMaskTreePt);
+        laovdb::tree::ValueAccessor<BoolTreeType> lhsAcc(*mMaskTreePt);
+        laovdb::tree::ValueAccessor<BoolTreeType> rhsAcc(*rhs.mMaskTreePt);
 
         using BoolRootNodeType = BoolTreeType::RootNodeType;
         using BoolNodeChainType = BoolRootNodeType::NodeChainType;
         using BoolInternalNodeType = BoolNodeChainType::Get<1>;
 
         for (size_t n = 0, N = rhsLeafNodes.size(); n < N; ++n) {
-            const openvdb::Coord& ijk = rhsLeafNodes[n]->origin();
+            const laovdb::Coord& ijk = rhsLeafNodes[n]->origin();
             if (!lhsAcc.probeLeaf(ijk)) {
 
                 // add node to lhs tree
@@ -958,26 +958,26 @@ private:
     bool wasInterrupted() const { return mInterrupter && mInterrupter->wasInterrupted(); }
 
     // just a rough estimate, but more accurate than activateRegion(...) for large spheres.
-    void activateRadialRegion(const openvdb::CoordBBox& bbox)
+    void activateRadialRegion(const laovdb::CoordBBox& bbox)
     {
         using LeafNodeType = BoolTreeType::LeafNodeType;
 
-        const openvdb::Vec3d center = bbox.getCenter();
+        const laovdb::Vec3d center = bbox.getCenter();
         const double radius = double(bbox.dim()[0]) * 0.5;
 
         // inscribed box
 
         const double iRadius = radius * double(1.0 / std::sqrt(3.0));
-        openvdb::CoordBBox ibox(
-            openvdb::Coord::round(openvdb::Vec3d(
+        laovdb::CoordBBox ibox(
+            laovdb::Coord::round(laovdb::Vec3d(
                 center[0] - iRadius, center[1] - iRadius, center[2] - iRadius)),
-            openvdb::Coord::round(openvdb::Vec3d(
+            laovdb::Coord::round(laovdb::Vec3d(
                 center[0] + iRadius, center[1] + iRadius, center[2] + iRadius)));
 
         ibox.min() &= ~(LeafNodeType::DIM - 1);
         ibox.max() &= ~(LeafNodeType::DIM - 1);
 
-        openvdb::Coord ijk(0);
+        laovdb::Coord ijk(0);
 
         for (ijk[0] = ibox.min()[0]; ijk[0] <= ibox.max()[0]; ijk[0] += LeafNodeType::DIM) {
             for (ijk[1] = ibox.min()[1]; ijk[1] <= ibox.max()[1]; ijk[1] += LeafNodeType::DIM) {
@@ -987,10 +987,10 @@ private:
             }
         }
 
-        const openvdb::Coord leafMin = bbox.min() & ~(LeafNodeType::DIM - 1);
-        const openvdb::Coord leafMax = bbox.max() & ~(LeafNodeType::DIM - 1);
+        const laovdb::Coord leafMin = bbox.min() & ~(LeafNodeType::DIM - 1);
+        const laovdb::Coord leafMax = bbox.max() & ~(LeafNodeType::DIM - 1);
 
-        openvdb::Vec3d xyz;
+        laovdb::Vec3d xyz;
         const double leafNodeRadius = double(LeafNodeType::DIM) * std::sqrt(3.0) * 0.5;
         double distSqr = radius + leafNodeRadius;
         distSqr *= distSqr;
@@ -1016,12 +1016,12 @@ private:
         }
     }
 
-    void activateRegion(const openvdb::CoordBBox& bbox)
+    void activateRegion(const laovdb::CoordBBox& bbox)
     {
         using LeafNodeType = BoolTreeType::LeafNodeType;
-        const openvdb::Coord leafMin = bbox.min() & ~(LeafNodeType::DIM - 1);
-        const openvdb::Coord leafMax = bbox.max() & ~(LeafNodeType::DIM - 1);
-        openvdb::Coord ijk(0);
+        const laovdb::Coord leafMin = bbox.min() & ~(LeafNodeType::DIM - 1);
+        const laovdb::Coord leafMax = bbox.max() & ~(LeafNodeType::DIM - 1);
+        laovdb::Coord ijk(0);
 
         for (ijk[0] = leafMin[0]; ijk[0] <= leafMax[0]; ijk[0] += LeafNodeType::DIM) {
             for (ijk[1] = leafMin[1]; ijk[1] <= leafMax[1]; ijk[1] += LeafNodeType::DIM) {
@@ -1033,19 +1033,19 @@ private:
     }
 
     template <typename LeafNodeType>
-    void activateLeafNodeRegion(const openvdb::CoordBBox& bbox, LeafNodeType& node) const
+    void activateLeafNodeRegion(const laovdb::CoordBBox& bbox, LeafNodeType& node) const
     {
-        const openvdb::Coord& origin = node.origin();
-        openvdb::Coord ijk = origin;
+        const laovdb::Coord& origin = node.origin();
+        laovdb::Coord ijk = origin;
         ijk.offset(LeafNodeType::DIM - 1);
 
         if (bbox.isInside(origin) && bbox.isInside(ijk)) {
             node.setValuesOn();
         } else if (!node.isValueMaskOn()) {
-            const openvdb::Coord ijkMin = openvdb::Coord::maxComponent(bbox.min(), origin);
-            const openvdb::Coord ijkMax = openvdb::Coord::minComponent(bbox.max(), ijk);
+            const laovdb::Coord ijkMin = laovdb::Coord::maxComponent(bbox.min(), origin);
+            const laovdb::Coord ijkMax = laovdb::Coord::minComponent(bbox.max(), ijk);
 
-            openvdb::Index xPos(0), yPos(0);
+            laovdb::Index xPos(0), yPos(0);
 
             for (ijk[0] = ijkMin[0]; ijk[0] <= ijkMax[0]; ++ijk[0]) {
                 xPos = (ijk[0] & (LeafNodeType::DIM - 1u)) << (2 * LeafNodeType::LOG2DIM);
@@ -1068,7 +1068,7 @@ private:
             : mTree(&tree), mNodes(nodes) { }
 
         void operator()(const tbb::blocked_range<size_t>& range) const {
-            openvdb::tree::ValueAccessor<BoolTreeType> acc(*mTree);
+            laovdb::tree::ValueAccessor<BoolTreeType> acc(*mTree);
             for (size_t n = range.begin(), N = range.end(); n < N; ++n) {
                 acc.probeLeaf(mNodes[n]->origin())->topologyUnion(*mNodes[n]);
             }
@@ -1082,13 +1082,13 @@ private:
 
     BoolTreeType                                       mMaskTree;
     BoolTreeType                               * const mMaskTreePt;
-    openvdb::tree::ValueAccessor<BoolTreeType>         mMaskAccessor;
+    laovdb::tree::ValueAccessor<BoolTreeType>         mMaskAccessor;
 
     PointCache                          const * const mPoints;
     PointIndexLeafNode          const * const * const mPointIndexNodes;
-    openvdb::math::Transform                    const mXform;
-    openvdb::CoordBBox                  const * const mClipBox;
-    openvdb::util::NullInterrupter            * const mInterrupter;
+    laovdb::math::Transform                    const mXform;
+    laovdb::CoordBBox                  const * const mClipBox;
+    laovdb::util::NullInterrupter            * const mInterrupter;
 }; // struct ConstructCandidateVoxelMask
 
 
@@ -1101,7 +1101,7 @@ struct CullFrustumLeafNodes
     CullFrustumLeafNodes(
         const PointIndexGridCollection& idxGridCollection,
         std::vector<MaskLeafNodeType*>& nodes,
-        const openvdb::math::Transform& xform)
+        const laovdb::math::Transform& xform)
         : mIdxGridCollection(&idxGridCollection)
         , mNodes(nodes.empty() ? nullptr : &nodes.front())
         , mXform(xform)
@@ -1110,8 +1110,8 @@ struct CullFrustumLeafNodes
 
     void operator()(const tbb::blocked_range<size_t>& range) const {
 
-        using PointIndexTree = openvdb::tools::PointIndexGrid::TreeType;
-        using IndexTreeAccessor = openvdb::tree::ValueAccessor<const PointIndexTree>;
+        using PointIndexTree = laovdb::tools::PointIndexGrid::TreeType;
+        using IndexTreeAccessor = laovdb::tree::ValueAccessor<const PointIndexTree>;
         using IndexTreeAccessorPtr = UT_SharedPtr<IndexTreeAccessor>;
 
         UT_UniquePtr<IndexTreeAccessorPtr[]> accessorList(
@@ -1122,20 +1122,20 @@ struct CullFrustumLeafNodes
             accessorList[i].reset(new IndexTreeAccessor(tree));
         }
 
-        openvdb::tools::PointIndexIterator<PointIndexTree> pointIndexIter;
+        laovdb::tools::PointIndexIterator<PointIndexTree> pointIndexIter;
 
         for (size_t n = range.begin(), N = range.end(); n != N; ++n) {
 
             MaskLeafNodeType& maskNode = *mNodes[n];
             if (maskNode.isEmpty()) continue;
 
-            const openvdb::CoordBBox nodeBounds = getInclusiveNodeBounds(maskNode);
+            const laovdb::CoordBBox nodeBounds = getInclusiveNodeBounds(maskNode);
 
-            const openvdb::Vec3d tmpMin = mXform.indexToWorld(nodeBounds.min());
-            const openvdb::Vec3d tmpMax = mXform.indexToWorld(nodeBounds.max());
+            const laovdb::Vec3d tmpMin = mXform.indexToWorld(nodeBounds.min());
+            const laovdb::Vec3d tmpMax = mXform.indexToWorld(nodeBounds.max());
 
-            const openvdb::Vec3d bMin = openvdb::math::minComponent(tmpMin, tmpMax);
-            const openvdb::Vec3d bMax = openvdb::math::maxComponent(tmpMin, tmpMax);
+            const laovdb::Vec3d bMin = laovdb::math::minComponent(tmpMin, tmpMax);
+            const laovdb::Vec3d bMax = laovdb::math::maxComponent(tmpMin, tmpMax);
 
             bool hasOverlap = false;
 
@@ -1143,10 +1143,10 @@ struct CullFrustumLeafNodes
 
                 const double sarchRadius = double(mIdxGridCollection->maxRadius(i));
 
-                const openvdb::math::Transform& idxGridTransform =
+                const laovdb::math::Transform& idxGridTransform =
                     mIdxGridCollection->idxGrid(i).transform();
 
-                const openvdb::CoordBBox searchRegion(
+                const laovdb::CoordBBox searchRegion(
                     idxGridTransform.worldToIndexCellCentered(bMin - sarchRadius),
                     idxGridTransform.worldToIndexCellCentered(bMax + sarchRadius));
 
@@ -1167,15 +1167,15 @@ struct CullFrustumLeafNodes
 private:
 
     template <typename NodeType>
-    static inline openvdb::CoordBBox getInclusiveNodeBounds(const NodeType& node)
+    static inline laovdb::CoordBBox getInclusiveNodeBounds(const NodeType& node)
     {
-        const openvdb::Coord& origin = node.origin();
-        return openvdb::CoordBBox(origin, origin.offsetBy(NodeType::DIM - 1));
+        const laovdb::Coord& origin = node.origin();
+        return laovdb::CoordBBox(origin, origin.offsetBy(NodeType::DIM - 1));
     }
 
     PointIndexGridCollection    const * const mIdxGridCollection;
     MaskLeafNodeType                * * const mNodes;
-    openvdb::math::Transform                  mXform;
+    laovdb::math::Transform                  mXform;
 }; // struct CullFrustumLeafNodes
 
 
@@ -1186,21 +1186,21 @@ private:
 inline void
 maskRegionOfInterest(PointIndexGridCollection::BoolTreeType& mask,
     const PointIndexGridCollection& idxGridCollection,
-    const openvdb::math::Transform& volumeTransform,
+    const laovdb::math::Transform& volumeTransform,
     bool clipToFrustum = false,
-    openvdb::util::NullInterrupter* interrupter = nullptr)
+    laovdb::util::NullInterrupter* interrupter = nullptr)
 {
     using BoolLeafNodeType = PointIndexGridCollection::BoolTreeType::LeafNodeType;
 
-    UT_SharedPtr<openvdb::CoordBBox> frustumClipBox;
+    UT_SharedPtr<laovdb::CoordBBox> frustumClipBox;
 
     if (clipToFrustum && !volumeTransform.isLinear()) {
-        using MapType = openvdb::math::NonlinearFrustumMap;
+        using MapType = laovdb::math::NonlinearFrustumMap;
         MapType::ConstPtr map = volumeTransform.map<MapType>();
         if (map) {
-            const openvdb::BBoxd& bbox = map->getBBox();
-            frustumClipBox.reset(new openvdb::CoordBBox(
-                    openvdb::Coord::floor(bbox.min()), openvdb::Coord::ceil(bbox.max())));
+            const laovdb::BBoxd& bbox = map->getBBox();
+            frustumClipBox.reset(new laovdb::CoordBBox(
+                    laovdb::Coord::floor(bbox.min()), laovdb::Coord::ceil(bbox.max())));
         }
     }
 
@@ -1219,11 +1219,11 @@ maskRegionOfInterest(PointIndexGridCollection::BoolTreeType& mask,
         const double maxPointRadius = idxGridCollection.maxRadius(n);
 
         if (maxPointRadius * 1.5 > voxelSize) {
-            const openvdb::math::Transform::Ptr xform =
-                openvdb::math::Transform::createLinearTransform(maxPointRadius);
+            const laovdb::math::Transform::Ptr xform =
+                laovdb::math::Transform::createLinearTransform(maxPointRadius);
 
             regionPointGridPtr =
-                openvdb::tools::createPointIndexGrid<PointIndexGridCollection::PointIndexGrid>(
+                laovdb::tools::createPointIndexGrid<PointIndexGridCollection::PointIndexGrid>(
                     pointCache, *xform);
 
             regionPointIndexTree = &regionPointGridPtr->tree();
@@ -1250,7 +1250,7 @@ maskRegionOfInterest(PointIndexGridCollection::BoolTreeType& mask,
         tbb::parallel_for(tbb::blocked_range<size_t>(0, maskNodes.size()),
             CullFrustumLeafNodes<BoolLeafNodeType>(idxGridCollection, maskNodes, volumeTransform));
 
-        openvdb::tools::pruneInactive(mask);
+        laovdb::tools::pruneInactive(mask);
     }
 }
 
@@ -1283,14 +1283,14 @@ struct FillActiveValues
 /// (Partially overlapped leafnode tiles are included)
 template<typename TreeAccessorType>
 inline void
-fillWithLeafLevelTiles(TreeAccessorType& treeAcc, const openvdb::CoordBBox& bbox)
+fillWithLeafLevelTiles(TreeAccessorType& treeAcc, const laovdb::CoordBBox& bbox)
 {
     using LeafNodeType = typename TreeAccessorType::TreeType::LeafNodeType;
 
-    openvdb::Coord imin = bbox.min() & ~(LeafNodeType::DIM - 1);
-    openvdb::Coord imax = bbox.max() & ~(LeafNodeType::DIM - 1);
+    laovdb::Coord imin = bbox.min() & ~(LeafNodeType::DIM - 1);
+    laovdb::Coord imax = bbox.max() & ~(LeafNodeType::DIM - 1);
 
-    openvdb::Coord ijk(0);
+    laovdb::Coord ijk(0);
 
     for (ijk[0] = imin[0]; ijk[0] <= imax[0]; ijk[0] += LeafNodeType::DIM) {
         for (ijk[1] = imin[1]; ijk[1] <= imax[1]; ijk[1] += LeafNodeType::DIM) {
@@ -1304,34 +1304,34 @@ fillWithLeafLevelTiles(TreeAccessorType& treeAcc, const openvdb::CoordBBox& bbox
 
 /// Transforms the input @a bbox from an axis-aligned box in @a srcTransform
 /// world space to an axis-aligned box i @a targetTransform world space.
-openvdb::CoordBBox
-remapBBox(openvdb::CoordBBox& bbox, const openvdb::math::Transform& srcTransform,
-    const openvdb::math::Transform& targetTransform)
+laovdb::CoordBBox
+remapBBox(laovdb::CoordBBox& bbox, const laovdb::math::Transform& srcTransform,
+    const laovdb::math::Transform& targetTransform)
 {
-    openvdb::CoordBBox output;
+    laovdb::CoordBBox output;
 
     // corner 1
-    openvdb::Coord ijk = bbox.min();
+    laovdb::Coord ijk = bbox.min();
     output.expand(targetTransform.worldToIndexNodeCentered(srcTransform.indexToWorld(ijk)));
 
     // corner 2
-    ijk = openvdb::Coord(bbox.min().x(), bbox.min().y(), bbox.max().z());
+    ijk = laovdb::Coord(bbox.min().x(), bbox.min().y(), bbox.max().z());
     output.expand(targetTransform.worldToIndexNodeCentered(srcTransform.indexToWorld(ijk)));
 
     // corner 3
-    ijk = openvdb::Coord(bbox.max().x(), bbox.min().y(), bbox.max().z());
+    ijk = laovdb::Coord(bbox.max().x(), bbox.min().y(), bbox.max().z());
     output.expand(targetTransform.worldToIndexNodeCentered(srcTransform.indexToWorld(ijk)));
 
     // corner 4
-    ijk = openvdb::Coord(bbox.max().x(), bbox.min().y(), bbox.min().z());
+    ijk = laovdb::Coord(bbox.max().x(), bbox.min().y(), bbox.min().z());
     output.expand(targetTransform.worldToIndexNodeCentered(srcTransform.indexToWorld(ijk)));
 
     // corner 5
-    ijk = openvdb::Coord(bbox.min().x(), bbox.max().y(), bbox.min().z());
+    ijk = laovdb::Coord(bbox.min().x(), bbox.max().y(), bbox.min().z());
     output.expand(targetTransform.worldToIndexNodeCentered(srcTransform.indexToWorld(ijk)));
 
     // corner 6
-    ijk = openvdb::Coord(bbox.min().x(), bbox.max().y(), bbox.max().z());
+    ijk = laovdb::Coord(bbox.min().x(), bbox.max().y(), bbox.max().z());
     output.expand(targetTransform.worldToIndexNodeCentered(srcTransform.indexToWorld(ijk)));
 
     // corner 7
@@ -1339,7 +1339,7 @@ remapBBox(openvdb::CoordBBox& bbox, const openvdb::math::Transform& srcTransform
     output.expand(targetTransform.worldToIndexNodeCentered(srcTransform.indexToWorld(ijk)));
 
     // corner 8
-    ijk = openvdb::Coord(bbox.max().x(), bbox.max().y(), bbox.min().z());
+    ijk = laovdb::Coord(bbox.max().x(), bbox.max().y(), bbox.min().z());
     output.expand(targetTransform.worldToIndexNodeCentered(srcTransform.indexToWorld(ijk)));
 
     return output;
@@ -1362,13 +1362,13 @@ template<typename T> struct ValueTypeTraits {
 };
 
 
-template<typename T> struct ValueTypeTraits<openvdb::math::Vec3<T> > {
+template<typename T> struct ValueTypeTraits<laovdb::math::Vec3<T> > {
     static const bool IsVec = true;
     static const int TupleSize = 3;
     using ScalarType = T;
     using HoudiniType = UT_Vector3T<T>;
 
-    static void convert(openvdb::math::Vec3<T>& lhs, const HoudiniType& rhs) {
+    static void convert(laovdb::math::Vec3<T>& lhs, const HoudiniType& rhs) {
         lhs[0] = rhs[0];
         lhs[1] = rhs[1];
         lhs[2] = rhs[2];
@@ -1383,13 +1383,13 @@ template<typename T> struct ValueTypeTraits<openvdb::math::Vec3<T> > {
 template<typename _ValueType>
 struct WeightedAverageOp
 {
-    enum { LOG2DIM = openvdb::tools::PointIndexTree::LeafNodeType::LOG2DIM };
+    enum { LOG2DIM = laovdb::tools::PointIndexTree::LeafNodeType::LOG2DIM };
 
     using Ptr = UT_SharedPtr<WeightedAverageOp>;
     using ConstPtr = UT_SharedPtr<const WeightedAverageOp>;
 
     using ValueType = _ValueType;
-    using LeafNodeType = openvdb::tree::LeafNode<ValueType, LOG2DIM>;
+    using LeafNodeType = laovdb::tree::LeafNode<ValueType, LOG2DIM>;
     using ScalarType = typename ValueTypeTraits<ValueType>::ScalarType;
     using HoudiniType = typename ValueTypeTraits<ValueType>::HoudiniType;
 
@@ -1405,12 +1405,12 @@ struct WeightedAverageOp
 
     const char* getName() const { return mHandle.getAttribute()->getName(); }
 
-    void beginNodeProcessing(const openvdb::Coord& origin, size_t nodeOffset)
+    void beginNodeProcessing(const laovdb::Coord& origin, size_t nodeOffset)
     {
         mVaryingData = false;
         mNodeOffset = nodeOffset;
         if (mNode) mNode->setOrigin(origin);
-        else mNode = new LeafNodeType(origin, openvdb::zeroVal<ValueType>());
+        else mNode = new LeafNodeType(origin, laovdb::zeroVal<ValueType>());
         mNodeVoxelData = const_cast<ValueType*>(&mNode->getValue(0));//mNode->buffer().data();
     }
 
@@ -1419,9 +1419,9 @@ struct WeightedAverageOp
         ValueTypeTraits<ValueType>::convert(mValue, val);
     }
 
-    void updateVoxelData(const std::vector<std::pair<float, openvdb::Index> >& densitySamples) {
+    void updateVoxelData(const std::vector<std::pair<float, laovdb::Index> >& densitySamples) {
 
-        using DensitySample = std::pair<float, openvdb::Index>;
+        using DensitySample = std::pair<float, laovdb::Index>;
 
         for (size_t n = 0, N = densitySamples.size(); n < N; ++n) {
 
@@ -1481,13 +1481,13 @@ private:
 template<typename _ValueType>
 struct DensityOp
 {
-    enum { LOG2DIM = openvdb::tools::PointIndexTree::LeafNodeType::LOG2DIM };
+    enum { LOG2DIM = laovdb::tools::PointIndexTree::LeafNodeType::LOG2DIM };
 
     using Ptr = UT_SharedPtr<DensityOp>;
     using ConstPtr = UT_SharedPtr<const DensityOp>;
 
     using ValueType = _ValueType;
-    using LeafNodeType = openvdb::tree::LeafNode<ValueType, LOG2DIM>;
+    using LeafNodeType = laovdb::tree::LeafNode<ValueType, LOG2DIM>;
 
     /////
 
@@ -1498,11 +1498,11 @@ struct DensityOp
 
     ~DensityOp() { delete mNode; }
 
-    void beginNodeProcessing(const openvdb::Coord& origin, size_t nodeOffset)
+    void beginNodeProcessing(const laovdb::Coord& origin, size_t nodeOffset)
     {
         mNodeOffset = nodeOffset;
         if (mNode) mNode->setOrigin(origin);
-        else mNode = new LeafNodeType(origin, openvdb::zeroVal<ValueType>());
+        else mNode = new LeafNodeType(origin, laovdb::zeroVal<ValueType>());
     }
 
     ValueType* data() {
@@ -1540,20 +1540,20 @@ isValidAttribute(const std::string& name, const GU_Detail& detail)
 template<typename _ValueType, typename _OperatorType = WeightedAverageOp<_ValueType> >
 struct Attribute
 {
-    enum { LOG2DIM = openvdb::tools::PointIndexTree::LeafNodeType::LOG2DIM };
+    enum { LOG2DIM = laovdb::tools::PointIndexTree::LeafNodeType::LOG2DIM };
 
     using Ptr = UT_SharedPtr<Attribute>;
     using ConstPtr = UT_SharedPtr<const Attribute>;
 
     using OperatorType = _OperatorType;
     using ValueType = _ValueType;
-    using LeafNodeType = openvdb::tree::LeafNode<ValueType, LOG2DIM>;
-    using BoolLeafNodeType = openvdb::tree::LeafNode<bool, LOG2DIM>;
-    using Transform = openvdb::math::Transform;
+    using LeafNodeType = laovdb::tree::LeafNode<ValueType, LOG2DIM>;
+    using BoolLeafNodeType = laovdb::tree::LeafNode<bool, LOG2DIM>;
+    using Transform = laovdb::math::Transform;
 
-    using PointIndexTreeType = openvdb::tools::PointIndexTree;
+    using PointIndexTreeType = laovdb::tools::PointIndexTree;
     using TreeType = typename PointIndexTreeType::template ValueConverter<ValueType>::Type;
-    using GridType = typename openvdb::Grid<TreeType>;
+    using GridType = typename laovdb::Grid<TreeType>;
 
     /////
 
@@ -1619,13 +1619,13 @@ struct Attribute
         tbb::parallel_reduce(tbb::blocked_range<size_t>(0, mNodeCount), op);
 
         grid->setTransform(
-            openvdb::math::Transform::createLinearTransform(voxelSize));
+            laovdb::math::Transform::createLinearTransform(voxelSize));
 
         typename GridType::Ptr frustumGrid = GridType::create();
         frustumGrid->setTransform(mTransform.copy());
 
         hvdb::HoudiniInterrupter interrupter;
-        openvdb::tools::resampleToMatch<openvdb::tools::BoxSampler>(
+        laovdb::tools::resampleToMatch<laovdb::tools::BoxSampler>(
             *grid, *frustumGrid, interrupter.interrupter());
 
         TreeType& frustumTree = frustumGrid->tree();
@@ -1656,7 +1656,7 @@ struct Attribute
     }
 
 
-    void exportGrid(std::vector<openvdb::GridBase::Ptr>& outputGrids)
+    void exportGrid(std::vector<laovdb::GridBase::Ptr>& outputGrids)
     {
         typename GridType::Ptr grid= GridType::create();
 
@@ -1669,16 +1669,16 @@ struct Attribute
             grid->setName(mName);
 
             if (mName == std::string("density")) {
-                grid->setGridClass(openvdb::GRID_FOG_VOLUME);
+                grid->setGridClass(laovdb::GRID_FOG_VOLUME);
             }
 
             if (ValueTypeTraits<ValueType>::IsVec) {
                 if (mName == std::string(GEO_STD_ATTRIB_VELOCITY)) {
-                    grid->setVectorType(openvdb::VEC_CONTRAVARIANT_RELATIVE);
+                    grid->setVectorType(laovdb::VEC_CONTRAVARIANT_RELATIVE);
                 } else if (mName == std::string(GEO_STD_ATTRIB_NORMAL)) {
-                    grid->setVectorType(openvdb::VEC_COVARIANT_NORMALIZE);
+                    grid->setVectorType(laovdb::VEC_COVARIANT_NORMALIZE);
                 } else if (mName == std::string(GEO_STD_ATTRIB_POSITION)) {
-                    grid->setVectorType(openvdb::VEC_CONTRAVARIANT_ABSOLUTE);
+                    grid->setVectorType(laovdb::VEC_CONTRAVARIANT_ABSOLUTE);
                 }
             }
 
@@ -1737,7 +1737,7 @@ private:
         }
 
         TreeType mTree;
-        openvdb::tree::ValueAccessor<TreeType> mAccessor;
+        laovdb::tree::ValueAccessor<TreeType> mAccessor;
         LeafNodeType * * const mNodes;
     }; // struct IFOPopulateTree
 
@@ -1748,7 +1748,7 @@ private:
     size_t                              mNodeCount;
     UT_UniquePtr<LeafNodeType*[]>       mNodes;
     std::vector<LeafNodeType*>          mOutputNodes;
-    openvdb::math::Transform            mTransform;
+    laovdb::math::Transform            mTransform;
 }; // struct Attribute
 
 
@@ -1813,7 +1813,7 @@ cacheFrustumAttributeBuffers(std::vector<UT_SharedPtr<AttributeType> >& attr,
 template<typename AttributeType>
 inline void
 exportAttributeGrid(UT_SharedPtr<AttributeType>& attr,
-    std::vector<openvdb::GridBase::Ptr>& outputGrids)
+    std::vector<laovdb::GridBase::Ptr>& outputGrids)
 {
     if (attr) attr->exportGrid(outputGrids);
 }
@@ -1822,7 +1822,7 @@ exportAttributeGrid(UT_SharedPtr<AttributeType>& attr,
 template<typename AttributeType>
 inline void
 exportAttributeGrid(std::vector<UT_SharedPtr<AttributeType> >& attr,
-    std::vector<openvdb::GridBase::Ptr>& outputGrids)
+    std::vector<laovdb::GridBase::Ptr>& outputGrids)
 {
     for (size_t n = 0, N = attr.size(); n < N; ++n) {
         attr[n]->exportGrid(outputGrids);
@@ -1969,17 +1969,17 @@ struct RasterizePoints
     using PosType = PointCache::PosType;
     using ScalarType = PosType::value_type;
 
-    using PointIndexTree = openvdb::tools::PointIndexGrid::TreeType;
+    using PointIndexTree = laovdb::tools::PointIndexGrid::TreeType;
     using PointIndexLeafNode = PointIndexTree::LeafNodeType;
     using PointIndexType = PointIndexLeafNode::ValueType;
 
-    using BoolLeafNodeType = openvdb::tree::LeafNode<bool, PointIndexLeafNode::LOG2DIM>;
+    using BoolLeafNodeType = laovdb::tree::LeafNode<bool, PointIndexLeafNode::LOG2DIM>;
 
     using DensityAttribute = Attribute<float, DensityOp<float> >;
-    using Vec3sAttribute = Attribute<openvdb::Vec3s>;
+    using Vec3sAttribute = Attribute<laovdb::Vec3s>;
     using FloatAttribute = Attribute<float>;
 
-    using DensitySample = std::pair<float, openvdb::Index>;
+    using DensitySample = std::pair<float, laovdb::Index>;
 
     enum DensityTreatment { ACCUMULATE = 0, MAXIMUM, MINIMUM };
 
@@ -1988,11 +1988,11 @@ struct RasterizePoints
     RasterizePoints(const GU_Detail& detail,
         const PointIndexGridCollection& idxGridCollection,
         std::vector<const BoolLeafNodeType*>& regionMaskLeafNodes,
-        const openvdb::math::Transform& volumeXform,
+        const laovdb::math::Transform& volumeXform,
         DensityTreatment treatment,
         const float densityScale = 1.0,
         const float solidRatio = 0.0,
-        openvdb::util::NullInterrupter* interrupter = nullptr)
+        laovdb::util::NullInterrupter* interrupter = nullptr)
         : mDetail(&detail)
         , mIdxGridCollection(&idxGridCollection)
         , mRegionMaskNodes(&regionMaskLeafNodes.front())
@@ -2072,9 +2072,9 @@ struct RasterizePoints
         GA_ROAttributeRef densityRef = mDetail->findFloatTuple(GA_ATTRIB_POINT, "density", 1);
         if (densityRef.isValid()) densityHandle.bind(densityRef.getAttribute());
 
-        openvdb::tools::PointIndexIterator<PointIndexTree> pointIndexIter;
+        laovdb::tools::PointIndexIterator<PointIndexTree> pointIndexIter;
 
-        using IndexTreeAccessor = openvdb::tree::ValueAccessor<const PointIndexTree>;
+        using IndexTreeAccessor = laovdb::tree::ValueAccessor<const PointIndexTree>;
         using IndexTreeAccessorPtr = UT_SharedPtr<IndexTreeAccessor>;
 
         UT_UniquePtr<IndexTreeAccessorPtr[]> accessorList(
@@ -2093,13 +2093,13 @@ struct RasterizePoints
         for (size_t n = range.begin(), N = range.end(); n != N; ++n) {
 
             if (this->wasInterrupted()) {
-                openvdb::thread::cancelGroupExecution();
+                laovdb::thread::cancelGroupExecution();
                 break;
             }
 
             const BoolLeafNodeType& maskNode = *mRegionMaskNodes[n];
             if (maskNode.isEmpty()) continue;
-            const openvdb::Coord& origin = maskNode.origin();
+            const laovdb::Coord& origin = maskNode.origin();
 
             if (transferAttributes) {
                 memset(voxelWeightArray.get(), 0, BoolLeafNodeType::SIZE * sizeof(float));
@@ -2117,11 +2117,11 @@ struct RasterizePoints
                 floatAttributes[i]->beginNodeProcessing(origin, n);
             }
 
-            const openvdb::CoordBBox nodeBoundingBox(
+            const laovdb::CoordBBox nodeBoundingBox(
                 origin, origin.offsetBy(BoolLeafNodeType::DIM - 1));
 
-            const openvdb::Vec3d bMin = mVolumeXform.indexToWorld(nodeBoundingBox.min());
-            const openvdb::Vec3d bMax = mVolumeXform.indexToWorld(nodeBoundingBox.max());
+            const laovdb::Vec3d bMin = mVolumeXform.indexToWorld(nodeBoundingBox.min());
+            const laovdb::Vec3d bMax = mVolumeXform.indexToWorld(nodeBoundingBox.max());
 
             bool transferData = false;
 
@@ -2131,10 +2131,10 @@ struct RasterizePoints
 
                 const double sarchRadius = double(mIdxGridCollection->maxRadius(i));
                 const PointCache& pointCache = mIdxGridCollection->pointCache(i);
-                const openvdb::math::Transform& idxGridTransform =
+                const laovdb::math::Transform& idxGridTransform =
                     mIdxGridCollection->idxGrid(i).transform();
 
-                const openvdb::CoordBBox searchRegion(
+                const laovdb::CoordBBox searchRegion(
                     idxGridTransform.worldToIndexCellCentered(bMin - sarchRadius),
                     idxGridTransform.worldToIndexCellCentered(bMax + sarchRadius));
 
@@ -2154,7 +2154,7 @@ struct RasterizePoints
                         const float weight = (voxelWeightArray[nn] > 0.0f) ?
                             (1.0f / voxelWeightArray[nn]) : 0.0f;
                         // Subnormal input values are nonzero but can result in infinite weights.
-                        voxelWeightArray[nn] = openvdb::math::isFinite(weight) ? weight : 0.0f;
+                        voxelWeightArray[nn] = laovdb::math::isFinite(weight) ? weight : 0.0f;
                     }
 
                     for (size_t i = 0, I = vecAttributes.size(); i < I; ++i) {
@@ -2177,10 +2177,10 @@ private:
 
     bool gatherDensityAndAttributes(
         GA_ROHandleF& densityHandle,
-        openvdb::tools::PointIndexIterator<PointIndexTree>& pointIndexIter,
+        laovdb::tools::PointIndexIterator<PointIndexTree>& pointIndexIter,
         double sarchRadius,
         const PointCache& pointCache,
-        const openvdb::CoordBBox& nodeBoundingBox,
+        const laovdb::CoordBBox& nodeBoundingBox,
         DensityAttribute::OperatorType::Ptr& densityAttribute,
         std::vector<Vec3sAttribute::OperatorType::Ptr>& vecAttributes,
         std::vector<FloatAttribute::OperatorType::Ptr>& floatAttributes,
@@ -2198,12 +2198,12 @@ private:
         ScalarType * const densityData = densityAttribute ? densityAttribute->data() : nullptr;
         const bool exportDensity = densityData != nullptr;
         const float * pointRadiusData = pointCache.radiusData();
-        const openvdb::Vec3s * pointPosData = pointCache.posData();
+        const laovdb::Vec3s * pointPosData = pointCache.posData();
 
         const double dx = mVolumeXform.voxelSize()[0];
         const double dxSqr = dx * dx;
 
-        openvdb::Coord ijk, pMin, pMax;
+        laovdb::Coord ijk, pMin, pMax;
         PosType xyz;
 
         for (; pointIndexIter; ++pointIndexIter) {
@@ -2229,7 +2229,7 @@ private:
             // Compute point properties
 
             xyz = pointPosData[*pointIndexIter];
-            openvdb::Vec3d localPos = mVolumeXform.worldToIndex(xyz);
+            laovdb::Vec3d localPos = mVolumeXform.worldToIndex(xyz);
 
             ScalarType radius = pointRadiusData[*pointIndexIter];
             const float radiusSqr = radius * radius;
@@ -2243,7 +2243,7 @@ private:
             const ScalarType invResidualRadius =
                 residualRadius > 0.0f ? 1.0f / residualRadius : 0.0f;
 
-            openvdb::Index xPos(0), yPos(0), pos(0);
+            laovdb::Index xPos(0), yPos(0), pos(0);
             double xSqr, ySqr, zSqr;
 
             densitySamples.clear();
@@ -2254,8 +2254,8 @@ private:
             pMin = mVolumeXform.worldToIndexCellCentered(xyz - sarchRadius);
             pMax = mVolumeXform.worldToIndexCellCentered(xyz + sarchRadius);
 
-            pMin = openvdb::Coord::maxComponent(nodeBoundingBox.min(), pMin);
-            pMax = openvdb::Coord::minComponent(nodeBoundingBox.max(), pMax);
+            pMin = laovdb::Coord::maxComponent(nodeBoundingBox.min(), pMin);
+            pMax = laovdb::Coord::minComponent(nodeBoundingBox.max(), pMax);
 
             for (ijk[0] = pMin[0]; ijk[0] <= pMax[0]; ++ijk[0]) {
 
@@ -2349,7 +2349,7 @@ private:
             bool exportDensity,
             std::vector<Vec3sAttribute::OperatorType::Ptr>& vecAttributes,
             std::vector<FloatAttribute::OperatorType::Ptr>& floatAttributes,
-            const openvdb::Coord& nodeOrigin,
+            const laovdb::Coord& nodeOrigin,
             const PosType& point,
             ScalarType radius,
             GA_Offset pointOffset) const
@@ -2361,8 +2361,8 @@ private:
 
             UT_Vector3* data = cvex.getWorldCoordBuffer();
 
-            openvdb::Coord coord;
-            openvdb::Vec3d ws;
+            laovdb::Coord coord;
+            laovdb::Vec3d ws;
 
             for (int n = 0; n < numValues; ++n) {
                 coord = BoolLeafNodeType::offsetToLocalCoord(densitySamples[n].second);
@@ -2472,13 +2472,13 @@ private:
     GU_Detail                   const * const mDetail;
     PointIndexGridCollection    const * const mIdxGridCollection;
     BoolLeafNodeType    const * const * const mRegionMaskNodes;
-    openvdb::util::NullInterrupter    * const mInterrupter;
+    laovdb::util::NullInterrupter    * const mInterrupter;
     DensityAttribute                  *       mDensityAttribute;
     std::vector<Vec3sAttribute::Ptr>  *       mVectorAttributes;
     std::vector<FloatAttribute::Ptr>  *       mFloatAttributes;
     VEXContext                        *       mVEXContext;
 
-    openvdb::math::Transform            const mVolumeXform;
+    laovdb::math::Transform            const mVolumeXform;
     ScalarType                          const mDensityScale, mSolidRatio;
     DensityTreatment                    const mDensityTreatment;
 }; // struct RasterizePoints
@@ -2490,7 +2490,7 @@ private:
 /// Collection of rasterization settings
 struct RasterizationSettings
 {
-    RasterizationSettings(const GU_Detail& geo, const GA_PointGroup* group, openvdb::util::NullInterrupter& in)
+    RasterizationSettings(const GU_Detail& geo, const GA_PointGroup* group, laovdb::util::NullInterrupter& in)
         : createDensity(true)
         , clipToFrustum(true)
         , invertMask(false)
@@ -2499,7 +2499,7 @@ struct RasterizationSettings
         , particleScale(1.0f)
         , solidRatio(0.0f)
         , treatment(RasterizePoints::MAXIMUM)
-        , transform(openvdb::math::Transform::createLinearTransform(0.1))
+        , transform(laovdb::math::Transform::createLinearTransform(0.1))
         , pointsGeo(&geo)
         , pointGroup(group)
         , interrupter(&in)
@@ -2525,15 +2525,15 @@ struct RasterizationSettings
     float   densityScale, particleScale, solidRatio;
 
     RasterizePoints::DensityTreatment         treatment;
-    openvdb::math::Transform::Ptr             transform;
+    laovdb::math::Transform::Ptr             transform;
     GU_Detail                   const * const pointsGeo;
     GA_PointGroup               const * const pointGroup;
-    openvdb::util::NullInterrupter    * const interrupter;
+    laovdb::util::NullInterrupter    * const interrupter;
     VEXContext                        *       vexContext;
     std::vector<std::string>                  scalarAttributeNames;
     std::vector<std::string>                  vectorAttributeNames;
     hvdb::GridCPtr                            maskGrid;
-    UT_SharedPtr<openvdb::BBoxd>              maskBBox;
+    UT_SharedPtr<laovdb::BBoxd>              maskBBox;
 
 private:
     float frustumQuality;
@@ -2551,18 +2551,18 @@ applyClippingMask(PointIndexGridCollection::BoolTreeType& mask, RasterizationSet
 
        } else {
 
-            openvdb::CoordBBox maskBBox;
+            laovdb::CoordBBox maskBBox;
             mask.evalActiveVoxelBoundingBox(maskBBox);
 
-            openvdb::Vec3d locVoxelSize = computeFrustumVoxelSize(
+            laovdb::Vec3d locVoxelSize = computeFrustumVoxelSize(
                 maskBBox.min().z(), *settings.transform);
-            openvdb::Vec3d nearPlaneVoxelSize = settings.transform->voxelSize();
+            laovdb::Vec3d nearPlaneVoxelSize = settings.transform->voxelSize();
 
             const double weight = double(settings.getFrustumQuality());
             double voxelSize = linearBlend(nearPlaneVoxelSize.x(), locVoxelSize.x(), weight);
 
-            openvdb::math::Transform::Ptr xform =
-                openvdb::math::Transform::createLinearTransform(voxelSize);
+            laovdb::math::Transform::Ptr xform =
+                laovdb::math::Transform::createLinearTransform(voxelSize);
 
             bboxClip(mask, *settings.maskBBox, settings.invertMask,
                 *settings.transform, xform.get());
@@ -2578,13 +2578,13 @@ applyClippingMask(PointIndexGridCollection::BoolTreeType& mask, RasterizationSet
 
 
 inline void
-rasterize(RasterizationSettings& settings, std::vector<openvdb::GridBase::Ptr>& outputGrids)
+rasterize(RasterizationSettings& settings, std::vector<laovdb::GridBase::Ptr>& outputGrids)
 {
     using BoolTreeType = PointIndexGridCollection::BoolTreeType;
     using BoolLeafNodeType = BoolTreeType::LeafNodeType;
 
     using DensityAttributeType = Attribute<float, DensityOp<float> >;
-    using Vec3sAttribute = Attribute<openvdb::Vec3s>;
+    using Vec3sAttribute = Attribute<laovdb::Vec3s>;
     using FloatAttribute = Attribute<float>;
 
     //////////
@@ -2637,7 +2637,7 @@ rasterize(RasterizationSettings& settings, std::vector<openvdb::GridBase::Ptr>& 
 
     if (settings.exportPointMask) {
 
-        using BoolGridType = openvdb::Grid<BoolTreeType>;
+        using BoolGridType = laovdb::Grid<BoolTreeType>;
         BoolGridType::Ptr exportMask = BoolGridType::create();
 
         exportMask->setTransform(settings.transform->copy());
@@ -2689,7 +2689,7 @@ rasterize(RasterizationSettings& settings, std::vector<openvdb::GridBase::Ptr>& 
 
     } else {  // frustum grid rasterization
 
-        openvdb::Vec3d nearPlaneVoxelSize = settings.transform->voxelSize();
+        laovdb::Vec3d nearPlaneVoxelSize = settings.transform->voxelSize();
         const double sizeWeight = double(settings.getFrustumQuality());
 
         std::sort(maskNodes.begin(), maskNodes.end(), CompZCoord<BoolLeafNodeType>());
@@ -2704,19 +2704,19 @@ rasterize(RasterizationSettings& settings, std::vector<openvdb::GridBase::Ptr>& 
             }
 
             int zCoord = maskNodes[nodeIdx]->origin().z();
-            openvdb::Vec3d locVoxelSize = computeFrustumVoxelSize(zCoord, *settings.transform);
+            laovdb::Vec3d locVoxelSize = computeFrustumVoxelSize(zCoord, *settings.transform);
 
             double voxelSize = linearBlend(nearPlaneVoxelSize.x(), locVoxelSize.x(), sizeWeight);
 
-            openvdb::math::Transform::Ptr xform =
-                openvdb::math::Transform::createLinearTransform(voxelSize);
+            laovdb::math::Transform::Ptr xform =
+                laovdb::math::Transform::createLinearTransform(voxelSize);
 
             std::vector<const BoolLeafNodeType*> frustumNodeQueue;
 
             // create subregion mask
 
             BoolTreeType subregionMask(false);
-            openvdb::tree::ValueAccessor<BoolTreeType> maskAcc(subregionMask);
+            laovdb::tree::ValueAccessor<BoolTreeType> maskAcc(subregionMask);
 
             for (; nodeIdx < maskNodes.size(); ++nodeIdx) {
 
@@ -2726,12 +2726,12 @@ rasterize(RasterizationSettings& settings, std::vector<openvdb::GridBase::Ptr>& 
 
                 const BoolLeafNodeType& node = *maskNodes[nodeIdx];
 
-                openvdb::Vec3d tmpVoxelSize =
+                laovdb::Vec3d tmpVoxelSize =
                     computeFrustumVoxelSize(node.origin().z(), *settings.transform);
 
                 if (tmpVoxelSize.x() > (locVoxelSize.x() * 2.0)) break;
 
-                openvdb::CoordBBox bbox;
+                laovdb::CoordBBox bbox;
                 node.evalActiveBoundingBox(bbox);
                 bbox = remapBBox(bbox, *settings.transform, *xform);
                 bbox.expand(1);
@@ -2842,7 +2842,7 @@ getAttributeNames(
 
 
 /// Returns a null pointer if geoPt is null or if no reference vdb is found.
-inline openvdb::math::Transform::Ptr
+inline laovdb::math::Transform::Ptr
 getReferenceTransform(const GU_Detail* geoPt, const GA_PrimitiveGroup* group = nullptr,
     UT_ErrorManager* log = nullptr)
 {
@@ -2855,7 +2855,7 @@ getReferenceTransform(const GU_Detail* geoPt, const GA_PrimitiveGroup* group = n
         }
     }
 
-    return openvdb::math::Transform::Ptr();
+    return laovdb::math::Transform::Ptr();
 }
 
 
@@ -3297,11 +3297,11 @@ SOP_OpenVDB_Rasterize_Points::cookVDBSop(OP_Context& context)
 
             // Set rasterization settings
 
-            openvdb::math::Transform::Ptr xform = getReferenceTransform(refGeo, refGroup, log);
+            laovdb::math::Transform::Ptr xform = getReferenceTransform(refGeo, refGroup, log);
             if (xform) voxelSize = float(xform->voxelSize().x());
 
 
-            UT_SharedPtr<openvdb::BBoxd> maskBBox;
+            UT_SharedPtr<laovdb::BBoxd> maskBBox;
             hvdb::GridCPtr maskGrid = getMaskVDB(maskGeo, maskGroup);
 
             if (!maskGrid) {
@@ -3322,7 +3322,7 @@ SOP_OpenVDB_Rasterize_Points::cookVDBSop(OP_Context& context)
             settings.particleScale = float(particleScale);
             settings.solidRatio = float(solidRatio);
             settings.transform = xform ?
-                xform : openvdb::math::Transform::createLinearTransform(double(voxelSize));
+                xform : laovdb::math::Transform::createLinearTransform(double(voxelSize));
             settings.vectorAttributeNames.swap(vectorAttribNames);
             settings.scalarAttributeNames.swap(scalarAttribNames);
             settings.treatment = compositing == 0 ?
@@ -3357,7 +3357,7 @@ SOP_OpenVDB_Rasterize_Points::cookVDBSop(OP_Context& context)
 
             // Rasterize attributes and export VDB grids
 
-            std::vector<openvdb::GridBase::Ptr> outputGrids;
+            std::vector<laovdb::GridBase::Ptr> outputGrids;
 
             rasterize(settings, outputGrids);
 

@@ -13,20 +13,20 @@ namespace {
 inline size_t padMask(size_t bytes)
 {
     return size_t(std::ceil(static_cast<float>(bytes+1) /
-        sizeof(openvdb::io::DelayedLoadMetadata::MaskType)));
+        sizeof(laovdb::io::DelayedLoadMetadata::MaskType)));
 }
 
 inline size_t padCompressedSize(size_t bytes)
 {
     return size_t(std::ceil(static_cast<float>(bytes+1) /
-        sizeof(openvdb::io::DelayedLoadMetadata::CompressedSizeType)));
+        sizeof(laovdb::io::DelayedLoadMetadata::CompressedSizeType)));
 }
 
 } // namespace
 
 #endif
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace io {
@@ -167,7 +167,7 @@ void DelayedLoadMetadata::readValue(std::istream& is, Index32 numBytes)
 
 #ifdef OPENVDB_USE_BLOSC
         // pad to include BLOSC_MAX_OVERHEAD
-        size_t uncompressedBytes = openvdb::compression::bloscUncompressedSize(compressedBuffer.get());
+        size_t uncompressedBytes = laovdb::compression::bloscUncompressedSize(compressedBuffer.get());
         const size_t paddedCount = padMask(uncompressedBytes + BLOSC_MAX_OVERHEAD);
 
         mMask.reserve(paddedCount);
@@ -195,7 +195,7 @@ void DelayedLoadMetadata::readValue(std::istream& is, Index32 numBytes)
 
 #ifdef OPENVDB_USE_BLOSC
             // pad to include BLOSC_MAX_OVERHEAD
-            size_t uncompressedBytes = openvdb::compression::bloscUncompressedSize(compressedBuffer.get());
+            size_t uncompressedBytes = laovdb::compression::bloscUncompressedSize(compressedBuffer.get());
             const size_t paddedCount = padCompressedSize(uncompressedBytes + BLOSC_MAX_OVERHEAD);
 
             mCompressedSize.reserve(paddedCount);
@@ -296,4 +296,4 @@ void DelayedLoadMetadata::writeValue(std::ostream& os) const
 
 } // namespace io
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb

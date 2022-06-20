@@ -20,7 +20,7 @@
 
 class TestFile;
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace io {
@@ -195,6 +195,6 @@ private:
 
 } // namespace io
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_IO_ARCHIVE_HAS_BEEN_INCLUDED

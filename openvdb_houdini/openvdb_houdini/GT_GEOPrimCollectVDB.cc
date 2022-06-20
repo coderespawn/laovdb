@@ -34,7 +34,7 @@
 #include <openvdb/openvdb.h>
 #include <openvdb/Grid.h>
 
-using namespace openvdb_houdini;
+using namespace laovdb_houdini;
 
 void
 GT_GEOPrimCollectVDB::registerPrimitive(const GA_PrimitiveTypeId &id)
@@ -70,7 +70,7 @@ public:
     enum { NPTS = 8 };
 
     void
-    appendBox(openvdb::Vec3s corners[NPTS])
+    appendBox(laovdb::Vec3s corners[NPTS])
     {
         myVertexCounts.append(NPTS * 2);
         myPos->append(corners[0].asPointer()); // 0
@@ -95,12 +95,12 @@ public:
     void
     processGrid(const GridT &grid, int /*dummy*/)
     {
-        using namespace openvdb;
+        using namespace laovdb;
         typedef typename GridT::TreeType TreeT;
         typedef typename TreeT::LeafCIter LeafCIter;
         typedef typename TreeT::LeafNodeType LeafNodeType;
 
-        const openvdb::math::Transform &xform = grid.transform();
+        const laovdb::math::Transform &xform = grid.transform();
 
         bool appended = false;
         for (LeafCIter iter = grid.tree().cbeginLeaf(); iter; ++iter)
@@ -139,7 +139,7 @@ public:
         if (!appended)
         {
             const int NPTS = 6;
-            openvdb::Vec3s lines[NPTS];
+            laovdb::Vec3s lines[NPTS];
 
             lines[0].init(-0.5, 0.0, 0.0);
             lines[1].init( 0.5, 0.0, 0.0);
@@ -163,7 +163,7 @@ public:
     void
     operator()(const UT_BlockedRange<exint> &range)
     {
-        using namespace openvdb;
+        using namespace laovdb;
 
         for (exint i = range.begin(); i != range.end(); ++i)
         {

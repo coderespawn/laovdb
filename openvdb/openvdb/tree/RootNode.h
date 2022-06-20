@@ -22,7 +22,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace tree {
@@ -983,7 +983,7 @@ private:
 ////////////////////////////////////////
 
 
-/// @brief NodeChain<RootNodeType, RootNodeType::LEVEL>::Type is a openvdb::TypeList
+/// @brief NodeChain<RootNodeType, RootNodeType::LEVEL>::Type is a laovdb::TypeList
 /// that lists the types of the nodes of the tree rooted at RootNodeType in reverse order,
 /// from LeafNode to RootNode.
 /// @details For example, if RootNodeType is
@@ -992,7 +992,7 @@ private:
 /// @endcode
 /// then NodeChain::Type is
 /// @code
-/// openvdb::TypeList<
+/// laovdb::TypeList<
 ///     LeafNode,
 ///     InternalNode<LeafNode>,
 ///     InternalNode<InternalNode<LeafNode> >,
@@ -3511,6 +3511,6 @@ RootNode<ChildT>::doVisit2(RootNodeT& self, OtherRootNodeT& other, VisitorOp& op
 
 } // namespace tree
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_TREE_ROOTNODE_HAS_BEEN_INCLUDED

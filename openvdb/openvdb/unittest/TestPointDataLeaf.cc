@@ -14,15 +14,15 @@
 #include <sstream>
 #include <vector>
 
-using namespace openvdb;
-using namespace openvdb::points;
+using namespace laovdb;
+using namespace laovdb::points;
 
 
 class TestPointDataLeaf: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::initialize(); }
-    void TearDown() override { openvdb::uninitialize(); }
+    void SetUp() override { laovdb::initialize(); }
+    void TearDown() override { laovdb::uninitialize(); }
 }; // class TestPointDataLeaf
 
 using LeafType = PointDataTree::LeafNodeType;
@@ -32,8 +32,8 @@ using BufferType = LeafType::Buffer;
 namespace {
 
 bool
-matchingNamePairs(const openvdb::NamePair& lhs,
-                  const openvdb::NamePair& rhs)
+matchingNamePairs(const laovdb::NamePair& lhs,
+                  const laovdb::NamePair& rhs)
 {
     if (lhs.first != rhs.first)     return false;
     if (lhs.second != rhs.second)     return false;
@@ -44,7 +44,7 @@ matchingNamePairs(const openvdb::NamePair& lhs,
 bool
 zeroLeafValues(const LeafType* leafNode)
 {
-    for (openvdb::Index i = 0; i < LeafType::SIZE; i++) {
+    for (laovdb::Index i = 0; i < LeafType::SIZE; i++) {
         if (leafNode->buffer().getValue(i) != LeafType::ValueType(0))   return false;
     }
 
@@ -77,10 +77,10 @@ monotonicOffsets(const LeafType& leafNode)
 class PointList
 {
 public:
-    using PosType       = openvdb::Vec3R;
-    using value_type    = openvdb::Vec3R;
+    using PosType       = laovdb::Vec3R;
+    using value_type    = laovdb::Vec3R;
 
-    PointList(const std::vector<openvdb::Vec3R>& points)
+    PointList(const std::vector<laovdb::Vec3R>& points)
         : mPoints(&points)
     {
     }
@@ -89,28 +89,28 @@ public:
         return mPoints->size();
     }
 
-    void getPos(size_t n, openvdb::Vec3R& xyz) const {
+    void getPos(size_t n, laovdb::Vec3R& xyz) const {
         xyz = (*mPoints)[n];
     }
 
 protected:
-    std::vector<openvdb::Vec3R> const * const mPoints;
+    std::vector<laovdb::Vec3R> const * const mPoints;
 }; // PointList
 
 // Generate random points by uniformly distributing points
 // on a unit-sphere.
 // (borrowed from PointIndexGrid unit test)
-std::vector<openvdb::Vec3R> genPoints(const int numPoints)
+std::vector<laovdb::Vec3R> genPoints(const int numPoints)
 {
     // init
-    openvdb::math::Random01 randNumber(0);
+    laovdb::math::Random01 randNumber(0);
     const int n = int(std::sqrt(double(numPoints)));
     const double xScale = (2.0 * M_PI) / double(n);
     const double yScale = M_PI / double(n);
 
     double x, y, theta, phi;
 
-    std::vector<openvdb::Vec3R> points;
+    std::vector<laovdb::Vec3R> points;
     points.reserve(n*n);
 
     // loop over a [0 to n) x [0 to n) grid.
@@ -150,7 +150,7 @@ TEST_F(TestPointDataLeaf, testEmptyLeaf)
         EXPECT_TRUE(!leafNode->buffer().empty());
         EXPECT_TRUE(zeroLeafValues(leafNode));
         EXPECT_TRUE(noAttributeData(leafNode));
-        EXPECT_TRUE(leafNode->origin() == openvdb::Coord(0, 0, 0));
+        EXPECT_TRUE(leafNode->origin() == laovdb::Coord(0, 0, 0));
 
         delete leafNode;
     }
@@ -158,7 +158,7 @@ TEST_F(TestPointDataLeaf, testEmptyLeaf)
     // empty leaf with non-zero origin construction
 
     {
-        openvdb::Coord coord(20, 30, 40);
+        laovdb::Coord coord(20, 30, 40);
 
         LeafType* leafNode = new LeafType(coord);
 
@@ -168,7 +168,7 @@ TEST_F(TestPointDataLeaf, testEmptyLeaf)
         EXPECT_TRUE(zeroLeafValues(leafNode));
         EXPECT_TRUE(noAttributeData(leafNode));
 
-        EXPECT_TRUE(leafNode->origin() == openvdb::Coord(16, 24, 40));
+        EXPECT_TRUE(leafNode->origin() == laovdb::Coord(16, 24, 40));
 
         delete leafNode;
     }
@@ -182,7 +182,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
     {
         LeafType* leafNode = new LeafType();
 
-        for (openvdb::Index i = 0; i < LeafType::SIZE; i++) {
+        for (laovdb::Index i = 0; i < LeafType::SIZE; i++) {
             leafNode->setOffsetOn(i, i);
         }
 
@@ -197,7 +197,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
     {
         LeafType* leafNode = new LeafType();
 
-        for (openvdb::Index i = 0; i < LeafType::SIZE; i++) {
+        for (laovdb::Index i = 0; i < LeafType::SIZE; i++) {
             leafNode->setOffsetOnly(i, i);
         }
 
@@ -212,7 +212,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
     {
         LeafType* leafNode = new LeafType();
 
-        for (openvdb::Index i = 0; i < LeafType::SIZE; ++i) {
+        for (laovdb::Index i = 0; i < LeafType::SIZE; ++i) {
             leafNode->setOffsetOn(i, 10);
         }
 
@@ -221,7 +221,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
         leafNode->setOffsets(newOffsets, /*updateValueMask*/false);
 
         const LeafType::NodeMaskType& valueMask = leafNode->getValueMask();
-        for (openvdb::Index i = 0; i < LeafType::SIZE; ++i ) {
+        for (laovdb::Index i = 0; i < LeafType::SIZE; ++i ) {
             EXPECT_TRUE(valueMask.isOn(i));
         }
 
@@ -233,7 +233,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
     {
         LeafType* leafNode = new LeafType();
 
-        for (openvdb::Index i = 0; i < LeafType::SIZE; ++i) {
+        for (laovdb::Index i = 0; i < LeafType::SIZE; ++i) {
             leafNode->setOffsetOn(i, 10);
         }
 
@@ -242,7 +242,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
         leafNode->setOffsets(newOffsets, /*updateValueMask*/true);
 
         const LeafType::NodeMaskType& valueMask = leafNode->getValueMask();
-        for (openvdb::Index i = 0; i < LeafType::SIZE; ++i ) {
+        for (laovdb::Index i = 0; i < LeafType::SIZE; ++i ) {
             EXPECT_TRUE(valueMask.isOff(i));
         }
 
@@ -255,7 +255,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
         LeafType* leafNode = new LeafType();
 
         std::vector<LeafType::ValueType> newOffsets;
-        EXPECT_THROW(leafNode->setOffsets(newOffsets), openvdb::ValueError);
+        EXPECT_THROW(leafNode->setOffsets(newOffsets), laovdb::ValueError);
 
         delete leafNode;
     }
@@ -271,7 +271,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
         auto emptyDescriptor = std::make_shared<Descriptor>();
         LeafType emptyLeafNode;
         EXPECT_THROW(emptyLeafNode.initializeAttributes(emptyDescriptor, 5),
-            openvdb::IndexError);
+            laovdb::IndexError);
 
         // create a non-empty Descriptor
         Descriptor::Ptr descriptor = Descriptor::create(AttributeVec3s::attributeType());
@@ -305,7 +305,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
             *offsets.begin() = 1;
             leafNode->setOffsets(offsets);
 
-            EXPECT_THROW(leafNode->validateOffsets(), openvdb::ValueError);
+            EXPECT_THROW(leafNode->validateOffsets(), laovdb::ValueError);
             delete leafNode;
         }
 
@@ -330,7 +330,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
             offsets.back() = numAttributes;
             leafNode->setOffsets(offsets);
 
-            EXPECT_THROW(leafNode->validateOffsets(), openvdb::ValueError);
+            EXPECT_THROW(leafNode->validateOffsets(), laovdb::ValueError);
             delete leafNode;
         }
 
@@ -352,7 +352,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
             offsets.back() = numAttributes - 1;
             leafNode->setOffsets(offsets);
 
-            EXPECT_THROW(leafNode->validateOffsets(), openvdb::ValueError);
+            EXPECT_THROW(leafNode->validateOffsets(), laovdb::ValueError);
             delete leafNode;
         }
 
@@ -373,7 +373,7 @@ TEST_F(TestPointDataLeaf, testOffsets)
             offsets.back() = numAttributes + 1;
             leafNode->setOffsets(offsets);
 
-            EXPECT_THROW(leafNode->validateOffsets(), openvdb::ValueError);
+            EXPECT_THROW(leafNode->validateOffsets(), laovdb::ValueError);
             delete leafNode;
         }
     }
@@ -384,10 +384,10 @@ TEST_F(TestPointDataLeaf, testSetValue)
 {
     // the following tests are not run when in debug mode due to assertions firing
 #ifdef NDEBUG
-    LeafType leaf(openvdb::Coord(0, 0, 0));
+    LeafType leaf(laovdb::Coord(0, 0, 0));
 
-    openvdb::Coord xyz(0, 0, 0);
-    openvdb::Index index(LeafType::coordToOffset(xyz));
+    laovdb::Coord xyz(0, 0, 0);
+    laovdb::Index index(LeafType::coordToOffset(xyz));
 
     // ensure all non-modifiable operations are no-ops
 
@@ -411,7 +411,7 @@ TEST_F(TestPointDataLeaf, testSetValue)
 
 TEST_F(TestPointDataLeaf, testMonotonicity)
 {
-    LeafType leaf(openvdb::Coord(0, 0, 0));
+    LeafType leaf(laovdb::Coord(0, 0, 0));
 
     // assign aggregate values and activate all non-even coordinate sums
 
@@ -422,7 +422,7 @@ TEST_F(TestPointDataLeaf, testMonotonicity)
             for (unsigned int k = 0; k < LeafType::DIM; k++) {
                 if (((i + j + k) % 2) == 0)     continue;
 
-                leaf.setOffsetOn(LeafType::coordToOffset(openvdb::Coord(i, j, k)), sum++);
+                leaf.setOffsetOn(LeafType::coordToOffset(laovdb::Coord(i, j, k)), sum++);
             }
         }
     }
@@ -450,7 +450,7 @@ TEST_F(TestPointDataLeaf, testAttributes)
 
     // create a leaf and initialize attributes using this descriptor
 
-    LeafType leaf(openvdb::Coord(0, 0, 0));
+    LeafType leaf(laovdb::Coord(0, 0, 0));
 
     EXPECT_EQ(leaf.attributeSet().size(), size_t(0));
 
@@ -549,11 +549,11 @@ TEST_F(TestPointDataLeaf, testAttributes)
 
     // check invalid pos or name throws
 
-    EXPECT_THROW(leaf.attributeArray(/*pos=*/3), openvdb::LookupError);
-    EXPECT_THROW(leaf.attributeArray("not_there"), openvdb::LookupError);
+    EXPECT_THROW(leaf.attributeArray(/*pos=*/3), laovdb::LookupError);
+    EXPECT_THROW(leaf.attributeArray("not_there"), laovdb::LookupError);
 
-    EXPECT_THROW(constLeaf->attributeArray(/*pos=*/3), openvdb::LookupError);
-    EXPECT_THROW(constLeaf->attributeArray("not_there"), openvdb::LookupError);
+    EXPECT_THROW(constLeaf->attributeArray(/*pos=*/3), laovdb::LookupError);
+    EXPECT_THROW(constLeaf->attributeArray("not_there"), laovdb::LookupError);
 
     // test leaf can be successfully cast to TypedAttributeArray and check types
 
@@ -577,11 +577,11 @@ TEST_F(TestPointDataLeaf, testAttributes)
 
     // check invalid pos or name throws
 
-    EXPECT_THROW(leaf.attributeArray(/*pos=*/2), openvdb::LookupError);
-    EXPECT_THROW(leaf.attributeArray("test"), openvdb::LookupError);
+    EXPECT_THROW(leaf.attributeArray(/*pos=*/2), laovdb::LookupError);
+    EXPECT_THROW(leaf.attributeArray("test"), laovdb::LookupError);
 
-    EXPECT_THROW(constLeaf->attributeArray(/*pos=*/2), openvdb::LookupError);
-    EXPECT_THROW(constLeaf->attributeArray("test"), openvdb::LookupError);
+    EXPECT_THROW(constLeaf->attributeArray(/*pos=*/2), laovdb::LookupError);
+    EXPECT_THROW(constLeaf->attributeArray("test"), laovdb::LookupError);
 
     // check memory usage = attribute set + base leaf
 
@@ -606,7 +606,7 @@ TEST_F(TestPointDataLeaf, testSteal)
 
     // create a leaf and initialize attributes using this descriptor
 
-    LeafType leaf(openvdb::Coord(0, 0, 0));
+    LeafType leaf(laovdb::Coord(0, 0, 0));
 
     EXPECT_EQ(leaf.attributeSet().size(), size_t(0));
 
@@ -632,11 +632,11 @@ TEST_F(TestPointDataLeaf, testTopologyCopy)
     // test topology copy from a float Leaf
 
     {
-        using FloatLeaf = openvdb::FloatTree::LeafNodeType;
+        using FloatLeaf = laovdb::FloatTree::LeafNodeType;
 
         // create a float leaf and activate some values
 
-        FloatLeaf floatLeaf(openvdb::Coord(0, 0, 0));
+        FloatLeaf floatLeaf(laovdb::Coord(0, 0, 0));
 
         floatLeaf.setValueOn(1);
         floatLeaf.setValueOn(4);
@@ -647,11 +647,11 @@ TEST_F(TestPointDataLeaf, testTopologyCopy)
 
         // validate construction of a PointDataLeaf using a TopologyCopy
 
-        LeafType leaf(floatLeaf, 0, openvdb::TopologyCopy());
+        LeafType leaf(floatLeaf, 0, laovdb::TopologyCopy());
 
         EXPECT_EQ(leaf.onVoxelCount(), Index64(4));
 
-        LeafType leaf2(openvdb::Coord(8, 8, 8));
+        LeafType leaf2(laovdb::Coord(8, 8, 8));
 
         leaf2.setValueOn(1);
         leaf2.setValueOn(4);
@@ -665,7 +665,7 @@ TEST_F(TestPointDataLeaf, testTopologyCopy)
 
         // validate construction of a PointDataLeaf using an Off-On TopologyCopy
 
-        LeafType leaf3(floatLeaf, 1, 2, openvdb::TopologyCopy());
+        LeafType leaf3(floatLeaf, 1, 2, laovdb::TopologyCopy());
 
         EXPECT_EQ(leaf3.onVoxelCount(), Index64(4));
     }
@@ -677,19 +677,19 @@ TEST_F(TestPointDataLeaf, testTopologyCopy)
         // (borrowed from PointIndexGrid unit test)
 
         const float voxelSize = 0.01f;
-        const openvdb::math::Transform::Ptr transform =
-                openvdb::math::Transform::createLinearTransform(voxelSize);
+        const laovdb::math::Transform::Ptr transform =
+                laovdb::math::Transform::createLinearTransform(voxelSize);
 
-        std::vector<openvdb::Vec3R> points = genPoints(40000);
+        std::vector<laovdb::Vec3R> points = genPoints(40000);
 
         PointList pointList(points);
 
         // construct point index grid
 
-        using PointIndexGrid = openvdb::tools::PointIndexGrid;
+        using PointIndexGrid = laovdb::tools::PointIndexGrid;
 
         PointIndexGrid::Ptr pointGridPtr =
-            openvdb::tools::createPointIndexGrid<PointIndexGrid>(pointList, *transform);
+            laovdb::tools::createPointIndexGrid<PointIndexGrid>(pointList, *transform);
 
         auto iter = pointGridPtr->tree().cbeginLeaf();
 
@@ -708,7 +708,7 @@ TEST_F(TestPointDataLeaf, testTopologyCopy)
 
 TEST_F(TestPointDataLeaf, testEquivalence)
 {
-    using AttributeVec3s    = TypedAttributeArray<openvdb::Vec3s>;
+    using AttributeVec3s    = TypedAttributeArray<laovdb::Vec3s>;
     using AttributeF        = TypedAttributeArray<float>;
     using AttributeI        = TypedAttributeArray<int32_t>;
 
@@ -720,7 +720,7 @@ TEST_F(TestPointDataLeaf, testEquivalence)
 
     // create a leaf and initialize attributes using this descriptor
 
-    LeafType leaf(openvdb::Coord(0, 0, 0));
+    LeafType leaf(laovdb::Coord(0, 0, 0));
     leaf.initializeAttributes(descrA, /*arrayLength=*/100);
 
     descrA = descrA->duplicateAppend("density", AttributeF::attributeType());
@@ -764,7 +764,7 @@ TEST_F(TestPointDataLeaf, testEquivalence)
 
         EXPECT_TRUE(leaf == leaf2);
 
-        leaf2.setOrigin(openvdb::Coord(0, 8, 0));
+        leaf2.setOrigin(laovdb::Coord(0, 8, 0));
 
         EXPECT_TRUE(leaf != leaf2);
     }
@@ -783,7 +783,7 @@ TEST_F(TestPointDataLeaf, testEquivalence)
 
 TEST_F(TestPointDataLeaf, testIterators)
 {
-    using AttributeVec3s    = TypedAttributeArray<openvdb::Vec3s>;
+    using AttributeVec3s    = TypedAttributeArray<laovdb::Vec3s>;
     using AttributeF        = TypedAttributeArray<float>;
 
     // create a descriptor
@@ -796,7 +796,7 @@ TEST_F(TestPointDataLeaf, testIterators)
 
     const size_t size = LeafType::NUM_VOXELS;
 
-    LeafType leaf(openvdb::Coord(0, 0, 0));
+    LeafType leaf(laovdb::Coord(0, 0, 0));
     leaf.initializeAttributes(descrA, /*arrayLength=*/size/2);
 
     descrA = descrA->duplicateAppend("density", AttributeF::attributeType());
@@ -846,7 +846,7 @@ TEST_F(TestPointDataLeaf, testIterators)
 
 TEST_F(TestPointDataLeaf, testReadWriteCompression)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     util::NodeMask<3> valueMask;
     util::NodeMask<3> childMask;
@@ -1020,7 +1020,7 @@ TEST_F(TestPointDataLeaf, testReadWriteCompression)
 
 TEST_F(TestPointDataLeaf, testIO)
 {
-    using AttributeVec3s    = TypedAttributeArray<openvdb::Vec3s>;
+    using AttributeVec3s    = TypedAttributeArray<laovdb::Vec3s>;
     using AttributeF        = TypedAttributeArray<float>;
 
     // create a descriptor
@@ -1033,7 +1033,7 @@ TEST_F(TestPointDataLeaf, testIO)
 
     const size_t size = LeafType::NUM_VOXELS;
 
-    LeafType leaf(openvdb::Coord(0, 0, 0));
+    LeafType leaf(laovdb::Coord(0, 0, 0));
     leaf.initializeAttributes(descrA, /*arrayLength=*/size/2);
 
     descrA = descrA->duplicateAppend("density", AttributeF::attributeType());
@@ -1057,7 +1057,7 @@ TEST_F(TestPointDataLeaf, testIO)
     // read and write topology to disk
 
     {
-        LeafType leaf2(openvdb::Coord(0, 0, 0));
+        LeafType leaf2(laovdb::Coord(0, 0, 0));
 
         std::ostringstream ostr(std::ios_base::binary);
         leaf.writeTopology(ostr);
@@ -1080,7 +1080,7 @@ TEST_F(TestPointDataLeaf, testIO)
     // read and write buffers to disk
 
     {
-        LeafType leaf2(openvdb::Coord(0, 0, 0));
+        LeafType leaf2(laovdb::Coord(0, 0, 0));
 
         io::StreamMetadata::Ptr streamMetadata(new io::StreamMetadata);
 
@@ -1099,7 +1099,7 @@ TEST_F(TestPointDataLeaf, testIO)
 
             io::StreamMetadata::Ptr meta;
             io::setStreamMetadataPtr(ostr, meta);
-            EXPECT_THROW(leaf.writeBuffers(ostr), openvdb::IoError);
+            EXPECT_THROW(leaf.writeBuffers(ostr), laovdb::IoError);
         }
 
         std::istringstream istr(ostr.str(), std::ios_base::binary);
@@ -1136,7 +1136,7 @@ TEST_F(TestPointDataLeaf, testIO)
         grid->setName("points");
         grid->tree().addLeaf(new LeafType(leaf));
 
-        openvdb::GridCPtrVec grids;
+        laovdb::GridCPtrVec grids;
         grids.push_back(grid);
 
         // write to file
@@ -1153,13 +1153,13 @@ TEST_F(TestPointDataLeaf, testIO)
             {
                 io::File file("leaf.vdb");
                 file.open();
-                openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+                laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
                 file.close();
 
-                gridFromDisk = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+                gridFromDisk = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
             }
 
-            LeafType* leafFromDisk = gridFromDisk->tree().probeLeaf(openvdb::Coord(0, 0, 0));
+            LeafType* leafFromDisk = gridFromDisk->tree().probeLeaf(laovdb::Coord(0, 0, 0));
             EXPECT_TRUE(leafFromDisk);
 
             EXPECT_TRUE(leaf == *leafFromDisk);
@@ -1171,13 +1171,13 @@ TEST_F(TestPointDataLeaf, testIO)
             {
                 io::File file("leaf.vdb");
                 file.open();
-                openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+                laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
                 file.close();
 
-                gridFromDisk = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+                gridFromDisk = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
             }
 
-            LeafType* leafFromDisk = gridFromDisk->tree().probeLeaf(openvdb::Coord(0, 0, 0));
+            LeafType* leafFromDisk = gridFromDisk->tree().probeLeaf(laovdb::Coord(0, 0, 0));
             EXPECT_TRUE(leafFromDisk);
 
             const AttributeVec3s& position(
@@ -1212,13 +1212,13 @@ TEST_F(TestPointDataLeaf, testIO)
             { // re-open
                 io::File file("leaf.vdb");
                 file.open();
-                openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+                laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
                 file.close();
 
-                gridFromDisk = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+                gridFromDisk = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
             }
 
-            leafFromDisk = gridFromDisk->tree().probeLeaf(openvdb::Coord(0, 0, 0));
+            leafFromDisk = gridFromDisk->tree().probeLeaf(laovdb::Coord(0, 0, 0));
             EXPECT_TRUE(leafFromDisk);
 
             const AttributeVec3s& position2(
@@ -1242,13 +1242,13 @@ TEST_F(TestPointDataLeaf, testIO)
             { // re-open
                 io::File file("leaf.vdb");
                 file.open();
-                openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+                laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
                 file.close();
 
-                gridFromDisk = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+                gridFromDisk = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
             }
 
-            leafFromDisk = gridFromDisk->tree().probeLeaf(openvdb::Coord(0, 0, 0));
+            leafFromDisk = gridFromDisk->tree().probeLeaf(laovdb::Coord(0, 0, 0));
             EXPECT_TRUE(leafFromDisk);
 
             const AttributeVec3s& position3(
@@ -1279,9 +1279,9 @@ TEST_F(TestPointDataLeaf, testIO)
 
         // create leaf nodes and initialize attributes using this descriptor
 
-        LeafType leaf0(openvdb::Coord(0, 0, 0));
-        LeafType leaf1(openvdb::Coord(0, 8, 0));
-        LeafType leaf2(openvdb::Coord(0, 0, 8));
+        LeafType leaf0(laovdb::Coord(0, 0, 0));
+        LeafType leaf1(laovdb::Coord(0, 8, 0));
+        LeafType leaf2(laovdb::Coord(0, 0, 8));
 
         leaf0.initializeAttributes(descrB, /*arrayLength=*/2);
         leaf1.initializeAttributes(descrB, /*arrayLength=*/2);
@@ -1322,7 +1322,7 @@ TEST_F(TestPointDataLeaf, testIO)
         grid->tree().addLeaf(new LeafType(leaf1));
         grid->tree().addLeaf(new LeafType(leaf2));
 
-        openvdb::GridCPtrVec grids;
+        laovdb::GridCPtrVec grids;
         grids.push_back(grid);
 
         { // write to file
@@ -1337,21 +1337,21 @@ TEST_F(TestPointDataLeaf, testIO)
             {
                 io::File file("leaf.vdb");
                 file.open();
-                openvdb::GridBase::Ptr baseGrid = file.readGrid("points");
+                laovdb::GridBase::Ptr baseGrid = file.readGrid("points");
                 file.close();
 
-                gridFromDisk = openvdb::gridPtrCast<PointDataGrid>(baseGrid);
+                gridFromDisk = laovdb::gridPtrCast<PointDataGrid>(baseGrid);
             }
 
-            LeafType* leafFromDisk = gridFromDisk->tree().probeLeaf(openvdb::Coord(0, 0, 0));
+            LeafType* leafFromDisk = gridFromDisk->tree().probeLeaf(laovdb::Coord(0, 0, 0));
             EXPECT_TRUE(leafFromDisk);
             EXPECT_TRUE(leaf0 == *leafFromDisk);
 
-            leafFromDisk = gridFromDisk->tree().probeLeaf(openvdb::Coord(0, 8, 0));
+            leafFromDisk = gridFromDisk->tree().probeLeaf(laovdb::Coord(0, 8, 0));
             EXPECT_TRUE(leafFromDisk);
             EXPECT_TRUE(leaf1 == *leafFromDisk);
 
-            leafFromDisk = gridFromDisk->tree().probeLeaf(openvdb::Coord(0, 0, 8));
+            leafFromDisk = gridFromDisk->tree().probeLeaf(laovdb::Coord(0, 0, 8));
             EXPECT_TRUE(leafFromDisk);
             EXPECT_TRUE(leaf2 == *leafFromDisk);
         }
@@ -1363,7 +1363,7 @@ TEST_F(TestPointDataLeaf, testIO)
 
 TEST_F(TestPointDataLeaf, testSwap)
 {
-    using AttributeVec3s    = TypedAttributeArray<openvdb::Vec3s>;
+    using AttributeVec3s    = TypedAttributeArray<laovdb::Vec3s>;
     using AttributeF        = TypedAttributeArray<float>;
     using AttributeI        = TypedAttributeArray<int>;
 
@@ -1376,7 +1376,7 @@ TEST_F(TestPointDataLeaf, testSwap)
     // create a leaf and initialize attributes using this descriptor
 
     const Index initialArrayLength = 100;
-    LeafType leaf(openvdb::Coord(0, 0, 0));
+    LeafType leaf(laovdb::Coord(0, 0, 0));
     leaf.initializeAttributes(descrA, /*arrayLength=*/initialArrayLength);
 
     descrA = descrA->duplicateAppend("density", AttributeF::attributeType());
@@ -1407,7 +1407,7 @@ TEST_F(TestPointDataLeaf, testSwap)
 
     // ensure we refuse to swap when the attribute set is null
 
-    EXPECT_THROW(leaf.replaceAttributeSet(nullptr), openvdb::ValueError);
+    EXPECT_THROW(leaf.replaceAttributeSet(nullptr), laovdb::ValueError);
 
     // ensure we refuse to swap when the descriptors do not match,
     // unless we explicitly allow a mismatch.
@@ -1417,7 +1417,7 @@ TEST_F(TestPointDataLeaf, testSwap)
 
     attributeSet->appendAttribute("extra", AttributeF::attributeType());
 
-    EXPECT_THROW(leaf.replaceAttributeSet(attributeSet), openvdb::ValueError);
+    EXPECT_THROW(leaf.replaceAttributeSet(attributeSet), laovdb::ValueError);
 
     leaf.replaceAttributeSet(attributeSet, true);
     EXPECT_EQ(const_cast<AttributeSet*>(&leaf.attributeSet()), attributeSet);
@@ -1425,7 +1425,7 @@ TEST_F(TestPointDataLeaf, testSwap)
 
 TEST_F(TestPointDataLeaf, testCopyOnWrite)
 {
-    using AttributeVec3s    = TypedAttributeArray<openvdb::Vec3s>;
+    using AttributeVec3s    = TypedAttributeArray<laovdb::Vec3s>;
     using AttributeF        = TypedAttributeArray<float>;
 
     // create a descriptor
@@ -1437,7 +1437,7 @@ TEST_F(TestPointDataLeaf, testCopyOnWrite)
     // create a leaf and initialize attributes using this descriptor
 
     const Index initialArrayLength = 100;
-    LeafType leaf(openvdb::Coord(0, 0, 0));
+    LeafType leaf(laovdb::Coord(0, 0, 0));
     leaf.initializeAttributes(descrA, /*arrayLength=*/initialArrayLength);
 
     descrA = descrA->duplicateAppend("density", AttributeF::attributeType());
@@ -1499,8 +1499,8 @@ TEST_F(TestPointDataLeaf, testCopyDescriptor)
 
     PointDataTree tree;
 
-    LeafNode* leaf = tree.touchLeaf(openvdb::Coord(0, 0, 0));
-    LeafNode* leaf2 = tree.touchLeaf(openvdb::Coord(0, 8, 0));
+    LeafNode* leaf = tree.touchLeaf(laovdb::Coord(0, 0, 0));
+    LeafNode* leaf2 = tree.touchLeaf(laovdb::Coord(0, 8, 0));
 
     // create a descriptor
 
@@ -1520,7 +1520,7 @@ TEST_F(TestPointDataLeaf, testCopyDescriptor)
 
     PointDataTree tree2(tree);
 
-    EXPECT_EQ(tree2.leafCount(), openvdb::Index32(2));
+    EXPECT_EQ(tree2.leafCount(), laovdb::Index32(2));
 
     descrA->setGroup("test", size_t(1));
 

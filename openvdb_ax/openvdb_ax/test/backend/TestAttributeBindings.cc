@@ -34,7 +34,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(TestAttributeBindings);
 void
 TestAttributeBindings::testSet()
 {
-    openvdb::ax::AttributeBindings bindings;
+    laovdb::ax::AttributeBindings bindings;
     CPPUNIT_ASSERT(!bindings.isBoundAXName("a"));
     CPPUNIT_ASSERT(!bindings.isBoundDataName("b"));
     bindings.set("a", "b");
@@ -48,7 +48,7 @@ void
 TestAttributeBindings::testSetFromVector()
 {
     std::vector<std::pair<std::string,std::string>> vec = {{"a", "b"}};
-    openvdb::ax::AttributeBindings bindings0(vec);
+    laovdb::ax::AttributeBindings bindings0(vec);
     CPPUNIT_ASSERT(bindings0.isBoundAXName("a"));
     CPPUNIT_ASSERT(bindings0.isBoundDataName("b"));
     CPPUNIT_ASSERT_EQUAL(*bindings0.dataNameBoundTo("a"), std::string("b"));
@@ -58,14 +58,14 @@ TestAttributeBindings::testSetFromVector()
 void
 TestAttributeBindings::testSetFromInitList()
 {
-    openvdb::ax::AttributeBindings bindings0 = {{"a", "b"}};
+    laovdb::ax::AttributeBindings bindings0 = {{"a", "b"}};
     CPPUNIT_ASSERT(bindings0.isBoundAXName("a"));
     CPPUNIT_ASSERT(bindings0.isBoundDataName("b"));
     CPPUNIT_ASSERT_EQUAL(*bindings0.dataNameBoundTo("a"), std::string("b"));
     CPPUNIT_ASSERT_EQUAL(*bindings0.axNameBoundTo("b"), std::string("a"));
 
     // initializer list ctor
-    openvdb::ax::AttributeBindings bindings1({{"a","b"}});
+    laovdb::ax::AttributeBindings bindings1({{"a","b"}});
     CPPUNIT_ASSERT(bindings1.isBoundAXName("a"));
     CPPUNIT_ASSERT(bindings1.isBoundDataName("b"));
     CPPUNIT_ASSERT_EQUAL(*bindings1.dataNameBoundTo("a"), std::string("b"));
@@ -75,7 +75,7 @@ TestAttributeBindings::testSetFromInitList()
 void
 TestAttributeBindings::testSetToExistingAXName()
 {
-    openvdb::ax::AttributeBindings bindings;
+    laovdb::ax::AttributeBindings bindings;
     bindings.set("a", "b");
     CPPUNIT_ASSERT(bindings.isBoundAXName("a"));
     CPPUNIT_ASSERT(bindings.isBoundDataName("b"));
@@ -93,7 +93,7 @@ TestAttributeBindings::testSetToExistingAXName()
 void
 TestAttributeBindings::testSetToExistingDataName()
 {
-    openvdb::ax::AttributeBindings bindings;
+    laovdb::ax::AttributeBindings bindings;
     bindings.set("a", "b");
     CPPUNIT_ASSERT(bindings.isBoundAXName("a"));
     CPPUNIT_ASSERT(bindings.isBoundDataName("b"));
@@ -113,7 +113,7 @@ TestAttributeBindings::testSetToExistingDataName()
 void
 TestAttributeBindings::testSwapNames()
 {
-    openvdb::ax::AttributeBindings bindings;
+    laovdb::ax::AttributeBindings bindings;
     bindings.set("a", "a");
     CPPUNIT_ASSERT(bindings.isBoundAXName("a"));
     CPPUNIT_ASSERT(bindings.isBoundDataName("a"));

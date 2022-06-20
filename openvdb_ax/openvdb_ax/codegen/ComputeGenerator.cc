@@ -27,7 +27,7 @@
 #include <llvm/Support/raw_os_ostream.h>
 #include <llvm/Transforms/Utils/BuildLibCalls.h>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -560,10 +560,10 @@ bool ComputeGenerator::visit(const ast::Keyword* node)
 
 bool ComputeGenerator::visit(const ast::BinaryOperator* node)
 {
-    openvdb::ax::ast::tokens::OperatorToken opToken = node->operation();
+    laovdb::ax::ast::tokens::OperatorToken opToken = node->operation();
     // if AND or OR, need to handle short-circuiting
-    if (opToken == openvdb::ax::ast::tokens::OperatorToken::AND
-        || opToken == openvdb::ax::ast::tokens::OperatorToken::OR) {
+    if (opToken == laovdb::ax::ast::tokens::OperatorToken::AND
+        || opToken == laovdb::ax::ast::tokens::OperatorToken::OR) {
         llvm::BranchInst* lhsBranch = nullptr;
         llvm::BasicBlock* rhsBlock = llvm::BasicBlock::Create(mContext, "binary_rhs", mFunction);
         llvm::BasicBlock* returnBlock = llvm::BasicBlock::Create(mContext, "binary_return", mFunction);
@@ -580,7 +580,7 @@ bool ComputeGenerator::visit(const ast::BinaryOperator* node)
             if (lhsType->isFloatingPointTy() || lhsType->isIntegerTy()) {
                 lhs = boolComparison(lhs, mBuilder);
 
-                if (opToken == openvdb::ax::ast::tokens::OperatorToken::AND) {
+                if (opToken == laovdb::ax::ast::tokens::OperatorToken::AND) {
                     lhsBranch = mBuilder.CreateCondBr(lhs, rhsBlock, returnBlock);
                 }
                 else {
@@ -1708,5 +1708,5 @@ bool ComputeGenerator::binaryExpression(llvm::Value*& result, llvm::Value* lhs, 
 } // namespace codegen
 } // namespace ax
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 

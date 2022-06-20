@@ -25,7 +25,7 @@
 
 #include <string>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -78,7 +78,7 @@ rasterizeTrilinear(const PointDataTreeT& points,
 
 } // namespace points
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #include "impl/PointRasterizeTrilinearImpl.h"
 

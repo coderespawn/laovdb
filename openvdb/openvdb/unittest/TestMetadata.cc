@@ -12,14 +12,14 @@
 class TestMetadata: public ::testing::Test
 {
 public:
-    void SetUp() override { openvdb::Metadata::clearRegistry(); }
-    void TearDown() override { openvdb::Metadata::clearRegistry(); }
+    void SetUp() override { laovdb::Metadata::clearRegistry(); }
+    void TearDown() override { laovdb::Metadata::clearRegistry(); }
 };
 
 
 TEST_F(TestMetadata, testMetadataRegistry)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     Int32Metadata::registerType();
 
@@ -38,12 +38,12 @@ TEST_F(TestMetadata, testMetadataRegistry)
 
     StringMetadata::unregisterType();
 
-    EXPECT_THROW(Metadata::createMetadata(strMetadata.typeName()), openvdb::LookupError);
+    EXPECT_THROW(Metadata::createMetadata(strMetadata.typeName()), laovdb::LookupError);
 }
 
 TEST_F(TestMetadata, testMetadataAsBool)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     {
         FloatMetadata meta(0.0);
@@ -94,7 +94,7 @@ TEST_F(TestMetadata, testMetadataAsBool)
 
 TEST_F(TestMetadata, testCustomMetadata)
 {
-    using namespace openvdb;
+    using namespace laovdb;
 
     const Vec3i expected(1, 2, 3);
     std::ostringstream ostr(std::ios_base::binary);

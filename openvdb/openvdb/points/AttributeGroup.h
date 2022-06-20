@@ -14,7 +14,7 @@
 #include "AttributeSet.h"
 #include <memory>
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace points {
@@ -169,7 +169,7 @@ private:
 } // namespace points
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 
 #endif // OPENVDB_POINTS_ATTRIBUTE_GROUP_HAS_BEEN_INCLUDED

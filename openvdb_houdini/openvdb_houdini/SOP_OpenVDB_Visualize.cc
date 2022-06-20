@@ -35,10 +35,10 @@ namespace {
 template <typename T>
 struct IsGridTypeIntegral
     : std::conditional_t<   std::is_integral<T>::value
-                         || std::is_same<T,openvdb::PointIndex32>::value
-                         || std::is_same<T,openvdb::PointIndex64>::value
-                         || std::is_same<T,openvdb::PointDataIndex32>::value
-                         || std::is_same<T,openvdb::PointDataIndex64>::value
+                         || std::is_same<T,laovdb::PointIndex32>::value
+                         || std::is_same<T,laovdb::PointIndex64>::value
+                         || std::is_same<T,laovdb::PointDataIndex32>::value
+                         || std::is_same<T,laovdb::PointDataIndex64>::value
                          , std::true_type
                          , std::false_type>
 {
@@ -686,7 +686,7 @@ struct TreeParms
 class TreeVisualizer
 {
 public:
-    TreeVisualizer(GU_Detail&, const TreeParms&, openvdb::util::NullInterrupter* = nullptr);
+    TreeVisualizer(GU_Detail&, const TreeParms&, laovdb::util::NullInterrupter* = nullptr);
 
     // create all the point attributes
     template<typename GridType>
@@ -694,7 +694,7 @@ public:
 
     // compute the index-space value corresponding to the desired slice
     template<typename GridType>
-    openvdb::Int32 computeIndexSlice(const GridType&);
+    laovdb::Int32 computeIndexSlice(const GridType&);
 
     // allocate the point, polygon and vertex offset arrays
     template<typename GridType>
@@ -702,7 +702,7 @@ public:
 
     // render nodes, tiles or voxels
     template<typename GridType>
-    void render(bool node, const GridType& grid, openvdb::Int32 sliceIndex,
+    void render(bool node, const GridType& grid, laovdb::Int32 sliceIndex,
         const RenderStyle& style1, const RenderStyle& style2);
 
     template<typename GridType>
@@ -733,8 +733,8 @@ private:
     std::vector<std::unique_ptr<size_t[]>> mVertexOffsets;
     std::vector<std::unique_ptr<size_t[]>> mPolygonOffsets;
     GU_Detail* mGeo;
-    openvdb::util::NullInterrupter* mInterrupter;
-    const openvdb::math::Transform* mXform;
+    laovdb::util::NullInterrupter* mInterrupter;
+    const laovdb::math::Transform* mXform;
     GA_RWHandleF  mFloatHandle;
     GA_RWHandleI  mInt32Handle;
     GA_RWHandleV3 mVec3fHandle;
@@ -748,10 +748,10 @@ private:
 
 // return true if slice index intersects with the coord bbox with the given slice plane
 inline
-bool isCoordBBoxValid(const openvdb::CoordBBox& bbox, const SlicePlane& slicePlane, openvdb::Int32 sliceIndex)
+bool isCoordBBoxValid(const laovdb::CoordBBox& bbox, const SlicePlane& slicePlane, laovdb::Int32 sliceIndex)
 {
-    openvdb::Int32 start(0);
-    openvdb::Int32 end(0);
+    laovdb::Int32 start(0);
+    laovdb::Int32 end(0);
 
     if (slicePlane == SLICE_XY) {
         start = bbox.min().z();
@@ -770,7 +770,7 @@ bool isCoordBBoxValid(const openvdb::CoordBBox& bbox, const SlicePlane& slicePla
 
 // return true if slice index intersects with the node with the given slice plane
 template <typename NodeT>
-bool isNodeValid(const NodeT& node, const SlicePlane& slicePlane, openvdb::Int32 sliceIndex)
+bool isNodeValid(const NodeT& node, const SlicePlane& slicePlane, laovdb::Int32 sliceIndex)
 {
     return isCoordBBoxValid(node.getNodeBoundingBox(), slicePlane, sliceIndex);
 }
@@ -779,7 +779,7 @@ bool isNodeValid(const NodeT& node, const SlicePlane& slicePlane, openvdb::Int32
 // return true if slice index intersects with the iterator with the given slice plane
 // note that for performance reasons, this method does not do leaf slice intersection testing
 template <typename IterT>
-bool isIterValid(const IterT& iter, const SlicePlane& slicePlane, openvdb::Int32 sliceIndex)
+bool isIterValid(const IterT& iter, const SlicePlane& slicePlane, laovdb::Int32 sliceIndex)
 {
     const auto& parent = iter.parent();
 
@@ -796,9 +796,9 @@ bool isIterValid(const IterT& iter, const SlicePlane& slicePlane, openvdb::Int32
         // tiles - bbox comparison
 
         // compute tile bounding box
-        const openvdb::Coord origin = iter.getCoord();
-        const openvdb::Index dim = parent.getChildDim();
-        const openvdb::CoordBBox bbox = openvdb::CoordBBox::createCube(origin, dim);
+        const laovdb::Coord origin = iter.getCoord();
+        const laovdb::Index dim = parent.getChildDim();
+        const laovdb::CoordBBox bbox = laovdb::CoordBBox::createCube(origin, dim);
 
         return isCoordBBoxValid(bbox, slicePlane, sliceIndex);
     }
@@ -808,7 +808,7 @@ bool isIterValid(const IterT& iter, const SlicePlane& slicePlane, openvdb::Int32
 
 
 TreeVisualizer::TreeVisualizer(GU_Detail& geo, const TreeParms& parms,
-    openvdb::util::NullInterrupter* interrupter)
+    laovdb::util::NullInterrupter* interrupter)
     : mParms(parms)
     , mGeo(&geo)
     , mInterrupter(interrupter)
@@ -823,7 +823,7 @@ struct TreeVisualizer::CountOp
     using RootT = typename TreeT::RootNodeType;
     using LeafT = typename TreeT::LeafNodeType;
 
-    CountOp(bool node, openvdb::Int32 sliceIndex, bool staggered, TreeVisualizer& parent)
+    CountOp(bool node, laovdb::Int32 sliceIndex, bool staggered, TreeVisualizer& parent)
         : mNode(node)
         , mSliceIndex(sliceIndex)
         , mStaggered(staggered)
@@ -974,7 +974,7 @@ struct TreeVisualizer::CountOp
     }
 
     const bool mNode;
-    const openvdb::Int32 mSliceIndex;
+    const laovdb::Int32 mSliceIndex;
     const bool mStaggered;
     TreeVisualizer& mParent;
 }; // struct TreeVisualizer::CountOp
@@ -1023,106 +1023,106 @@ struct TreeVisualizer::RenderPointsOp
     using RootT = typename TreeT::RootNodeType;
     using LeafT = typename TreeT::LeafNodeType;
 
-    RenderPointsOp(bool node, GA_Offset offset, openvdb::Int32 sliceIndex, bool staggered, TreeVisualizer& parent)
+    RenderPointsOp(bool node, GA_Offset offset, laovdb::Int32 sliceIndex, bool staggered, TreeVisualizer& parent)
         : mNode(node)
         , mOffset(offset)
         , mSliceIndex(sliceIndex)
         , mStaggered(staggered)
         , mParent(parent) { }
 
-    openvdb::Vec3d bboxToVec3d(const openvdb::CoordBBox& bbox) const
+    laovdb::Vec3d bboxToVec3d(const laovdb::CoordBBox& bbox) const
     {
-        return openvdb::Vec3d(  0.5*(bbox.min().x()+bbox.max().x()),
+        return laovdb::Vec3d(  0.5*(bbox.min().x()+bbox.max().x()),
                                 0.5*(bbox.min().y()+bbox.max().y()),
                                 0.5*(bbox.min().z()+bbox.max().z()));
 
     }
 
-    UT_Vector3i vec3dToUTV3i(const openvdb::Vec3d& pos) const
+    UT_Vector3i vec3dToUTV3i(const laovdb::Vec3d& pos) const
     {
-        openvdb::Coord idxPos = openvdb::Coord::floor(pos);
+        laovdb::Coord idxPos = laovdb::Coord::floor(pos);
         return UT_Vector3i(idxPos[0], idxPos[1], idxPos[2]);
     }
 
-    UT_Vector3 indexToWorldUTV3(const openvdb::Vec3d& pos) const
+    UT_Vector3 indexToWorldUTV3(const laovdb::Vec3d& pos) const
     {
-        const openvdb::Vec3d posWS = mParent.mXform->indexToWorld(pos);
+        const laovdb::Vec3d posWS = mParent.mXform->indexToWorld(pos);
         return UT_Vector3(float(posWS.x()), float(posWS.y()), float(posWS.z()));
     }
 
-    void setPos(size_t pointIndex, const openvdb::Vec3d& pos) const
+    void setPos(size_t pointIndex, const laovdb::Vec3d& pos) const
     {
         mParent.mGeo->setPos3(pointIndex, indexToWorldUTV3(pos));
     }
 
-    void setStaggeredPos(size_t pointIndex, const openvdb::Vec3d& pos) const
+    void setStaggeredPos(size_t pointIndex, const laovdb::Vec3d& pos) const
     {
-        openvdb::Vec3d pos0 = pos - openvdb::Vec3d(0.5, 0, 0);
-        openvdb::Vec3d pos1 = pos - openvdb::Vec3d(0, 0.5, 0);
-        openvdb::Vec3d pos2 = pos - openvdb::Vec3d(0, 0, 0.5);
+        laovdb::Vec3d pos0 = pos - laovdb::Vec3d(0.5, 0, 0);
+        laovdb::Vec3d pos1 = pos - laovdb::Vec3d(0, 0.5, 0);
+        laovdb::Vec3d pos2 = pos - laovdb::Vec3d(0, 0, 0.5);
 
         mParent.mGeo->setPos3(pointIndex,   indexToWorldUTV3(pos0));
         mParent.mGeo->setPos3(pointIndex+1, indexToWorldUTV3(pos1));
         mParent.mGeo->setPos3(pointIndex+2, indexToWorldUTV3(pos2));
     }
 
-    void setBoxPos(size_t pointIndex, const openvdb::CoordBBox& bbox) const
+    void setBoxPos(size_t pointIndex, const laovdb::CoordBBox& bbox) const
     {
-        const openvdb::Vec3d min(bbox.min().x()-0.5, bbox.min().y()-0.5, bbox.min().z()-0.5);
-        const openvdb::Vec3d max(bbox.max().x()+0.5, bbox.max().y()+0.5, bbox.max().z()+0.5);
+        const laovdb::Vec3d min(bbox.min().x()-0.5, bbox.min().y()-0.5, bbox.min().z()-0.5);
+        const laovdb::Vec3d max(bbox.max().x()+0.5, bbox.max().y()+0.5, bbox.max().z()+0.5);
 
         // set the box corners
 
-        mParent.mGeo->setPos3(pointIndex, indexToWorldUTV3(openvdb::Vec3d(min.x(), min.y(), min.z())));
-        mParent.mGeo->setPos3(pointIndex+1, indexToWorldUTV3(openvdb::Vec3d(min.x(), min.y(), max.z())));
-        mParent.mGeo->setPos3(pointIndex+2, indexToWorldUTV3(openvdb::Vec3d(max.x(), min.y(), max.z())));
-        mParent.mGeo->setPos3(pointIndex+3, indexToWorldUTV3(openvdb::Vec3d(max.x(), min.y(), min.z())));
-        mParent.mGeo->setPos3(pointIndex+4, indexToWorldUTV3(openvdb::Vec3d(min.x(), max.y(), min.z())));
-        mParent.mGeo->setPos3(pointIndex+5, indexToWorldUTV3(openvdb::Vec3d(min.x(), max.y(), max.z())));
-        mParent.mGeo->setPos3(pointIndex+6, indexToWorldUTV3(openvdb::Vec3d(max.x(), max.y(), max.z())));
-        mParent.mGeo->setPos3(pointIndex+7, indexToWorldUTV3(openvdb::Vec3d(max.x(), max.y(), min.z())));
+        mParent.mGeo->setPos3(pointIndex, indexToWorldUTV3(laovdb::Vec3d(min.x(), min.y(), min.z())));
+        mParent.mGeo->setPos3(pointIndex+1, indexToWorldUTV3(laovdb::Vec3d(min.x(), min.y(), max.z())));
+        mParent.mGeo->setPos3(pointIndex+2, indexToWorldUTV3(laovdb::Vec3d(max.x(), min.y(), max.z())));
+        mParent.mGeo->setPos3(pointIndex+3, indexToWorldUTV3(laovdb::Vec3d(max.x(), min.y(), min.z())));
+        mParent.mGeo->setPos3(pointIndex+4, indexToWorldUTV3(laovdb::Vec3d(min.x(), max.y(), min.z())));
+        mParent.mGeo->setPos3(pointIndex+5, indexToWorldUTV3(laovdb::Vec3d(min.x(), max.y(), max.z())));
+        mParent.mGeo->setPos3(pointIndex+6, indexToWorldUTV3(laovdb::Vec3d(max.x(), max.y(), max.z())));
+        mParent.mGeo->setPos3(pointIndex+7, indexToWorldUTV3(laovdb::Vec3d(max.x(), max.y(), min.z())));
     }
 
-    void setPlanePos(size_t pointIndex, const openvdb::CoordBBox& bbox) const
+    void setPlanePos(size_t pointIndex, const laovdb::CoordBBox& bbox) const
     {
-        const openvdb::Vec3d min(bbox.min().x()-0.5, bbox.min().y()-0.5, bbox.min().z()-0.5);
-        const openvdb::Vec3d max(bbox.max().x()+0.5, bbox.max().y()+0.5, bbox.max().z()+0.5);
+        const laovdb::Vec3d min(bbox.min().x()-0.5, bbox.min().y()-0.5, bbox.min().z()-0.5);
+        const laovdb::Vec3d max(bbox.max().x()+0.5, bbox.max().y()+0.5, bbox.max().z()+0.5);
 
         // set the plane corners
 
         if (mParent.mParms.slicePlane == SLICE_XY) {
-            mParent.mGeo->setPos3(pointIndex, indexToWorldUTV3(openvdb::Vec3d(min.x(), min.y(), mSliceIndex)));
-            mParent.mGeo->setPos3(pointIndex+1, indexToWorldUTV3(openvdb::Vec3d(min.x(), max.y(), mSliceIndex)));
-            mParent.mGeo->setPos3(pointIndex+2, indexToWorldUTV3(openvdb::Vec3d(max.x(), max.y(), mSliceIndex)));
-            mParent.mGeo->setPos3(pointIndex+3, indexToWorldUTV3(openvdb::Vec3d(max.x(), min.y(), mSliceIndex)));
+            mParent.mGeo->setPos3(pointIndex, indexToWorldUTV3(laovdb::Vec3d(min.x(), min.y(), mSliceIndex)));
+            mParent.mGeo->setPos3(pointIndex+1, indexToWorldUTV3(laovdb::Vec3d(min.x(), max.y(), mSliceIndex)));
+            mParent.mGeo->setPos3(pointIndex+2, indexToWorldUTV3(laovdb::Vec3d(max.x(), max.y(), mSliceIndex)));
+            mParent.mGeo->setPos3(pointIndex+3, indexToWorldUTV3(laovdb::Vec3d(max.x(), min.y(), mSliceIndex)));
         } else if (mParent.mParms.slicePlane == SLICE_YZ) {
-            mParent.mGeo->setPos3(pointIndex, indexToWorldUTV3(openvdb::Vec3d(mSliceIndex, min.y(), min.z())));
-            mParent.mGeo->setPos3(pointIndex+1, indexToWorldUTV3(openvdb::Vec3d(mSliceIndex, min.y(), max.z())));
-            mParent.mGeo->setPos3(pointIndex+2, indexToWorldUTV3(openvdb::Vec3d(mSliceIndex, max.y(), max.z())));
-            mParent.mGeo->setPos3(pointIndex+3, indexToWorldUTV3(openvdb::Vec3d(mSliceIndex, max.y(), min.z())));
+            mParent.mGeo->setPos3(pointIndex, indexToWorldUTV3(laovdb::Vec3d(mSliceIndex, min.y(), min.z())));
+            mParent.mGeo->setPos3(pointIndex+1, indexToWorldUTV3(laovdb::Vec3d(mSliceIndex, min.y(), max.z())));
+            mParent.mGeo->setPos3(pointIndex+2, indexToWorldUTV3(laovdb::Vec3d(mSliceIndex, max.y(), max.z())));
+            mParent.mGeo->setPos3(pointIndex+3, indexToWorldUTV3(laovdb::Vec3d(mSliceIndex, max.y(), min.z())));
         } else if (mParent.mParms.slicePlane == SLICE_ZX) {
-            mParent.mGeo->setPos3(pointIndex, indexToWorldUTV3(openvdb::Vec3d(min.x(), mSliceIndex, min.z())));
-            mParent.mGeo->setPos3(pointIndex+1, indexToWorldUTV3(openvdb::Vec3d(max.x(), mSliceIndex, min.z())));
-            mParent.mGeo->setPos3(pointIndex+2, indexToWorldUTV3(openvdb::Vec3d(max.x(), mSliceIndex, max.z())));
-            mParent.mGeo->setPos3(pointIndex+3, indexToWorldUTV3(openvdb::Vec3d(min.x(), mSliceIndex, max.z())));
+            mParent.mGeo->setPos3(pointIndex, indexToWorldUTV3(laovdb::Vec3d(min.x(), mSliceIndex, min.z())));
+            mParent.mGeo->setPos3(pointIndex+1, indexToWorldUTV3(laovdb::Vec3d(max.x(), mSliceIndex, min.z())));
+            mParent.mGeo->setPos3(pointIndex+2, indexToWorldUTV3(laovdb::Vec3d(max.x(), mSliceIndex, max.z())));
+            mParent.mGeo->setPos3(pointIndex+3, indexToWorldUTV3(laovdb::Vec3d(min.x(), mSliceIndex, max.z())));
         }
     }
 
-    void setIndex(size_t pointIndex, const openvdb::Vec3d& pos) const
+    void setIndex(size_t pointIndex, const laovdb::Vec3d& pos) const
     {
         if (!mParent.mIndexCoordHandle.isValid())   return;
         // Attach the (integer) index coordinates of the voxel at the given pos.
         mParent.mIndexCoordHandle.set(pointIndex, vec3dToUTV3i(pos));
     }
 
-    void setStaggeredIndex(size_t pointIndex, const openvdb::Vec3d& pos) const
+    void setStaggeredIndex(size_t pointIndex, const laovdb::Vec3d& pos) const
     {
         if (!mParent.mIndexCoordHandle.isValid())   return;
 
         // Attach the (integer) index coordinates of the voxel at the given pos.
-        openvdb::Vec3d pos0 = pos - openvdb::Vec3d(0.5, 0, 0);
-        openvdb::Vec3d pos1 = pos - openvdb::Vec3d(0, 0.5, 0);
-        openvdb::Vec3d pos2 = pos - openvdb::Vec3d(0, 0, 0.5);
+        laovdb::Vec3d pos0 = pos - laovdb::Vec3d(0.5, 0, 0);
+        laovdb::Vec3d pos1 = pos - laovdb::Vec3d(0, 0.5, 0);
+        laovdb::Vec3d pos2 = pos - laovdb::Vec3d(0, 0, 0.5);
 
         mParent.mIndexCoordHandle.set(pointIndex,   vec3dToUTV3i(pos0));
         mParent.mIndexCoordHandle.set(pointIndex+1, vec3dToUTV3i(pos1));
@@ -1170,7 +1170,7 @@ struct TreeVisualizer::RenderPointsOp
     template<typename ValueT>
     void setColorBySign(size_t idx, const ValueT& value, size_t count = 1) const
     {
-        const bool negative = openvdb::math::isNegative(value);
+        const bool negative = laovdb::math::isNegative(value);
         const auto color = SOP_OpenVDB_Visualize::colorSign(negative);
         for (size_t i = 0; i < count; i++) {
             mParent.mCdHandle.set(idx+i, color);
@@ -1192,7 +1192,7 @@ struct TreeVisualizer::RenderPointsOp
         }
     }
 
-    void setColorByLevel(size_t idx, const openvdb::Index level, size_t count = 1) const
+    void setColorByLevel(size_t idx, const laovdb::Index level, size_t count = 1) const
     {
         if (mParent.mCdHandle.isValid()) {
             const auto color = SOP_OpenVDB_Visualize::colorLevel(level);
@@ -1239,11 +1239,11 @@ struct TreeVisualizer::RenderPointsOp
         if (!style)     return;
         if (mParent.mParms.sliceStyle == NO_SLICE ||
             isNodeValid(node, mParent.mParms.slicePlane, mSliceIndex)) {
-            const openvdb::CoordBBox bbox = node.getNodeBoundingBox();
+            const laovdb::CoordBBox bbox = node.getNodeBoundingBox();
             const size_t pointIndex = mOffset + mParent.mPointOffsets[NodeT::LEVEL][idx];
 
             if (style == STYLE_POINTS) {
-                openvdb::Vec3d pos = bboxToVec3d(bbox);
+                laovdb::Vec3d pos = bboxToVec3d(bbox);
                 setPos(pointIndex, pos);
                 setIndex(pointIndex, pos);
                 setColorByLevel(pointIndex, node.getLevel(), 1);
@@ -1280,11 +1280,11 @@ struct TreeVisualizer::RenderPointsOp
 
                 if (allValid || isIterValid(iter, mParent.mParms.slicePlane, mSliceIndex)) {
 
-                    openvdb::CoordBBox bbox;
+                    laovdb::CoordBBox bbox;
                     bbox.expand(iter.getCoord(), node.getChildDim());
 
                     if (style == STYLE_POINTS) {
-                        openvdb::Vec3d pos = bboxToVec3d(bbox);
+                        laovdb::Vec3d pos = bboxToVec3d(bbox);
                         if (mStaggered && NodeT::LEVEL == 0) {
                             setStaggeredPos(pointIndex, pos);
                             setStaggeredIndex(pointIndex, pos);
@@ -1338,7 +1338,7 @@ struct TreeVisualizer::RenderPointsOp
 
     const bool mNode;
     const GA_Offset mOffset;
-    const openvdb::Int32 mSliceIndex;
+    const laovdb::Int32 mSliceIndex;
     const bool mStaggered;
     TreeVisualizer& mParent;
 }; // struct TreeVisualizer::RenderPointsOp
@@ -1352,7 +1352,7 @@ struct TreeVisualizer::RenderVerticesOp
     using LeafT = typename TreeT::LeafNodeType;
 
     RenderVerticesOp(bool node, std::unique_ptr<int[]>& vertices,
-        openvdb::Int32 sliceIndex, TreeVisualizer& parent)
+        laovdb::Int32 sliceIndex, TreeVisualizer& parent)
         : mNode(node)
         , mVertices(vertices)
         , mSliceIndex(sliceIndex)
@@ -1528,7 +1528,7 @@ struct TreeVisualizer::RenderVerticesOp
 
     const bool mNode;
     std::unique_ptr<int[]>& mVertices;
-    const openvdb::Int32 mSliceIndex;
+    const laovdb::Int32 mSliceIndex;
     TreeVisualizer& mParent;
 }; // struct TreeVisualizer::RenderVerticesOp
 
@@ -1541,7 +1541,7 @@ struct TreeVisualizer::RenderGeometrySingleThreadedOp
     using LeafT = typename TreeT::LeafNodeType;
 
     RenderGeometrySingleThreadedOp(bool node, GA_Offset offset, std::unique_ptr<int[]>& vertices,
-        openvdb::Int32 sliceIndex, TreeVisualizer& parent)
+        laovdb::Int32 sliceIndex, TreeVisualizer& parent)
         : mNode(node)
         , mOffset(offset)
         , mVertices(vertices.get())
@@ -1643,7 +1643,7 @@ struct TreeVisualizer::RenderGeometrySingleThreadedOp
     const bool mNode;
     const GA_Offset mOffset;
     int* mVertices;
-    const openvdb::Int32 mSliceIndex;
+    const laovdb::Int32 mSliceIndex;
     TreeVisualizer& mParent;
 }; // struct TreeVisualizer::RenderGeometrySingleThreadedOp
 
@@ -1689,8 +1689,8 @@ TreeVisualizer::createPointAttributes(const GridT& grid)
             attrName.forceValidVariableName();
         }
 
-        if (valueType == openvdb::typeNameAsString<float>() ||
-            valueType == openvdb::typeNameAsString<double>())
+        if (valueType == laovdb::typeNameAsString<float>() ||
+            valueType == laovdb::typeNameAsString<double>())
         {
             if (!attrName.isstring()) attrName = "vdb_float";
             UT_String varName = attrName;
@@ -1707,9 +1707,9 @@ TreeVisualizer::createPointAttributes(const GridT& grid)
             mFloatHandle = attribHandle.getAttribute();
             mGeo->addVariableName(attrName, varName);
 
-        } else if (valueType == openvdb::typeNameAsString<int32_t>() ||
-            valueType == openvdb::typeNameAsString<int64_t>() ||
-            valueType == openvdb::typeNameAsString<bool>())
+        } else if (valueType == laovdb::typeNameAsString<int32_t>() ||
+            valueType == laovdb::typeNameAsString<int64_t>() ||
+            valueType == laovdb::typeNameAsString<bool>())
         {
             if (!attrName.isstring()) attrName = "vdb_int";
             UT_String varName = attrName;
@@ -1726,8 +1726,8 @@ TreeVisualizer::createPointAttributes(const GridT& grid)
             mInt32Handle = attribHandle.getAttribute();
             mGeo->addVariableName(attrName, varName);
 
-        } else if (valueType == openvdb::typeNameAsString<openvdb::Vec3s>() ||
-            valueType == openvdb::typeNameAsString<openvdb::Vec3d>())
+        } else if (valueType == laovdb::typeNameAsString<laovdb::Vec3s>() ||
+            valueType == laovdb::typeNameAsString<laovdb::Vec3d>())
         {
             if (!attrName.isstring()) attrName = "vdb_vec3f";
             UT_String varName = attrName;
@@ -1752,9 +1752,9 @@ TreeVisualizer::createPointAttributes(const GridT& grid)
 }
 
 template<typename GridType>
-openvdb::Int32 TreeVisualizer::computeIndexSlice(const GridType& grid)
+laovdb::Int32 TreeVisualizer::computeIndexSlice(const GridType& grid)
 {
-    openvdb::Int32 slice(std::numeric_limits<openvdb::Int32>::max());
+    laovdb::Int32 slice(std::numeric_limits<laovdb::Int32>::max());
 
     if (mParms.sliceStyle == NO_SLICE)  return slice;
 
@@ -1771,25 +1771,25 @@ openvdb::Int32 TreeVisualizer::computeIndexSlice(const GridType& grid)
 
     // compute min and max index space bounds
 
-    openvdb::CoordBBox activeVoxelBbox;
+    laovdb::CoordBBox activeVoxelBbox;
     if (!grid.tree().evalActiveVoxelBoundingBox(activeVoxelBbox)) {
         return slice;
     }
 
-    const openvdb::Int32 min = activeVoxelBbox.min()[axis];
-    const openvdb::Int32 max = activeVoxelBbox.max()[axis];
+    const laovdb::Int32 min = activeVoxelBbox.min()[axis];
+    const laovdb::Int32 max = activeVoxelBbox.max()[axis];
 
     if (mParms.useWorldSpace) {
         // convert world space offset to index space
 
-        openvdb::Vec3d posWS(0);
+        laovdb::Vec3d posWS(0);
         posWS(axis) = mParms.sliceOffset;
-        const openvdb::Vec3d pos = grid.worldToIndex(posWS);
+        const laovdb::Vec3d pos = grid.worldToIndex(posWS);
         double offsetIndexSpace = pos(axis);
 
         // now round to nearest index-space integer
 
-        slice = openvdb::Int32(openvdb::math::Round(offsetIndexSpace));
+        slice = laovdb::Int32(laovdb::math::Round(offsetIndexSpace));
 
         // store the offsets in the node cache so that they can be seamlessly converted if desired
 
@@ -1815,7 +1815,7 @@ openvdb::Int32 TreeVisualizer::computeIndexSlice(const GridType& grid)
 
         // now round to nearest index-space integer
 
-        slice = openvdb::Int32(openvdb::math::Round(offsetIndexSpace));
+        slice = laovdb::Int32(laovdb::math::Round(offsetIndexSpace));
 
         // store the offsets in the node cache so that they can be seamlessly converted if desired
 
@@ -1826,9 +1826,9 @@ openvdb::Int32 TreeVisualizer::computeIndexSlice(const GridType& grid)
         if (mParms.cachedOffsetWS) {
             // convert index space offset to world space
 
-            openvdb::Vec3d pos(0);
+            laovdb::Vec3d pos(0);
             pos(axis) = offsetIndexSpace;
-            const openvdb::Vec3d posWS = grid.indexToWorld(pos);
+            const laovdb::Vec3d posWS = grid.indexToWorld(pos);
 
             *mParms.cachedOffsetWS = posWS(axis);
             mParms.cachedOffsetWS = nullptr; // reset pointer so only the offset from the first grid is stored
@@ -1855,25 +1855,25 @@ TreeVisualizer::allocateOffsetArrays(const GridType& grid)
 
 template<typename GridType>
 void
-TreeVisualizer::render(bool node, const GridType& grid, openvdb::Int32 sliceIndex,
+TreeVisualizer::render(bool node, const GridType& grid, laovdb::Int32 sliceIndex,
     const RenderStyle& style1, const RenderStyle& style2)
 {
     using TreeType = typename GridType::TreeType;
 
     const bool staggered = !mParms.ignoreStaggeredVectors &&
-        (grid.getGridClass() == openvdb::GRID_STAGGERED);
+        (grid.getGridClass() == laovdb::GRID_STAGGERED);
 
     // define the number of points and polygons to generate per node
 
     CountOp<TreeType> countOp(node, sliceIndex, staggered, *this);
-    openvdb::tree::DynamicNodeManager<const TreeType> nodeManager(grid.constTree());
+    laovdb::tree::DynamicNodeManager<const TreeType> nodeManager(grid.constTree());
     nodeManager.foreachTopDown(countOp, /*threaded=*/true);
 
     // make points per node cumulative - note that to preserve existing behavior,
     // the depth-first node visitor is used to ensure the same point order
 
     ComputeOffsetsOp offsetsOp(*this);
-    openvdb::tools::visitNodesDepthFirst(grid.tree(), offsetsOp);
+    laovdb::tools::visitNodesDepthFirst(grid.tree(), offsetsOp);
 
     GA_Size pointCount = offsetsOp.pointOffset();
     GA_Size vertexCount = offsetsOp.vertexOffset();
@@ -1947,7 +1947,7 @@ TreeVisualizer::render(bool node, const GridType& grid, openvdb::Int32 sliceInde
             } else {
                 // when rendering a mixture of solid and wire boxes, generate geometry single-threaded
                 RenderGeometrySingleThreadedOp<TreeType> renderGeometryOp(node, pointOffset, vertices, sliceIndex, *this);
-                openvdb::tools::visitNodesDepthFirst(grid.tree(), renderGeometryOp);
+                laovdb::tools::visitNodesDepthFirst(grid.tree(), renderGeometryOp);
             }
         });
         task_group.wait();
@@ -1970,7 +1970,7 @@ TreeVisualizer::operator()(const GridType& grid)
 
     createPointAttributes(grid);
 
-    openvdb::Int32 indexSlice = computeIndexSlice(grid);
+    laovdb::Int32 indexSlice = computeIndexSlice(grid);
 
     allocateOffsetArrays(grid);
 

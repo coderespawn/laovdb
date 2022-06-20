@@ -36,7 +36,7 @@ class TestLevelSetRayIntersector : public ::testing::Test
 
 TEST_F(TestLevelSetRayIntersector, tests)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     typedef math::Ray<double>  RayT;
     typedef RayT::Vec3Type     Vec3T;
 
@@ -311,7 +311,7 @@ TEST_F(TestLevelSetRayIntersector, tests)
 #ifdef STATS_TEST
 TEST_F(TestLevelSetRayIntersector, stats)
 {
-    using namespace openvdb;
+    using namespace laovdb;
     typedef math::Ray<double>  RayT;
     typedef RayT::Vec3Type     Vec3T;
     util::CpuTimer timer;

@@ -16,7 +16,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace io {
@@ -750,6 +750,6 @@ writeCompressedValues(std::ostream& os, ValueT* srcBuf, Index srcCount,
 
 } // namespace io
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_IO_COMPRESSION_HAS_BEEN_INCLUDED

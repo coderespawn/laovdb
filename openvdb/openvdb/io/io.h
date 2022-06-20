@@ -16,7 +16,7 @@
 
 class TestMappedFile;
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -145,7 +145,7 @@ public:
     /// @brief Return a new stream buffer for the mapped file.
     /// @details Typical usage is
     /// @code
-    /// openvdb::io::MappedFile::Ptr mappedFile = ...;
+    /// laovdb::io::MappedFile::Ptr mappedFile = ...;
     /// auto buf = mappedFile->createBuffer();
     /// std::istream istrm{buf.get()};
     /// // Read from istrm...
@@ -269,6 +269,6 @@ OPENVDB_API SharedPtr<StreamMetadata> clearStreamMetadataPtr(std::ios_base&);
 
 } // namespace io
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_IO_IO_HAS_BEEN_INCLUDED

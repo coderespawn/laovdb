@@ -9,10 +9,10 @@
 #define OPENVDB_HOUDINI_GEOMETRY_UTIL_HAS_BEEN_INCLUDED
 
 #include <openvdb/openvdb.h>
-#include <openvdb/tools/MeshToVolume.h> // for openvdb::tools::MeshToVoxelEdgeData
+#include <openvdb/tools/MeshToVolume.h> // for laovdb::tools::MeshToVoxelEdgeData
 #include <openvdb/tree/LeafManager.h>
 #include <openvdb/util/NullInterrupter.h>
-#include <openvdb/util/Util.h> // for openvdb::util::COORD_OFFSETS
+#include <openvdb/util/Util.h> // for laovdb::util::COORD_OFFSETS
 
 #include <GU/GU_Detail.h>
 
@@ -44,14 +44,14 @@ class Interrupter;
 /// Add geometry to the given detail to indicate the extents of a frustum transform.
 OPENVDB_HOUDINI_API
 void
-drawFrustum(GU_Detail&, const openvdb::math::Transform&,
+drawFrustum(GU_Detail&, const laovdb::math::Transform&,
     const UT_Vector3* boxColor, const UT_Vector3* tickColor,
     bool shaded, bool drawTicks = true);
 
 
 /// Construct a frustum transform from a Houdini camera.
 OPENVDB_HOUDINI_API
-openvdb::math::Transform::Ptr
+laovdb::math::Transform::Ptr
 frustumTransformFromCamera(
     OP_Node&, OP_Context&, OBJ_Camera&,
     float offset, float nearPlaneDist, float farPlaneDist,
@@ -76,7 +76,7 @@ pointInPrimGroup(GA_Offset ptnOffset, GU_Detail&, const GA_PrimitiveGroup&);
 /// converted or subdivided, otherwise a null pointer
 OPENVDB_HOUDINI_API
 std::unique_ptr<GU_Detail>
-convertGeometry(const GU_Detail&, std::string& warning, openvdb::util::NullInterrupter*);
+convertGeometry(const GU_Detail&, std::string& warning, laovdb::util::NullInterrupter*);
 
 
 OPENVDB_DEPRECATED_MESSAGE("openvdb_houdini::Interrupter has been deprecated, use openvdb_houdini::HoudiniInterrupter")
@@ -93,15 +93,15 @@ class OPENVDB_HOUDINI_API TransformOp
 {
 public:
     TransformOp(GU_Detail const * const gdp,
-        const openvdb::math::Transform& transform,
-        std::vector<openvdb::Vec3s>& pointList);
+        const laovdb::math::Transform& transform,
+        std::vector<laovdb::Vec3s>& pointList);
 
     void operator()(const GA_SplittableRange&) const;
 
 private:
     GU_Detail const * const mGdp;
-    const openvdb::math::Transform& mTransform;
-    std::vector<openvdb::Vec3s>* const mPointList;
+    const laovdb::math::Transform& mTransform;
+    std::vector<laovdb::Vec3s>* const mPointList;
 };
 
 
@@ -113,12 +113,12 @@ private:
 class OPENVDB_HOUDINI_API PrimCpyOp
 {
 public:
-    PrimCpyOp(GU_Detail const * const gdp, std::vector<openvdb::Vec4I>& primList);
+    PrimCpyOp(GU_Detail const * const gdp, std::vector<laovdb::Vec4I>& primList);
     void operator()(const GA_SplittableRange&) const;
 
 private:
     GU_Detail const * const mGdp;
-    std::vector<openvdb::Vec4I>* const mPrimList;
+    std::vector<laovdb::Vec4I>* const mPrimList;
 };
 
 
@@ -155,11 +155,11 @@ private:
 class OPENVDB_HOUDINI_API SharpenFeaturesOp
 {
 public:
-    using EdgeData = openvdb::tools::MeshToVoxelEdgeData;
+    using EdgeData = laovdb::tools::MeshToVoxelEdgeData;
 
     SharpenFeaturesOp(GU_Detail& meshGeo, const GU_Detail& refGeo, EdgeData& edgeData,
-        const openvdb::math::Transform& xform, const GA_PrimitiveGroup* surfacePrims = nullptr,
-        const openvdb::BoolTree* mask = nullptr);
+        const laovdb::math::Transform& xform, const GA_PrimitiveGroup* surfacePrims = nullptr,
+        const laovdb::BoolTree* mask = nullptr);
 
     void operator()(const GA_SplittableRange&) const;
 
@@ -167,9 +167,9 @@ private:
     GU_Detail& mMeshGeo;
     const GU_Detail& mRefGeo;
     EdgeData& mEdgeData;
-    const openvdb::math::Transform& mXForm;
+    const laovdb::math::Transform& mXForm;
     const GA_PrimitiveGroup* mSurfacePrims;
-    const openvdb::BoolTree* mMaskTree;
+    const laovdb::BoolTree* mMaskTree;
 };
 
 
@@ -181,7 +181,7 @@ template<typename IndexTreeType, typename BoolTreeType>
 class GenAdaptivityMaskOp
 {
 public:
-    using BoolLeafManager = openvdb::tree::LeafManager<BoolTreeType>;
+    using BoolLeafManager = laovdb::tree::LeafManager<BoolTreeType>;
 
     GenAdaptivityMaskOp(const GU_Detail& refGeo,
         const IndexTreeType& indexTree, BoolLeafManager&, float edgetolerance = 0.0);
@@ -228,14 +228,14 @@ void
 GenAdaptivityMaskOp<IndexTreeType, BoolTreeType>::operator()(
     const tbb::blocked_range<size_t>& range) const
 {
-    using IndexAccessorType = typename openvdb::tree::ValueAccessor<const IndexTreeType>;
+    using IndexAccessorType = typename laovdb::tree::ValueAccessor<const IndexTreeType>;
     IndexAccessorType idxAcc(mIndexTree);
 
     UT_Vector3 tmpN, normal;
     GA_Offset primOffset;
     int tmpIdx;
 
-    openvdb::Coord ijk, nijk;
+    laovdb::Coord ijk, nijk;
     typename BoolTreeType::LeafNodeType::ValueOnIter iter;
 
     for (size_t n = range.begin(); n < range.end(); ++n) {
@@ -251,7 +251,7 @@ GenAdaptivityMaskOp<IndexTreeType, BoolTreeType>::operator()(
             normal = mRefGeo.getGEOPrimitive(primOffset)->computeNormal();
 
             for (size_t i = 0; i < 18; ++i) {
-                nijk = ijk + openvdb::util::COORD_OFFSETS[i];
+                nijk = ijk + laovdb::util::COORD_OFFSETS[i];
                 if (idxAcc.probeValue(nijk, tmpIdx) && tmpIdx != idx) {
                     primOffset = mRefGeo.primitiveOffset(tmpIdx);
                     tmpN = mRefGeo.getGEOPrimitive(primOffset)->computeNormal();

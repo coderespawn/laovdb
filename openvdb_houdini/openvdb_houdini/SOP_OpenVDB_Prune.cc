@@ -158,13 +158,13 @@ struct PruneOp {
 
         if (mode == "value") {
             OPENVDB_NO_TYPE_CONVERSION_WARNING_BEGIN
-            const ValueT tolerance(openvdb::zeroVal<ValueT>() + pruneTolerance);
+            const ValueT tolerance(laovdb::zeroVal<ValueT>() + pruneTolerance);
             OPENVDB_NO_TYPE_CONVERSION_WARNING_END
-            openvdb::tools::prune(grid.tree(), tolerance);
+            laovdb::tools::prune(grid.tree(), tolerance);
         } else if (mode == "inactive") {
-            openvdb::tools::pruneInactive(grid.tree());
+            laovdb::tools::pruneInactive(grid.tree());
         } else if (mode == "levelset") {
-            openvdb::tools::pruneLevelSet(grid.tree());
+            laovdb::tools::pruneLevelSet(grid.tree());
         }
     }
 

@@ -13,7 +13,7 @@
 #include "Vec3.h"
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 namespace math {
@@ -166,6 +166,6 @@ private:
 
 } // namespace math
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_MATH_LEGACYFRUSTUM_HAS_BEEN_INCLUDED

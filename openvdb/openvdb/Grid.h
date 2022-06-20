@@ -19,7 +19,7 @@
 #include <vector>
 
 
-namespace openvdb {
+namespace laovdb {
 OPENVDB_USE_VERSION_NAMESPACE
 namespace OPENVDB_VERSION_NAME {
 
@@ -244,12 +244,12 @@ public:
     ///
     /// @par Example:
     /// @code
-    /// using AllowedGridTypes = openvdb::TypeList<
-    ///     openvdb::Int32Grid, openvdb::Int64Grid,
-    ///     openvdb::FloatGrid, openvdb::DoubleGrid>;
+    /// using AllowedGridTypes = laovdb::TypeList<
+    ///     laovdb::Int32Grid, laovdb::Int64Grid,
+    ///     laovdb::FloatGrid, laovdb::DoubleGrid>;
     ///
-    /// const openvdb::CoordBBox bbox{
-    ///     openvdb::Coord{0,0,0}, openvdb::Coord{10,10,10}};
+    /// const laovdb::CoordBBox bbox{
+    ///     laovdb::Coord{0,0,0}, laovdb::Coord{10,10,10}};
     ///
     /// // Fill the grid if it is one of the allowed types.
     /// myGridBasePtr->apply<AllowedGridTypes>(
@@ -1798,6 +1798,6 @@ GridBase::apply(const OpT& op)
 
 
 } // namespace OPENVDB_VERSION_NAME
-} // namespace openvdb
+} // namespace laovdb
 
 #endif // OPENVDB_GRID_HAS_BEEN_INCLUDED
